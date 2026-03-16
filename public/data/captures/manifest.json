@@ -3,5 +3,116 @@
     "width": 390,
     "height": 844
   },
-  "captures": []
+  "captures": [
+    {
+      "name": "home",
+      "file": "home.png",
+      "group": "home",
+      "path": "/",
+      "url": "https://digital.garden-fi.com/",
+      "capturedAt": "2026-03-16T22:46:35.631Z",
+      "x": 0,
+      "y": 48
+    },
+    {
+      "name": "accounts",
+      "file": "accounts.png",
+      "group": "accounts",
+      "path": "/accounts/",
+      "url": "https://digital.garden-fi.com/accounts/",
+      "capturedAt": "2026-03-16T22:46:53.864Z",
+      "x": 0,
+      "y": 1229
+    },
+    {
+      "name": "ach",
+      "file": "ach.png",
+      "group": "payments",
+      "path": "/payments/ach",
+      "url": "https://digital.garden-fi.com/payments/ach",
+      "capturedAt": "2026-03-16T22:47:16.992Z",
+      "x": 0,
+      "y": 2410
+    },
+    {
+      "name": "ach-create-ach",
+      "file": "ach-create-ach.png",
+      "group": "payments",
+      "path": "/payments/ach/batch/new",
+      "url": "https://digital.garden-fi.com/payments/ach/batch/new",
+      "capturedAt": "2026-03-16T22:47:35.669Z",
+      "x": 430,
+      "y": 2410
+    },
+    {
+      "name": "ach-create-ach-filled",
+      "file": "ach-create-ach-filled.png",
+      "group": "payments",
+      "path": "/payments/ach/batch/new",
+      "url": "https://digital.garden-fi.com/payments/ach/batch/new",
+      "capturedAt": "2026-03-16T22:47:39.971Z",
+      "x": 860,
+      "y": 2410
+    },
+    {
+      "name": "ach-create-ach-file-layouts",
+      "file": "ach-create-ach-file-layouts.png",
+      "group": "payments",
+      "path": "/payments/ach/import-settings",
+      "url": "https://digital.garden-fi.com/payments/ach/import-settings",
+      "capturedAt": "2026-03-16T22:47:54.295Z",
+      "x": 1290,
+      "y": 2410
+    },
+    {
+      "name": "ach-upload-ach",
+      "file": "ach-upload-ach.png",
+      "group": "payments",
+      "path": "/payments/ach/upload",
+      "url": "https://digital.garden-fi.com/payments/ach/upload",
+      "capturedAt": "2026-03-16T22:48:23.536Z",
+      "x": 1720,
+      "y": 2410
+    },
+    {
+      "name": "ach-pay-taxes",
+      "file": "ach-pay-taxes.png",
+      "group": "payments",
+      "path": "/payments/ach/tax/new",
+      "url": "https://digital.garden-fi.com/payments/ach/tax/new",
+      "capturedAt": "2026-03-16T22:48:45.134Z",
+      "x": 2150,
+      "y": 2410
+    },
+    {
+      "name": "ach-pay-taxes-filled",
+      "file": "ach-pay-taxes-filled.png",
+      "group": "payments",
+      "path": "/payments/ach/tax/new",
+      "url": "https://digital.garden-fi.com/payments/ach/tax/new",
+      "capturedAt": "2026-03-16T22:48:48.800Z",
+      "x": 2580,
+      "y": 2410
+    },
+    {
+      "name": "ach-search-recipients",
+      "file": "ach-search-recipients.png",
+      "group": "payments",
+      "path": "/payments/ach/search-recipients",
+      "url": "https://digital.garden-fi.com/payments/ach/search-recipients",
+      "capturedAt": "2026-03-16T22:49:21.492Z",
+      "x": 3010,
+      "y": 2410
+    },
+    {
+      "name": "ach-search-recipients-filled",
+      "file": "ach-search-recipients-filled.png",
+      "group": "payments",
+      "path": "/payments/ach/search-recipients",
+      "url": "https://digital.garden-fi.com/payments/ach/search-recipients",
+      "capturedAt": "2026-03-16T22:49:22.057Z",
+      "x": 3440,
+      "y": 2410
+    }
+  ]
 }
