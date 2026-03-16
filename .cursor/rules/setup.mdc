@@ -37,60 +37,44 @@ The new repo will be named **`design-core-<company-slug>`** (lowercase, hyphenat
 
 ### 2. Ensure tools are available
 
-The setup needs `git`, `node`, `npm`, and `gh` (GitHub CLI). Check for each and install any that are missing:
+The setup needs `git`, `node`, and `npm`. Check for each and install any that are missing:
 
 1. **git** -- run `git --version`. Should already be installed. If not, on macOS: `xcode-select --install`.
 2. **Node.js** -- run `node --version`. If missing, on macOS: `brew install node`. Otherwise: download from [nodejs.org](https://nodejs.org).
-3. **gh (GitHub CLI)** -- run `gh --version`. If missing, install it: on macOS: `brew install gh`. Otherwise: see [cli.github.com](https://cli.github.com).
-4. **gh auth** -- run `gh auth status`. If not logged in, run `gh auth login` and walk the user through the prompts (browser login is easiest).
 
-### 3. Clone, create company repo, and connect
+No other CLI tools are needed. The company repo is created through Cursor's built-in Git integration.
 
-**Critical:** The public repo (`ubrandon/design-core`) is **never modified**. We clone it, create a new company repo, and point the clone at the new repo. The public repo stays as an upstream so the company can pull updates later.
+### 3. Prepare the repo and publish through Cursor
 
-Run these steps automatically:
+**Critical:** The public repo (`ubrandon/design-core`) is **never modified**. The user's prompt from GETTING_STARTED.md already handles cloning, renaming the remote to `upstream`, unsetting branch tracking, and installing dependencies. By the time you are reading this file, those steps are done.
 
-1. **Clone the public repo** with the company name:
-   ```
-   git clone https://github.com/ubrandon/design-core.git design-core-COMPANY_SLUG
-   ```
-   This creates a local folder (e.g. `design-core-jack-henry`) with all the tool files.
+**Verify the setup is correct.** Run `git remote -v` -- you should see only `upstream` pointing to `ubrandon/design-core`. There should be NO `origin` remote. If `origin` exists and points to `ubrandon/design-core`, the prompt steps were skipped -- run them now:
+```
+git remote rename origin upstream
+git branch --unset-upstream main
+```
 
-2. **Create a new empty repo** on GitHub under their org/account:
-   ```
-   gh repo create THEIR_ORG/design-core-COMPANY_SLUG --private --description "Design Core for COMPANY_NAME"
-   ```
-   (Use `--public` if they prefer a public repo. Omit `THEIR_ORG/` and use just the repo name if creating under a personal account.)
+Now continue with:
 
-3. **Swap remotes** so the clone points to the new repo and keeps the public repo as upstream:
-   ```
-   cd design-core-COMPANY_SLUG
-   git remote rename origin upstream
-   git remote add origin https://github.com/THEIR_ORG/design-core-COMPANY_SLUG.git
-   ```
-   Now `origin` = their company repo (push here), `upstream` = public repo (pull updates from here).
+1. **Update `GETTING_STARTED.md`** -- replace `YOUR_ORG` and `YOUR_REPO` with the company's org and repo name so teammates get the right clone URL.
 
-4. **Install dependencies:**
-   ```
-   npm install
-   ```
+2. **Update `.designer.example`** with the company name (see step 5 below for the format).
 
-5. **Update `GETTING_STARTED.md`** -- replace `YOUR_ORG` and `YOUR_REPO` with the company's org and repo name so teammates get the right clone URL.
+3. **Tell the user to publish from Cursor.** Stop and tell the user:
 
-6. **Update `.designer.example`** with the company name (see step 5 below for the format).
+   > "Your repo is ready. To connect it to GitHub:
+   > 1. Open the **Source Control** tab in Cursor (the branch icon in the sidebar)
+   > 2. Click **Publish Branch**
+   > 3. Name it `design-core-COMPANY_SLUG` and choose **private**
+   > 4. Cursor will create the repo on GitHub and push everything
+   >
+   > Let me know when that's done and I'll continue with the rest of the setup."
 
-7. **Commit and push** to the new company repo:
-   ```
-   git add -A
-   git commit -m "Set up Design Core for COMPANY_NAME"
-   git push -u origin main
-   ```
+   Wait for the user to confirm before continuing. Do NOT try to create the repo or push via the terminal -- Cursor's Git integration handles authentication and remote setup.
 
-8. **Enable GitHub Pages** (optional, for shareable prototype links):
-   ```
-   gh api repos/THEIR_ORG/design-core-COMPANY_SLUG/pages -X POST -f build_type=workflow
-   ```
-   If it succeeds, prototypes will be live at `https://THEIR_ORG.github.io/design-core-COMPANY_SLUG/` after each push. If it fails, tell the user to enable it manually: repo **Settings → Pages → Source → GitHub Actions**.
+4. **Enable GitHub Pages** (optional, for shareable prototype links). After the user has published, tell them:
+
+   > "If you want shareable prototype links, enable GitHub Pages: go to your repo on GitHub → **Settings → Pages → Source → GitHub Actions**. After that, prototypes will be live at `https://THEIR_ORG.github.io/design-core-COMPANY_SLUG/` after each push."
 
 ### Pulling updates from the public repo later
 
@@ -207,4 +191,4 @@ Run `npm run dev` and tell them the URL to open in their browser. Explain what t
 
 **NEVER make tool-level changes in a company repo.** Company repos pull tool updates from the upstream core repo (`ubrandon/design-core`) via `git fetch upstream && git merge upstream/main`. If you edit tool files (Cursor rules, root HTML pages, scripts, styles, config, docs) directly in a company repo, those changes will conflict with future upstream merges.
 
-The only tool-level files modified in a company repo are `GETTING_STARTED.md` and `.designer.example` -- and only during the initial setup commit (step 3.5 and 3.6 above). After that, all tool changes flow from the core repo downstream.
+The only tool-level files modified in a company repo are `GETTING_STARTED.md` and `.designer.example` -- and only during the initial setup. After that, all tool changes flow from the core repo downstream.
