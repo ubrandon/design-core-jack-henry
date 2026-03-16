@@ -1,0 +1,9 @@
+{
+  "appUrl": "",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "discover": true,
+  "dismissSelectors": []
+}

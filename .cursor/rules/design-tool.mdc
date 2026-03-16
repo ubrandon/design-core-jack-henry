@@ -137,6 +137,18 @@ The design system page (`design-system.html`) uses an **infinite canvas**: main 
 4. **Never edit the design system** without being explicitly asked. The files in `public/data/design-system/` and `public/styles/` are shared across all projects.
 5. **Use the design system.** Always use existing CSS classes from `public/styles/ds.css` and design tokens from `public/styles/shared.css`. Read both files before creating anything.
 
+## Before Creating Anything
+
+When a designer asks you to create screens, prototypes, or any design work, **always check existing projects first** before creating anything new.
+
+1. **Read `public/data/projects/index.json`** to see what projects already exist.
+2. **If the user explicitly says "create a new project"**, proceed with the project creation flow below.
+3. **If the user does NOT mention creating a new project** (e.g. they say "make me a home screen" or "design a login flow"), list the existing projects and ask where they want the work to go:
+   - "You have these projects: **Project A**, **Project B**. Which one should I add this to, or would you like to create a new project?"
+4. **If there are no projects yet**, tell the user you'll create one and ask for a name:
+   - "There aren't any projects yet. What would you like to call this project?"
+5. **Never auto-generate a project name** like "New Project" or "Untitled". Always ask the user.
+
 ## How to Create Things
 
 ### Creating a new project
@@ -449,6 +461,55 @@ When building a design system from scratch, use these groups as a starting point
 - **Navigation** -- nav bars, tab bars, list items, bottom sheets
 - **Cards & Content** -- any domain-specific card types, content rows, media layouts
 - **Layout & Structure** -- dividers, avatar groups, section headers
+
+## Screen Captures
+
+The Captures page lets teams screenshot their live app and view the results on an infinite canvas. Configuration is split into two files:
+
+### Shared config (committed to git)
+
+**`public/data/captures/config.json`** -- contains `appUrl`, `viewport`, `discover`, `screens`, `dismissSelectors`. Created automatically when a designer captures from the UI, or you can create/edit it directly. This is shared with the whole team.
+
+### Local credentials (gitignored)
+
+**`.app-screens.json`** in the repo root -- only needed for apps behind login. Contains the `login` block with steps and credentials. Each designer creates their own. Copy from `.app-screens.example.json`.
+
+### How to help designers with captures
+
+1. **First capture (public app)** -- tell them to go to the Captures page and enter their URL. Or create `public/data/captures/config.json` with `appUrl` and `"discover": true`.
+
+2. **App behind login** -- create `.app-screens.json` in the repo root. Ask the designer for their login credentials. The simple format auto-detects login fields:
+   ```json
+   { "login": { "username": "their_username", "password": "their_password" } }
+   ```
+   Add `"url": "/custom-login"` if the login page isn't at `/login`. The script auto-detects username/email fields, password fields, submit buttons, and handles both single-page and multi-step (SSO) login flows. If MFA is required, the browser stays open for manual completion.
+
+   If auto-detection doesn't work (custom web components, non-standard forms), fall back to explicit steps:
+   ```json
+   { "login": { "url": "/login", "steps": [
+     { "action": "fill", "selector": "input[name='username']", "value": "user@example.com" },
+     { "action": "submit" },
+     { "action": "fill", "selector": "input[type='password']", "value": "password123" },
+     { "action": "submit" }
+   ] } }
+   ```
+
+3. **Custom dismiss selectors** -- if the app has popups/modals that aren't auto-dismissed, add CSS selectors to `dismissSelectors` in the shared config.
+
+4. **Explicit screens** -- if discovery mode misses screens or the designer wants specific ones, set `"discover": false` and list screens in the `screens` array with `name`, `path`, and optional `group`, `waitFor`, `delay`.
+
+5. **Troubleshooting** -- if captures fail:
+   - Check that Playwright is installed: `npx playwright install chromium`
+   - Check that the URL is correct and accessible
+   - For login issues, the browser window stays open so the designer can complete MFA manually
+   - Check the terminal output for specific errors
+
+### What you can edit (consumer repo)
+
+- `public/data/captures/config.json` -- shared capture settings (this is user content under `public/data/`)
+- `.app-screens.json` -- local credentials (gitignored)
+
+Do NOT edit `scripts/capture-screens.js`, `captures.html`, or the Vite config -- those are tool files.
 
 ## Tone
 

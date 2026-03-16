@@ -169,159 +169,228 @@
         }
       }
       if (e.key === "Escape") {
+        closeContextMenu();
         clearSelection();
       }
     });
 
-    /* ── Pointer interaction on cards ── */
-    let cardPointer = null;
+    /* ── Right-click context menu ── */
+    let ctxMenu = null;
 
-    function onCardPointerDown(e, idx) {
-      if (pz.spaceHeld) return;
-      e.stopPropagation();
-
-      const rect = viewport.getBoundingClientRect();
-      cardPointer = {
-        idx: idx,
-        startX: e.clientX,
-        startY: e.clientY,
-        moved: false,
-        stageOffX: 0,
-        stageOffY: 0,
-        dragOffsets: null,
-      };
-
-      viewport.setPointerCapture(e.pointerId);
+    function closeContextMenu() {
+      if (ctxMenu) { ctxMenu.remove(); ctxMenu = null; }
+      window.removeEventListener("pointerdown", onCtxOutside);
     }
 
-    viewport.addEventListener("pointermove", (e) => {
-      if (!cardPointer) return;
+    function onCtxOutside(e) {
+      if (ctxMenu && !ctxMenu.contains(e.target)) closeContextMenu();
+    }
 
-      const dx = e.clientX - cardPointer.startX;
-      const dy = e.clientY - cardPointer.startY;
-
-      if (!cardPointer.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
-
-      if (!cardPointer.moved) {
-        cardPointer.moved = true;
-        viewport.classList.add("dragging-card");
-
-        if (!selected.has(cardPointer.idx)) {
-          if (!e.shiftKey && !e.metaKey && !e.ctrlKey) {
-            setSelected([cardPointer.idx]);
-          } else {
-            selected.add(cardPointer.idx);
-            applySelectionClasses();
-            updateSelectionBar();
-          }
+    function showContextMenu(x, y, items) {
+      closeContextMenu();
+      ctxMenu = document.createElement("div");
+      ctxMenu.className = "canvas-context-menu";
+      for (const item of items) {
+        if (item.sep) {
+          const sep = document.createElement("div");
+          sep.className = "canvas-context-menu-sep";
+          ctxMenu.appendChild(sep);
+          continue;
         }
-
-        const rect = viewport.getBoundingClientRect();
-        const sX = (cardPointer.startX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
-        const sY = (cardPointer.startY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
-
-        cardPointer.dragOffsets = [];
-        selected.forEach(i => {
-          cardPointer.dragOffsets.push({ idx: i, offX: sX - screens[i].x, offY: sY - screens[i].y });
-        });
+        const btn = document.createElement("button");
+        btn.className = "canvas-context-menu-item" + (item.danger ? " canvas-context-menu-item--danger" : "");
+        btn.innerHTML = (item.icon || "") + item.label;
+        btn.addEventListener("click", () => { closeContextMenu(); item.action(); });
+        ctxMenu.appendChild(btn);
       }
+      ctxMenu.style.left = x + "px";
+      ctxMenu.style.top = y + "px";
+      document.body.appendChild(ctxMenu);
 
-      const rect = viewport.getBoundingClientRect();
-      const stageX = (e.clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
-      const stageY = (e.clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
+      const rect = ctxMenu.getBoundingClientRect();
+      if (rect.right > window.innerWidth) ctxMenu.style.left = (x - rect.width) + "px";
+      if (rect.bottom > window.innerHeight) ctxMenu.style.top = (y - rect.height) + "px";
 
-      cardPointer.dragOffsets.forEach(d => {
-        const s = screens[d.idx];
-        s.x = stageX - d.offX;
-        s.y = stageY - d.offY;
-        const card = document.getElementById("card-" + d.idx);
-        if (card) {
-          card.style.left = s.x + "px";
-          card.style.top = s.y + "px";
-        }
-      });
+      setTimeout(() => window.addEventListener("pointerdown", onCtxOutside), 0);
+    }
+
+    const ICON_SELECT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>';
+    const ICON_TIDY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>';
+    const ICON_DELETE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+
+    viewport.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      const card = e.target.closest(".canvas-card");
+
+      if (card) {
+        const idx = parseInt(card.id.replace("card-", ""), 10);
+        if (isNaN(idx)) return;
+        if (!selected.has(idx)) setSelected([idx]);
+
+        const count = selected.size;
+        const label = count === 1 ? screens[idx].file.replace(".html", "") : count + " screens";
+        showContextMenu(e.clientX, e.clientY, [
+          { label: "Select All", icon: ICON_SELECT, action: () => setSelected(screens.map((_, i) => i)) },
+          { sep: true },
+          { label: "Tidy Layout", icon: ICON_TIDY, action: tidyLayout },
+          { sep: true },
+          { label: "Delete " + label, icon: ICON_DELETE, danger: true, action: deleteSelected },
+        ]);
+      } else {
+        clearSelection();
+        showContextMenu(e.clientX, e.clientY, [
+          { label: "Select All", icon: ICON_SELECT, action: () => setSelected(screens.map((_, i) => i)) },
+          { sep: true },
+          { label: "Tidy Layout", icon: ICON_TIDY, action: tidyLayout },
+        ]);
+      }
     });
 
-    viewport.addEventListener("pointerup", (e) => {
-      if (!cardPointer) return;
-
-      if (!cardPointer.moved) {
-        const idx = cardPointer.idx;
-        if (e.shiftKey || e.metaKey || e.ctrlKey) {
-          toggleSelected(idx);
-        } else {
-          setSelected([idx]);
-        }
-      }
-
-      if (cardPointer.moved) {
-        viewport.classList.remove("dragging-card");
-      }
-
-      cardPointer = null;
-    });
-
-    /* ── Marquee selection on empty canvas ── */
+    /* ── Card click/drag + marquee + deselect ── */
+    let cardPointer = null;
     let marquee = null;
     let marqueeEl = null;
 
-    viewport.addEventListener("pointerdown", (e) => {
-      if (e.target.closest(".canvas-card")) return;
+    function onCardPointerDown(e, idx) {
+      if (e.button !== 0) return;
       if (pz.spaceHeld) return;
+      e.stopPropagation();
+      e.preventDefault();
+      closeContextMenu();
 
-      marquee = {
+      const shiftHeld = e.shiftKey;
+
+      if (shiftHeld) {
+        const next = new Set(selected);
+        if (next.has(idx)) next.delete(idx); else next.add(idx);
+        setSelected([...next]);
+      } else if (!selected.has(idx)) {
+        setSelected([idx]);
+      }
+
+      cardPointer = {
+        idx,
         startX: e.clientX,
         startY: e.clientY,
         moved: false,
+        shiftHeld,
+        dragOffsets: null,
         pointerId: e.pointerId,
       };
+      viewport.setPointerCapture(e.pointerId);
+    }
+
+    viewport.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      if (pz.spaceHeld) return;
+      if (e.target.closest(".canvas-card")) return;
+
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        marquee = {
+          startX: e.clientX,
+          startY: e.clientY,
+          moved: false,
+          pointerId: e.pointerId,
+        };
+        viewport.setPointerCapture(e.pointerId);
+      }
     });
 
     viewport.addEventListener("pointermove", (e) => {
-      if (!marquee) return;
+      if (cardPointer) {
+        const dx = e.clientX - cardPointer.startX;
+        const dy = e.clientY - cardPointer.startY;
+        if (!cardPointer.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
 
-      const dx = e.clientX - marquee.startX;
-      const dy = e.clientY - marquee.startY;
+        if (!cardPointer.moved) {
+          cardPointer.moved = true;
+          viewport.classList.add("dragging-card");
 
-      if (!marquee.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
+          const rect = viewport.getBoundingClientRect();
+          const sX = (cardPointer.startX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
+          const sY = (cardPointer.startY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
 
-      if (!marquee.moved) {
-        marquee.moved = true;
-        pz.isPanning = false;
-        marqueeEl = document.createElement("div");
-        marqueeEl.className = "canvas-marquee";
-        document.body.appendChild(marqueeEl);
+          cardPointer.dragOffsets = [];
+          selected.forEach(i => {
+            cardPointer.dragOffsets.push({ idx: i, offX: sX - screens[i].x, offY: sY - screens[i].y });
+          });
+        }
+
+        const rect = viewport.getBoundingClientRect();
+        const stageX = (e.clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
+        const stageY = (e.clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
+
+        cardPointer.dragOffsets.forEach(d => {
+          const s = screens[d.idx];
+          s.x = stageX - d.offX;
+          s.y = stageY - d.offY;
+          const el = document.getElementById("card-" + d.idx);
+          if (el) {
+            el.style.left = s.x + "px";
+            el.style.top = s.y + "px";
+          }
+        });
+        return;
       }
 
-      const x = Math.min(marquee.startX, e.clientX);
-      const y = Math.min(marquee.startY, e.clientY);
-      const w = Math.abs(dx);
-      const h = Math.abs(dy);
-      marqueeEl.style.left = x + "px";
-      marqueeEl.style.top = y + "px";
-      marqueeEl.style.width = w + "px";
-      marqueeEl.style.height = h + "px";
+      if (marquee) {
+        const dx = e.clientX - marquee.startX;
+        const dy = e.clientY - marquee.startY;
+        if (!marquee.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
 
-      const hits = [];
-      screens.forEach((s, i) => {
-        const card = document.getElementById("card-" + i);
-        if (card) {
-          const cr = card.getBoundingClientRect();
-          if (cr.right > x && cr.left < x + w && cr.bottom > y && cr.top < y + h) {
-            hits.push(i);
-          }
+        if (!marquee.moved) {
+          marquee.moved = true;
+          pz.isPanning = false;
+          marqueeEl = document.createElement("div");
+          marqueeEl.className = "canvas-marquee";
+          document.body.appendChild(marqueeEl);
         }
-      });
-      setSelected(hits);
+
+        const x = Math.min(marquee.startX, e.clientX);
+        const y = Math.min(marquee.startY, e.clientY);
+        const w = Math.abs(dx);
+        const h = Math.abs(dy);
+        marqueeEl.style.left = x + "px";
+        marqueeEl.style.top = y + "px";
+        marqueeEl.style.width = w + "px";
+        marqueeEl.style.height = h + "px";
+
+        const hits = [];
+        screens.forEach((s, i) => {
+          const card = document.getElementById("card-" + i);
+          if (card) {
+            const cr = card.getBoundingClientRect();
+            if (cr.right > x && cr.left < x + w && cr.bottom > y && cr.top < y + h) {
+              hits.push(i);
+            }
+          }
+        });
+        setSelected(hits);
+      }
     });
 
     viewport.addEventListener("pointerup", (e) => {
-      if (marquee) {
-        if (!marquee.moved) {
-          if (!e.shiftKey && !e.metaKey && !e.ctrlKey) clearSelection();
+      if (cardPointer) {
+        if (cardPointer.moved) {
+          viewport.classList.remove("dragging-card");
+          saveCanvas();
+        } else if (!cardPointer.shiftHeld) {
+          setSelected([cardPointer.idx]);
         }
+        cardPointer = null;
+        return;
+      }
+
+      if (marquee) {
         if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
         marquee = null;
+        return;
+      }
+
+      if (!pz.didPan && !e.target.closest(".canvas-card") && !e.target.closest(".canvas-context-menu")) {
+        clearSelection();
       }
     });
 
@@ -402,8 +471,7 @@
       const bust = "?t=" + Date.now();
       stage.innerHTML = screens.map((s, i) => `
         <div class="canvas-card${selected.has(i) ? " is-selected" : ""}" id="card-${i}"
-             style="left:${s.x}px; top:${s.y}px; width:${s.width}px;"
-             onpointerdown="onCardPointerDown(event, ${i})">
+             style="left:${s.x}px; top:${s.y}px; width:${s.width}px;">
           <div class="canvas-card-body">
             <iframe src="data/projects/${projectId}/screens/${s.file}${bust}"
                     width="${s.width}"
@@ -414,6 +482,10 @@
           </div>
         </div>
       `).join("");
+
+      stage.querySelectorAll(".canvas-card").forEach((card, i) => {
+        card.addEventListener("pointerdown", (e) => onCardPointerDown(e, i));
+      });
     }
 
     function autoSizeIframe(iframe) {

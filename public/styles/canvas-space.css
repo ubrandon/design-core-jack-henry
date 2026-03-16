@@ -6,6 +6,8 @@
   top: 52px;
   overflow: hidden;
   cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
   background-color: #b8b8b8;
   background-image:
     radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
@@ -19,7 +21,7 @@
 }
 
 .canvas-space-viewport.dragging-card {
-  cursor: default;
+  cursor: grabbing;
 }
 
 .canvas-space-stage {
@@ -30,6 +32,8 @@
   will-change: transform;
   min-width: 1px;
   min-height: 1px;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* Screen card on canvas */
@@ -42,8 +46,14 @@
     0 8px 32px rgba(0, 0, 0, 0.18),
     0 2px 8px rgba(0, 0, 0, 0.1);
   background: #fff;
-  cursor: move;
+  cursor: grab;
   user-select: none;
+  -webkit-user-drag: none;
+}
+
+.canvas-card * {
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 .canvas-card:hover {
@@ -208,4 +218,62 @@
 
 .palette-item:last-of-type {
   margin-bottom: 0;
+}
+
+/* Context menu */
+.canvas-context-menu {
+  position: fixed;
+  z-index: 400;
+  min-width: 180px;
+  padding: 6px;
+  background: rgba(10, 10, 10, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.canvas-context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  transition: background 0.1s;
+}
+
+.canvas-context-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.canvas-context-menu-item--danger {
+  color: #ff6b6b;
+}
+
+.canvas-context-menu-item--danger:hover {
+  background: rgba(255, 80, 80, 0.15);
+}
+
+.canvas-context-menu-item svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.canvas-context-menu-sep {
+  height: 1px;
+  margin: 4px 8px;
+  background: rgba(255, 255, 255, 0.1);
 }
