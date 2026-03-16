@@ -770,60 +770,6 @@ a.tile-card:hover {
   gap: 16px;
 }
 
-.screen-card {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.screen-card-header {
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.7);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.screen-card-frame {
-  width: 100%;
-  height: 550px;
-  border: none;
-  display: block;
-}
-
-/* ── Design system ── */
-.ds-section {
-  margin-bottom: 32px;
-}
-
-.ds-section h2 {
-  font-size: 1.2rem;
-  font-weight: 800;
-  margin-bottom: 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.component-preview {
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.2);
-  overflow-x: auto;
-  min-height: 60px;
-  margin-bottom: 12px;
-}
-
-.component-label {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--muted-2);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 8px;
-}
-
 /* ── Empty state ── */
 .empty-state {
   padding: 40px 20px;

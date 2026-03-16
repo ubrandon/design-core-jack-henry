@@ -29,6 +29,26 @@ function copyLink(url, btn) {
     } else {
       showToast("Link copied!");
     }
+  }).catch(() => {
+    showToast("Could not copy link");
+  });
+}
+
+function formatDate(iso) {
+  try {
+    return new Date(iso).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  } catch { return ""; }
+}
+
+function initials(name) {
+  if (!name) return "?";
+  return name.split(/\s+/).map(w => w[0]).join("").slice(0, 2);
+}
+
+function fetchJSON(url) {
+  return fetch(url).then(r => {
+    if (!r.ok) throw new Error(r.status + " " + r.statusText);
+    return r.json();
   });
 }
 

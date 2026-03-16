@@ -58,12 +58,6 @@
 
     document.getElementById("canvas-link").href = "canvas.html?project=" + projectId;
 
-    function formatDate(iso) {
-      try {
-        return new Date(iso).toLocaleDateString("en-US", { month: "short", year: "numeric" });
-      } catch { return ""; }
-    }
-
     function getPrototypeDevice(deviceRaw) {
       const device = (deviceRaw || "responsive").toLowerCase();
       if (device === "mobile" || device === "desktop" || device === "responsive") return device;
@@ -99,8 +93,7 @@
       };
     }
 
-    fetch("data/projects/" + projectId + "/project.json")
-      .then(r => r.json())
+    fetchJSON("data/projects/" + projectId + "/project.json")
       .then(data => {
         document.getElementById("project-name").textContent = data.name;
         document.getElementById("project-desc").textContent = data.description;
@@ -113,10 +106,12 @@
         } else {
           meta.hidden = true;
         }
+      })
+      .catch(() => {
+        document.getElementById("project-name").textContent = "Project not found";
       });
 
-    fetch("data/projects/" + projectId + "/prototypes/index.json")
-      .then(r => r.json())
+    fetchJSON("data/projects/" + projectId + "/prototypes/index.json")
       .then(data => {
         const grid = document.getElementById("prototypes");
         if (!data.prototypes.length) {
@@ -145,6 +140,9 @@
             </a>
           `;
         }).join("");
+      })
+      .catch(() => {
+        document.getElementById("prototypes").innerHTML = '<div class="empty-state">Could not load prototypes.</div>';
       });
 
     // Cursor-follow glow on canvas CTA and prototype cards

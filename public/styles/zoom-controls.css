@@ -1,0 +1,52 @@
+.zoom-controls {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 150;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.zoom-controls__zoom-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-left: 12px;
+  margin-left: 4px;
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+}
+.zoom-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  font-size: 1.1rem;
+  font-family: inherit;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.zoom-btn:hover {
+  background: #f0f0f0;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.zoom-level {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #555;
+  min-width: 40px;
+  text-align: center;
+}
+.zoom-btn--tidy {
+  width: auto;
+  min-width: auto;
+  padding: 0 12px;
+  font-size: 0.8rem;
+}

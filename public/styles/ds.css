@@ -1325,3 +1325,44 @@
   max-width: 260px;
   margin-bottom: 20px;
 }
+
+/* ===== FOCUS & ACCESSIBILITY ===== */
+
+.btn:focus-visible {
+  outline: 2px solid var(--neon-blue);
+  outline-offset: 2px;
+}
+
+.ds-chip:focus-visible {
+  outline: 2px solid var(--neon-blue);
+  outline-offset: 2px;
+}
+
+.ds-toggle:focus-visible {
+  outline: 2px solid var(--neon-blue);
+  outline-offset: 3px;
+  border-radius: 16px;
+}
+
+.ds-tab-item:focus-visible {
+  outline: 2px solid var(--neon-blue);
+  outline-offset: -2px;
+}
+
+.ds-list-item:focus-visible {
+  outline: 2px solid var(--neon-blue);
+  outline-offset: -2px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.ds-search-bar input:focus-visible {
+  outline: 2px solid var(--neon-blue);
+  outline-offset: -2px;
+}
+
+.ds-bottom-sheet:focus-visible,
+.ds-alert:focus-visible,
+.ds-snackbar:focus-visible {
+  outline: 2px solid var(--neon-blue);
+  outline-offset: 2px;
+}

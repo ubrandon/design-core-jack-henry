@@ -6,16 +6,33 @@
   <title>Prototype — Design Core</title>
   <link rel="stylesheet" href="styles/shared.css">
   <link rel="stylesheet" href="styles/app.css">
+  <style>
+    .proto-label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .phone-frame--desktop {
+      width: 1024px;
+      height: 768px;
+      border-radius: 12px;
+    }
+    .phone-frame--responsive {
+      width: 90vw;
+      max-width: 1200px;
+      height: 80vh;
+      border-radius: 12px;
+    }
+  </style>
 </head>
 <body>
   <div class="preview-page">
     <div class="phone-frame-wrap">
-      <div class="phone-frame">
+      <div id="proto-container" class="phone-frame">
         <iframe id="proto-frame" class="phone-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
     </div>
-
-    <div id="proto-name" style="color: var(--muted); font-size: 0.85rem; font-weight: 600;"></div>
+    <div id="proto-name" class="proto-label"></div>
   </div>
 
   <script src="scripts/shared.js"></script>
@@ -28,8 +45,8 @@
 
     renderNav({
       breadcrumbs: [
-        { label: "Project", href: "project.html?id=" + projectId, id: "nav-project" },
-        { label: protoId },
+        { label: projectId, href: "project.html?id=" + projectId, id: "nav-project" },
+        { label: protoId, id: "nav-proto" },
       ],
       actions: [
         { label: "Copy link", id: "copy-btn", href: "#", onclick: "event.preventDefault(); copyLink(window.location.href, document.getElementById('copy-btn'))" },
@@ -38,23 +55,38 @@
 
     const basePath = "data/projects/" + projectId + "/prototypes/" + protoId + "/";
 
-    fetch("data/projects/" + projectId + "/project.json")
-      .then(r => r.json())
+    fetchJSON("data/projects/" + projectId + "/project.json")
       .then(data => {
-        const navProject = document.getElementById("nav-project");
-        if (navProject) navProject.textContent = data.name;
+        var el = document.getElementById("nav-project");
+        if (el) el.textContent = data.name;
       })
       .catch(() => {});
 
-    fetch(basePath + "meta.json")
-      .then(r => r.json())
+    fetchJSON(basePath + "meta.json")
       .then(data => {
         document.getElementById("proto-name").textContent = data.name + " — " + data.description;
         document.title = data.name + " — Design Core";
+        var el = document.getElementById("nav-proto");
+        if (el) el.textContent = data.name;
       })
       .catch(() => {
         document.getElementById("proto-name").textContent = protoId;
       });
+
+    fetchJSON("data/projects/" + projectId + "/prototypes/index.json")
+      .then(data => {
+        var proto = data.prototypes.find(p => p.id === protoId);
+        if (proto && proto.device) {
+          var device = proto.device.toLowerCase();
+          var container = document.getElementById("proto-container");
+          if (device === "desktop") {
+            container.classList.add("phone-frame--desktop");
+          } else if (device === "responsive") {
+            container.classList.add("phone-frame--responsive");
+          }
+        }
+      })
+      .catch(() => {});
 
     document.getElementById("proto-frame").src = basePath + "index.html";
   </script>

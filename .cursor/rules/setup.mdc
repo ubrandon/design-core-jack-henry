@@ -56,6 +56,11 @@ The user cloned the original `BUnglaub/design-core` repo. They need their own co
    ```
 4. Update `GETTING_STARTED.md` -- replace `YOUR_ORG` in the designer joining prompt with their actual org name, so when teammates read the page they get the right clone URL
 5. Commit and push these changes to their new repo
+6. **Enable GitHub Pages** so prototypes get shareable links automatically. After pushing, run:
+   ```
+   gh api repos/THEIR_ORG/design-core/pages -X POST -f build_type=workflow
+   ```
+   This enables GitHub Pages with GitHub Actions as the source. If it succeeds, tell the user their prototypes will be live at `https://THEIR_ORG.github.io/design-core/` after each push. If it fails (e.g. `gh` not installed or not authenticated), fall back to telling them to enable it manually: go to `https://github.com/THEIR_ORG/design-core/settings/pages` and set **Source** to **GitHub Actions**.
 
 Skip this step entirely for designers joining -- they already cloned from their org's fork.
 

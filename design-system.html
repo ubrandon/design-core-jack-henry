@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles/shared.css" />
     <link rel="stylesheet" href="styles/ds.css" />
     <link rel="stylesheet" href="styles/canvas-space.css" />
+    <link rel="stylesheet" href="styles/zoom-controls.css" />
     <link rel="stylesheet" href="styles/app.css" />
     <style>
       .ds-canvas-viewport {
@@ -22,9 +23,7 @@
         background-size: 24px 24px;
         background-position: 0 0, 12px 12px;
       }
-      .ds-canvas-viewport:active {
-        cursor: grabbing;
-      }
+      .ds-canvas-viewport:active { cursor: grabbing; }
       .ds-canvas-stage {
         position: absolute;
         top: 50%;
@@ -70,8 +69,6 @@
         max-width: 420px;
         flex-shrink: 0;
         overflow: visible;
-
-        /* Reset tokens to light mode so components render correctly */
         --bg-0: #ffffff;
         --bg-1: #f8f9fb;
         --surface: rgba(0, 0, 0, 0.03);
@@ -98,10 +95,7 @@
         gap: 28px 20px;
       }
       .ds-component-grid--fixed {
-        grid-template-columns: repeat(
-          var(--fixed-component-columns, 3),
-          minmax(0, 1fr)
-        );
+        grid-template-columns: repeat(var(--fixed-component-columns, 3), minmax(0, 1fr));
       }
       .ds-component-item {
         display: flex;
@@ -122,58 +116,6 @@
         min-height: 40px;
         overflow: visible;
       }
-      .zoom-controls {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 150;
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        padding: 8px 12px;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-        border: 1px solid rgba(0, 0, 0, 0.08);
-      }
-      .zoom-btn {
-        width: 36px;
-        height: 36px;
-        border: 1px solid rgba(0, 0, 0, 0.12);
-        border-radius: 8px;
-        background: #fff;
-        color: #333;
-        font-size: 1.1rem;
-        font-family: inherit;
-        cursor: pointer;
-        display: grid;
-        place-items: center;
-      }
-      .zoom-btn:hover {
-        background: #f0f0f0;
-        border-color: rgba(0, 0, 0, 0.2);
-      }
-      .zoom-level {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #555;
-        min-width: 40px;
-        text-align: center;
-      }
-      .zoom-btn--tidy {
-        width: auto;
-        min-width: auto;
-        padding: 0 12px;
-        font-size: 0.8rem;
-      }
-      .zoom-controls__zoom-group {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        padding-left: 12px;
-        margin-left: 4px;
-        border-left: 1px solid rgba(0, 0, 0, 0.12);
-      }
     </style>
   </head>
   <body>
@@ -184,161 +126,38 @@
     <div class="zoom-controls">
       <button class="zoom-btn zoom-btn--tidy" onclick="refreshDS()" title="Reload components to see edits">Refresh</button>
       <div class="zoom-controls__zoom-group">
-        <button class="zoom-btn" onclick="zoomBy(-0.04)" title="Zoom out">&minus;</button>
+        <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
         <span id="zoom-label" class="zoom-level">100%</span>
-        <button class="zoom-btn" onclick="zoomBy(0.04)" title="Zoom in">+</button>
-        <button class="zoom-btn" onclick="resetView()" title="Reset view" style="font-size:0.8rem">&#8962;</button>
+        <button class="zoom-btn" onclick="pz.zoomBy(0.04)" title="Zoom in">+</button>
+        <button class="zoom-btn" onclick="pz.resetView()" title="Reset view" style="font-size:0.8rem">&#8962;</button>
       </div>
     </div>
 
     <script src="scripts/shared.js"></script>
     <script src="scripts/nav.js"></script>
+    <script src="scripts/canvas-pan-zoom.js"></script>
     <script>
       renderNav({
         breadcrumbs: [{ label: "Design System" }],
         fixed: true,
       });
 
-      const MIN_ZOOM = 0.2;
-      const MAX_ZOOM = 2;
-
       const viewport = document.getElementById("viewport");
       const stage = document.getElementById("stage");
-
-      let panX = 0,
-        panY = 0,
-        zoom = 1;
-      let isPanning = false,
-        panStartX = 0,
-        panStartY = 0,
-        panOriginX = 0,
-        panOriginY = 0;
-      let spaceHeld = false;
-
-      function applyTransform() {
-        stage.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
-        document.getElementById("zoom-label").textContent =
-          Math.round(zoom * 100) + "%";
-      }
-
-      function zoomBy(delta) {
-        zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom + delta));
-        applyTransform();
-      }
-
-      function resetView() {
-        panX = 0;
-        panY = 0;
-        zoom = 1;
-        applyTransform();
-      }
-
-      window.addEventListener("keydown", (e) => {
-        if (e.code === "Space") {
-          e.preventDefault();
-          spaceHeld = true;
-        }
-      });
-      window.addEventListener("keyup", (e) => {
-        if (e.code === "Space") {
-          e.preventDefault();
-          spaceHeld = false;
-          if (isPanning) isPanning = false;
-        }
-      });
-
-      viewport.addEventListener("pointerdown", (e) => {
-        isPanning = true;
-        panStartX = e.clientX;
-        panStartY = e.clientY;
-        panOriginX = panX;
-        panOriginY = panY;
-        viewport.setPointerCapture(e.pointerId);
-      });
-
-      viewport.addEventListener("pointermove", (e) => {
-        if (isPanning) {
-          panX = panOriginX + (e.clientX - panStartX);
-          panY = panOriginY + (e.clientY - panStartY);
-          applyTransform();
-        }
-      });
-
-      viewport.addEventListener("pointerup", () => {
-        isPanning = false;
-      });
-
-      viewport.addEventListener(
-        "wheel",
-        (e) => {
-          e.preventDefault();
-          const rect = viewport.getBoundingClientRect();
-          const mx = e.clientX - rect.left - rect.width / 2;
-          const my = e.clientY - rect.top - rect.height / 2 + 26;
-
-          if (e.ctrlKey || e.metaKey) {
-            const delta = e.deltaY > 0 ? -0.06 : 0.06;
-            const oldZoom = zoom;
-            zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom + delta));
-            panX = mx - (mx - panX) * (zoom / oldZoom);
-            panY = my - (my - panY) * (zoom / oldZoom);
-          } else {
-            panX -= e.deltaX;
-            panY -= e.deltaY;
-          }
-          applyTransform();
-        },
-        { passive: false },
-      );
-
-      let lastTouchDist = 0,
-        lastTouchMidX = 0,
-        lastTouchMidY = 0;
-      viewport.addEventListener(
-        "touchstart",
-        (e) => {
-          if (e.touches.length === 2) {
-            const dx = e.touches[0].clientX - e.touches[1].clientX;
-            const dy = e.touches[0].clientY - e.touches[1].clientY;
-            lastTouchDist = Math.hypot(dx, dy);
-            lastTouchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-            lastTouchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-          }
-        },
-        { passive: true },
-      );
-
-      viewport.addEventListener(
-        "touchmove",
-        (e) => {
-          if (e.touches.length === 2) {
-            e.preventDefault();
-            const dx = e.touches[0].clientX - e.touches[1].clientX;
-            const dy = e.touches[0].clientY - e.touches[1].clientY;
-            const dist = Math.hypot(dx, dy);
-            const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-            const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-
-            panX += midX - lastTouchMidX;
-            panY += midY - lastTouchMidY;
-            zoom = Math.min(
-              MAX_ZOOM,
-              Math.max(MIN_ZOOM, zoom * (dist / lastTouchDist)),
-            );
-
-            lastTouchDist = dist;
-            lastTouchMidX = midX;
-            lastTouchMidY = midY;
-            applyTransform();
-          }
-        },
-        { passive: false },
-      );
+      const pz = initPanZoom(viewport, stage, { navHeight: 52 });
 
       async function loadDesignSystem() {
         const bust = "?t=" + Date.now();
-        const res = await fetch("data/design-system/registry.json" + bust);
-        const registry = await res.json();
+        let registry;
+        try {
+          const res = await fetch("data/design-system/registry.json" + bust);
+          if (!res.ok) throw new Error(res.status);
+          registry = await res.json();
+        } catch {
+          stage.innerHTML = '<div style="padding:40px;color:rgba(0,0,0,0.5);">Could not load design system registry.</div>';
+          return;
+        }
+
         const groups = registry.groups || [{ id: "default", name: "Components" }];
         const byGroup = new Map();
         for (const g of groups) byGroup.set(g.id, []);
@@ -348,46 +167,41 @@
           byGroup.get(gid).push(cat);
         }
 
-        const groupHtml = [];
+        const componentFetches = [];
+        for (const cat of registry.categories) {
+          for (const comp of cat.components) {
+            componentFetches.push(
+              fetch("data/design-system/components/" + comp.file + bust)
+                .then(r => r.ok ? r.text() : Promise.reject())
+                .then(content => ({ id: comp.id, content }))
+                .catch(() => ({ id: comp.id, content: '<div class="empty-state">Could not load ' + comp.file + '</div>' }))
+            );
+          }
+        }
+        const loaded = await Promise.all(componentFetches);
+        const contentMap = new Map();
+        for (const c of loaded) contentMap.set(c.id, c.content);
 
+        const groupHtml = [];
         for (const g of groups) {
           const cats = byGroup.get(g.id) || [];
           if (cats.length === 0) continue;
 
           const sections = [];
           for (const cat of cats) {
-            const layout =
-              typeof cat.layout === "string"
-                ? { mode: cat.layout }
-                : cat.layout || {};
+            const layout = typeof cat.layout === "string" ? { mode: cat.layout } : cat.layout || {};
             const isRow = layout.mode === "row";
-            const gridClass = isRow
-              ? "ds-component-grid ds-component-grid--fixed"
-              : "ds-component-grid";
-            const gridStyle = isRow
-              ? 'style="--fixed-component-columns:3"'
-              : "";
-            const comps = [];
-            for (const comp of cat.components) {
-              try {
-                const r = await fetch("data/design-system/components/" + comp.file + bust);
-                const content = await r.text();
-                comps.push({ label: comp.label, content });
-              } catch {
-                comps.push({
-                  label: comp.label,
-                  content: '<div class="empty-state">Could not load ' + comp.file + "</div>",
-                });
-              }
-            }
+            const gridClass = isRow ? "ds-component-grid ds-component-grid--fixed" : "ds-component-grid";
+            const gridStyle = isRow ? 'style="--fixed-component-columns:3"' : "";
+
             sections.push(`
               <section class="ds-section">
                 <h2 class="ds-section-header">${cat.name}</h2>
                 <div class="${gridClass}" ${gridStyle}>
-                  ${comps.map((c) => `
+                  ${cat.components.map(comp => `
                     <div class="ds-component-item">
-                      <span class="ds-component-label">${c.label}</span>
-                      <div class="ds-component-preview">${c.content}</div>
+                      <span class="ds-component-label">${comp.label}</span>
+                      <div class="ds-component-preview">${contentMap.get(comp.id) || ""}</div>
                     </div>
                   `).join("")}
                 </div>
@@ -404,12 +218,10 @@
         }
 
         stage.innerHTML = groupHtml.join("");
-        applyTransform();
+        pz.applyTransform();
       }
 
-      function refreshDS() {
-        loadDesignSystem();
-      }
+      function refreshDS() { loadDesignSystem(); }
 
       loadDesignSystem();
     </script>

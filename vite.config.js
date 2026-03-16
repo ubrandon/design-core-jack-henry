@@ -11,11 +11,9 @@ export default defineConfig({
     {
       name: "reload-on-data-change",
       handleHotUpdate({ file, server }) {
-        if (file.includes("public/data/design-system/") || file.includes("public/styles/")) {
-          return [];
-        }
-        if (file.includes("public/data/") || file.includes("data/projects/")) {
+        if (file.includes("public/data/") || file.includes("public/styles/")) {
           server.ws.send({ type: "full-reload", path: "*" });
+          return [];
         }
       },
     },

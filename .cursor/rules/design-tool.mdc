@@ -1,11 +1,11 @@
 ---
-description: Core rules for the Design Core tool — guides AI to help designers create screens and interactive prototypes
+description: Core rules for the Design Core tool -- guides AI to help designers create screens and interactive prototypes
 alwaysApply: true
 ---
 
-# Design Core — AI Guidelines
+# Design Core -- AI Guidelines
 
-## Context Detection — Core Repo vs Consumer Repo
+## Context Detection -- Core Repo vs Consumer Repo
 
 Before doing anything, determine which context you are operating in:
 
@@ -20,11 +20,11 @@ Check the **repo name** (the workspace folder name or `package.json` `name` fiel
 
 You are working with a **developer** who maintains the design tool. In this mode:
 
-- The goal is to improve, fix, or extend the tool — its pages, scripts, styles, Vite config, Cursor rules, etc.
+- The goal is to improve, fix, or extend the tool -- its pages, scripts, styles, Vite config, Cursor rules, etc.
 - You **can and should** edit root-level HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`), files in `scripts/`, config files, shared styles, and anything else in the repo.
-- Do NOT create new design projects, screens, or prototypes unless the developer explicitly asks (e.g. for testing). The `data/projects/` folder contains sample/test data — treat it as fixtures, not real design work.
+- Do NOT create new design projects, screens, or prototypes unless the developer explicitly asks (e.g. for testing). The `public/data/projects/` folder contains sample/test data -- treat it as fixtures, not real design work.
 - Speak technically. The developer understands HTML, CSS, JS, Vite, and the codebase.
-- The "Critical Rules" section below about staying in a project folder and never editing the tool **does not apply** — those rules protect designers in consumer repos.
+- The "Critical Rules" section below about staying in a project folder and never editing the tool **does not apply** -- those rules protect designers in consumer repos.
 
 ### Consumer repo mode (using the tool to design)
 
@@ -38,74 +38,122 @@ You are helping a **designer** create UI screens and interactive prototypes. The
 
 ## First-Time Setup
 
-When a user opens the repo for the first time, they may not have a `.designer` file yet. See `setup.mdc` for the full onboarding flow — it walks them through identity, team info, and getting started. If `.designer` is missing and the user asks to create a project or screen, prompt them to complete setup first.
+When a user opens the repo for the first time, they may not have a `.designer` file yet. See `setup.mdc` for the full onboarding flow -- it walks them through identity, team info, and getting started. If `.designer` is missing and the user asks to create a project or screen, prompt them to complete setup first.
 
 ## What This Project Is
 
 This is a design prototyping tool. Designers create:
-- **Canvas screens** — Static HTML/CSS files for UI ideation. No JavaScript.
-- **Prototypes** — Interactive HTML/CSS/JS mini apps that feel like real features. JavaScript is expected.
+- **Canvas screens** -- Static HTML/CSS files for UI ideation. No JavaScript.
+- **Prototypes** -- Interactive HTML/CSS/JS mini apps that feel like real features. JavaScript is expected.
 
 There is no backend, no database, no framework. The tool itself is vanilla HTML served by Vite.
 
+## How paths work
+
+Vite serves the `public/` folder as the web root. All data files live under `public/` on disk, but are accessed without the `public/` prefix in the browser and in fetch URLs.
+
+- **Disk path**: `public/data/projects/sample-app/project.json`
+- **Browser/fetch path**: `data/projects/sample-app/project.json`
+
+When creating or editing files, always use the **full disk path** (with `public/`). When referencing URLs in HTML `src`, `href`, or `fetch()` calls, omit `public/`.
+
 ## Project Structure
 
-- `data/projects/<project>/` — One folder per project. The **project id** is the folder name (e.g. `sample-app`).
-- `data/projects/<project>/project.json` — **Project name and metadata.** Contains `name` (human-readable title), `description`, and optionally `createdBy`, `createdAt`. The app uses this for the project hub title, nav breadcrumbs, and page titles. When helping in a project folder, read this file to know the project's display name.
-- `data/projects/index.json` — List of all projects (`id`, `name`, `description`, `createdBy`, `createdAt`). Home page cards use this. New projects need an entry here and a `project.json` in their folder.
-- **Designer identity (`.designer` file)** — Each user has a `.designer` file in the repo root (gitignored). Created during first-time setup (see `setup.mdc`). Contains `name`, `company`, and `team` array:
+All paths below are **disk paths** (relative to repo root):
+
+- `public/data/projects/<project>/` -- One folder per project. The **project id** is the folder name (e.g. `sample-app`).
+- `public/data/projects/<project>/project.json` -- **Project name and metadata.** Contains `name`, `description`, and optionally `createdBy`, `createdAt`.
+- `public/data/projects/index.json` -- List of all projects (`id`, `name`, `description`, `createdBy`, `createdAt`). Home page cards use this.
+- `public/data/projects/<project>/canvas.json` -- **Canvas screen layout.** Lists which screens appear on the canvas and their positions/sizes. Contains `{ "screens": [{ "file": "home.html", "x": 0, "y": 0, "width": 375 }, ...] }`. When adding a new screen, you MUST also add an entry here or it won't show on the canvas.
+- `public/data/projects/<project>/screens/` -- Static screen HTML files for the ideation canvas
+- `public/data/projects/<project>/prototypes/<prototype>/index.html` -- Interactive prototype
+- `public/data/projects/<project>/prototypes/<prototype>/meta.json` -- Prototype name and description
+- `public/data/projects/<project>/prototypes/index.json` -- Prototype list (`id`, `name`, `description`, optional `device`)
+- `public/data/design-system/components/` -- Shared design system component HTML files
+- `public/data/design-system/registry.json` -- Category list + groups (order controls layout)
+- `public/styles/shared.css` -- Design tokens (colors, fonts, spacing, radii)
+- `public/styles/ds.css` -- Reusable component styles
+- **Designer identity (`.designer` file)** -- In the repo root (gitignored). Created during first-time setup (see `setup.mdc`). Contains `name`, `company`, and `team` array:
   ```json
   { "name": "Ben", "company": "Acme Inc", "team": [{ "name": "Ben" }, { "name": "Sara" }] }
   ```
-  Use the `name` field for `createdBy` when creating projects. The `company` field provides team context. The `team` array lists all team members. If `.designer` is missing, the user hasn't completed setup — prompt them to run the setup flow.
-- `data/projects/<project>/screens/` — Static screen HTML files for the ideation canvas
-- `data/projects/<project>/prototypes/<prototype>/index.html` — Interactive prototype
-- `data/projects/<project>/prototypes/<prototype>/meta.json` — Prototype name/description
-- `data/projects/<project>/prototypes/index.json` — Prototype list shown on project page (`id`, `name`, `description`, optional `device`)
-- `data/design-system/components/` — Shared design system component HTML files
-- `data/design-system/registry.json` — Category list + groups (order controls layout)
-- `public/styles/shared.css` — Design tokens (colors, fonts, spacing, radii)
-- `public/styles/ds.css` — Reusable component styles (cards, buttons, chips, tags, rows)
+  Use the `name` field for `createdBy` when creating projects. If `.designer` is missing, prompt the user to run the setup flow.
 
 ### Design System Page Layout
 
 The design system page (`design-system.html`) uses an **infinite canvas**: main sections (groups) stack **vertically**; under each, sub-categories are laid out **horizontally** in one row so the canvas uses width. Layout is driven by `registry.json`:
 
-- **`groups`** — order defines vertical order. Each group has a header, then a single horizontal row of section cards (its categories).
-- **Categories** — each has `group`, `name`, and `components`. Optionally `"layout": "row"` so that section's components sit side by side.
-- **Adding content** — add a category to a group; it appears as another card in that group's horizontal row.
+- **`groups`** -- order defines vertical order. Each group has a header, then a single horizontal row of section cards (its categories).
+- **Categories** -- each has `group`, `name`, and `components`. Optionally `"layout": "row"` so that section's components sit side by side.
+- **Adding content** -- add a category to a group; it appears as another card in that group's horizontal row.
 
 ## Critical Rules
 
-> These rules apply in **consumer repo mode**. In **core repo mode**, you are a developer working on the tool itself — these boundaries do not apply (see "Context Detection" above).
+> These rules apply in **consumer repo mode**. In **core repo mode**, you are a developer working on the tool itself -- these boundaries do not apply (see "Context Detection" above).
 
-1. **Stay in your project.** Only create or edit files inside the designer's current project folder (`data/projects/<project>/`). NEVER modify files in other project folders.
-2. **Stay in your prototype.** If the designer is working on a prototype (`data/projects/<project>/prototypes/<prototype>/`), all work happens inside that prototype's folder. Never touch other prototypes or project-level screens.
-3. **Never edit the tool itself.** Do not touch root-level HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`), `scripts/`, or config files. If the designer asks to change these, stop and confirm: "That would change the design tool itself — are you sure?"
+1. **Stay in your project.** Only create or edit files inside the designer's current project folder (`public/data/projects/<project>/`). NEVER modify files in other project folders.
+2. **Stay in your prototype.** If the designer is working on a prototype (`public/data/projects/<project>/prototypes/<prototype>/`), all work happens inside that prototype's folder. Never touch other prototypes or project-level screens.
+3. **Never edit the tool itself.** Do not touch root-level HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`), `scripts/`, or config files. If the designer asks to change these, stop and confirm: "That would change the design tool itself -- are you sure?"
 4. **Never edit the design system** without being explicitly asked. The files in `public/data/design-system/` and `public/styles/` are shared across all projects.
 5. **Use the design system.** Always use existing CSS classes from `public/styles/ds.css` and design tokens from `public/styles/shared.css`. Read both files before creating anything.
 
-## Canvas Screens — Static Ideation
+## How to Create Things
 
-Files in `public/data/projects/<project>/screens/` are canvas screens.
+### Creating a new project
 
-- **HTML + CSS only.** No JavaScript. No interactivity.
-- Used for quick visual exploration on the ideation canvas.
-- Wrap in a container with standard background and max-width:
+1. Choose a project id (lowercase, hyphenated, e.g. `mobile-redesign`)
+2. Create the folder: `public/data/projects/<id>/`
+3. Create `public/data/projects/<id>/project.json`:
+   ```json
+   { "name": "Mobile Redesign", "description": "...", "createdBy": "Ben", "createdAt": "2026-03-15T00:00:00Z" }
+   ```
+4. Add an entry to `public/data/projects/index.json` with matching `id`, `name`, `description`, `createdBy`, `createdAt`
+5. Create `public/data/projects/<id>/canvas.json`: `{ "screens": [] }`
+6. Create `public/data/projects/<id>/screens/` directory
+7. Create `public/data/projects/<id>/prototypes/index.json`: `{ "prototypes": [] }`
 
-```html
-<div style="padding: 16px; max-width: 390px; margin: 0 auto; background: var(--bg-0); border-radius: var(--radius-lg);">
-  <!-- Screen content here -->
-</div>
-```
+### Creating a new canvas screen
 
-## Prototype Mode — Interactive Features
+1. Create the HTML file: `public/data/projects/<project>/screens/<name>.html`
+2. **Add an entry to `canvas.json`** -- this is required or the screen won't appear on the canvas:
+   ```json
+   { "file": "<name>.html", "x": 0, "y": 0, "width": 375 }
+   ```
+   Space screens apart by adjusting `x` (e.g. increment by 420 for each new screen).
+3. Use the standard screen wrapper:
+   ```html
+   <div style="padding: 16px; max-width: 390px; margin: 0 auto; background: var(--bg-0); border-radius: var(--radius-lg);">
+     <!-- Screen content -->
+   </div>
+   ```
+4. **HTML + CSS only.** No JavaScript. No interactivity.
+
+### Creating a new prototype
+
+1. Ask the designer: "Should this be mobile, desktop, or responsive?"
+2. Choose a prototype id (lowercase, hyphenated, e.g. `signup-flow`)
+3. Create the folder: `public/data/projects/<project>/prototypes/<id>/`
+4. Create `meta.json`:
+   ```json
+   { "name": "Signup Flow", "description": "..." }
+   ```
+5. Add an entry to `public/data/projects/<project>/prototypes/index.json`:
+   ```json
+   { "id": "<id>", "name": "Signup Flow", "description": "...", "device": "mobile" }
+   ```
+6. Create `index.html` with design system imports:
+   ```html
+   <link rel="stylesheet" href="../../../../../styles/shared.css">
+   <link rel="stylesheet" href="../../../../../styles/ds.css">
+   ```
+
+## Prototype Mode -- Interactive Features
 
 Files in `public/data/projects/<project>/prototypes/<prototype>/` are interactive prototypes.
 
 ### How to detect prototype mode
 
-The designer is in prototype mode when the file path matches `data/projects/*/prototypes/*`.
+The designer is in prototype mode when the file path matches `prototypes/*/`.
 
 ### What a prototype is
 
@@ -119,23 +167,12 @@ A prototype is a **self-contained interactive mini web app**. It lives in a sing
 ### Rules for prototype mode
 
 1. **Read context first.** Read `meta.json` in the prototype folder to understand the prototype's name and purpose.
-2. **Ask device type before building new prototypes.** When creating a new prototype (or if unclear), ask: "Should this prototype be mobile, desktop, or responsive?" Save the answer as `device` in `data/projects/<project>/prototypes/index.json`.
-3. **JavaScript is expected.** Prototypes are interactive — write real JS for state, transitions, validation, etc.
-4. **Use the design system.** Import styles in the prototype HTML using relative paths: `<link rel="stylesheet" href="../../../../../styles/shared.css">` and `<link rel="stylesheet" href="../../../../../styles/ds.css">` (5 levels up from `public/data/projects/<project>/prototypes/<proto>/`). Use tokens and component classes as the foundation.
-5. **Add new styles inline.** If the designer asks for something not in the design system, use `<style>` blocks inside the prototype. Keep the shared design system files untouched.
-6. **Self-contained.** Everything the prototype needs goes in its folder. No external npm packages or CDN scripts unless the designer explicitly asks.
-7. **Look at the design system.** Read existing component HTML files in `public/data/design-system/components/` for visual patterns.
-8. **One file preferred.** Keep the prototype in a single `index.html` unless it grows large enough to justify splitting.
-
-### Example prompts a designer might give in prototype mode
-
-- "Build a signup flow with email, password, and confirm password. Show inline validation errors."
-- "Make a settings page with toggles for notifications, dark mode, and location sharing."
-- "Create a search experience — type in a search bar, show filtered results below."
-- "Build a multi-step onboarding: welcome, pick interests, set profile photo, done."
-- "Add a bottom tab bar that switches between Home, Discover, and Profile views."
-
-For each of these, you write the full interactive HTML/CSS/JS in the prototype's `index.html`.
+2. **JavaScript is expected.** Prototypes are interactive -- write real JS for state, transitions, validation, etc.
+3. **Use the design system.** Import styles using relative paths (5 levels up from the prototype folder). Use tokens and component classes as the foundation.
+4. **Add new styles inline.** If the designer asks for something not in the design system, use `<style>` blocks inside the prototype. Keep the shared design system files untouched.
+5. **Self-contained.** Everything the prototype needs goes in its folder. No external npm packages or CDN scripts unless the designer explicitly asks.
+6. **Look at the design system.** Read existing component HTML files in `public/data/design-system/components/` for visual patterns.
+7. **One file preferred.** Keep the prototype in a single `index.html` unless it grows large enough to justify splitting.
 
 ## Design Tokens (quick reference)
 
@@ -148,21 +185,51 @@ For each of these, you write the full interactive HTML/CSS/JS in the prototype's
 
 ## Available Component Classes
 
-- **Buttons**: `.btn`, `.btn-primary`, `.btn-dark`, `.btn-sm`
-- **Cards**: `.plan-card`, `.event-card`, `.ds-activity-row`, `.ds-interest-card`, `.ds-group-card`, `.ds-friend-card`
-- **Plan carousel**: `.ds-plan-carousel`, `.plan-card-mini`
-- **Event mini**: `.ds-event-mini-card`, `.ds-event-mini-grid`
-- **Chips**: `.ds-chip`, `.ds-chip.is-active`, `.ds-chip-row`
-- **Tags**: `.ds-tag`, `.ds-tag-tone-sunset`, `.ds-tag-tone-teal`, `.ds-tag-tone-green`, `.ds-tag-tone-mint`, `.ds-tag-tone-gold`, `.ds-tag-tone-dark`
-- **Type pills**: `.ds-type-pill`, `.ds-type-plan`, `.ds-type-activity`, `.ds-type-event`, `.ds-type-place`
-- **Avatars**: `.ds-recent-activity`, `.ds-recent-item`, `.ds-avatar-stack`
-- **Section titles**: `.ds-section-title`, `.ds-home-header`
-- **Plan rows**: `.ds-plan-row`, `.ds-plan-rows`
-- **Form inputs**: `.form-group`, `.form-group label`, `.form-group input`
+### Buttons
+`.btn`, `.btn-primary`, `.btn-dark`, `.btn-sm`
+
+### Cards
+`.plan-card`, `.plan-card-full`, `.plan-card-mini`, `.plan-card-mini-carousel` / `.ds-plan-carousel`, `.event-card`, `.ds-event-mini-card`, `.ds-event-mini-grid`, `.ds-activity-row`, `.ds-interest-card`, `.ds-group-card`, `.ds-friend-card`
+
+### Plan rows
+`.ds-plan-row`, `.ds-plan-rows`
+
+### Chips & pills
+`.ds-chip`, `.ds-chip.is-active`, `.ds-chip-row`, `.ds-type-pill`, `.ds-type-plan`, `.ds-type-activity`, `.ds-type-event`, `.ds-type-place`
+
+### Tags
+`.ds-tag`, `.ds-tag-tone-sunset`, `.ds-tag-tone-teal`, `.ds-tag-tone-green`, `.ds-tag-tone-mint`, `.ds-tag-tone-gold`, `.ds-tag-tone-dark`, `.ds-hero-tag`
+
+### Badges & status
+`.ds-badge`, `.ds-badge-dot`, `.ds-status-dot`
+
+### Form inputs
+`.form-group`, `.form-group label`, `.form-group input`, `.ds-search-bar`
+
+### Toggle
+`.ds-toggle`, `.ds-toggle.is-on`
+
+### Navigation
+`.ds-nav-bar`, `.ds-tab-bar`, `.ds-tab-item`, `.ds-tab-item.is-active`, `.ds-bottom-sheet`
+
+### Lists
+`.ds-list-item`, `.ds-list-item-leading`, `.ds-list-item-content`, `.ds-list-item-trailing`
+
+### Avatars
+`.ds-recent-activity`, `.ds-recent-item`, `.ds-avatar-stack`, `.ds-avatar-group`
+
+### Section titles
+`.ds-section-title`, `.ds-home-header`
+
+### Feedback
+`.ds-progress`, `.ds-skeleton`, `.ds-alert`, `.ds-snackbar`, `.ds-empty-state`
+
+### Layout
+`.ds-divider`
 
 ## Tone
 
-> In **core repo mode**, speak technically — the user is a developer. Skip the simplifications below.
+> In **core repo mode**, speak technically -- the user is a developer. Skip the simplifications below.
 
 > In **consumer repo mode**, follow these rules:
 
