@@ -2,3 +2,4 @@
 node_modules/
 dist/
 .designer
+.app-screens.json

@@ -1,0 +1,26 @@
+{
+  "appUrl": "https://your-app.com",
+
+  "login": {
+    "url": "/login",
+    "steps": [
+      { "action": "fill", "selector": "input[name='username'], input[type='text']", "value": "YOUR_USERNAME" },
+      { "action": "submit" },
+      { "action": "fill", "selector": "input[name='password'], input[type='password']", "value": "YOUR_PASSWORD" },
+      { "action": "submit" },
+      { "action": "wait", "ms": 2000 }
+    ]
+  },
+
+  "viewport": { "width": 390, "height": 844 },
+
+  "dismissSelectors": [],
+
+  "discover": true,
+
+  "screens": [
+    { "name": "dashboard", "path": "/dashboard" },
+    { "name": "accounts", "path": "/accounts", "group": "accounts" },
+    { "name": "transfers", "path": "/transfers", "waitFor": ".transfer-form", "delay": 1000 }
+  ]
+}

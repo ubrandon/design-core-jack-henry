@@ -15,6 +15,8 @@ function initPanZoom(viewport, stage, opts) {
   var panY = restore && typeof restore.panY === "number" ? restore.panY : 0;
   var zoom = restore && typeof restore.zoom === "number" ? Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, restore.zoom)) : 1;
   var isPanning = false, panStartX = 0, panStartY = 0, panOriginX = 0, panOriginY = 0;
+  var panPending = null;
+  var didPan = false;
   var spaceHeld = false;
   var lastTouchDist = 0, lastTouchMidX = 0, lastTouchMidY = 0;
 
@@ -44,13 +46,19 @@ function initPanZoom(viewport, stage, opts) {
   });
 
   viewport.addEventListener("pointerdown", function (e) {
-    if (spaceHeld) {
+    if (spaceHeld || e.button === 1) {
       isPanning = true;
       panStartX = e.clientX;
       panStartY = e.clientY;
       panOriginX = panX;
       panOriginY = panY;
       viewport.setPointerCapture(e.pointerId);
+      e.preventDefault();
+      return;
+    }
+    if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      panPending = { x: e.clientX, y: e.clientY, id: e.pointerId };
     }
   });
 
@@ -59,11 +67,27 @@ function initPanZoom(viewport, stage, opts) {
       panX = panOriginX + (e.clientX - panStartX);
       panY = panOriginY + (e.clientY - panStartY);
       applyTransform();
+      return;
+    }
+    if (panPending) {
+      var dx = e.clientX - panPending.x;
+      var dy = e.clientY - panPending.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+        isPanning = true;
+        panStartX = panPending.x;
+        panStartY = panPending.y;
+        panOriginX = panX;
+        panOriginY = panY;
+        viewport.setPointerCapture(panPending.id);
+        panPending = null;
+      }
     }
   });
 
   viewport.addEventListener("pointerup", function () {
+    didPan = isPanning;
     isPanning = false;
+    panPending = null;
   });
 
   viewport.addEventListener("wheel", function (e) {
@@ -115,6 +139,8 @@ function initPanZoom(viewport, stage, opts) {
     }
   }, { passive: false });
 
+  viewport.addEventListener("dragstart", function (e) { e.preventDefault(); });
+
   applyTransform();
 
   var api = {
@@ -130,6 +156,7 @@ function initPanZoom(viewport, stage, opts) {
     resetView: resetView,
     get isPanning() { return isPanning; },
     set isPanning(v) { isPanning = v; },
+    get didPan() { return didPan; },
   };
 
   return api;

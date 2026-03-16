@@ -73,6 +73,7 @@ export default defineConfig({
         main: resolve(__dirname, "index.html"),
         project: resolve(__dirname, "project.html"),
         canvas: resolve(__dirname, "canvas.html"),
+        captures: resolve(__dirname, "captures.html"),
         prototype: resolve(__dirname, "prototype.html"),
         "design-system": resolve(__dirname, "design-system.html"),
       },

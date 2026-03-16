@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Captures — Design Core</title>
+  <link rel="stylesheet" href="styles/shared.css">
+  <link rel="stylesheet" href="styles/canvas-space.css">
+  <link rel="stylesheet" href="styles/zoom-controls.css">
+  <link rel="stylesheet" href="styles/app.css">
+  <style>
+    .cap-viewport {
+      position: fixed;
+      inset: 0;
+      top: 52px;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      background-color: #b8b8b8;
+      background-image:
+        radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+        radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 24px 24px;
+      background-position: 0 0, 12px 12px;
+    }
+    .cap-viewport:active { cursor: grabbing; }
+
+    .cap-stage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-origin: 0 0;
+      will-change: transform;
+      min-width: 1px;
+      min-height: 1px;
+      user-select: none;
+      -webkit-user-select: none;
+      padding: 40px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      width: max-content;
+    }
+
+    .cap-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .cap-group-header {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: rgba(0, 0, 0, 0.7);
+      padding-bottom: 10px;
+    }
+
+    .cap-group-row {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .cap-card {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cap-card-header {
+      padding: 0 2px 8px;
+    }
+
+    .cap-card-name {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.8);
+      letter-spacing: -0.01em;
+      margin-bottom: 2px;
+    }
+
+    .cap-card-path {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .cap-card-image-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.18),
+        0 2px 8px rgba(0, 0, 0, 0.1);
+      background: #fff;
+    }
+
+    .cap-card-image-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+
+    .cap-card-expand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 0 0;
+      background: none;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      font-family: inherit;
+      pointer-events: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cap-card-expand span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 20px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: rgba(0, 0, 0, 0.5);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .cap-card-expand:hover span {
+      background: rgba(0, 0, 0, 0.12);
+      color: rgba(0, 0, 0, 0.75);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="viewport" class="cap-viewport">
+    <div id="stage" class="cap-stage"></div>
+  </div>
+
+  <div class="zoom-controls">
+    <button class="zoom-btn zoom-btn--tidy" onclick="refreshCaptures()" title="Reload captures">Refresh</button>
+    <div class="zoom-controls__zoom-group">
+      <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
+      <span id="zoom-label" class="zoom-level">100%</span>
+      <button class="zoom-btn" onclick="pz.zoomBy(0.04)" title="Zoom in">+</button>
+      <button class="zoom-btn" onclick="pz.resetView()" title="Reset view" style="font-size:0.8rem">&#8962;</button>
+    </div>
+  </div>
+
+  <script src="scripts/shared.js"></script>
+  <script src="scripts/nav.js"></script>
+  <script src="scripts/canvas-pan-zoom.js"></script>
+  <script>
+    renderNav({
+      breadcrumbs: [{ label: "Captures" }],
+      fixed: true,
+    });
+
+    var viewport = document.getElementById("viewport");
+    var stage = document.getElementById("stage");
+
+    var CAP_STORAGE_KEY = "design-core-canvas-captures";
+    var restoreState = null;
+    try {
+      var s = sessionStorage.getItem(CAP_STORAGE_KEY);
+      if (s) restoreState = JSON.parse(s);
+    } catch (_) {}
+
+    var pz = initPanZoom(viewport, stage, { navHeight: 52, restoreState: restoreState });
+
+    function savePanZoom() {
+      try {
+        sessionStorage.setItem(CAP_STORAGE_KEY, JSON.stringify({
+          panX: pz.panX,
+          panY: pz.panY,
+          zoom: pz.zoom,
+        }));
+      } catch (_) {}
+    }
+    window.addEventListener("pagehide", savePanZoom);
+
+    function toggleExpand(btn) {
+      var card = btn.closest(".cap-card");
+      var wrap = card.querySelector(".cap-card-image-wrap");
+      var isCollapsed = wrap.classList.contains("is-collapsed");
+      if (isCollapsed) {
+        wrap.classList.remove("is-collapsed");
+        wrap.style.maxHeight = "none";
+        btn.querySelector("span").textContent = "Collapse";
+      } else {
+        wrap.classList.add("is-collapsed");
+        wrap.style.maxHeight = wrap.dataset.capHeight + "px";
+        btn.querySelector("span").textContent = "Expand";
+      }
+    }
+
+    function loadCaptures() {
+      var bust = "?t=" + Date.now();
+      return fetch("data/captures/manifest.json" + bust)
+        .then(function(r) {
+          if (!r.ok) throw new Error(r.status);
+          return r.json();
+        })
+        .then(function(data) {
+          var captures = data.captures || [];
+          var capHeight = Math.round(((data.viewport && data.viewport.height) || 844) * 1.1);
+          var capWidth = (data.viewport && data.viewport.width) || 390;
+
+          if (captures.length === 0) {
+            showEmpty();
+            return;
+          }
+
+          removeEmpty();
+
+          function deriveGroup(cap) {
+            if (cap.group) return cap.group;
+            var p = (cap.path || "/").replace(/^\//, "").replace(/\/$/, "");
+            if (!p) return "home";
+            var segments = p.split("/");
+            return segments[0];
+          }
+
+          var segmentCounts = {};
+          for (var i = 0; i < captures.length; i++) {
+            var seg = deriveGroup(captures[i]);
+            segmentCounts[seg] = (segmentCounts[seg] || 0) + 1;
+          }
+
+          var groups = {};
+          var groupOrder = [];
+          for (var i = 0; i < captures.length; i++) {
+            var c = captures[i];
+            var g = deriveGroup(c);
+            if (segmentCounts[g] === 1 && g !== "home") {
+              g = "screens";
+            }
+            if (!groups[g]) {
+              groups[g] = [];
+              groupOrder.push(g);
+            }
+            groups[g].push(c);
+          }
+
+          var html = "";
+          for (var gi = 0; gi < groupOrder.length; gi++) {
+            var groupName = groupOrder[gi];
+            var items = groups[groupName];
+            var label = groupName.replace(/-/g, " ").replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+
+            var cards = "";
+            for (var ci = 0; ci < items.length; ci++) {
+              var item = items[ci];
+              var displayName = item.name.replace(/-/g, " ");
+              displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+
+              cards +=
+                '<div class="cap-card" style="width:' + capWidth + 'px;">' +
+                  '<div class="cap-card-header">' +
+                    '<div class="cap-card-name">' + displayName + '</div>' +
+                    '<div class="cap-card-path">' + (item.path || "") + '</div>' +
+                  '</div>' +
+                  '<div class="cap-card-image-wrap is-collapsed" data-cap-height="' + capHeight + '" style="max-height:' + capHeight + 'px;">' +
+                    '<img src="data/captures/' + item.file + bust + '" alt="' + displayName + '" loading="lazy">' +
+                  '</div>' +
+                  '<button class="cap-card-expand" onclick="toggleExpand(this)"><span>Expand</span></button>' +
+                '</div>';
+            }
+
+            html +=
+              '<div class="cap-group">' +
+                '<h2 class="cap-group-header">' + label + '</h2>' +
+                '<div class="cap-group-row">' + cards + '</div>' +
+              '</div>';
+          }
+
+          stage.innerHTML = html;
+
+          hideExpandIfNotNeeded(capHeight);
+          pz.applyTransform();
+        })
+        .catch(function() {
+          showEmpty();
+        });
+    }
+
+    function hideExpandIfNotNeeded(capHeight) {
+      var cards = document.querySelectorAll(".cap-card");
+      for (var i = 0; i < cards.length; i++) {
+        var img = cards[i].querySelector(".cap-card-image-wrap img");
+        if (!img) continue;
+        if (img.complete) {
+          checkImage(img, cards[i], capHeight);
+        } else {
+          (function(imgEl, cardEl) {
+            imgEl.addEventListener("load", function() {
+              checkImage(imgEl, cardEl, capHeight);
+            });
+          })(img, cards[i]);
+        }
+      }
+    }
+
+    function checkImage(img, card, capHeight) {
+      if (img.naturalHeight <= capHeight) {
+        var wrap = card.querySelector(".cap-card-image-wrap");
+        wrap.classList.remove("is-collapsed");
+        wrap.style.maxHeight = "none";
+        var btn = card.querySelector(".cap-card-expand");
+        if (btn) btn.style.display = "none";
+      }
+    }
+
+    function showEmpty() {
+      stage.innerHTML = "";
+      if (document.getElementById("cap-empty")) return;
+      var el = document.createElement("div");
+      el.id = "cap-empty";
+      el.style.cssText = "position:fixed;inset:0;top:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;z-index:10;";
+      el.innerHTML =
+        '<div style="width:64px;height:64px;border-radius:50%;background:rgba(59,130,246,0.1);display:grid;place-items:center;margin-bottom:20px;">' +
+          '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(59,130,246,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+            '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>' +
+          '</svg>' +
+        '</div>' +
+        '<div style="font-size:1.15rem;font-weight:800;color:rgba(0,0,0,0.75);margin-bottom:8px;">No captures yet</div>' +
+        '<div style="font-size:0.9rem;color:rgba(0,0,0,0.45);max-width:380px;line-height:1.55;">' +
+          'Run <code style="padding:2px 8px;border-radius:6px;background:rgba(0,0,0,0.06);font-size:0.85em;font-weight:600;">npm run capture</code> to screenshot your app. ' +
+          'Set up <code style="padding:2px 8px;border-radius:6px;background:rgba(0,0,0,0.06);font-size:0.85em;font-weight:600;">.app-screens.json</code> first — copy the example file to get started.' +
+        '</div>';
+      document.body.appendChild(el);
+    }
+
+    function removeEmpty() {
+      var el = document.getElementById("cap-empty");
+      if (el) el.remove();
+    }
+
+    function refreshCaptures() {
+      var btn = document.querySelector('[onclick="refreshCaptures()"]');
+      if (btn) btn.disabled = true;
+      loadCaptures().then(function() {
+        if (btn) {
+          btn.textContent = "✓ Refresh";
+          btn.disabled = false;
+          setTimeout(function() { btn.textContent = "Refresh"; }, 1500);
+        }
+      });
+    }
+
+    loadCaptures();
+  </script>
+</body>
+</html>

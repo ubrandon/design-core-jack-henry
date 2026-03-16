@@ -2,13 +2,16 @@
   "name": "design-core",
   "version": "1.0.0",
   "description": "File-based design tool for UI ideation, prototyping, and design system reference. Built with vanilla HTML/CSS/JS + Vite.",
+  "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "capture": "node scripts/capture-screens.js"
   },
   "devDependencies": {
+    "playwright": "^1.58.2",
     "vite": "^8.0.0"
   }
 }
