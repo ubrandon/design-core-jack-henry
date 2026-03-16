@@ -20,6 +20,19 @@ Design Core is a file-based design prototyping tool. Designers use [Cursor](http
 
 No frameworks, no databases, no backend. Just HTML/CSS/JS served by Vite.
 
+### Why not other AI design tools?
+
+Design Core works **alongside** Figma, not instead of it. Keep using Figma for what it's great at -- this is for AI-powered prototyping.
+
+The difference is cost and quality compared to other AI design tools. Figma Make, Google Stitch, and similar tools are expensive, slow, or produce mediocre results. Design Core is **free and open source** -- the only cost is a [Cursor](https://cursor.com) subscription:
+
+- **Hobby (free)** -- limited requests, but enough to try it out
+- **Pro ($20/mo per person)** -- the sweet spot for most designers
+
+Cursor's **Auto mode** and **Composer 1.5** model give you near-unlimited usage at the Pro tier -- fast responses, high-quality output, and a fraction of the cost of dedicated AI design tools.
+
+Each person on the team needs their own Cursor account. There's no separate Design Core license. Companies can use [Cursor Teams ($40/user/mo)](https://cursor.com/pricing) for centralized billing and admin controls, but individual Pro plans work fine too.
+
 ### Who is it for?
 
 - **Design teams** who want to prototype ideas quickly without waiting for developers

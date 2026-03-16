@@ -7,6 +7,8 @@ alwaysApply: true
 
 ## When to trigger setup
 
+**If you are in the core repo** (repo name is `design-core` and git origin points to `BUnglaub/design-core`): the user is a developer maintaining the tool. **Do not run this setup flow** — skip it entirely and follow `design-tool.mdc` in core repo mode. Company setup is for teams that fork the repo to their own org; the core repo is the source tool, not a company instance.
+
 Check if the file `.designer` exists in the repo root. If it **does not exist**, the user has not completed setup yet. When they ask to "set up" or "get started" or paste a getting-started prompt, walk them through the setup flow below.
 
 If `.designer` already exists, setup is done -- skip this entirely and follow the normal `design-tool.mdc` rules.
@@ -32,17 +34,24 @@ If the repo isn't already cloned and open in Cursor, clone it for them. The user
 
 **Important:** If the current workspace is already the `design-core` repo with origin pointing to `BUnglaub/design-core`, that's the **source/tool repo** -- not a company's working copy. Don't treat it as "already cloned." For company setup, this repo still needs to be forked to their org (step 4 handles that). Proceed with the setup flow normally.
 
-### 2. Install Node.js
+### 2. Check Cursor settings
+
+Before going further, remind the user to set up Cursor for the best experience:
+
+- **Agent mode** should be active (it's the default in the chat panel). This lets you create files, run commands, and build things for them.
+- **Model set to Auto** -- tell them to check the model dropdown at the bottom of the chat and pick **Auto**. It's the fastest and cheapest option.
+
+### 3. Install Node.js
 
 Run `node --version` to check if Node.js is installed. If it's not:
 - On macOS: try `brew install node`. If Homebrew isn't installed either, guide them to download Node.js from [nodejs.org](https://nodejs.org).
 - On Windows/Linux: guide them to download from [nodejs.org](https://nodejs.org) (LTS version).
 
-### 3. Install dependencies
+### 4. Install dependencies
 
 Run `npm install` for them. Wait for it to finish. If it fails, help troubleshoot.
 
-### 4. Company setup: collect company info and fork
+### 5. Company setup: collect company info and fork
 
 **This step only applies to company setup (first person at the org).**
 
@@ -68,11 +77,11 @@ Then fork and configure the repo. Use `gh` CLI to do this automatically:
 
 Skip this step entirely for designers joining -- they already cloned from their org's fork.
 
-### 5. Collect identity info
+### 6. Collect identity info
 
 #### Company setup (first person at the org)
 
-You already have the company name from step 4. Now ask:
+You already have the company name from step 5. Now ask:
 
 1. **"What's your name?"** -- their display name for attribution on projects
 2. **"Who else is on your design team?"** -- optional, they can add people later. If they provide names, collect them.
@@ -127,11 +136,11 @@ Create `.designer` in the repo root:
 
 The team array only needs them -- they don't need to list the whole org. The `company` field should match what the admin set up.
 
-### 6. Start the preview server
+### 7. Start the preview server
 
 Run `npm run dev` and tell them the URL to open in their browser. Explain what they'll see: the home page with a project hub.
 
-### 7. Offer next steps
+### 8. Offer next steps
 
 #### For company setup
 
