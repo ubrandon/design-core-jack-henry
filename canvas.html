@@ -35,6 +35,7 @@
   <script src="scripts/canvas-pan-zoom.js"></script>
   <script>
     const CARD_GAP = 40;
+    const DRAG_THRESHOLD = 5;
 
     const projectId = getParam("project");
     if (!projectId) window.location.href = "index.html";
@@ -47,7 +48,6 @@
       fixed: true,
     });
 
-    // Fetch project name for breadcrumb
     fetchJSON("data/projects/" + projectId + "/project.json")
       .then(data => {
         var link = document.getElementById("project-link");
@@ -80,7 +80,248 @@
     window.addEventListener("pagehide", savePanZoom);
 
     let screens = [];
-    let isDragging = false, dragCard = null, dragOffX = 0, dragOffY = 0;
+
+    /* ── Selection state ── */
+    const selected = new Set();
+
+    function setSelected(indices) {
+      selected.clear();
+      indices.forEach(i => selected.add(i));
+      applySelectionClasses();
+      updateSelectionBar();
+    }
+
+    function toggleSelected(idx) {
+      if (selected.has(idx)) selected.delete(idx); else selected.add(idx);
+      applySelectionClasses();
+      updateSelectionBar();
+    }
+
+    function clearSelection() {
+      selected.clear();
+      applySelectionClasses();
+      updateSelectionBar();
+    }
+
+    function applySelectionClasses() {
+      screens.forEach((_, i) => {
+        const card = document.getElementById("card-" + i);
+        if (card) card.classList.toggle("is-selected", selected.has(i));
+      });
+    }
+
+    /* ── Selection toolbar ── */
+    let selectionBar = null;
+
+    function updateSelectionBar() {
+      if (selected.size === 0) {
+        if (selectionBar) { selectionBar.remove(); selectionBar = null; }
+        return;
+      }
+      if (!selectionBar) {
+        selectionBar = document.createElement("div");
+        selectionBar.className = "canvas-selection-bar";
+        document.body.appendChild(selectionBar);
+      }
+      const label = selected.size === 1 ? "1 screen" : selected.size + " screens";
+      selectionBar.innerHTML =
+        '<span class="canvas-selection-bar-label">' + label + ' selected</span>' +
+        '<button class="canvas-selection-bar-btn" onclick="deleteSelected()">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+        'Delete</button>';
+    }
+
+    /* ── Delete selected screens ── */
+    function deleteSelected() {
+      if (selected.size === 0) return;
+      const indices = Array.from(selected).sort((a, b) => b - a);
+      indices.forEach(i => screens.splice(i, 1));
+      clearSelection();
+      renderCards();
+      saveCanvas();
+    }
+
+    function saveCanvas() {
+      const payload = { screens: screens.map(s => ({ file: s.file, x: Math.round(s.x), y: Math.round(s.y), width: s.width })) };
+      fetch("data/projects/" + projectId + "/canvas.json", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload, null, 2),
+      }).catch(() => {});
+    }
+
+    /* ── Keyboard shortcuts ── */
+    window.addEventListener("keydown", function (e) {
+      if (e.key === "Delete" || e.key === "Backspace") {
+        if (selected.size > 0 && !e.target.closest("input, textarea, [contenteditable]")) {
+          e.preventDefault();
+          deleteSelected();
+        }
+      }
+      if ((e.key === "a" || e.key === "A") && (e.metaKey || e.ctrlKey)) {
+        if (!e.target.closest("input, textarea, [contenteditable]")) {
+          e.preventDefault();
+          setSelected(screens.map((_, i) => i));
+        }
+      }
+      if (e.key === "Escape") {
+        clearSelection();
+      }
+    });
+
+    /* ── Pointer interaction on cards ── */
+    let cardPointer = null;
+
+    function onCardPointerDown(e, idx) {
+      if (pz.spaceHeld) return;
+      e.stopPropagation();
+
+      const rect = viewport.getBoundingClientRect();
+      cardPointer = {
+        idx: idx,
+        startX: e.clientX,
+        startY: e.clientY,
+        moved: false,
+        stageOffX: 0,
+        stageOffY: 0,
+        dragOffsets: null,
+      };
+
+      viewport.setPointerCapture(e.pointerId);
+    }
+
+    viewport.addEventListener("pointermove", (e) => {
+      if (!cardPointer) return;
+
+      const dx = e.clientX - cardPointer.startX;
+      const dy = e.clientY - cardPointer.startY;
+
+      if (!cardPointer.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
+
+      if (!cardPointer.moved) {
+        cardPointer.moved = true;
+        viewport.classList.add("dragging-card");
+
+        if (!selected.has(cardPointer.idx)) {
+          if (!e.shiftKey && !e.metaKey && !e.ctrlKey) {
+            setSelected([cardPointer.idx]);
+          } else {
+            selected.add(cardPointer.idx);
+            applySelectionClasses();
+            updateSelectionBar();
+          }
+        }
+
+        const rect = viewport.getBoundingClientRect();
+        const sX = (cardPointer.startX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
+        const sY = (cardPointer.startY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
+
+        cardPointer.dragOffsets = [];
+        selected.forEach(i => {
+          cardPointer.dragOffsets.push({ idx: i, offX: sX - screens[i].x, offY: sY - screens[i].y });
+        });
+      }
+
+      const rect = viewport.getBoundingClientRect();
+      const stageX = (e.clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
+      const stageY = (e.clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
+
+      cardPointer.dragOffsets.forEach(d => {
+        const s = screens[d.idx];
+        s.x = stageX - d.offX;
+        s.y = stageY - d.offY;
+        const card = document.getElementById("card-" + d.idx);
+        if (card) {
+          card.style.left = s.x + "px";
+          card.style.top = s.y + "px";
+        }
+      });
+    });
+
+    viewport.addEventListener("pointerup", (e) => {
+      if (!cardPointer) return;
+
+      if (!cardPointer.moved) {
+        const idx = cardPointer.idx;
+        if (e.shiftKey || e.metaKey || e.ctrlKey) {
+          toggleSelected(idx);
+        } else {
+          setSelected([idx]);
+        }
+      }
+
+      if (cardPointer.moved) {
+        viewport.classList.remove("dragging-card");
+      }
+
+      cardPointer = null;
+    });
+
+    /* ── Marquee selection on empty canvas ── */
+    let marquee = null;
+    let marqueeEl = null;
+
+    viewport.addEventListener("pointerdown", (e) => {
+      if (e.target.closest(".canvas-card")) return;
+      if (pz.spaceHeld) return;
+
+      marquee = {
+        startX: e.clientX,
+        startY: e.clientY,
+        moved: false,
+        pointerId: e.pointerId,
+      };
+    });
+
+    viewport.addEventListener("pointermove", (e) => {
+      if (!marquee) return;
+
+      const dx = e.clientX - marquee.startX;
+      const dy = e.clientY - marquee.startY;
+
+      if (!marquee.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
+
+      if (!marquee.moved) {
+        marquee.moved = true;
+        pz.isPanning = false;
+        marqueeEl = document.createElement("div");
+        marqueeEl.className = "canvas-marquee";
+        document.body.appendChild(marqueeEl);
+      }
+
+      const x = Math.min(marquee.startX, e.clientX);
+      const y = Math.min(marquee.startY, e.clientY);
+      const w = Math.abs(dx);
+      const h = Math.abs(dy);
+      marqueeEl.style.left = x + "px";
+      marqueeEl.style.top = y + "px";
+      marqueeEl.style.width = w + "px";
+      marqueeEl.style.height = h + "px";
+
+      const hits = [];
+      screens.forEach((s, i) => {
+        const card = document.getElementById("card-" + i);
+        if (card) {
+          const cr = card.getBoundingClientRect();
+          if (cr.right > x && cr.left < x + w && cr.bottom > y && cr.top < y + h) {
+            hits.push(i);
+          }
+        }
+      });
+      setSelected(hits);
+    });
+
+    viewport.addEventListener("pointerup", (e) => {
+      if (marquee) {
+        if (!marquee.moved) {
+          if (!e.shiftKey && !e.metaKey && !e.ctrlKey) clearSelection();
+        }
+        if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
+        marquee = null;
+      }
+    });
+
+    /* ── Canvas data ── */
 
     function tidyLayout() {
       let x = 0;
@@ -139,6 +380,7 @@
 
     function refreshScreens() {
       screens = [];
+      clearSelection();
       const btn = document.querySelector('[onclick="refreshScreens()"]');
       if (btn) { btn.disabled = true; }
       loadCanvas().then(() => {
@@ -150,51 +392,14 @@
       });
     }
 
-    viewport.addEventListener("pointermove", (e) => {
-      if (isDragging && dragCard) {
-        const rect = viewport.getBoundingClientRect();
-        const stageX = (e.clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
-        const stageY = (e.clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
-        const newX = stageX - dragOffX;
-        const newY = stageY - dragOffY;
-        dragCard.el.style.left = newX + "px";
-        dragCard.el.style.top = newY + "px";
-        dragCard.screen.x = newX;
-        dragCard.screen.y = newY;
-      }
-    });
-
-    viewport.addEventListener("pointerup", () => {
-      if (isDragging) {
-        isDragging = false;
-        dragCard = null;
-        viewport.classList.remove("dragging-card");
-      }
-    });
-
-    function startDrag(e, idx) {
-      if (pz.spaceHeld) return;
-      e.stopPropagation();
-      isDragging = true;
-      viewport.classList.add("dragging-card");
-      const card = document.getElementById("card-" + idx);
-      const rect = viewport.getBoundingClientRect();
-      const stageX = (e.clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
-      const stageY = (e.clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
-      dragOffX = stageX - screens[idx].x;
-      dragOffY = stageY - screens[idx].y;
-      dragCard = { el: card, screen: screens[idx] };
-      viewport.setPointerCapture(e.pointerId);
-    }
-
     loadCanvas();
 
     function renderCards() {
       const bust = "?t=" + Date.now();
       stage.innerHTML = screens.map((s, i) => `
-        <div class="canvas-card" id="card-${i}"
+        <div class="canvas-card${selected.has(i) ? " is-selected" : ""}" id="card-${i}"
              style="left:${s.x}px; top:${s.y}px; width:${s.width}px;"
-             onpointerdown="startDrag(event, ${i})">
+             onpointerdown="onCardPointerDown(event, ${i})">
           <div class="canvas-card-body">
             <iframe src="data/projects/${projectId}/screens/${s.file}${bust}"
                     width="${s.width}"

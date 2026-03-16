@@ -44,7 +44,7 @@ function initPanZoom(viewport, stage, opts) {
   });
 
   viewport.addEventListener("pointerdown", function (e) {
-    if (spaceHeld || !e.target.closest(".canvas-card")) {
+    if (spaceHeld) {
       isPanning = true;
       panStartX = e.clientX;
       panStartY = e.clientY;

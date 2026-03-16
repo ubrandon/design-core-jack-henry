@@ -55,6 +55,74 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
+.canvas-card.is-selected {
+  border-color: var(--neon-blue);
+  box-shadow:
+    0 0 0 3px var(--neon-blue),
+    0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+/* Marquee selection rectangle */
+.canvas-marquee {
+  position: fixed;
+  border: 2px solid var(--neon-blue);
+  background: rgba(var(--neon-blue-rgb), 0.08);
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* Selection toolbar */
+.canvas-selection-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  background: rgba(10, 10, 10, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 300;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.canvas-selection-bar-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+}
+
+.canvas-selection-bar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid rgba(255, 80, 80, 0.3);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 80, 80, 0.12);
+  color: #ff6b6b;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.canvas-selection-bar-btn:hover {
+  background: rgba(255, 80, 80, 0.25);
+  border-color: rgba(255, 80, 80, 0.5);
+}
+
+.canvas-selection-bar-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
 .canvas-card-header {
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.06);
