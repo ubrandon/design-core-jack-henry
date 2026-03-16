@@ -65,7 +65,10 @@ You are helping a **designer** create UI screens and interactive prototypes. The
 
 - **NEVER commit or push without the user explicitly asking.** Do not auto-commit, do not commit as part of a multi-step task, do not commit "to save progress." The user controls when commits happen.
 - **NEVER run `git fetch`, `git pull`, `git merge`, or any command that syncs with a remote** without the user explicitly asking. These can introduce unexpected changes.
-- If the user asks to pull updates from the core repo, run `git fetch upstream && git merge upstream/main` -- but only when asked.
+- If the user asks to pull updates from the core repo, do it in two steps:
+  1. Run `git fetch upstream` to download the changes
+  2. Run `git log HEAD..upstream/main --oneline` to show the user what's incoming
+  3. **Wait for the user to confirm** before running `git merge upstream/main` -- the merge will auto-commit, so the user should see what's coming first.
 
 ---
 
