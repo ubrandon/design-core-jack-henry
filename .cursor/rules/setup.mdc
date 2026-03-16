@@ -55,6 +55,8 @@ Run `npm install` for them. Wait for it to finish. If it fails, help troubleshoo
 
 **This step only applies to company setup (first person at the org).**
 
+**Critical:** We are creating a **new repo** by forking the **public** repo (`BUnglaub/design-core`). The public repo is **never modified**. All setup (GETTING_STARTED, .designer, etc.) happens **only in the new fork**, so the new repo can pull updates from the main repo. Never edit the main/public repo during company setup.
+
 Ask these two questions (one at a time):
 
 1. **"What's your company or team name?"** (e.g. `Acme Design`) -- needed to name the repo and configure the tool.
@@ -62,13 +64,13 @@ Ask these two questions (one at a time):
 
 Then fork and configure the repo. Use `gh` CLI to do this automatically:
 
-1. **Fork the repo** to their org with a company-specific name. Use the naming convention **`design-core-<company-slug>`** (lowercase, hyphenated). Examples: "Jack Henry" → `design-core-jack-henry`, "Acme Design" → `design-core-acme-design`. This keeps the tool recognizable and makes pulling updates from the main repo clear.
+1. **Fork the public repo** to their org/account with a company-specific name. Use the naming convention **`design-core-<company-slug>`** (lowercase, hyphenated). Examples: "Jack Henry" → `design-core-jack-henry`, "Acme Design" → `design-core-acme-design`. This creates a **new** repo (e.g. `THEIR_ORG/design-core-jack-henry`) that can pull updates from `BUnglaub/design-core`.
    ```
    gh repo fork BUnglaub/design-core --org THEIR_ORG --fork-name design-core-THEIR_COMPANY_SLUG --remote=true
    ```
-   This forks the repo and updates the git remote automatically. Forking preserves the upstream connection so the company can pull future updates from `BUnglaub/design-core`.
-2. **Update `GETTING_STARTED.md`** -- replace `YOUR_ORG` and `YOUR_REPO` in the designer joining prompt with the actual org name and repo name, so when teammates read the page they get the right clone URL.
-3. **Commit and push** these changes to the new fork.
+   (Omit `--org` if forking to a personal account.) Forking preserves the upstream connection so the new repo can receive updates from the public repo.
+2. **In the new fork only** (the workspace must be the fork, not the public repo): update `GETTING_STARTED.md` — replace `YOUR_ORG` and `YOUR_REPO` with the fork's org and repo name, so teammates get the right clone URL.
+3. **Commit and push** these changes to the new fork (never to the public repo).
 4. **Enable GitHub Pages** so prototypes get shareable links automatically:
    ```
    gh api repos/THEIR_ORG/THEIR_REPO_NAME/pages -X POST -f build_type=workflow
