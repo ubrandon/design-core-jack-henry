@@ -62,9 +62,9 @@ Ask these two questions (one at a time):
 
 Then fork and configure the repo. Use `gh` CLI to do this automatically:
 
-1. **Fork the repo** to their org with a company-specific name. Suggest a repo name based on their company name (e.g. "Acme Design" becomes `acme-design`). The repo doesn't have to stay named `design-core` -- a company-specific name is better.
+1. **Fork the repo** to their org with a company-specific name. Use the naming convention **`design-core-<company-slug>`** (lowercase, hyphenated). Examples: "Jack Henry" → `design-core-jack-henry`, "Acme Design" → `design-core-acme-design`. This keeps the tool recognizable and makes pulling updates from the main repo clear.
    ```
-   gh repo fork BUnglaub/design-core --org THEIR_ORG --fork-name THEIR_REPO_NAME --remote=true
+   gh repo fork BUnglaub/design-core --org THEIR_ORG --fork-name design-core-THEIR_COMPANY_SLUG --remote=true
    ```
    This forks the repo and updates the git remote automatically. Forking preserves the upstream connection so the company can pull future updates from `BUnglaub/design-core`.
 2. **Update `GETTING_STARTED.md`** -- replace `YOUR_ORG` and `YOUR_REPO` in the designer joining prompt with the actual org name and repo name, so when teammates read the page they get the right clone URL.
