@@ -12,8 +12,8 @@ Design Core is a design tool for teams. You describe what you want, AI builds it
 
 **[Get Started](GETTING_STARTED.md)**
 
-- **Setting up for your company?** [Company Setup](GETTING_STARTED.md#company-setup) -- fork the repo and onboard your team
-- **Joining your team?** [Designer Setup](GETTING_STARTED.md#designer-setup) -- clone, install, start building
+- **Setting up for your company?** [Company Setup](GETTING_STARTED.md#setting-up-for-your-company-first-time) -- fork the repo and onboard your team
+- **Joining your team?** [Designer Setup](GETTING_STARTED.md#joining-your-team-someone-shared-this-with-you) -- clone and start building
 
 ---
 
