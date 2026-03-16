@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
-import { writeFileSync, unlinkSync, existsSync, mkdirSync } from "fs";
+import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync, rmSync } from "fs";
 import { spawn } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const LOCAL_CREDS_PATH = resolve(__dirname, ".app-screens.json");
 
 function dataFilesPlugin() {
   return {
@@ -223,6 +224,62 @@ function captureApiPlugin() {
         if (req.url === "/api/capture/status" && req.method === "GET") {
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ running: !!activeCapture }));
+          return;
+        }
+
+        if (req.url === "/api/capture/creds" && req.method === "GET") {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          try {
+            if (existsSync(LOCAL_CREDS_PATH)) {
+              const data = JSON.parse(readFileSync(LOCAL_CREDS_PATH, "utf-8"));
+              const login = data.login || {};
+              res.end(JSON.stringify({
+                username: login.username || "",
+                password: login.password || "",
+              }));
+            } else {
+              res.end(JSON.stringify({ username: "", password: "" }));
+            }
+          } catch {
+            res.end(JSON.stringify({ username: "", password: "" }));
+          }
+          return;
+        }
+
+        if (req.url === "/api/capture/creds" && req.method === "POST") {
+          try {
+            const params = await readBody(req);
+            let data = {};
+            if (existsSync(LOCAL_CREDS_PATH)) {
+              try { data = JSON.parse(readFileSync(LOCAL_CREDS_PATH, "utf-8")); } catch {}
+            }
+            data.login = {
+              ...(data.login || {}),
+              username: params.username || "",
+              password: params.password || "",
+            };
+            writeFileSync(LOCAL_CREDS_PATH, JSON.stringify(data, null, 2) + "\n");
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end('{"ok":true}');
+          } catch (e) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(`{"error":"${e.message}"}`);
+          }
+          return;
+        }
+
+        if (req.url === "/api/capture/reset-session" && req.method === "POST") {
+          const browserDataDir = resolve(__dirname, ".capture-browser-data");
+          try {
+            if (existsSync(browserDataDir)) {
+              rmSync(browserDataDir, { recursive: true, force: true });
+            }
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end('{"ok":true}');
+          } catch (e) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(`{"error":"${e.message}"}`);
+          }
           return;
         }
 

@@ -25,6 +25,7 @@
       background-position: 0 0, 12px 12px;
     }
     .cap-viewport:active { cursor: grabbing; }
+    .cap-viewport.dragging-card { cursor: grabbing; }
 
     .cap-stage {
       position: absolute;
@@ -36,39 +37,31 @@
       min-height: 1px;
       user-select: none;
       -webkit-user-select: none;
-      padding: 40px 48px;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      width: max-content;
-    }
-
-    .cap-group {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .cap-group-header {
-      font-size: 1.6rem;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      color: rgba(0, 0, 0, 0.7);
-      padding-bottom: 10px;
-    }
-
-    .cap-group-row {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      gap: 24px;
-      align-items: flex-start;
     }
 
     .cap-card {
-      flex-shrink: 0;
+      position: absolute;
       display: flex;
       flex-direction: column;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .cap-card.is-selected {
+      z-index: 10;
+    }
+
+    .cap-card:hover .cap-card-image-wrap {
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.22),
+        0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .cap-card.is-selected .cap-card-image-wrap {
+      box-shadow:
+        0 0 0 3px var(--neon-blue),
+        0 12px 40px rgba(0, 0, 0, 0.22);
     }
 
     .cap-card-header {
@@ -102,12 +95,19 @@
       background: #fff;
     }
 
+    .cap-card * {
+      pointer-events: none;
+      -webkit-user-drag: none;
+    }
+
     .cap-card-image-wrap img {
       display: block;
       width: 100%;
       height: auto;
-      -webkit-user-drag: none;
-      pointer-events: none;
+    }
+
+    .cap-card-image-wrap.is-collapsed {
+      overflow: hidden;
     }
 
     .cap-card-expand {
@@ -144,6 +144,18 @@
       color: rgba(0, 0, 0, 0.75);
     }
 
+    /* Section headers on canvas */
+    .cap-section-header {
+      position: absolute;
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: rgba(0, 0, 0, 0.55);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+
     /* ---- Capture form (empty state) ---- */
     .cap-form {
       display: flex;
@@ -162,6 +174,17 @@
       gap: 8px;
       width: 100%;
       max-width: 420px;
+    }
+
+    .cap-form-actions {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      max-width: 420px;
+      margin-top: 12px;
+    }
+    .cap-form-actions .cap-form-btn {
+      flex: 1;
     }
 
     .cap-form-input {
@@ -199,6 +222,10 @@
     .cap-form-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+    .cap-form-btn--secondary {
+      background: rgba(0, 0, 0, 0.08);
+      color: rgba(0, 0, 0, 0.6);
     }
 
     .cap-progress {
@@ -390,10 +417,25 @@
 
     .cap-scout-actions {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
       gap: 12px;
-      margin-top: 8px;
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .cap-scout-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .cap-scout-buttons .cap-form-btn {
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .cap-form-btn--outline {
+      background: rgba(0, 0, 0, 0.08);
+      color: rgba(0, 0, 0, 0.6);
     }
 
     .cap-scout-toggle {
@@ -446,6 +488,43 @@
       background: rgba(59, 130, 246, 0.1);
       color: rgba(59, 130, 246, 0.9);
     }
+
+    .cap-modal-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .cap-back-btn {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(59, 130, 246, 0.9);
+      cursor: pointer;
+      padding: 4px 0;
+      flex-shrink: 0;
+    }
+    .cap-back-btn:hover { text-decoration: underline; }
+
+    .cap-reset-session {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      padding: 2px 0;
+      transition: color 0.15s;
+    }
+    .cap-reset-session:hover {
+      color: rgba(220, 60, 60, 0.7);
+    }
+
   </style>
 </head>
 <body>
@@ -456,6 +535,7 @@
 
   <div class="zoom-controls">
     <button class="zoom-btn zoom-btn--tidy" onclick="openCaptureModal()" title="New capture">New Capture</button>
+    <button class="zoom-btn zoom-btn--tidy" onclick="tidyLayout()" title="Tidy layout">Tidy</button>
     <button class="zoom-btn zoom-btn--tidy" onclick="refreshCaptures()" title="Reload captures">Refresh</button>
     <div class="zoom-controls__zoom-group">
       <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
@@ -471,16 +551,20 @@
 
       <!-- Step 1: URL input + scout -->
       <div id="modal-step-url">
-        <div class="cap-modal-steps">
-          <span class="cap-modal-step is-active">1. Find screens</span>
-          <span class="cap-modal-step">2. Capture</span>
-        </div>
         <div class="cap-modal-title">New Capture</div>
         <div class="cap-modal-desc">Enter your app's URL to discover available screens.</div>
         <form class="cap-form" onsubmit="startScout(event)">
           <div class="cap-form-row">
             <input id="modal-cap-url" class="cap-form-input" type="url" placeholder="https://your-app.com" required>
+          </div>
+          <div style="display:flex;gap:8px;width:100%;">
+            <input id="modal-cap-user" class="cap-form-input" type="text" placeholder="Username (optional)" autocomplete="off" style="flex:1;">
+            <input id="modal-cap-pass" class="cap-form-input" type="password" placeholder="Password" autocomplete="off" style="flex:1;">
+          </div>
+          <div class="cap-form-actions">
             <button id="modal-scout-btn" class="cap-form-btn" type="submit">Find Screens</button>
+            <button type="button" id="cap-prev-results-btn" class="cap-form-btn cap-form-btn--secondary" style="display:none;" onclick="showScoutResults()">Use previous results</button>
+            <button type="button" id="cap-capture-all-btn" class="cap-form-btn cap-form-btn--secondary" onclick="skipToCapture()">Capture All</button>
           </div>
           <div id="modal-scout-progress" class="cap-progress">
             <div class="cap-progress-header">
@@ -490,25 +574,25 @@
             <div id="modal-scout-log" class="cap-progress-log"></div>
           </div>
           <div class="cap-form-hint">
-            For apps behind login, set up <code style="padding:1px 6px;border-radius:5px;background:rgba(0,0,0,0.06);font-size:0.9em;font-weight:600;">.app-screens.json</code> with your credentials.
+            Login credentials are stored locally and never committed to Git.
           </div>
+          <button type="button" class="cap-reset-session" onclick="resetBrowserSession()">Reset browser session</button>
         </form>
       </div>
 
       <!-- Step 2: Scout results checklist + deep capture -->
       <div id="modal-step-select" style="display:none;">
-        <div class="cap-modal-steps">
-          <span class="cap-modal-step">1. Find screens</span>
-          <span class="cap-modal-step is-active">2. Capture</span>
+        <div class="cap-modal-top-row">
+          <button class="cap-back-btn" onclick="backToUrl()">← Back</button>
         </div>
         <div class="cap-modal-title">Select screens to capture</div>
         <div class="cap-modal-desc">Pick the features you want to deep-capture. Each one will be explored for sub-pages, tabs, and interactions.</div>
         <div id="modal-scout-list" class="cap-scout-list"></div>
         <div class="cap-scout-actions">
           <button class="cap-scout-toggle" onclick="toggleAllScout()">Select all</button>
-          <div style="display:flex;gap:8px;">
-            <button class="cap-form-btn" style="background:rgba(0,0,0,0.08);color:rgba(0,0,0,0.6);" onclick="backToUrl()">Back</button>
+          <div class="cap-scout-buttons">
             <button id="modal-deep-btn" class="cap-form-btn" onclick="startDeepCapture()">Capture Selected</button>
+            <button type="button" id="modal-capture-all-btn" class="cap-form-btn cap-form-btn--secondary" onclick="skipToCaptureFromResults()">Capture All</button>
           </div>
         </div>
         <div id="modal-deep-progress" class="cap-progress" style="margin-top:12px;">
@@ -554,6 +638,512 @@
     }
     window.addEventListener("pagehide", savePanZoom);
 
+    var CARD_GAP = 40;
+    var DRAG_THRESHOLD = 5;
+    var captures = [];
+    var capWidth = 390;
+    var capHeight = 928;
+
+    /* ── Selection ── */
+    var selected = new Set();
+
+    function setSelected(indices) {
+      selected.clear();
+      for (var i = 0; i < indices.length; i++) selected.add(indices[i]);
+      applySelectionClasses();
+      updateSelectionBar();
+    }
+
+    function toggleSelected(idx) {
+      if (selected.has(idx)) selected.delete(idx); else selected.add(idx);
+      applySelectionClasses();
+      updateSelectionBar();
+    }
+
+    function clearSelection() {
+      selected.clear();
+      applySelectionClasses();
+      updateSelectionBar();
+    }
+
+    function applySelectionClasses() {
+      for (var i = 0; i < captures.length; i++) {
+        var card = document.getElementById("cap-card-" + i);
+        if (card) {
+          if (selected.has(i)) card.classList.add("is-selected");
+          else card.classList.remove("is-selected");
+        }
+      }
+    }
+
+    /* ── Selection bar ── */
+    var selectionBar = null;
+
+    function updateSelectionBar() {
+      if (selected.size === 0) {
+        if (selectionBar) { selectionBar.remove(); selectionBar = null; }
+        return;
+      }
+      if (!selectionBar) {
+        selectionBar = document.createElement("div");
+        selectionBar.className = "canvas-selection-bar";
+        document.body.appendChild(selectionBar);
+      }
+      var label = selected.size === 1 ? "1 screen" : selected.size + " screens";
+      selectionBar.innerHTML =
+        '<span class="canvas-selection-bar-label">' + label + ' selected</span>' +
+        '<button class="canvas-selection-bar-btn" onclick="deleteSelected()">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+        'Delete</button>';
+    }
+
+    /* ── Delete ── */
+    function deleteSelected() {
+      if (selected.size === 0) return;
+      var indices = Array.from(selected).sort(function(a, b) { return b - a; });
+      var filesToDelete = [];
+      for (var i = 0; i < indices.length; i++) {
+        filesToDelete.push(captures[indices[i]].file);
+        captures.splice(indices[i], 1);
+      }
+      clearSelection();
+      renderCards();
+      saveManifest();
+      for (var i = 0; i < filesToDelete.length; i++) {
+        fetch("data/captures/" + filesToDelete[i], { method: "DELETE" }).catch(function() {});
+      }
+    }
+
+    function saveManifest() {
+      var payload = {
+        viewport: { width: capWidth, height: capHeight },
+        captures: captures.map(function(c) {
+          return { name: c.name, file: c.file, group: c.group, path: c.path, url: c.url, capturedAt: c.capturedAt, x: Math.round(c.x), y: Math.round(c.y) };
+        })
+      };
+      fetch("data/captures/manifest.json", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload, null, 2),
+      }).catch(function() {});
+    }
+
+    /* ── Keyboard shortcuts ── */
+    window.addEventListener("keydown", function(e) {
+      if (e.key === "Delete" || e.key === "Backspace") {
+        if (selected.size > 0 && !e.target.closest("input, textarea, [contenteditable]")) {
+          e.preventDefault();
+          deleteSelected();
+        }
+      }
+      if ((e.key === "a" || e.key === "A") && (e.metaKey || e.ctrlKey)) {
+        if (!e.target.closest("input, textarea, [contenteditable]")) {
+          e.preventDefault();
+          var all = [];
+          for (var i = 0; i < captures.length; i++) all.push(i);
+          setSelected(all);
+        }
+      }
+      if (e.key === "Escape") {
+        closeContextMenu();
+        clearSelection();
+      }
+    });
+
+    /* ── Context menu ── */
+    var ctxMenu = null;
+
+    function closeContextMenu() {
+      if (ctxMenu) { ctxMenu.remove(); ctxMenu = null; }
+      window.removeEventListener("pointerdown", onCtxOutside);
+    }
+
+    function onCtxOutside(e) {
+      if (ctxMenu && !ctxMenu.contains(e.target)) closeContextMenu();
+    }
+
+    function showContextMenu(x, y, items) {
+      closeContextMenu();
+      ctxMenu = document.createElement("div");
+      ctxMenu.className = "canvas-context-menu";
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (item.sep) {
+          var sep = document.createElement("div");
+          sep.className = "canvas-context-menu-sep";
+          ctxMenu.appendChild(sep);
+          continue;
+        }
+        var btn = document.createElement("button");
+        btn.className = "canvas-context-menu-item" + (item.danger ? " canvas-context-menu-item--danger" : "");
+        btn.innerHTML = (item.icon || "") + item.label;
+        btn.addEventListener("click", (function(action) { return function() { closeContextMenu(); action(); }; })(item.action));
+        ctxMenu.appendChild(btn);
+      }
+      ctxMenu.style.left = x + "px";
+      ctxMenu.style.top = y + "px";
+      document.body.appendChild(ctxMenu);
+
+      var rect = ctxMenu.getBoundingClientRect();
+      if (rect.right > window.innerWidth) ctxMenu.style.left = (x - rect.width) + "px";
+      if (rect.bottom > window.innerHeight) ctxMenu.style.top = (y - rect.height) + "px";
+
+      setTimeout(function() { window.addEventListener("pointerdown", onCtxOutside); }, 0);
+    }
+
+    var ICON_SELECT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>';
+    var ICON_TIDY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>';
+    var ICON_DELETE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+
+    viewport.addEventListener("contextmenu", function(e) {
+      e.preventDefault();
+      var card = e.target.closest(".cap-card");
+
+      if (card) {
+        var idx = parseInt(card.id.replace("cap-card-", ""), 10);
+        if (isNaN(idx)) return;
+        if (!selected.has(idx)) setSelected([idx]);
+
+        var count = selected.size;
+        var cLabel = count === 1 ? captures[idx].name : count + " screens";
+        showContextMenu(e.clientX, e.clientY, [
+          { label: "Select All", icon: ICON_SELECT, action: function() { var a = []; for (var i = 0; i < captures.length; i++) a.push(i); setSelected(a); } },
+          { sep: true },
+          { label: "Tidy Layout", icon: ICON_TIDY, action: tidyLayout },
+          { sep: true },
+          { label: "Delete " + cLabel, icon: ICON_DELETE, danger: true, action: deleteSelected },
+        ]);
+      } else {
+        clearSelection();
+        showContextMenu(e.clientX, e.clientY, [
+          { label: "Select All", icon: ICON_SELECT, action: function() { var a = []; for (var i = 0; i < captures.length; i++) a.push(i); setSelected(a); } },
+          { sep: true },
+          { label: "Tidy Layout", icon: ICON_TIDY, action: tidyLayout },
+        ]);
+      }
+    });
+
+    /* ── Card click/drag + marquee ── */
+    var cardPointer = null;
+    var marquee = null;
+    var marqueeEl = null;
+
+    function onCardPointerDown(e, idx) {
+      if (e.button !== 0) return;
+      if (pz.spaceHeld) return;
+      if (e.target.closest(".cap-card-expand")) return;
+      e.stopPropagation();
+      e.preventDefault();
+      closeContextMenu();
+
+      var shiftHeld = e.shiftKey;
+      if (shiftHeld) {
+        var next = new Set(selected);
+        if (next.has(idx)) next.delete(idx); else next.add(idx);
+        setSelected(Array.from(next));
+      } else if (!selected.has(idx)) {
+        setSelected([idx]);
+      }
+
+      cardPointer = {
+        idx: idx,
+        startX: e.clientX,
+        startY: e.clientY,
+        moved: false,
+        shiftHeld: shiftHeld,
+        dragOffsets: null,
+        pointerId: e.pointerId,
+      };
+      viewport.setPointerCapture(e.pointerId);
+    }
+
+    viewport.addEventListener("pointerdown", function(e) {
+      if (e.button !== 0) return;
+      if (pz.spaceHeld) return;
+      if (e.target.closest(".cap-card")) return;
+
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        marquee = { startX: e.clientX, startY: e.clientY, moved: false, pointerId: e.pointerId };
+        viewport.setPointerCapture(e.pointerId);
+      }
+    });
+
+    viewport.addEventListener("pointermove", function(e) {
+      if (cardPointer) {
+        var dx = e.clientX - cardPointer.startX;
+        var dy = e.clientY - cardPointer.startY;
+        if (!cardPointer.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
+
+        if (!cardPointer.moved) {
+          cardPointer.moved = true;
+          viewport.classList.add("dragging-card");
+
+          var rect = viewport.getBoundingClientRect();
+          var sX = (cardPointer.startX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
+          var sY = (cardPointer.startY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
+
+          cardPointer.dragOffsets = [];
+          selected.forEach(function(i) {
+            cardPointer.dragOffsets.push({ idx: i, offX: sX - captures[i].x, offY: sY - captures[i].y });
+          });
+        }
+
+        var rect = viewport.getBoundingClientRect();
+        var stageX = (e.clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
+        var stageY = (e.clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
+
+        for (var di = 0; di < cardPointer.dragOffsets.length; di++) {
+          var d = cardPointer.dragOffsets[di];
+          var s = captures[d.idx];
+          s.x = stageX - d.offX;
+          s.y = stageY - d.offY;
+          var el = document.getElementById("cap-card-" + d.idx);
+          if (el) { el.style.left = s.x + "px"; el.style.top = s.y + "px"; }
+        }
+        return;
+      }
+
+      if (marquee) {
+        var mdx = e.clientX - marquee.startX;
+        var mdy = e.clientY - marquee.startY;
+        if (!marquee.moved && Math.abs(mdx) < DRAG_THRESHOLD && Math.abs(mdy) < DRAG_THRESHOLD) return;
+
+        if (!marquee.moved) {
+          marquee.moved = true;
+          pz.isPanning = false;
+          marqueeEl = document.createElement("div");
+          marqueeEl.className = "canvas-marquee";
+          document.body.appendChild(marqueeEl);
+        }
+
+        var mx = Math.min(marquee.startX, e.clientX);
+        var my = Math.min(marquee.startY, e.clientY);
+        var mw = Math.abs(mdx);
+        var mh = Math.abs(mdy);
+        marqueeEl.style.left = mx + "px";
+        marqueeEl.style.top = my + "px";
+        marqueeEl.style.width = mw + "px";
+        marqueeEl.style.height = mh + "px";
+
+        var hits = [];
+        for (var ci = 0; ci < captures.length; ci++) {
+          var card = document.getElementById("cap-card-" + ci);
+          if (card) {
+            var cr = card.getBoundingClientRect();
+            if (cr.right > mx && cr.left < mx + mw && cr.bottom > my && cr.top < my + mh) {
+              hits.push(ci);
+            }
+          }
+        }
+        setSelected(hits);
+      }
+    });
+
+    viewport.addEventListener("pointerup", function(e) {
+      if (cardPointer) {
+        if (cardPointer.moved) {
+          viewport.classList.remove("dragging-card");
+          updateSectionHeaders();
+          saveManifest();
+        } else if (!cardPointer.shiftHeld) {
+          setSelected([cardPointer.idx]);
+        }
+        cardPointer = null;
+        return;
+      }
+
+      if (marquee) {
+        if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
+        marquee = null;
+        return;
+      }
+
+      if (!pz.didPan && !e.target.closest(".cap-card") && !e.target.closest(".canvas-context-menu") && !e.target.closest(".canvas-selection-bar")) {
+        clearSelection();
+      }
+    });
+
+    /* ── Group helpers ── */
+    var HEADER_HEIGHT = 48;
+    var GROUP_GAP = 80;
+
+    function deriveGroup(cap) {
+      if (cap.group) return cap.group;
+      var p = (cap.path || "/").replace(/^\//, "").replace(/\/$/, "");
+      if (!p) return "home";
+      return p.split("/")[0];
+    }
+
+    function buildGroups() {
+      var groups = {};
+      var order = [];
+      for (var i = 0; i < captures.length; i++) {
+        var g = deriveGroup(captures[i]);
+        if (!groups[g]) { groups[g] = []; order.push(g); }
+        groups[g].push(i);
+      }
+      return { groups: groups, order: order };
+    }
+
+    function groupLabel(key) {
+      return key.replace(/-/g, " ").replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+    }
+
+    /* ── Tidy layout (grouped) ── */
+    function tidyLayout() {
+      var info = buildGroups();
+      var cursorY = 0;
+      for (var gi = 0; gi < info.order.length; gi++) {
+        var gName = info.order[gi];
+        var indices = info.groups[gName];
+        var rowY = cursorY + HEADER_HEIGHT;
+        var cursorX = 0;
+        for (var ci = 0; ci < indices.length; ci++) {
+          var idx = indices[ci];
+          captures[idx].x = cursorX;
+          captures[idx].y = rowY;
+          cursorX += capWidth + CARD_GAP;
+        }
+        var tallest = estimateRowHeight();
+        cursorY = rowY + tallest + GROUP_GAP;
+      }
+      renderCards();
+      saveManifest();
+    }
+
+    function estimateRowHeight() {
+      return Math.round(capHeight * 1.2) + 40;
+    }
+
+    function hasStoredPositions(items) {
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].x != null && items[i].y != null) return true;
+      }
+      return false;
+    }
+
+    function updateSectionHeaders() {
+      var info = buildGroups();
+      var headers = stage.querySelectorAll(".cap-section-header");
+      for (var h = 0; h < headers.length; h++) headers[h].remove();
+
+      for (var gi = 0; gi < info.order.length; gi++) {
+        var gName = info.order[gi];
+        var indices = info.groups[gName];
+        if (indices.length === 0) continue;
+        var minX = Infinity, minY = Infinity;
+        for (var ci = 0; ci < indices.length; ci++) {
+          var c = captures[indices[ci]];
+          if (c.x < minX) minX = c.x;
+          if (c.y < minY) minY = c.y;
+        }
+        var el = document.createElement("div");
+        el.className = "cap-section-header";
+        el.style.left = minX + "px";
+        el.style.top = (minY - HEADER_HEIGHT) + "px";
+        el.textContent = groupLabel(gName);
+        stage.appendChild(el);
+      }
+    }
+
+    /* ── Load & render ── */
+    function loadCaptures() {
+      var bust = "?t=" + Date.now();
+      return fetch("data/captures/manifest.json" + bust)
+        .then(function(r) {
+          if (!r.ok) throw new Error(r.status);
+          return r.json();
+        })
+        .then(function(data) {
+          var items = data.captures || [];
+          capWidth = (data.viewport && data.viewport.width) || 390;
+          capHeight = (data.viewport && data.viewport.height) || 844;
+
+          if (items.length === 0) {
+            captures = [];
+            showEmpty();
+            return;
+          }
+
+          removeEmpty();
+
+          var stored = hasStoredPositions(items);
+          captures = items.map(function(c) {
+            return {
+              name: c.name, file: c.file, group: c.group, path: c.path,
+              url: c.url, capturedAt: c.capturedAt,
+              x: (c.x != null) ? c.x : 0,
+              y: (c.y != null) ? c.y : 0,
+            };
+          });
+
+          if (!stored) {
+            tidyLayout();
+          } else {
+            renderCards();
+          }
+          pz.applyTransform();
+        })
+        .catch(function() {
+          showEmpty();
+        });
+    }
+
+    function renderCards() {
+      var bust = "?t=" + Date.now();
+      var collapseH = Math.round(capHeight * 1.1);
+      var info = buildGroups();
+
+      var html = "";
+
+      for (var gi = 0; gi < info.order.length; gi++) {
+        var gName = info.order[gi];
+        var indices = info.groups[gName];
+        if (indices.length === 0) continue;
+
+        var minX = Infinity, minY = Infinity;
+        for (var ci = 0; ci < indices.length; ci++) {
+          var c = captures[indices[ci]];
+          if (c.x < minX) minX = c.x;
+          if (c.y < minY) minY = c.y;
+        }
+
+        html += '<div class="cap-section-header" style="left:' + minX + 'px;top:' + (minY - HEADER_HEIGHT) + 'px;">' +
+          groupLabel(gName) + '</div>';
+      }
+
+      for (var i = 0; i < captures.length; i++) {
+        var c = captures[i];
+        var displayName = c.name.replace(/-/g, " ");
+        displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+
+        html +=
+          '<div class="cap-card' + (selected.has(i) ? ' is-selected' : '') + '" id="cap-card-' + i + '" style="left:' + c.x + 'px;top:' + c.y + 'px;width:' + capWidth + 'px;">' +
+            '<div class="cap-card-header">' +
+              '<div class="cap-card-name">' + displayName + '</div>' +
+              '<div class="cap-card-path">' + (c.path || "") + '</div>' +
+            '</div>' +
+            '<div class="cap-card-image-wrap is-collapsed" data-cap-height="' + collapseH + '" style="max-height:' + collapseH + 'px;">' +
+              '<img src="data/captures/' + c.file + bust + '" alt="' + displayName + '" loading="lazy">' +
+            '</div>' +
+            '<button class="cap-card-expand" onclick="toggleExpand(this)"><span>Expand</span></button>' +
+          '</div>';
+      }
+
+      stage.innerHTML = html;
+
+      var cards = stage.querySelectorAll(".cap-card");
+      for (var i = 0; i < cards.length; i++) {
+        (function(idx) {
+          cards[idx].addEventListener("pointerdown", function(e) { onCardPointerDown(e, idx); });
+        })(i);
+      }
+
+      hideExpandIfNotNeeded(collapseH);
+    }
+
     function toggleExpand(btn) {
       var card = btn.closest(".cap-card");
       var wrap = card.querySelector(".cap-card-image-wrap");
@@ -569,115 +1159,25 @@
       }
     }
 
-    function loadCaptures() {
-      var bust = "?t=" + Date.now();
-      return fetch("data/captures/manifest.json" + bust)
-        .then(function(r) {
-          if (!r.ok) throw new Error(r.status);
-          return r.json();
-        })
-        .then(function(data) {
-          var captures = data.captures || [];
-          var capHeight = Math.round(((data.viewport && data.viewport.height) || 844) * 1.1);
-          var capWidth = (data.viewport && data.viewport.width) || 390;
-
-          if (captures.length === 0) {
-            showEmpty();
-            return;
-          }
-
-          removeEmpty();
-
-          function deriveGroup(cap) {
-            if (cap.group) return cap.group;
-            var p = (cap.path || "/").replace(/^\//, "").replace(/\/$/, "");
-            if (!p) return "home";
-            var segments = p.split("/");
-            return segments[0];
-          }
-
-          var segmentCounts = {};
-          for (var i = 0; i < captures.length; i++) {
-            var seg = deriveGroup(captures[i]);
-            segmentCounts[seg] = (segmentCounts[seg] || 0) + 1;
-          }
-
-          var groups = {};
-          var groupOrder = [];
-          for (var i = 0; i < captures.length; i++) {
-            var c = captures[i];
-            var g = deriveGroup(c);
-            if (segmentCounts[g] === 1 && g !== "home") {
-              g = "screens";
-            }
-            if (!groups[g]) {
-              groups[g] = [];
-              groupOrder.push(g);
-            }
-            groups[g].push(c);
-          }
-
-          var html = "";
-          for (var gi = 0; gi < groupOrder.length; gi++) {
-            var groupName = groupOrder[gi];
-            var items = groups[groupName];
-            var label = groupName.replace(/-/g, " ").replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-
-            var cards = "";
-            for (var ci = 0; ci < items.length; ci++) {
-              var item = items[ci];
-              var displayName = item.name.replace(/-/g, " ");
-              displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
-
-              cards +=
-                '<div class="cap-card" style="width:' + capWidth + 'px;">' +
-                  '<div class="cap-card-header">' +
-                    '<div class="cap-card-name">' + displayName + '</div>' +
-                    '<div class="cap-card-path">' + (item.path || "") + '</div>' +
-                  '</div>' +
-                  '<div class="cap-card-image-wrap is-collapsed" data-cap-height="' + capHeight + '" style="max-height:' + capHeight + 'px;">' +
-                    '<img src="data/captures/' + item.file + bust + '" alt="' + displayName + '" loading="lazy">' +
-                  '</div>' +
-                  '<button class="cap-card-expand" onclick="toggleExpand(this)"><span>Expand</span></button>' +
-                '</div>';
-            }
-
-            html +=
-              '<div class="cap-group">' +
-                '<h2 class="cap-group-header">' + label + '</h2>' +
-                '<div class="cap-group-row">' + cards + '</div>' +
-              '</div>';
-          }
-
-          stage.innerHTML = html;
-
-          hideExpandIfNotNeeded(capHeight);
-          pz.applyTransform();
-        })
-        .catch(function() {
-          showEmpty();
-        });
-    }
-
-    function hideExpandIfNotNeeded(capHeight) {
+    function hideExpandIfNotNeeded(collapseH) {
       var cards = document.querySelectorAll(".cap-card");
       for (var i = 0; i < cards.length; i++) {
         var img = cards[i].querySelector(".cap-card-image-wrap img");
         if (!img) continue;
         if (img.complete) {
-          checkImage(img, cards[i], capHeight);
+          checkExpandNeeded(img, cards[i], collapseH);
         } else {
           (function(imgEl, cardEl) {
             imgEl.addEventListener("load", function() {
-              checkImage(imgEl, cardEl, capHeight);
+              checkExpandNeeded(imgEl, cardEl, collapseH);
             });
           })(img, cards[i]);
         }
       }
     }
 
-    function checkImage(img, card, capHeight) {
-      if (img.naturalHeight <= capHeight) {
+    function checkExpandNeeded(img, card, collapseH) {
+      if (img.naturalHeight <= collapseH) {
         var wrap = card.querySelector(".cap-card-image-wrap");
         wrap.classList.remove("is-collapsed");
         wrap.style.maxHeight = "none";
@@ -747,19 +1247,68 @@
       });
     }
 
+    var SCOUT_CACHE_KEY = "design-core-captures-scout-cache";
     var scoutedItems = [];
+
+    function loadScoutedItemsCache() {
+      try {
+        var raw = localStorage.getItem(SCOUT_CACHE_KEY);
+        if (!raw) return [];
+        var parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed;
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveScoutedItemsCache(items) {
+      try {
+        localStorage.setItem(SCOUT_CACHE_KEY, JSON.stringify(items || []));
+      } catch (_) {}
+    }
+
+    scoutedItems = loadScoutedItemsCache();
 
     function openCaptureModal() {
       var overlay = document.getElementById("cap-modal-overlay");
       overlay.classList.add("is-open");
-      var input = document.getElementById("modal-cap-url");
-      if (!input.value) {
+      var urlInput = document.getElementById("modal-cap-url");
+      var userInput = document.getElementById("modal-cap-user");
+      var passInput = document.getElementById("modal-cap-pass");
+
+      if (!urlInput.value) {
         fetch("data/captures/config.json?t=" + Date.now())
           .then(function(r) { return r.ok ? r.json() : null; })
-          .then(function(cfg) { if (cfg && cfg.appUrl) input.value = cfg.appUrl; })
+          .then(function(cfg) { if (cfg && cfg.appUrl) urlInput.value = cfg.appUrl; })
           .catch(function() {});
       }
-      setTimeout(function() { input.focus(); }, 200);
+
+      if (!userInput.value && !passInput.value) {
+        fetch("/api/capture/creds")
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(creds) {
+            if (creds) {
+              if (creds.username) userInput.value = creds.username;
+              if (creds.password) passInput.value = creds.password;
+            }
+          })
+          .catch(function() {});
+      }
+
+      var prevBtn = document.getElementById("cap-prev-results-btn");
+      var captureAllBtn = document.getElementById("cap-capture-all-btn");
+      var hasItems = scoutedItems.length > 0;
+      if (prevBtn) {
+        prevBtn.style.display = hasItems ? "" : "none";
+        if (hasItems) prevBtn.textContent = "Use previous results (" + scoutedItems.length + ")";
+      }
+      if (captureAllBtn) captureAllBtn.style.display = hasItems ? "none" : "";
+
+      document.getElementById("modal-step-url").style.display = "";
+      document.getElementById("modal-step-select").style.display = "none";
+
+      setTimeout(function() { urlInput.focus(); }, 200);
     }
 
     function closeCaptureModal(e) {
@@ -770,6 +1319,19 @@
     function backToUrl() {
       document.getElementById("modal-step-url").style.display = "";
       document.getElementById("modal-step-select").style.display = "none";
+    }
+
+    function resetBrowserSession() {
+      if (!confirm("This will clear the saved browser session (cookies, login). You'll need to log in again on the next capture. Continue?")) return;
+      fetch("/api/capture/reset-session", { method: "POST" })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.ok) {
+            var btn = document.querySelector(".cap-reset-session");
+            if (btn) { btn.textContent = "✓ Session cleared"; setTimeout(function() { btn.textContent = "Reset browser session"; }, 2000); }
+          }
+        })
+        .catch(function() {});
     }
 
     document.addEventListener("keydown", function(e) {
@@ -813,6 +1375,92 @@
       });
     }
 
+    function saveCreds() {
+      var user = document.getElementById("modal-cap-user").value.trim();
+      var pass = document.getElementById("modal-cap-pass").value.trim();
+      if (user || pass) {
+        return fetch("/api/capture/creds", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: user, password: pass }),
+        }).catch(function() {});
+      }
+      return Promise.resolve();
+    }
+
+    function runCaptureAll(progressEl, statusEl, logEl) {
+      var urlInput = document.getElementById("modal-cap-url");
+      var appUrl = urlInput.value.trim();
+      if (!appUrl) { urlInput.focus(); return; }
+
+      var scoutBtn = document.getElementById("modal-scout-btn");
+      var deepBtn = document.getElementById("modal-deep-btn");
+      var captureAllBtn = document.getElementById("modal-capture-all-btn");
+
+      urlInput.disabled = true;
+      if (scoutBtn) scoutBtn.disabled = true;
+      if (deepBtn) deepBtn.disabled = true;
+      if (captureAllBtn) captureAllBtn.disabled = true;
+      progressEl.classList.add("is-active");
+      statusEl.textContent = "Saving credentials...";
+      statusEl.style.color = "";
+      logEl.innerHTML = "";
+
+      saveCreds().then(function() {
+        statusEl.textContent = "Capturing all screens...";
+        return streamSSE("/api/capture", { url: appUrl }, {
+          log: function(d) {
+            var div = document.createElement("div");
+            div.textContent = d.text;
+            logEl.appendChild(div);
+            logEl.scrollTop = logEl.scrollHeight;
+          },
+          status: function(d) { statusEl.textContent = d.message; },
+          done: function() {
+            statusEl.textContent = "Done! Loading screenshots...";
+            urlInput.disabled = false;
+            if (scoutBtn) scoutBtn.disabled = false;
+            if (deepBtn) deepBtn.disabled = false;
+            if (captureAllBtn) captureAllBtn.disabled = false;
+            removeEmpty();
+            closeCaptureModal();
+            loadCaptures();
+          },
+          error: function(d) {
+            statusEl.textContent = "Error: " + d.message;
+            statusEl.style.color = "rgba(220, 38, 38, 0.9)";
+            urlInput.disabled = false;
+            if (scoutBtn) scoutBtn.disabled = false;
+            if (deepBtn) deepBtn.disabled = false;
+            if (captureAllBtn) captureAllBtn.disabled = false;
+          },
+        });
+      }).catch(function(err) {
+        statusEl.textContent = "Error: " + err.message;
+        statusEl.style.color = "rgba(220, 38, 38, 0.9)";
+        urlInput.disabled = false;
+        if (scoutBtn) scoutBtn.disabled = false;
+        if (deepBtn) deepBtn.disabled = false;
+        if (captureAllBtn) captureAllBtn.disabled = false;
+      });
+    }
+
+    function skipToCapture() {
+      runCaptureAll(
+        document.getElementById("modal-scout-progress"),
+        document.getElementById("modal-scout-status"),
+        document.getElementById("modal-scout-log")
+      );
+    }
+
+    function skipToCaptureFromResults() {
+      runCaptureAll(
+        document.getElementById("modal-deep-progress"),
+        document.getElementById("modal-deep-status"),
+        document.getElementById("modal-deep-log")
+      );
+    }
+
     function startScout(e) {
       e.preventDefault();
       var urlInput = document.getElementById("modal-cap-url");
@@ -825,41 +1473,46 @@
 
       urlInput.disabled = true;
       btn.disabled = true;
-      btn.textContent = "Scanning...";
+      btn.textContent = "Saving...";
       progress.classList.add("is-active");
-      status.textContent = "Opening browser and scanning...";
+      status.textContent = "Saving credentials...";
       status.style.color = "";
       log.innerHTML = "";
 
-      streamSSE("/api/capture/scout", { url: appUrl }, {
-        log: function(d) {
-          var div = document.createElement("div");
-          div.textContent = d.text;
-          log.appendChild(div);
-          log.scrollTop = log.scrollHeight;
-        },
-        status: function(d) { status.textContent = d.message; },
-        scout: function(d) {
-          scoutedItems = d.items || [];
-          showScoutResults();
-        },
-        done: function() {
-          urlInput.disabled = false;
-          btn.disabled = false;
-          btn.textContent = "Find Screens";
-          if (scoutedItems.length > 0) {
+      saveCreds().then(function() {
+        btn.textContent = "Scanning...";
+        status.textContent = "Opening browser and scanning...";
+        return streamSSE("/api/capture/scout", { url: appUrl }, {
+          log: function(d) {
+            var div = document.createElement("div");
+            div.textContent = d.text;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+          },
+          status: function(d) { status.textContent = d.message; },
+          scout: function(d) {
+            scoutedItems = d.items || [];
+            saveScoutedItemsCache(scoutedItems);
             showScoutResults();
-          } else {
-            status.textContent = "No screens found. Try a different URL.";
-          }
-        },
-        error: function(d) {
-          status.textContent = "Error: " + d.message;
-          status.style.color = "rgba(220, 38, 38, 0.9)";
-          urlInput.disabled = false;
-          btn.disabled = false;
-          btn.textContent = "Retry";
-        },
+          },
+          done: function() {
+            urlInput.disabled = false;
+            btn.disabled = false;
+            btn.textContent = "Find Screens";
+            if (scoutedItems.length > 0) {
+              showScoutResults();
+            } else {
+              status.textContent = "No screens found. Try a different URL.";
+            }
+          },
+          error: function(d) {
+            status.textContent = "Error: " + d.message;
+            status.style.color = "rgba(220, 38, 38, 0.9)";
+            urlInput.disabled = false;
+            btn.disabled = false;
+            btn.textContent = "Retry";
+          },
+        });
       }).catch(function(err) {
         status.textContent = "Error: " + err.message;
         status.style.color = "rgba(220, 38, 38, 0.9)";
@@ -879,7 +1532,7 @@
       var homeRow = document.createElement("label");
       homeRow.className = "cap-scout-item";
       homeRow.innerHTML =
-        '<input type="checkbox" checked data-idx="home">' +
+        '<input type="checkbox" data-idx="home">' +
         '<span class="cap-scout-item-label">Home</span>' +
         '<span class="cap-scout-item-path">/</span>';
       list.appendChild(homeRow);
@@ -891,10 +1544,10 @@
         var row = document.createElement("label");
         row.className = "cap-scout-item";
         row.innerHTML =
-          '<input type="checkbox" checked data-idx="' + i + '">' +
+          '<input type="checkbox" data-idx="' + i + '">' +
           '<span class="cap-scout-item-label">' + displayLabel + '</span>' +
           '<span class="cap-scout-item-path">' + (item.path || "") + '</span>' +
-          (item.source === "menu" ? '<span class="cap-scout-item-badge">menu</span>' : '');
+          (item.source && item.source !== 'content' ? '<span class="cap-scout-item-badge">' + item.source.replace('-', ' ') + '</span>' : '');
         list.appendChild(row);
       }
     }
@@ -994,6 +1647,7 @@
         status: function(d) { status.textContent = d.message; },
         scout: function(d) {
           scoutedItems = d.items || [];
+          saveScoutedItemsCache(scoutedItems);
         },
         done: function() {
           if (scoutedItems.length > 0) {
@@ -1024,6 +1678,8 @@
     }
 
     function refreshCaptures() {
+      captures = [];
+      clearSelection();
       var btn = document.querySelector('[onclick="refreshCaptures()"]');
       if (btn) btn.disabled = true;
       loadCaptures().then(function() {

@@ -6,6 +6,7 @@ const ROOT = resolve(import.meta.dirname, '..');
 const SHARED_CONFIG_PATH = join(ROOT, 'public', 'data', 'captures', 'config.json');
 const LOCAL_CONFIG_PATH = join(ROOT, '.app-screens.json');
 const OUTPUT_DIR = join(ROOT, 'public', 'data', 'captures');
+const BROWSER_DATA_DIR = join(ROOT, '.capture-browser-data');
 
 let sharedConfig = {};
 let localConfig = {};
@@ -29,6 +30,7 @@ if (!config.appUrl) {
 const baseUrl = config.appUrl.replace(/\/$/, '');
 const viewport = config.viewport || { width: 390, height: 844 };
 const extraDismissSelectors = config.dismissSelectors || [];
+const SELECT_ALL_KEY = process.platform === 'darwin' ? 'Meta+a' : 'Control+a';
 
 mkdirSync(OUTPUT_DIR, { recursive: true });
 
@@ -51,14 +53,18 @@ function writeManifest(newCaptures, replace = false) {
   return merged.length;
 }
 
-// Safe navigation that won't crash on timeout
-async function safeGoto(page, url, waitMs = 3000) {
+async function safeGoto(page, url, waitMs = 1500) {
   try {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
   } catch {
     // If domcontentloaded times out, the page might still be usable
   }
-  await page.waitForTimeout(waitMs);
+  try {
+    await page.waitForLoadState('networkidle', { timeout: 5000 });
+  } catch {
+    // Network didn't settle -- use fallback wait
+    await page.waitForTimeout(waitMs);
+  }
 }
 
 // Dismiss any promo modals, popups, toasts, or overlay dialogs
@@ -98,10 +104,9 @@ async function dismissModals(page) {
         }
       }
 
-      // Buttons/links with dismiss-like text
       const dismissText = [
-        'close', 'dismiss', 'not now', 'no thanks', 'skip',
-        'maybe later', 'got it', 'ok', 'cancel', 'x',
+        'close', 'dismiss', 'not now', 'no thanks',
+        'maybe later', 'got it',
       ];
       for (const el of root.querySelectorAll('button, a, [role="button"]')) {
         const text = el.textContent.trim().toLowerCase();
@@ -324,13 +329,25 @@ function dedupeFilename(name, usedNames) {
   return candidate;
 }
 
+const MAX_SCREENSHOT_HEIGHT = viewport.height * 4;
+
 async function captureCurrentPage(page, name, usedNames, screens) {
   const url = page.url();
   const path = new URL(url).pathname;
   const dedupedName = dedupeFilename(name, usedNames);
   const filename = `${dedupedName}.png`;
 
-  await page.screenshot({ path: join(OUTPUT_DIR, filename), fullPage: true });
+  const bodyHeight = await page.evaluate(() => document.body ? document.body.scrollHeight : 0);
+
+  if (bodyHeight > MAX_SCREENSHOT_HEIGHT) {
+    await page.screenshot({
+      path: join(OUTPUT_DIR, filename),
+      clip: { x: 0, y: 0, width: viewport.width, height: MAX_SCREENSHOT_HEIGHT },
+    });
+  } else {
+    await page.screenshot({ path: join(OUTPUT_DIR, filename), fullPage: true });
+  }
+
   screens.push({
     name: dedupedName,
     file: filename,
@@ -339,7 +356,7 @@ async function captureCurrentPage(page, name, usedNames, screens) {
     url,
     capturedAt: new Date().toISOString()
   });
-  console.log(`    ✓ Saved ${filename}`);
+  console.log(`    ✓ Saved ${filename}${bodyHeight > MAX_SCREENSHOT_HEIGHT ? ` (clipped at ${MAX_SCREENSHOT_HEIGHT}px)` : ''}`);
 }
 
 async function getAllClickableItems(page, origin) {
@@ -426,24 +443,33 @@ async function discoverTabs(page, parentName, usedNames, screens) {
       '.tab', '.tab-item',
       '[data-tab]',
     ];
-    for (const sel of selectors) {
-      for (const el of document.querySelectorAll(sel)) {
-        const rect = el.getBoundingClientRect();
-        if (rect.width === 0 || rect.height === 0) continue;
-        const text = el.textContent.trim().replace(/\s+/g, ' ').slice(0, 40);
-        if (!text) continue;
-        const isActive = el.classList.contains('active') ||
-          el.classList.contains('is-active') ||
-          el.classList.contains('selected') ||
-          el.getAttribute('aria-selected') === 'true' ||
-          el.getAttribute('data-active') === 'true';
-        if (isActive) continue;
-        const key = `${Math.round(rect.x)}:${Math.round(rect.y)}`;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        results.push({ label: text, x: Math.round(rect.x + rect.width / 2), y: Math.round(rect.y + rect.height / 2) });
+
+    function findTabs(root) {
+      if (!root) return;
+      for (const el of root.querySelectorAll('*')) {
+        if (el.shadowRoot) findTabs(el.shadowRoot);
+      }
+      for (const sel of selectors) {
+        for (const el of root.querySelectorAll(sel)) {
+          const rect = el.getBoundingClientRect();
+          if (rect.width === 0 || rect.height === 0) continue;
+          const text = el.textContent.trim().replace(/\s+/g, ' ').slice(0, 40);
+          if (!text) continue;
+          const isActive = el.classList.contains('active') ||
+            el.classList.contains('is-active') ||
+            el.classList.contains('selected') ||
+            el.getAttribute('aria-selected') === 'true' ||
+            el.getAttribute('data-active') === 'true';
+          if (isActive) continue;
+          const key = `${Math.round(rect.x)}:${Math.round(rect.y)}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          results.push({ label: text, x: Math.round(rect.x + rect.width / 2), y: Math.round(rect.y + rect.height / 2) });
+        }
       }
     }
+
+    findTabs(document);
     return results;
   });
 
@@ -624,14 +650,28 @@ async function captureExplicitScreens(page, screens) {
 async function loginIfNeeded(page) {
   if (!config.login) return;
 
+  // Check if already logged in by navigating to the app first
+  console.log('\n  Checking login status...');
+  await safeGoto(page, baseUrl);
+  const currentUrl = page.url().toLowerCase();
+  const isOnLogin = currentUrl.includes('/login') || currentUrl.includes('/sign-in') ||
+    currentUrl.includes('/signin') || currentUrl.includes('/auth');
+
+  if (!isOnLogin) {
+    console.log('  ✓ Already logged in.\n');
+    return;
+  }
+
   const loginPath = config.login.url || '/login';
   const loginUrl = loginPath.startsWith('http')
     ? loginPath
     : `${baseUrl}${loginPath}`;
 
-  console.log(`\n  Logging in at ${loginUrl}`);
-  await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
-  await page.waitForTimeout(2000);
+  if (page.url() !== loginUrl) {
+    console.log(`  Navigating to login at ${loginUrl}`);
+    await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.waitForTimeout(2000);
+  }
 
   if (config.login.steps && config.login.steps.length > 0) {
     console.log('  Using configured login steps...');
@@ -661,162 +701,620 @@ async function loginIfNeeded(page) {
   await dismissModals(page);
 }
 
+async function getNavItems(page, baseOrigin) {
+  return page.evaluate((origin) => {
+    const items = [];
+    const seen = new Set();
+    const skipText = ['logout', 'sign out', 'log out', 'enroll', 'sign up', 'recaptcha', 'skip to main'];
+
+    function isNavAncestor(el) {
+      let cur = el;
+      while (cur) {
+        if (cur instanceof Element) {
+          const tag = cur.tagName.toLowerCase();
+          if (tag === 'nav') return true;
+          const role = cur.getAttribute && cur.getAttribute('role');
+          if (role === 'navigation' || role === 'menu' || role === 'menubar') return true;
+          const cl = cur.className && typeof cur.className === 'string' ? cur.className.toLowerCase() : '';
+          if (cl.includes('nav') || cl.includes('menu') || cl.includes('sidebar') || cl.includes('drawer') || cl.includes('tab-bar') || cl.includes('tabbar') || cl.includes('bottom-bar')) return true;
+        }
+        cur = cur.parentNode || (cur.host ? cur.host : null);
+      }
+      return false;
+    }
+
+    function walkTree(root) {
+      if (!root) return;
+      const elements = root.querySelectorAll('*');
+      for (const el of elements) {
+        if (el.shadowRoot) walkTree(el.shadowRoot);
+
+        const tag = el.tagName.toLowerCase();
+        const rect = el.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) continue;
+
+        const isLink = tag === 'a' && el.getAttribute('href');
+        const isButton = tag === 'button';
+        const role = el.getAttribute('role');
+        const hasRole = ['link', 'tab', 'menuitem', 'menuitemradio', 'menuitemcheckbox', 'button', 'treeitem'].includes(role);
+
+        if (!isLink && !isButton && !hasRole) continue;
+
+        const text = el.textContent.trim().replace(/\s+/g, ' ').slice(0, 80);
+        if (!text || text === '(unlabeled)') continue;
+        if (skipText.some(s => text.toLowerCase().includes(s))) continue;
+
+        const href = el.getAttribute('href') || null;
+        if (href && (href.startsWith('tel:') || href.startsWith('mailto:') || href === '#' || href === '')) continue;
+        if (href && href.startsWith('http') && !href.startsWith(origin)) continue;
+
+        const key = href ? `href:${href}` : `text:${text.toLowerCase()}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        const inNav = isNavAncestor(el);
+
+        items.push({
+          type: isLink ? 'link' : 'click',
+          href,
+          label: text,
+          x: Math.round(rect.x + rect.width / 2),
+          y: Math.round(rect.y + rect.height / 2),
+          inNav,
+        });
+      }
+    }
+
+    walkTree(document);
+    return items;
+  }, baseOrigin);
+}
+
+async function findHamburger(page) {
+  return page.evaluate(() => {
+    const candidates = [];
+
+    function check(root) {
+      if (!root) return;
+      for (const el of root.querySelectorAll('*')) {
+        if (el.shadowRoot) check(el.shadowRoot);
+      }
+
+      const sels = [
+        '[aria-label*="menu" i]', '[aria-label*="navigation" i]',
+        '[aria-label*="Menu" i]', '[aria-label*="hamburger" i]',
+        '[data-testid*="menu" i]', '[data-testid*="nav" i]',
+        '[class*="hamburger" i]', '[class*="menu-toggle" i]',
+        '[class*="menu-btn" i]', '[class*="nav-toggle" i]',
+        '[id*="menu-toggle" i]', '[id*="hamburger" i]',
+      ];
+      for (const sel of sels) {
+        try {
+          for (const el of root.querySelectorAll(sel)) {
+            const rect = el.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0 && rect.width < 80 && rect.height < 80) {
+              candidates.push({ x: Math.round(rect.x + rect.width / 2), y: Math.round(rect.y + rect.height / 2), score: 10 });
+            }
+          }
+        } catch {}
+      }
+
+      for (const el of root.querySelectorAll('button, [role="button"]')) {
+        const rect = el.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) continue;
+        if (rect.width > 80 || rect.height > 80) continue;
+        if (rect.y > 200) continue;
+        const text = el.textContent.trim();
+        if (text.length > 4) continue;
+
+        const svgs = el.querySelectorAll('svg, img, [class*="icon"]');
+        const has3lines = el.innerHTML.includes('line') || el.innerHTML.includes('rect') || el.innerHTML.includes('path');
+        if (svgs.length > 0 || has3lines || text.length === 0) {
+          const score = (rect.x < 80 ? 5 : 1) + (rect.y < 100 ? 3 : 0) + (text.length === 0 ? 2 : 0);
+          candidates.push({ x: Math.round(rect.x + rect.width / 2), y: Math.round(rect.y + rect.height / 2), score });
+        }
+      }
+    }
+
+    check(document);
+    if (candidates.length === 0) return null;
+    candidates.sort((a, b) => b.score - a.score);
+    return candidates[0];
+  });
+}
+
 async function scoutNavItems(page, baseOrigin) {
   const homeUrl = page.url();
-  const items = [];
-  const seen = new Set();
+  const homePath = new URL(homeUrl).pathname;
 
   await page.waitForTimeout(2000);
   await dismissModals(page);
 
-  const allItems = await getAllClickableItems(page, baseOrigin);
+  const viewportHeight = await page.evaluate(() => window.innerHeight);
 
-  // Find hamburger menu
-  const hamburger = allItems.find(item =>
-    item.type === 'click' && item.label === '(unlabeled)' && item.x < 60 && item.y < 200
-  );
+  // --- Phase 1: Scan visible page for nav-like items ---
+  const pageItems = await getNavItems(page, baseOrigin);
+  console.log(`  Found ${pageItems.length} navigation-like items on page`);
 
-  // Collect links from main page
-  for (const item of allItems) {
-    if (item.type !== 'link' || !item.href) continue;
-    if (item.href.startsWith('tel:') || item.href.startsWith('mailto:')) continue;
-    const pathOnly = item.href.split('?')[0];
-    if (seen.has(pathOnly)) continue;
-    seen.add(pathOnly);
-    items.push({
-      label: item.label,
-      href: item.href,
-      path: pathOnly,
-      source: 'page',
-    });
-  }
-
-  // Open hamburger menu for more links
-  if (hamburger) {
-    console.log('  Opening hamburger menu...');
-    await page.mouse.click(hamburger.x, hamburger.y);
-    await page.waitForTimeout(2000);
-
-    const menuItems = await getAllClickableItems(page, baseOrigin);
-    for (const item of menuItems) {
-      if (item.type !== 'link' || !item.href) continue;
-      if (item.href.startsWith('tel:') || item.href.startsWith('mailto:')) continue;
-      const pathOnly = item.href.split('?')[0];
-      if (seen.has(pathOnly)) continue;
-      seen.add(pathOnly);
-      items.push({
-        label: item.label,
-        href: item.href,
-        path: pathOnly,
-        source: 'menu',
-      });
+  const classifiedItems = pageItems.map(item => {
+    let source = 'content';
+    if (item.inNav) {
+      source = item.y > viewportHeight * 0.75 ? 'bottom-nav' : 'nav';
+    } else if (item.y > viewportHeight * 0.8) {
+      source = 'bottom-nav';
+    } else if (item.y < viewportHeight * 0.12) {
+      source = 'nav';
     }
+    const path = item.href ? item.href.split('?')[0] : null;
+    return { ...item, source, path };
+  });
+
+  // --- Phase 2: Try to find and open a hamburger/menu ---
+  const hamburger = await findHamburger(page);
+  let menuItems = [];
+
+  if (hamburger) {
+    console.log(`  Found menu button at (${hamburger.x}, ${hamburger.y}), opening...`);
+    await page.mouse.click(hamburger.x, hamburger.y);
+    await page.waitForTimeout(2500);
+
+    const menuAllItems = await getNavItems(page, baseOrigin);
+    const beforeLabels = new Set(pageItems.map(i => i.label.toLowerCase()));
+
+    for (const item of menuAllItems) {
+      if (beforeLabels.has(item.label.toLowerCase())) continue;
+      const path = item.href ? item.href.split('?')[0] : null;
+      menuItems.push({ ...item, source: 'menu', path });
+    }
+
+    console.log(`  Found ${menuItems.length} new items in menu`);
 
     await page.keyboard.press('Escape');
     await page.waitForTimeout(500);
+
+    // If Escape didn't close it, try clicking the hamburger again (toggle)
+    const stillOpen = await page.evaluate(() => {
+      const els = document.querySelectorAll('[class*="open"], [class*="active"], [class*="expanded"]');
+      for (const el of els) {
+        const cl = el.className.toLowerCase();
+        if ((cl.includes('menu') || cl.includes('nav') || cl.includes('drawer') || cl.includes('sidebar')) &&
+            (cl.includes('open') || cl.includes('active') || cl.includes('expanded'))) return true;
+      }
+      return false;
+    });
+    if (stillOpen) {
+      await page.mouse.click(hamburger.x, hamburger.y);
+      await page.waitForTimeout(500);
+    }
+  } else {
+    console.log('  No hamburger/menu button found');
   }
 
-  return items;
+  // --- Phase 3: Also scan <nav> elements explicitly ---
+  const navElementItems = await page.evaluate((origin) => {
+    const items = [];
+    const seen = new Set();
+    function scanNav(root) {
+      if (!root) return;
+      for (const el of root.querySelectorAll('*')) {
+        if (el.shadowRoot) scanNav(el.shadowRoot);
+      }
+      for (const nav of root.querySelectorAll('nav, [role="navigation"], [role="menu"], [role="menubar"]')) {
+        for (const el of nav.querySelectorAll('a[href], button, [role="menuitem"], [role="link"]')) {
+          const rect = el.getBoundingClientRect();
+          if (rect.width === 0 || rect.height === 0) continue;
+          const text = el.textContent.trim().replace(/\\s+/g, ' ').slice(0, 80);
+          if (!text) continue;
+          const href = el.getAttribute('href') || null;
+          if (href && (href.startsWith('tel:') || href.startsWith('mailto:') || href === '#')) continue;
+          if (href && href.startsWith('http') && !href.startsWith(origin)) continue;
+          const key = href ? `href:${href}` : `text:${text.toLowerCase()}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          items.push({
+            type: href ? 'link' : 'click',
+            href, label: text,
+            x: Math.round(rect.x + rect.width / 2),
+            y: Math.round(rect.y + rect.height / 2),
+            path: href ? href.split('?')[0] : null,
+            source: 'nav',
+          });
+        }
+      }
+    }
+    scanNav(document);
+    return items;
+  }, baseOrigin);
+
+  // --- Phase 4: Merge and deduplicate ---
+  const seen = new Set();
+  const final = [];
+
+  seen.add(homePath);
+  seen.add(homePath.replace(/\/$/, '') || '/');
+  seen.add('/');
+
+  const allCandidates = [
+    ...classifiedItems.filter(i => i.source === 'bottom-nav'),
+    ...classifiedItems.filter(i => i.source === 'nav'),
+    ...navElementItems,
+    ...menuItems,
+    ...classifiedItems.filter(i => i.source === 'content'),
+  ];
+
+  const seenLabels = new Set();
+
+  for (const item of allCandidates) {
+    if (item.href && (item.href.startsWith('tel:') || item.href.startsWith('mailto:'))) continue;
+
+    let pathKey = null;
+    if (item.path) {
+      pathKey = item.path;
+      if (pathKey.startsWith('http')) {
+        try { pathKey = new URL(pathKey).pathname; } catch {}
+      }
+      pathKey = pathKey.replace(/\/$/, '') || '/';
+      if (seen.has(pathKey)) continue;
+    }
+
+    const normLabel = item.label.toLowerCase().trim();
+    if (seenLabels.has(normLabel)) continue;
+
+    if (item.source === 'content') {
+      const isDupe = final.some(f => f.label.toLowerCase().trim() === normLabel);
+      if (isDupe) continue;
+    }
+
+    if (pathKey) seen.add(pathKey);
+    seenLabels.add(normLabel);
+
+    final.push({
+      label: item.label,
+      href: item.href,
+      path: item.path,
+      source: item.source,
+    });
+  }
+
+  console.log(`  Filtered to ${final.length} feature links`);
+  const navCount = final.filter(i => i.source !== 'content').length;
+  const contentCount = final.filter(i => i.source === 'content').length;
+  if (navCount > 0) console.log(`    ${navCount} from navigation/menu`);
+  if (contentCount > 0) console.log(`    ${contentCount} from dashboard content`);
+
+  return final;
+}
+
+const FAKE_DATA = {
+  email: 'jane.doe@example.com',
+  phone: '5551234567',
+  name: 'Jane Doe',
+  first: 'Jane',
+  last: 'Doe',
+  address: '123 Main St',
+  city: 'Springfield',
+  state: 'IL',
+  zip: '62701',
+  ssn: '123456789',
+  routing: '021000021',
+  account: '123456789012',
+  amount: '25.00',
+  date: '2026-04-01',
+  memo: 'Test payment',
+  generic: 'Test value',
+};
+
+function guessFieldValue(field) {
+  const n = (field.name || '').toLowerCase();
+  const id = (field.id || '').toLowerCase();
+  const ph = (field.placeholder || '').toLowerCase();
+  const label = (field.label || '').toLowerCase();
+  const all = `${n} ${id} ${ph} ${label}`;
+
+  if (field.type === 'email' || all.includes('email')) return FAKE_DATA.email;
+  if (field.type === 'tel' || all.includes('phone') || all.includes('mobile')) return FAKE_DATA.phone;
+  if (field.type === 'date') return FAKE_DATA.date;
+  if (all.includes('amount') || all.includes('dollar') || all.includes('payment')) return FAKE_DATA.amount;
+  if (all.includes('routing')) return FAKE_DATA.routing;
+  if (all.includes('account') && (all.includes('number') || all.includes('#') || all.includes('num'))) return FAKE_DATA.account;
+  if (all.includes('ssn') || all.includes('social')) return FAKE_DATA.ssn;
+  if (all.includes('zip') || all.includes('postal')) return FAKE_DATA.zip;
+  if (all.includes('state') || all.includes('province')) return FAKE_DATA.state;
+  if (all.includes('city')) return FAKE_DATA.city;
+  if (all.includes('address') || all.includes('street')) return FAKE_DATA.address;
+  if (all.includes('first') && all.includes('name')) return FAKE_DATA.first;
+  if (all.includes('last') && all.includes('name')) return FAKE_DATA.last;
+  if (all.includes('name')) return FAKE_DATA.name;
+  if (all.includes('memo') || all.includes('note') || all.includes('description')) return FAKE_DATA.memo;
+
+  if (field.type === 'number') return FAKE_DATA.amount;
+  if (field.type === 'text' || field.type === 'search' || !field.type) return FAKE_DATA.generic;
+  return null;
+}
+
+async function fillAndCaptureForms(page, parentName, usedNames, screens, depth) {
+  const pad = '  '.repeat(depth + 2);
+  const forms = await page.evaluate(() => {
+    const results = [];
+    const inputSel =
+      'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([readonly]):not([disabled]), ' +
+      'textarea:not([readonly]):not([disabled]), ' +
+      'select:not([disabled])';
+
+    const allInputs = [];
+    function findInputs(root) {
+      if (!root) return;
+      for (const el of root.querySelectorAll('*')) {
+        if (el.shadowRoot) findInputs(el.shadowRoot);
+      }
+      for (const inp of root.querySelectorAll(inputSel)) {
+        allInputs.push(inp);
+      }
+    }
+    findInputs(document);
+
+    if (allInputs.length === 0) return results;
+
+    const skipInputTypes = ['search', 'password'];
+    const skipNames = ['search', 'query', 'q', 'filter', 'keyword', 'username', 'login', 'email'];
+
+    const fields = [];
+    for (const inp of allInputs) {
+      const rect = inp.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) continue;
+
+      const iType = (inp.getAttribute('type') || '').toLowerCase();
+      if (skipInputTypes.includes(iType)) continue;
+      const iName = (inp.getAttribute('name') || '').toLowerCase();
+      const iId = (inp.id || '').toLowerCase();
+      const iRole = (inp.getAttribute('role') || '').toLowerCase();
+      if (iRole === 'searchbox' || iRole === 'combobox') continue;
+      if (skipNames.some(s => iName.includes(s) || iId.includes(s))) continue;
+
+      let labelText = '';
+      if (inp.id) {
+        const lbl = document.querySelector(`label[for="${inp.id}"]`);
+        if (lbl) labelText = lbl.textContent.trim();
+      }
+      if (!labelText) {
+        const parent = inp.closest('label, .form-group, .field, [class*="field"], [class*="input"]');
+        if (parent) {
+          const lbl = parent.querySelector('label, .label, [class*="label"]');
+          if (lbl) labelText = lbl.textContent.trim();
+        }
+      }
+
+      fields.push({
+        tag: inp.tagName.toLowerCase(),
+        type: inp.getAttribute('type') || '',
+        name: inp.getAttribute('name') || '',
+        id: inp.id || '',
+        placeholder: inp.getAttribute('placeholder') || '',
+        label: labelText,
+        x: Math.round(rect.x + rect.width / 2),
+        y: Math.round(rect.y + rect.height / 2),
+        value: inp.value || '',
+      });
+    }
+
+    if (fields.length > 0) {
+      const submitBtn = document.querySelector(
+        'button[type="submit"], input[type="submit"], ' +
+        'button:not([type]):not([class*="cancel"]):not([class*="back"]):not([class*="close"])'
+      );
+      let submit = null;
+      if (submitBtn) {
+        const r = submitBtn.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) {
+          submit = {
+            label: submitBtn.textContent.trim().slice(0, 40),
+            x: Math.round(r.x + r.width / 2),
+            y: Math.round(r.y + r.height / 2),
+          };
+        }
+      }
+      results.push({ fields, submit });
+    }
+    return results;
+  });
+
+  if (forms.length === 0) return;
+
+  for (const form of forms) {
+    if (form.fields.length === 0) continue;
+    const emptyFields = form.fields.filter(f => !f.value);
+    if (emptyFields.length === 0) continue;
+
+    console.log(`${pad}⤷ Found form with ${form.fields.length} fields, filling ${emptyFields.length} empty ones`);
+
+    for (const field of emptyFields) {
+      const value = guessFieldValue(field);
+      if (!value) continue;
+
+      try {
+        if (field.tag === 'select') {
+          await page.mouse.click(field.x, field.y);
+          await page.waitForTimeout(300);
+          await page.keyboard.press('ArrowDown');
+          await page.keyboard.press('Enter');
+          await page.waitForTimeout(200);
+        } else {
+          await page.mouse.click(field.x, field.y);
+          await page.waitForTimeout(200);
+          await page.keyboard.press(SELECT_ALL_KEY);
+          await page.keyboard.type(value, { delay: 20 });
+          await page.waitForTimeout(100);
+        }
+      } catch {
+        // field interaction failed
+      }
+    }
+
+    const filledName = `${parentName}-filled`;
+    await captureCurrentPage(page, filledName, usedNames, screens);
+
+    if (form.submit) {
+      console.log(`${pad}⤷ Submitting form ("${form.submit.label}")...`);
+      try {
+        await page.mouse.click(form.submit.x, form.submit.y);
+        await page.waitForTimeout(3000);
+        await dismissModals(page);
+
+        const submitName = `${parentName}-submitted`;
+        await captureCurrentPage(page, submitName, usedNames, screens);
+      } catch {
+        console.log(`${pad}  ⤷ Submit failed`);
+      }
+    }
+  }
+}
+
+const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}/;
+const GLOBAL_NAV_PATHS = [
+  '/support', '/help', '/contact', '/messages', '/settings', '/profile',
+  '/account', '/preferences', '/notifications', '/feedback', '/privacy',
+  '/terms', '/about', '/faq', '/login', '/sign-in', '/signin', '/logout',
+  '/sign-out', '/signout', '/enroll', '/register',
+];
+
+function isInScope(href, scopePath, baseOrigin) {
+  let pathname;
+  try {
+    if (href.startsWith('http')) pathname = new URL(href).pathname;
+    else pathname = href.split('?')[0];
+  } catch { return false; }
+
+  pathname = pathname.replace(/\/$/, '') || '/';
+  const scope = scopePath.replace(/\/$/, '') || '/';
+
+  if (pathname.startsWith(scope)) return true;
+
+  const lowerPath = pathname.toLowerCase();
+  if (GLOBAL_NAV_PATHS.some(gp => lowerPath === gp || lowerPath.startsWith(gp + '/'))) return false;
+
+  if (UUID_RE.test(pathname)) return false;
+
+  return false;
 }
 
 async function deepCaptureItem(page, item, baseOrigin) {
-  const visitedPaths = new Set();
-  const visitedActualUrls = new Set();
+  const visitedUrls = new Set();
   const screens = [];
   const usedNames = new Set();
   const startUrl = item.href.startsWith('http') ? item.href : `${baseOrigin}${item.href}`;
   const itemName = slugify(item.label) || slugify(item.path) || 'screen';
-  const MAX_PER_ITEM = 25;
-  const MAX_SUB_LINKS = 40;
+  const MAX_PER_ITEM = 40;
+  const MAX_DEPTH = 4;
 
-  console.log(`\n  Deep capturing: "${item.label}" → ${startUrl}`);
-  await safeGoto(page, startUrl, 3000);
-  await dismissModals(page);
-
-  const currentUrl = page.url();
-  if (currentUrl.includes('/login') || currentUrl.includes('/sign-in')) {
-    console.log('    ⤷ Redirected to login, skipping.');
-    return screens;
+  let scopePath;
+  try {
+    scopePath = new URL(startUrl).pathname;
+  } catch {
+    scopePath = item.href.split('?')[0];
   }
 
-  const currentPath = new URL(currentUrl).pathname;
-  visitedPaths.add(currentPath);
-  visitedPaths.add(item.path || currentPath);
-  visitedActualUrls.add(currentUrl.split('?')[0]);
-  await captureCurrentPage(page, itemName, usedNames, screens);
+  async function explorePage(pageUrl, name, depth) {
+    if (screens.length >= MAX_PER_ITEM) return;
+    if (depth > MAX_DEPTH) return;
 
-  await discoverTabs(page, itemName, usedNames, screens);
+    const pad = '  '.repeat(depth + 2);
 
-  // Reload the start page to get a fresh state after tab clicking
-  await safeGoto(page, startUrl, 2000);
-  await dismissModals(page);
+    if (isTimedOut()) {
+      console.log(`${pad}⏱ Timed out (${MAX_TOTAL_TIME / 60000}min), stopping`);
+      return;
+    }
 
-  const subItems = await getAllClickableItems(page, baseOrigin);
-  console.log(`    ⤷ Found ${subItems.length} clickable items on page`);
-  const subLinks = subItems.filter(si => {
-    if (si.type !== 'link' || !si.href) return false;
-    if (si.href.startsWith('tel:') || si.href.startsWith('mailto:')) return false;
-    const sp = si.href.split('?')[0];
-    if (visitedPaths.has(sp)) return false;
-    return true;
-  });
+    const urlKey = pageUrl.split('?')[0];
 
-  // Cap the initial sub-links list
-  if (subLinks.length > MAX_SUB_LINKS) subLinks.length = MAX_SUB_LINKS;
-  console.log(`    ⤷ ${subLinks.length} unvisited sub-links to explore`);
+    if (visitedUrls.has(urlKey)) {
+      console.log(`${pad}⤷ Already visited, skipping`);
+      return;
+    }
 
-  for (let i = 0; i < subLinks.length && screens.length < MAX_PER_ITEM; i++) {
-    const sub = subLinks[i];
-    const subPath = sub.href.split('?')[0];
-    if (visitedPaths.has(subPath)) continue;
-    visitedPaths.add(subPath);
+    console.log(`${pad}→ ${name} (${pageUrl})`);
+    await safeGoto(page, pageUrl, 3000);
+    await dismissModals(page);
 
-    const subUrl = sub.href.startsWith('http') ? sub.href : `${baseOrigin}${sub.href}`;
-    console.log(`    [${i + 1}/${subLinks.length}] "${sub.label}" → ${sub.href}`);
+    const actualUrl = page.url();
+    const actualKey = actualUrl.split('?')[0];
 
-    try {
-      await safeGoto(page, subUrl, 3000);
-      await dismissModals(page);
+    if (actualUrl.includes('/login') || actualUrl.includes('/sign-in')) {
+      console.log(`${pad}⤷ Redirected to login, skipping`);
+      return;
+    }
 
-      const navUrl = page.url();
-      const actualPath = navUrl.split('?')[0];
+    if (visitedUrls.has(actualKey)) {
+      console.log(`${pad}⤷ Already visited (redirect), skipping`);
+      return;
+    }
 
-      if (navUrl.includes('/login') || navUrl.includes('/sign-in')) {
-        console.log(`      ⤷ Redirected to login, skipping.`);
-        await safeGoto(page, startUrl, 2000);
-        continue;
+    visitedUrls.add(urlKey);
+    visitedUrls.add(actualKey);
+
+    await captureCurrentPage(page, name, usedNames, screens);
+
+    await discoverTabs(page, name, usedNames, screens);
+
+    await fillAndCaptureForms(page, name, usedNames, screens, depth);
+
+    if (screens.length >= MAX_PER_ITEM || depth >= MAX_DEPTH) return;
+
+    await safeGoto(page, pageUrl, 2000);
+    await dismissModals(page);
+
+    const subItems = await getAllClickableItems(page, baseOrigin);
+    const subLinks = subItems.filter(si => {
+      if (si.type !== 'link' || !si.href) return false;
+      if (si.href.startsWith('tel:') || si.href.startsWith('mailto:')) return false;
+      if (si.label === '(unlabeled)') return false;
+      const sp = si.href.split('?')[0];
+      if (visitedUrls.has(sp)) return false;
+      if (!isInScope(si.href, scopePath, baseOrigin)) {
+        return false;
       }
+      return true;
+    });
 
-      if (visitedActualUrls.has(actualPath)) {
-        console.log(`      ⤷ Already captured this page, skipping.`);
-        await safeGoto(page, startUrl, 2000);
-        continue;
-      }
-      visitedActualUrls.add(actualPath);
+    if (subLinks.length > 0) {
+      console.log(`${pad}⤷ ${subLinks.length} in-scope sub-links to explore`);
+    }
 
-      const subName = `${itemName}-${slugify(sub.label) || `sub-${i}`}`;
-      await captureCurrentPage(page, subName, usedNames, screens);
+    const cap = Math.min(subLinks.length, 20);
+    for (let i = 0; i < cap && screens.length < MAX_PER_ITEM; i++) {
+      const sub = subLinks[i];
+      const subUrl = sub.href.startsWith('http') ? sub.href : `${baseOrigin}${sub.href}`;
+      const subName = `${name}-${slugify(sub.label) || `sub-${i}`}`;
 
-      await discoverTabs(page, subName, usedNames, screens);
+      await explorePage(subUrl, subName, depth + 1);
 
-      await safeGoto(page, startUrl, 2000);
+      await safeGoto(page, pageUrl, 2000);
       await dismissModals(page);
-    } catch (err) {
-      console.log(`      ⤷ Failed: ${err.message.slice(0, 100)}`);
-      try { await safeGoto(page, startUrl, 2000); } catch {}
     }
   }
 
+  console.log(`\n  Deep capturing: "${item.label}" → ${startUrl}`);
+  console.log(`    Scope: ${scopePath}*`);
+  await explorePage(startUrl, itemName, 0);
   console.log(`    ✓ Captured ${screens.length} screens for "${item.label}"`);
   return screens;
 }
 
 const MODE = process.argv[2] || 'default';
 
+const MAX_TOTAL_TIME = 10 * 60 * 1000; // 10 minutes
+const captureStartTime = Date.now();
+
+function isTimedOut() {
+  return Date.now() - captureStartTime > MAX_TOTAL_TIME;
+}
+
 async function main() {
-  const browser = await chromium.launch({ headless: false });
-  const context = await browser.newContext({ viewport });
-  const page = await context.newPage();
+  mkdirSync(BROWSER_DATA_DIR, { recursive: true });
+  const context = await chromium.launchPersistentContext(BROWSER_DATA_DIR, {
+    headless: false,
+    viewport,
+  });
+  const page = context.pages()[0] || await context.newPage();
 
   await loginIfNeeded(page);
 
@@ -829,7 +1327,7 @@ async function main() {
     const items = await scoutNavItems(page, baseUrl);
     // Output JSON to stdout for the API to parse
     console.log('__SCOUT_RESULT__' + JSON.stringify(items));
-    await browser.close();
+    await context.close();
     return;
   }
 
@@ -862,7 +1360,7 @@ async function main() {
     }
 
     const totalInManifest = writeManifest(allCaptures);
-    await browser.close();
+    await context.close();
     console.log(`\n  ✓ Done! ${allCaptures.length} new screenshots. ${totalInManifest} total in manifest.`);
     return;
   }
@@ -877,7 +1375,7 @@ async function main() {
   }
 
   writeManifest(captures, true);
-  await browser.close();
+  await context.close();
   console.log(`\n  ✓ Done! ${captures.length} screenshots saved to public/data/captures/`);
 }
 
