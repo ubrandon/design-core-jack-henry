@@ -66,7 +66,7 @@
         border: 1px solid rgba(0, 0, 0, 0.08);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         min-width: 280px;
-        max-width: 420px;
+        width: max-content;
         flex-shrink: 0;
         overflow: visible;
         --bg-0: #ffffff;
@@ -90,12 +90,15 @@
         border-bottom: 1px solid rgba(0, 0, 0, 0.08);
       }
       .ds-component-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 28px 20px;
       }
+      .ds-component-grid > .ds-component-item {
+        flex: 0 1 auto;
+      }
       .ds-component-grid--fixed {
-        grid-template-columns: repeat(var(--fixed-component-columns, 3), minmax(0, 1fr));
+        flex-wrap: nowrap;
       }
       .ds-component-item {
         display: flex;
@@ -253,7 +256,7 @@
             const layout = typeof cat.layout === "string" ? { mode: cat.layout } : cat.layout || {};
             const isRow = layout.mode === "row";
             const gridClass = isRow ? "ds-component-grid ds-component-grid--fixed" : "ds-component-grid";
-            const gridStyle = isRow ? 'style="--fixed-component-columns:3"' : "";
+            const gridStyle = "";
 
             sections.push(`
               <section class="ds-section">
