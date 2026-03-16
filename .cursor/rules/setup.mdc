@@ -40,27 +40,29 @@ Run `node --version` to check if Node.js is installed. If it's not:
 
 Run `npm install` for them. Wait for it to finish. If it fails, help troubleshoot.
 
-### 4. Company setup: fork to their org
+### 4. Company setup: collect company info and fork
 
 **This step only applies to company setup (first person at the org).**
 
-The user cloned the original `BUnglaub/design-core` repo. They need their own copy under their GitHub org so their team can collaborate. Walk them through this:
+Ask these two questions (one at a time):
 
-1. Ask: **"What's your GitHub organization or account name?"** (e.g. `acme-design`)
-2. Help them create a fork or new repo under their org. They can:
-   - Go to `https://github.com/BUnglaub/design-core` and click **Fork**, choosing their org as the owner
-   - Or create a new repo on GitHub and push to it
-3. Once they have their org's repo URL, update the git remote:
+1. **"What's your company or team name?"** (e.g. `Acme Design`) -- needed to name the repo and configure the tool.
+2. **"What's your GitHub organization or account name?"** (e.g. `acme-design`) -- where the fork will live.
+
+Then fork and configure the repo. Use `gh` CLI to do this automatically:
+
+1. **Fork the repo** to their org with a company-specific name. Suggest a repo name based on their company name (e.g. "Acme Design" becomes `acme-design`). The repo doesn't have to stay named `design-core` -- a company-specific name is better.
    ```
-   git remote set-url origin https://github.com/THEIR_ORG/design-core.git
+   gh repo fork BUnglaub/design-core --org THEIR_ORG --fork-name THEIR_REPO_NAME --remote=true
    ```
-4. Update `GETTING_STARTED.md` -- replace `YOUR_ORG` in the designer joining prompt with their actual org name, so when teammates read the page they get the right clone URL
-5. Commit and push these changes to their new repo
-6. **Enable GitHub Pages** so prototypes get shareable links automatically. After pushing, run:
+   This forks the repo and updates the git remote automatically. Forking preserves the upstream connection so the company can pull future updates from `BUnglaub/design-core`.
+2. **Update `GETTING_STARTED.md`** -- replace `YOUR_ORG` and `YOUR_REPO` in the designer joining prompt with the actual org name and repo name, so when teammates read the page they get the right clone URL.
+3. **Commit and push** these changes to the new fork.
+4. **Enable GitHub Pages** so prototypes get shareable links automatically:
    ```
-   gh api repos/THEIR_ORG/design-core/pages -X POST -f build_type=workflow
+   gh api repos/THEIR_ORG/THEIR_REPO_NAME/pages -X POST -f build_type=workflow
    ```
-   This enables GitHub Pages with GitHub Actions as the source. If it succeeds, tell the user their prototypes will be live at `https://THEIR_ORG.github.io/design-core/` after each push. If it fails (e.g. `gh` not installed or not authenticated), fall back to telling them to enable it manually: go to `https://github.com/THEIR_ORG/design-core/settings/pages` and set **Source** to **GitHub Actions**.
+   If it succeeds, tell the user their prototypes will be live at `https://THEIR_ORG.github.io/THEIR_REPO_NAME/` after each push. If it fails (e.g. `gh` not installed or not authenticated), fall back to telling them to enable it manually: go to `https://github.com/THEIR_ORG/THEIR_REPO_NAME/settings/pages` and set **Source** to **GitHub Actions**.
 
 Skip this step entirely for designers joining -- they already cloned from their org's fork.
 
@@ -68,11 +70,10 @@ Skip this step entirely for designers joining -- they already cloned from their 
 
 #### Company setup (first person at the org)
 
-Ask the user:
+You already have the company name from step 4. Now ask:
 
 1. **"What's your name?"** -- their display name for attribution on projects
-2. **"What's your company or team name?"** -- the organization using Design Core
-3. **"Who else is on your design team?"** -- optional, they can add people later. If they provide names, collect them.
+2. **"Who else is on your design team?"** -- optional, they can add people later. If they provide names, collect them.
 
 Create `.designer` in the repo root:
 
@@ -134,7 +135,7 @@ Run `npm run dev` and tell them the URL to open in their browser. Explain what t
 
 > "You're all set! A few things you might want to do:
 > - **Create your first project** -- just tell me a name and I'll set it up
-> - **Share with your team** -- send them the Getting Started page on your repo: `https://github.com/THEIR_ORG/design-core/blob/main/GETTING_STARTED.md` -- the designer joining prompt already has your org's repo link.
+> - **Share with your team** -- send them the Getting Started page on your repo: `https://github.com/THEIR_ORG/THEIR_REPO_NAME/blob/main/GETTING_STARTED.md` -- the designer joining prompt already has your org's repo link.
 > - **Explore the design system** -- click Design System in the nav to see available components
 >
 > What would you like to do first?"

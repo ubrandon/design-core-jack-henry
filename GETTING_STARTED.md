@@ -27,13 +27,13 @@ I want to set up Design Core for my company. Please:
 ```
 I'm joining my team's Design Core repo. Please:
 
-1. Clone the repo from https://github.com/YOUR_ORG/design-core.git
+1. Clone the repo from https://github.com/YOUR_ORG/YOUR_REPO.git
 2. Open the cloned folder in Cursor
 3. Once open, read the .cursor/rules/setup.mdc file and follow the designer joining flow to walk me through the rest
 ```
 
-> **Note:** Replace `YOUR_ORG` with your company's GitHub org name -- your admin can tell you this.
+> **Note:** Replace `YOUR_ORG` and `YOUR_REPO` with your company's GitHub org and repo name -- your admin can tell you this.
 
 ---
 
-That's it. The AI handles everything else -- installing dependencies, setting up your identity, and walking you through the tool.
+That's it. The AI handles everything else -- installing dependencies, forking, setting up your identity, and walking you through the tool.
