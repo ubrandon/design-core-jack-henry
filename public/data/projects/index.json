@@ -1,3 +1,11 @@
 {
-  "projects": []
+  "projects": [
+    {
+      "id": "new-project",
+      "name": "New Project",
+      "description": "",
+      "createdBy": "Brandon Unglaub",
+      "createdAt": "2026-03-16T00:00:00Z"
+    }
+  ]
 }

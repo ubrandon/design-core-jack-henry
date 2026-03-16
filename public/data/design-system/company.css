@@ -31,6 +31,12 @@
   padding: 20px;
 }
 
+/* Design system preview cards: tighter padding for component demos */
+.jh-preview-card {
+  padding: 16px 20px;
+  max-width: 100%;
+}
+
 .jh-card-title {
   font-size: 1rem;
   font-weight: 700;
@@ -78,6 +84,12 @@
   border-bottom: none;
 }
 
+.jh-detail-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+}
+
 /* Action row: grey icons + grey text, subtle (not prominent buttons) */
 .jh-action-item {
   display: flex;
@@ -105,6 +117,19 @@
   color: var(--jh-blue);
   font-size: 0.85rem;
   font-weight: 600;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.jh-pill:hover {
+  background: rgba(var(--jh-blue-rgb), 0.22);
+}
+
+.jh-pill:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--jh-blue-rgb), 0.35);
 }
 
 .jh-btn-outline {
@@ -119,7 +144,20 @@
   color: var(--jh-blue);
   font-size: 0.9rem;
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.jh-btn-outline:hover {
+  background: rgba(var(--jh-blue-rgb), 0.06);
+  border-color: #1d4ed8;
+  color: #1d4ed8;
+}
+
+.jh-btn-outline:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--jh-blue-rgb), 0.25);
 }
 
 .jh-sidebar {
@@ -354,6 +392,17 @@
   cursor: pointer;
   font-size: 0.7rem;
   font-weight: 600;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.jh-action-grid-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.jh-action-grid-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
 }
 
 .jh-action-grid-btn svg {
@@ -386,4 +435,427 @@
   color: rgba(0, 0, 0, 0.85);
   flex: 1;
   min-width: 0;
+}
+
+/* Selector row (From: Checking / $1,500.00 with chevron) */
+.jh-selector-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.jh-selector-row:hover {
+  background: rgba(0, 0, 0, 0.03);
+  margin: 0 -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: var(--radius-sm);
+}
+
+.jh-selector-value {
+  text-align: right;
+  flex: 1;
+  min-width: 0;
+}
+
+.jh-selector-value .jh-amount {
+  font-size: 0.95rem;
+  display: block;
+}
+
+.jh-selector-sub {
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.jh-chevron {
+  flex-shrink: 0;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* Payment history table */
+.jh-payment-header {
+  display: grid;
+  grid-template-columns: 70px 1fr 100px 90px;
+  gap: 12px;
+  padding: 8px 0 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 4px;
+}
+
+.jh-payment-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 100px 90px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+
+.jh-payment-row:last-child {
+  border-bottom: none;
+}
+
+.jh-payment-row:hover {
+  background: rgba(0, 0, 0, 0.03);
+  margin: 0 -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: var(--radius-sm);
+}
+
+.jh-payment-date,
+.jh-payment-payee {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.jh-payment-name {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.jh-payment-amount {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.jh-payment-amount svg {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.jh-payment-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.jh-payment-status-paid {
+  color: var(--jh-green);
+}
+
+.jh-payment-status-scheduled {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.jh-payment-status-stopped {
+  color: var(--jh-red);
+}
+
+/* Search input with icon */
+.jh-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.jh-search-wrap:focus-within {
+  border-color: rgba(var(--jh-blue-rgb), 0.4);
+  box-shadow: 0 0 0 3px rgba(var(--jh-blue-rgb), 0.08);
+}
+
+.jh-search-wrap svg {
+  flex-shrink: 0;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.jh-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.jh-search-input::placeholder {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.jh-search-input:focus {
+  outline: none;
+}
+
+/* Amount input with $ prefix */
+.jh-input-amount-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+  background: var(--bg-1);
+  padding: 14px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.jh-input-amount-wrap:focus-within {
+  border-color: rgba(var(--jh-blue-rgb), 0.4);
+  box-shadow: 0 0 0 3px rgba(var(--jh-blue-rgb), 0.08);
+}
+
+.jh-input-amount-prefix {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.5);
+  margin-right: 8px;
+}
+
+.jh-input-amount {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--jh-blue);
+  text-align: right;
+}
+
+.jh-input-amount:focus {
+  outline: none;
+}
+
+/* Icon + text button (header on dark background) */
+.jh-btn-icon-text-wrap {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  background: var(--jh-navy);
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+}
+
+.jh-btn-icon-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s, color 0.15s;
+}
+
+.jh-btn-icon-text:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.jh-btn-icon-text:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Floating action button */
+.jh-fab-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.jh-fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--jh-blue);
+  color: #fff;
+  border: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(var(--jh-blue-rgb), 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.jh-fab:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 20px rgba(var(--jh-blue-rgb), 0.45);
+}
+
+.jh-fab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--jh-blue-rgb), 0.4);
+}
+
+.jh-fab-sm {
+  width: 44px;
+  height: 44px;
+}
+
+.jh-fab-sm svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Text link action (+ New payee, More options) */
+.jh-link-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.jh-link-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--jh-blue);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.jh-link-action:hover {
+  color: var(--jh-navy);
+  text-decoration: underline;
+}
+
+.jh-link-action:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px rgba(var(--jh-blue-rgb), 0.4);
+}
+
+/* Primary button (Pay, Submit) */
+.jh-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.jh-btn-primary {
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  background: var(--jh-blue);
+  color: #fff;
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.jh-btn-primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.jh-btn-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--jh-blue-rgb), 0.4);
+}
+
+.jh-btn-primary-sm {
+  padding: 10px 18px;
+  font-size: 0.88rem;
+}
+
+/* Small circular icon button (calendar nav) */
+.jh-calendar-nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.jh-calendar-month {
+  font-weight: 700;
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.88);
+  min-width: 60px;
+  text-align: center;
+}
+
+.jh-btn-icon-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  border: none;
+  display: grid;
+  place-items: center;
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.jh-btn-icon-circle:hover {
+  background: rgba(var(--jh-blue-rgb), 0.12);
+  color: var(--jh-blue);
+}
+
+.jh-btn-icon-circle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--jh-blue-rgb), 0.35);
+}
+
+/* Typography preview */
+.jh-typography-preview .jh-type-sample {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.jh-type-meta {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.jh-type-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 12px 0;
+}
+
+.jh-type-display {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.jh-type-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.jh-type-body {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.jh-type-caption {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.45);
 }

@@ -21,8 +21,9 @@ I want to set up Design Core for my company. Before you have access to any repo 
 2. cd into the cloned folder
 3. Rename the remote: git remote rename origin upstream
 4. Unset branch tracking: git branch --unset-upstream main
-5. Install dependencies: npm install
-6. Tell me to open the folder in Cursor (File → Open Folder) and to add it to my workspace
+5. Disable push to upstream: git remote set-url --push upstream no-push-allowed
+6. Install dependencies: npm install
+7. Tell me to open the folder in Cursor (File → Open Folder) and to add it to my workspace
 
 Once I have the folder open in Cursor, read the .cursor/rules/setup.mdc file and follow the company setup flow to walk me through the rest (identity, team info, publishing to GitHub, etc.)
 ```

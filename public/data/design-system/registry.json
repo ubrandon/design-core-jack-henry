@@ -16,6 +16,22 @@
       ]
     },
     {
+      "group": "foundations",
+      "name": "Typography",
+      "components": [
+        { "id": "jh-typography", "file": "jack-henry/typography.html", "label": "Type scale & weights" }
+      ]
+    },
+    {
+      "group": "foundations",
+      "name": "Inputs",
+      "layout": { "mode": "row" },
+      "components": [
+        { "id": "jh-input-search", "file": "jack-henry/input-search.html", "label": "Search" },
+        { "id": "jh-input-amount", "file": "jack-henry/input-amount.html", "label": "Amount ($ prefix)" }
+      ]
+    },
+    {
       "group": "headers",
       "name": "Page & account headers",
       "layout": { "mode": "row" },
@@ -45,6 +61,15 @@
     },
     {
       "group": "lists",
+      "name": "List items & rows",
+      "components": [
+        { "id": "jh-list-item-detail", "file": "jack-henry/list-item-detail.html", "label": "Detail row (key-value)" },
+        { "id": "jh-list-item-selector", "file": "jack-henry/list-item-selector.html", "label": "Selector row (From)" },
+        { "id": "jh-payment-history-item", "file": "jack-henry/payment-history-item.html", "label": "Payment history row" }
+      ]
+    },
+    {
+      "group": "lists",
       "name": "Transactions & summary",
       "components": [
         { "id": "jh-transaction-list", "file": "jack-henry/transaction-list.html", "label": "Transaction list (full)" },
@@ -58,6 +83,11 @@
       "name": "Buttons & controls",
       "layout": { "mode": "row" },
       "components": [
+        { "id": "jh-btn-primary", "file": "jack-henry/btn-primary.html", "label": "Primary (Pay, Submit)" },
+        { "id": "jh-btn-icon-text", "file": "jack-henry/btn-icon-text.html", "label": "Icon + text (header)" },
+        { "id": "jh-btn-fab", "file": "jack-henry/btn-fab.html", "label": "FAB (help)" },
+        { "id": "jh-link-action", "file": "jack-henry/link-action.html", "label": "Link (+ New payee)" },
+        { "id": "jh-btn-icon-circle", "file": "jack-henry/btn-icon-circle.html", "label": "Icon circle (calendar)" },
         { "id": "jh-action-grid", "file": "jack-henry/action-grid.html", "label": "Action grid (desktop)" },
         { "id": "jh-action-grid-mobile", "file": "jack-henry/action-grid-mobile.html", "label": "Action grid (mobile)" },
         { "id": "jh-action-list", "file": "jack-henry/action-list.html", "label": "Action list (Add account)" },

@@ -48,11 +48,14 @@ No other CLI tools are needed. The company repo is created through Cursor's buil
 
 **Critical:** The public repo (`ubrandon/design-core`) is **never modified**. The user's prompt from GETTING_STARTED.md already handles cloning, renaming the remote to `upstream`, unsetting branch tracking, and installing dependencies. By the time you are reading this file, those steps are done.
 
-**Verify the setup is correct.** Run `git remote -v` -- you should see only `upstream` pointing to `ubrandon/design-core`. There should be NO `origin` remote. If `origin` exists and points to `ubrandon/design-core`, the prompt steps were skipped -- run them now:
+**Verify the setup is correct.** Run `git remote -v` -- you should see only `upstream` pointing to `ubrandon/design-core` for fetch, and `no-push-allowed` for push. There should be NO `origin` remote. If `origin` exists and points to `ubrandon/design-core`, the prompt steps were skipped -- run them now:
 ```
 git remote rename origin upstream
 git branch --unset-upstream main
+git remote set-url --push upstream no-push-allowed
 ```
+
+The `set-url --push` step is critical -- it prevents accidental pushes to the public core repo. Without it, `git push` from a company repo could push company-specific content upstream.
 
 Now continue with:
 
@@ -78,7 +81,7 @@ Now continue with:
 
 ### Pulling updates from the public repo later
 
-To get updates from the public Design Core repo at any time:
+The `upstream` remote is **fetch-only** -- pushing to it is disabled by design. To get updates from the public Design Core repo at any time:
 ```
 git fetch upstream
 git merge upstream/main
