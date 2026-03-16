@@ -1,32 +1,55 @@
 import { defineConfig } from "vite";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
-import { writeFileSync } from "fs";
+import { writeFileSync, unlinkSync, existsSync } from "fs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-function writeJsonPlugin() {
+function dataFilesPlugin() {
   return {
-    name: "write-json",
+    name: "data-files",
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (req.method !== "PUT") return next();
         const url = req.url.split("?")[0];
-        if (!url.startsWith("/data/") || !url.endsWith(".json")) return next();
-        const filePath = resolve(__dirname, "public" + url);
-        let body = "";
-        req.on("data", chunk => { body += chunk; });
-        req.on("end", () => {
+        if (!url.startsWith("/data/")) return next();
+
+        if (req.method === "PUT" && url.endsWith(".json")) {
+          const filePath = resolve(__dirname, "public" + url);
+          let body = "";
+          req.on("data", chunk => { body += chunk; });
+          req.on("end", () => {
+            try {
+              JSON.parse(body);
+              writeFileSync(filePath, body, "utf-8");
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end('{"ok":true}');
+            } catch (e) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end('{"error":"Invalid JSON"}');
+            }
+          });
+          return;
+        }
+
+        if (req.method === "DELETE") {
+          const filePath = resolve(__dirname, "public" + url);
+          if (!filePath.startsWith(resolve(__dirname, "public/data/"))) {
+            res.writeHead(403, { "Content-Type": "application/json" });
+            res.end('{"error":"Forbidden"}');
+            return;
+          }
           try {
-            JSON.parse(body);
-            writeFileSync(filePath, body, "utf-8");
+            if (existsSync(filePath)) unlinkSync(filePath);
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end('{"ok":true}');
           } catch (e) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.end('{"error":"Invalid JSON"}');
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end('{"error":"' + e.message + '"}');
           }
-        });
+          return;
+        }
+
+        next();
       });
     },
   };
@@ -42,7 +65,7 @@ export default defineConfig({
         if (file.includes("/public/")) return [];
       },
     },
-    writeJsonPlugin(),
+    dataFilesPlugin(),
   ],
   build: {
     rollupOptions: {

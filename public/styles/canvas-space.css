@@ -32,34 +32,30 @@
   min-height: 1px;
 }
 
-/* Screen card on canvas — full-screen device frame */
+/* Screen card on canvas */
 .canvas-card {
   position: absolute;
-  border-radius: 32px;
+  border-radius: 16px;
   overflow: hidden;
-  border: 8px solid #0a0a0a;
+  border: none;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.08),
-    0 24px 64px rgba(0, 0, 0, 0.5),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-  background: #000;
+    0 8px 32px rgba(0, 0, 0, 0.18),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
   cursor: move;
   user-select: none;
 }
 
 .canvas-card:hover {
-  border-color: #111;
   box-shadow:
-    0 0 0 1px rgba(var(--neon-teal-rgb), 0.3),
-    0 24px 64px rgba(0, 0, 0, 0.5),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    0 12px 40px rgba(0, 0, 0, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .canvas-card.is-selected {
-  border-color: var(--neon-blue);
   box-shadow:
     0 0 0 3px var(--neon-blue),
-    0 24px 64px rgba(0, 0, 0, 0.5);
+    0 12px 40px rgba(0, 0, 0, 0.22);
 }
 
 /* Marquee selection rectangle */

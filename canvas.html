@@ -135,10 +135,14 @@
     function deleteSelected() {
       if (selected.size === 0) return;
       const indices = Array.from(selected).sort((a, b) => b - a);
+      const filesToDelete = indices.map(i => screens[i].file);
       indices.forEach(i => screens.splice(i, 1));
       clearSelection();
       renderCards();
       saveCanvas();
+      filesToDelete.forEach(f => {
+        fetch("data/projects/" + projectId + "/screens/" + f, { method: "DELETE" }).catch(() => {});
+      });
     }
 
     function saveCanvas() {

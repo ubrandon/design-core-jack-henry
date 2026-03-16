@@ -103,7 +103,7 @@ All paths below are **disk paths** (relative to repo root):
 - `public/data/projects/<project>/` -- One folder per project. The **project id** is the folder name (e.g. `my-app`).
 - `public/data/projects/<project>/project.json` -- **Project name and metadata.** Contains `name`, `description`, and optionally `createdBy`, `createdAt`.
 - `public/data/projects/index.json` -- List of all projects (`id`, `name`, `description`, `createdBy`, `createdAt`). Home page cards use this.
-- `public/data/projects/<project>/canvas.json` -- **Canvas screen layout.** Lists which screens appear on the canvas and their positions/sizes. Contains `{ "screens": [{ "file": "home.html", "x": 0, "y": 0, "width": 390 }, ...] }`. When adding a new screen, you MUST also add an entry here or it won't show on the canvas. Width must be **390** to match the standard screen content width.
+- `public/data/projects/<project>/canvas.json` -- **Canvas screen layout.** Lists which screens appear on the canvas and their positions/sizes. Contains `{ "screens": [{ "file": "home.html", "x": 0, "y": 0, "width": 390 }, ...] }`. When adding a new screen, you MUST also add an entry here or it won't show on the canvas. Standard widths: **390** for mobile, **1024** for tablet, **1440** for desktop. Use whatever fits the screen being designed.
 - `public/data/projects/<project>/screens/` -- Static screen HTML files for the ideation canvas
 - `public/data/projects/<project>/prototypes/<prototype>/index.html` -- Interactive prototype
 - `public/data/projects/<project>/prototypes/<prototype>/meta.json` -- Prototype name and description
@@ -159,13 +159,14 @@ The design system page (`design-system.html`) uses an **infinite canvas**: main 
    ```json
    { "file": "<name>.html", "x": 0, "y": 0, "width": 390 }
    ```
-   Space screens apart by adjusting `x` (e.g. increment by 430 for each new screen). The width **must be 390** -- this matches the screen content width and the iframe that renders it. Using a smaller value (e.g. 375) will squeeze the content and clip text on the right edge.
+   Space screens apart by adjusting `x` (add the width + 40px gap for each new screen). Standard widths: **390** for mobile, **1024** for tablet, **1440** for desktop. Match the width to what the screen is designed for -- a desktop dashboard should be 1440, a mobile screen should be 390.
 3. Use the standard screen wrapper:
    ```html
-   <div style="padding: 16px; max-width: 390px; margin: 0 auto; background: var(--bg-0); border-radius: var(--radius-lg);">
+   <div style="background: var(--bg-0);">
      <!-- Screen content -->
    </div>
    ```
+   The wrapper is just a background container. Do NOT add `padding`, `max-width`, or `margin: 0 auto` to it -- those prevent full-width elements (nav bars, hero backgrounds, footers) from reaching the edges. Individual content sections inside the wrapper handle their own padding (e.g. `padding: 16px`).
 4. **HTML + CSS only.** No JavaScript. No interactivity.
 
 #### Canvas screen content rules
@@ -230,6 +231,18 @@ A prototype is a **self-contained interactive mini web app**. It lives in a sing
 5. **Self-contained.** Everything the prototype needs goes in its folder. No external npm packages or CDN scripts unless the designer explicitly asks.
 6. **Look at the design system.** Read existing component HTML files in `public/data/design-system/components/` for visual patterns.
 7. **One file preferred.** Keep the prototype in a single `index.html` unless it grows large enough to justify splitting.
+
+## Platform-Aware Components
+
+When the designer specifies a target platform (iOS, Android, or desktop), adapt the UI accordingly:
+
+1. **Check the design system first.** Look at `public/data/design-system/components/` and `company.css` for existing components that match the platform. If the team has built components, always prefer those.
+2. **If no matching component exists**, build native-looking UI for the specified platform using the team's brand colors and tokens from `company.css` (or `shared.css` if no company overrides exist):
+   - **iOS** -- SF-style navigation bars, large titles, rounded grouped list rows, iOS-style toggles, tab bars with icons, subtle separators, system-like blur effects. Use the team's accent color for tint/interactive elements.
+   - **Android / Material** -- Top app bars, FABs, bottom navigation with labels, outlined/filled text fields, Material-style cards with subtle elevation, ripple-like interaction areas. Use the team's primary color for Material theming.
+   - **Desktop** -- Sidebar navigation, multi-column layouts, data tables, breadcrumbs, dropdown menus, toolbar actions. Use wider content areas (1024–1440px frames).
+3. **Always use the team's brand colors.** Native-looking doesn't mean default blue iOS or purple Material -- it means the platform's layout patterns and interaction idioms rendered in the team's color palette.
+4. **If no platform is specified**, default to a generic/neutral style using the design system's existing components.
 
 ## Design Tokens (quick reference)
 
