@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Send wire (iOS)</title>
+  <link rel="stylesheet" href="../../../../../../styles/shared.css">
+  <link rel="stylesheet" href="../../../../../../styles/ds.css">
+  <link rel="stylesheet" href="../../../../../../data/design-system/company.css">
+  <style>
+    :root {
+      --ios-blue: #007AFF;
+      --ios-blue-rgb: 0, 122, 255;
+      --ios-green: #34C759;
+      --ios-green-rgb: 52, 199, 89;
+      --ios-gray: #8E8E93;
+      --ios-gray-2: #C7C7CC;
+      --ios-gray-3: #E5E5EA;
+      --ios-gray-4: #F2F2F7;
+      --ios-gray-5: #FAFAFA;
+      --ios-separator: rgba(60, 60, 67, 0.12);
+      --ios-bg: #F2F2F7;
+      --ios-group-bg: #FFFFFF;
+      --ios-radius: 12px;
+      --ios-radius-lg: 16px;
+      --ios-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", sans-serif;
+    }
+    html, body { margin: 0; padding: 0; font-family: var(--ios-font); -webkit-font-smoothing: antialiased; }
+    body { background: var(--ios-bg); color: #000; }
+    .view { display: none; }
+    .view.active { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: env(safe-area-inset-bottom); }
+    .clickable { cursor: pointer; }
+    .ios-status-bar { height: 44px; padding: 12px 24px 0; display: flex; align-items: center; justify-content: space-between; font-size: 15px; font-weight: 600; color: #000; }
+    .ios-nav-bar { padding: 8px 16px 12px; display: flex; align-items: center; justify-content: space-between; background: rgba(242, 242, 247, 0.95); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); }
+    .ios-nav-back { display: flex; align-items: center; gap: 4px; background: none; border: none; color: var(--ios-blue); font-size: 17px; font-weight: 400; cursor: pointer; font-family: inherit; }
+    .ios-nav-title { font-size: 17px; font-weight: 600; }
+    .ios-nav-title-large { font-size: 34px; font-weight: 700; letter-spacing: 0.37px; padding: 0 16px 8px; }
+    .ios-nav-action { background: none; border: none; color: var(--ios-blue); font-size: 17px; font-weight: 400; cursor: pointer; font-family: inherit; }
+    .ios-content { flex: 1; padding: 16px; overflow-y: auto; }
+    .ios-group { background: var(--ios-group-bg); border-radius: var(--ios-radius-lg); overflow: hidden; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .ios-group-title { font-size: 13px; font-weight: 400; color: var(--ios-gray); padding: 16px 16px 8px; text-transform: none; }
+    .ios-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; min-height: 44px; background: var(--ios-group-bg); border-bottom: 0.5px solid var(--ios-separator); }
+    .ios-row:last-child { border-bottom: none; }
+    .ios-row.clickable:hover { background: var(--ios-gray-4); }
+    .ios-row-label { font-size: 17px; font-weight: 400; color: #000; }
+    .ios-row-value { font-size: 17px; font-weight: 400; color: var(--ios-gray); text-align: right; }
+    .ios-row-value.accent { color: var(--ios-blue); font-weight: 600; }
+    .ios-chevron { width: 14px; height: 14px; color: var(--ios-gray-2); flex-shrink: 0; }
+    .ios-input { flex: 1; border: none; background: none; font-size: 17px; font-weight: 400; color: #000; font-family: inherit; text-align: right; }
+    .ios-input::placeholder { color: var(--ios-gray); }
+    .ios-input:focus { outline: none; }
+    .ios-btn { width: 100%; padding: 16px; border-radius: var(--ios-radius); border: none; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer; background: var(--ios-blue); color: #fff; }
+    .ios-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .ios-btn-secondary { background: var(--ios-gray-4); color: #000; }
+    .ios-toggle { width: 51px; height: 31px; border-radius: 16px; background: var(--ios-gray-3); position: relative; cursor: pointer; transition: background 0.2s; }
+    .ios-toggle.is-on { background: var(--ios-green); }
+    .ios-toggle::after { content: ''; position: absolute; width: 27px; height: 27px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .ios-toggle.is-on::after { transform: translateX(20px); }
+    .ios-list-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 0.5px solid var(--ios-separator); }
+    .ios-list-item:last-child { border-bottom: none; }
+    .ios-list-item.clickable:hover { background: var(--ios-gray-4); }
+    .ios-list-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(var(--ios-blue-rgb), 0.12); display: grid; place-items: center; flex-shrink: 0; }
+    .ios-list-icon svg { color: var(--ios-blue); }
+    .ios-list-content { flex: 1; min-width: 0; }
+    .ios-list-title { font-size: 17px; font-weight: 600; color: #000; }
+    .ios-list-subtitle { font-size: 15px; font-weight: 400; color: var(--ios-gray); margin-top: 2px; }
+    .ios-link { display: inline; font-size: 17px; font-weight: 400; color: var(--ios-blue); }
+    .ios-textarea { width: 100%; padding: 12px 16px; border: none; background: none; font-size: 17px; font-family: inherit; resize: vertical; min-height: 100px; box-sizing: border-box; }
+    .ios-textarea::placeholder { color: var(--ios-gray); }
+    .ios-textarea:focus { outline: none; }
+    .optional-expanded .optional-chevron { transform: rotate(180deg); }
+  </style>
+</head>
+<body>
+  <!-- 1. Wire list -->
+  <div id="view-list" class="view active">
+    <div class="ios-status-bar">
+      <span>9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M1 9h2v3H1zM5 6h2v6H5zM9 3h2v9H9zM13 0h2v12h-2z"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2C5 2 2.4 3.6 1 6c1.4 2.4 4 4 7 4s5.6-1.6 7-4c-1.4-2.4-4-4-7-4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        <div style="width:24px;height:11px;border:1px solid rgba(0,0,0,0.3);border-radius:3px;padding:1px;"><div style="width:65%;height:100%;background:#000;border-radius:1.5px;"></div></div>
+      </div>
+    </div>
+    <nav class="ios-nav-bar" style="padding: 16px;">
+      <div style="width:60px;"></div>
+      <span class="ios-nav-title-large">Wires</span>
+      <button class="clickable ios-nav-action" style="width:60px;text-align:right;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4-2v-8.54L22 3z"/></svg></button>
+    </nav>
+    <main class="ios-content">
+      <button class="clickable ios-btn" data-next="send-wire" style="margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Send wire
+      </button>
+      <div class="ios-group">
+        <div class="ios-list-item clickable">
+          <div class="ios-list-content">
+            <div class="ios-list-title">Vendor payment</div>
+            <div class="ios-list-subtitle">Approval to Bank of America...</div>
+          </div>
+          <span class="ios-row-value accent" style="font-size:17px;">$235.00</span>
+        </div>
+        <div class="ios-list-item clickable">
+          <div class="ios-list-content">
+            <div class="ios-list-title">Rent deposit</div>
+            <div class="ios-list-subtitle">Initiated to Bank of America (x1234)</div>
+          </div>
+          <span class="ios-row-value accent" style="font-size:17px;">$640.00</span>
+        </div>
+        <div class="ios-list-item clickable">
+          <div class="ios-list-content">
+            <div class="ios-list-title">Materials payment</div>
+            <div class="ios-list-subtitle">Ready to Chase Bank (x1234)</div>
+          </div>
+          <span class="ios-row-value accent" style="font-size:17px;">$340.00</span>
+        </div>
+        <div class="ios-list-item clickable">
+          <div class="ios-list-content">
+            <div class="ios-list-title">Equipment fee refund</div>
+            <div class="ios-list-subtitle">Processed to Chase Bank (x1234)</div>
+          </div>
+          <span class="ios-row-value accent" style="font-size:17px;">$800.00</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 2. Send wire -->
+  <div id="view-send-wire" class="view">
+    <div class="ios-status-bar"></div>
+    <nav class="ios-nav-bar">
+      <div style="width:60px;"></div>
+      <span class="ios-nav-title">Send wire</span>
+      <button class="clickable ios-nav-action" data-next="list">Cancel</button>
+    </nav>
+    <main class="ios-content">
+      <p class="ios-group-title">Wire details</p>
+      <div class="ios-group">
+        <div class="ios-row">
+          <span class="ios-row-label">Wire name</span>
+          <input type="text" id="wire-name" class="ios-input" placeholder="e.g. Payment for materials">
+        </div>
+        <div class="ios-row clickable" id="from-account-picker">
+          <span class="ios-row-label">From account</span>
+          <span id="from-account-display" class="ios-row-value" style="width:60%;">Select account</span>
+          <svg class="ios-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="ios-row">
+          <span class="ios-row-label">Amount</span>
+          <span style="font-size:17px;color:var(--ios-gray);">$</span>
+          <input type="text" id="wire-amount" class="ios-input" placeholder="0.00" inputmode="decimal" style="text-align:right;color:var(--ios-blue);font-weight:600;">
+        </div>
+        <div class="ios-row clickable" id="toggle-optional">
+          <span id="optional-label" class="ios-row-label">Show optional fields</span>
+          <svg class="optional-chevron ios-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div id="optional-fields" style="display:none; border-top: 0.5px solid var(--ios-separator);">
+          <div style="padding: 12px 16px; display: flex; flex-direction: column; gap: 8px;">
+            <span class="ios-row-label">Remittance info (optional)</span>
+            <textarea id="wire-remittance" class="ios-textarea" placeholder="Add up to four lines of notes or reference details." rows="3" style="min-height: 80px;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <p class="ios-group-title">Recipient details</p>
+      <div id="creditor-empty" class="creditor-block ios-group clickable" data-next="creditor" style="margin-bottom:12px;">
+        <div class="ios-list-item">
+          <div class="ios-list-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="ios-list-content">
+            <div class="ios-list-title">Creditor</div>
+            <div class="ios-list-subtitle">Person or company receiving the wire.</div>
+            <span class="ios-link" style="margin-top:4px;display:inline-block;">Add creditor</span>
+          </div>
+          <svg class="ios-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </div>
+      <div id="creditor-filled" class="creditor-block ios-group clickable" data-next="creditor" style="display:none; margin-bottom:12px;">
+        <div class="ios-list-item">
+          <div class="ios-list-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="ios-list-content">
+            <div class="ios-list-title" id="creditor-name-display">Amy Smith</div>
+            <div class="ios-list-subtitle" id="creditor-address-display">****56678 - Elm Street, Maple Grove, CA</div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ios-gray)" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+      </div>
+
+      <div id="agent-empty" class="agent-block ios-group clickable" data-next="creditor-agent">
+        <div class="ios-list-item">
+          <div class="ios-list-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          </div>
+          <div class="ios-list-content">
+            <div class="ios-list-title">Creditor agent</div>
+            <div class="ios-list-subtitle">Financial institution that is handling the wire.</div>
+            <span class="ios-link" style="margin-top:4px;display:inline-block;">Add agent</span>
+          </div>
+          <svg class="ios-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </div>
+      <div id="agent-filled" class="agent-block ios-group clickable" data-next="creditor-agent" style="display:none;">
+        <div class="ios-list-item">
+          <div class="ios-list-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          </div>
+          <div class="ios-list-content">
+            <div class="ios-list-title" id="agent-name-display">ABC Bank</div>
+            <div class="ios-list-subtitle" id="agent-address-display">123 Maple Street, Springfield, USA</div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ios-gray)" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+      </div>
+    </main>
+    <div style="padding: 16px;">
+      <button id="btn-review-send" class="ios-btn" disabled>Review & send</button>
+    </div>
+  </div>
+
+  <!-- 3. Creditor details -->
+  <div id="view-creditor" class="view">
+    <div class="ios-status-bar"></div>
+    <nav class="ios-nav-bar">
+      <button class="clickable ios-nav-back" data-next="send-wire">
+        <svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 1L1 9l8 8"/></svg>
+        Back
+      </button>
+      <span class="ios-nav-title">Creditor details</span>
+      <div style="width:60px;"></div>
+    </nav>
+    <main class="ios-content">
+      <p class="ios-group-title">Creditor</p>
+      <div class="ios-group">
+        <div class="ios-row">
+          <span class="ios-row-label">Name</span>
+          <input type="text" id="creditor-name" class="ios-input" placeholder="Full legal name">
+        </div>
+        <div class="ios-row">
+          <span class="ios-row-label">Account number</span>
+          <input type="text" id="creditor-account" class="ios-input" placeholder="Account number">
+        </div>
+      </div>
+      <p class="ios-group-title">Creditor address</p>
+      <div class="ios-group">
+        <div class="ios-row">
+          <span class="ios-row-label">Building/street #</span>
+          <input type="text" id="creditor-building" class="ios-input" placeholder="Building or street number">
+        </div>
+        <div class="ios-row">
+          <span class="ios-row-label">Street name</span>
+          <input type="text" id="creditor-street" class="ios-input" placeholder="Street name">
+        </div>
+        <div class="ios-row">
+          <span class="ios-row-label">Town name (city)</span>
+          <input type="text" id="creditor-city" class="ios-input" placeholder="City">
+        </div>
+        <div class="ios-row">
+          <span class="ios-row-label">State</span>
+          <input type="text" id="creditor-state" class="ios-input" placeholder="State">
+        </div>
+        <div class="ios-row">
+          <span class="ios-row-label">Post code (zip)</span>
+          <input type="text" id="creditor-zip" class="ios-input" placeholder="ZIP code">
+        </div>
+        <div class="ios-row clickable">
+          <span class="ios-row-label">Country</span>
+          <span class="ios-row-value">United States</span>
+          <svg class="ios-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </div>
+    </main>
+    <div style="padding: 16px;">
+      <button id="btn-creditor-done" class="ios-btn" disabled>Done</button>
+    </div>
+  </div>
+
+  <!-- 4. Creditor agent details -->
+  <div id="view-creditor-agent" class="view">
+    <div class="ios-status-bar"></div>
+    <nav class="ios-nav-bar">
+      <button class="clickable ios-nav-back" data-next="send-wire">
+        <svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 1L1 9l8 8"/></svg>
+        Back
+      </button>
+      <span class="ios-nav-title">Creditor agent details</span>
+      <div style="width:60px;"></div>
+    </nav>
+    <main class="ios-content">
+      <p class="ios-group-title">Creditor agent</p>
+      <div class="ios-group">
+        <div class="ios-row">
+          <span class="ios-row-label">Routing/ABA number</span>
+          <input type="text" id="agent-routing" class="ios-input" placeholder="9-digit routing number">
+        </div>
+        <div class="ios-row">
+          <span class="ios-row-label">Institution name</span>
+          <input type="text" id="agent-institution" class="ios-input" placeholder="Bank or institution name">
+        </div>
+        <div class="ios-row">
+          <span class="ios-row-label">Reference beneficiary</span>
+          <input type="text" id="agent-reference" class="ios-input" placeholder="Reference">
+        </div>
+      </div>
+      <p class="ios-group-title">Creditor agent address</p>
+      <div class="ios-group">
+        <div class="ios-row">
+          <span class="ios-row-label">Town name (city)</span>
+          <input type="text" id="agent-city" class="ios-input" placeholder="City">
+        </div>
+        <div class="ios-row">
+          <span class="ios-row-label">State</span>
+          <input type="text" id="agent-state" class="ios-input" placeholder="State">
+        </div>
+        <div class="ios-row clickable">
+          <span class="ios-row-label">Country</span>
+          <span class="ios-row-value">United States</span>
+          <svg class="ios-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </div>
+      <p class="ios-group-title">Instructed agent</p>
+      <div class="ios-group">
+        <div class="ios-row">
+          <span class="ios-row-label">Same details as creditor agent</span>
+          <div id="same-agent-toggle" class="ios-toggle is-on" role="button" tabindex="0" aria-pressed="true"></div>
+        </div>
+      </div>
+    </main>
+    <div style="padding: 16px;">
+      <button id="btn-agent-done" class="ios-btn">Done</button>
+    </div>
+  </div>
+
+  <script>
+    const views = ['list', 'send-wire', 'creditor', 'creditor-agent'];
+    const state = { creditor: null, agent: null, wireName: '', fromAccount: '', amount: '' };
+
+    function showView(id) {
+      views.forEach(v => {
+        const el = document.getElementById('view-' + v);
+        if (el) el.classList.toggle('active', v === id);
+      });
+      if (id === 'send-wire') updateSendWireUI();
+      if (id === 'creditor' && state.creditor) {
+        document.getElementById('creditor-name').value = state.creditor.name;
+        document.getElementById('creditor-account').value = state.creditor.account || '';
+      }
+      if (id === 'creditor-agent' && state.agent) {
+        document.getElementById('agent-institution').value = state.agent.name;
+      }
+      if (id === 'creditor') updateCreditorDoneButton();
+    }
+
+    function updateSendWireUI() {
+      const hasCreditor = !!state.creditor;
+      const hasAgent = !!state.agent;
+      document.getElementById('creditor-empty').style.display = hasCreditor ? 'none' : 'block';
+      document.getElementById('creditor-filled').style.display = hasCreditor ? 'block' : 'none';
+      document.getElementById('agent-empty').style.display = hasAgent ? 'none' : 'block';
+      document.getElementById('agent-filled').style.display = hasAgent ? 'block' : 'none';
+      if (hasCreditor) {
+        document.getElementById('creditor-name-display').textContent = state.creditor.name;
+        document.getElementById('creditor-address-display').textContent = state.creditor.address;
+      }
+      if (hasAgent) {
+        document.getElementById('agent-name-display').textContent = state.agent.name;
+        document.getElementById('agent-address-display').textContent = state.agent.address;
+      }
+      const disp = document.getElementById('from-account-display');
+      disp.textContent = state.fromAccount ? (state.fromAccountSub ? state.fromAccount + '\n' + state.fromAccountSub : state.fromAccount) : 'Select account';
+      disp.style.color = state.fromAccount ? '#000' : 'var(--ios-gray)';
+      disp.style.whiteSpace = state.fromAccountSub ? 'pre-line' : 'normal';
+      document.getElementById('wire-name').value = state.wireName;
+      document.getElementById('wire-amount').value = state.amount;
+      updateReviewButton();
+    }
+
+    function updateReviewButton() {
+      const valid = state.creditor && state.agent && state.wireName && state.fromAccount && state.amount && parseFloat(state.amount) > 0;
+      const btn = document.getElementById('btn-review-send');
+      btn.disabled = !valid;
+    }
+
+    function creditorRequiredFilled() {
+      const name = document.getElementById('creditor-name').value.trim();
+      const account = document.getElementById('creditor-account').value.trim();
+      const building = document.getElementById('creditor-building').value.trim();
+      const street = document.getElementById('creditor-street').value.trim();
+      const city = document.getElementById('creditor-city').value.trim();
+      const stateVal = document.getElementById('creditor-state').value.trim();
+      const zip = document.getElementById('creditor-zip').value.trim();
+      return name && account && building && street && city && stateVal && zip;
+    }
+
+    function updateCreditorDoneButton() {
+      const btn = document.getElementById('btn-creditor-done');
+      btn.disabled = !creditorRequiredFilled();
+    }
+
+    function saveWireFormToState() {
+      state.wireName = document.getElementById('wire-name').value;
+      state.amount = document.getElementById('wire-amount').value;
+    }
+
+    document.querySelectorAll('.clickable[data-next]').forEach(el => {
+      el.addEventListener('click', () => {
+        if (el.dataset.next === 'creditor' || el.dataset.next === 'creditor-agent') saveWireFormToState();
+        showView(el.dataset.next);
+      });
+    });
+
+    document.getElementById('wire-name').addEventListener('input', (e) => { state.wireName = e.target.value; updateReviewButton(); });
+    document.getElementById('wire-amount').addEventListener('input', (e) => { state.amount = e.target.value; updateReviewButton(); });
+    document.getElementById('from-account-picker').addEventListener('click', () => {
+      state.fromAccount = 'Payment for materials';
+      state.fromAccountSub = 'Business checking (x1234)';
+      const display = document.getElementById('from-account-display');
+      display.textContent = state.fromAccountSub ? state.fromAccount + '\n' + state.fromAccountSub : state.fromAccount;
+      display.style.color = '#000';
+      display.style.whiteSpace = 'pre-line';
+      updateReviewButton();
+    });
+
+    document.getElementById('btn-creditor-done').addEventListener('click', () => {
+      if (!creditorRequiredFilled()) return;
+      const building = document.getElementById('creditor-building').value.trim();
+      const street = document.getElementById('creditor-street').value.trim();
+      const city = document.getElementById('creditor-city').value.trim();
+      const stateVal = document.getElementById('creditor-state').value.trim();
+      const zip = document.getElementById('creditor-zip').value.trim();
+      const account = document.getElementById('creditor-account').value.trim();
+      state.creditor = {
+        name: document.getElementById('creditor-name').value.trim(),
+        address: `****${account.slice(-5)} - ${street}, ${city}, ${stateVal}`,
+        account
+      };
+      showView('send-wire');
+    });
+
+    ['creditor-name','creditor-account','creditor-building','creditor-street','creditor-city','creditor-state','creditor-zip'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', updateCreditorDoneButton);
+    });
+
+    document.getElementById('btn-agent-done').addEventListener('click', () => {
+      const name = document.getElementById('agent-institution').value.trim() || 'ABC Bank';
+      const ref = document.getElementById('agent-reference').value.trim();
+      const city = document.getElementById('agent-city').value.trim() || 'Springfield';
+      const stateVal = document.getElementById('agent-state').value.trim() || 'USA';
+      const address = ref ? `${ref}, ${city}, ${stateVal}` : (city && stateVal ? `${city}, ${stateVal}` : '123 Maple Street, Springfield, USA');
+      state.agent = { name, address };
+      showView('send-wire');
+    });
+
+    document.getElementById('same-agent-toggle').addEventListener('click', function() {
+      this.classList.toggle('is-on');
+      this.setAttribute('aria-pressed', this.classList.contains('is-on'));
+    });
+
+    document.getElementById('btn-review-send').addEventListener('click', () => {
+      if (state.creditor && state.agent && state.wireName && state.fromAccount && state.amount) {
+        alert('Review & send — would navigate to confirmation screen.');
+      }
+    });
+
+    document.getElementById('toggle-optional').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const fields = document.getElementById('optional-fields');
+      const label = document.getElementById('optional-label');
+      const btn = document.getElementById('toggle-optional');
+      const isExpanded = fields.style.display !== 'none';
+      fields.style.display = isExpanded ? 'none' : 'block';
+      label.textContent = isExpanded ? 'Show optional fields' : 'Hide optional fields';
+      btn.classList.toggle('optional-expanded', !isExpanded);
+    });
+
+    updateSendWireUI();
+  </script>
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Send wire</title>
+  <link rel="stylesheet" href="../../../../../../styles/shared.css">
+  <link rel="stylesheet" href="../../../../../../styles/ds.css">
+  <link rel="stylesheet" href="../../../../../../data/design-system/company.css">
+  <style>
+    html, body { margin: 0; padding: 0; }
+    .view { display: none; }
+    .view.active { display: flex; flex-direction: column; min-height: 100vh; }
+    .jh-row { align-items: flex-start; }
+    .jh-row .jh-label { flex-shrink: 0; }
+    .jh-row .jh-detail-value { min-width: 0; text-align: right; }
+    .clickable { cursor: pointer; }
+    .input-wrap { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-md); background: var(--bg-1); border: 1px solid rgba(0,0,0,0.08); transition: border-color 0.15s, box-shadow 0.15s; }
+    .input-wrap:focus-within { border-color: rgba(var(--jh-blue-rgb), 0.4); box-shadow: 0 0 0 3px rgba(var(--jh-blue-rgb), 0.08); }
+    .input-wrap input, .input-wrap select, .input-wrap textarea { flex: 1; min-width: 0; border: none; background: none; font-family: inherit; font-size: 0.95rem; color: var(--text); }
+    .input-wrap input::placeholder, .input-wrap textarea::placeholder { color: rgba(0,0,0,0.45); }
+    .input-wrap input:focus, .input-wrap textarea:focus { outline: none; }
+    .input-wrap .chevron { flex-shrink: 0; color: rgba(0,0,0,0.4); }
+    .input-wrap .search-icon { flex-shrink: 0; color: rgba(0,0,0,0.45); }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .toggle-row label { font-size: 0.9rem; font-weight: 600; color: rgba(0,0,0,0.85); }
+    .toggle-switch { width: 48px; height: 28px; border-radius: 14px; background: rgba(0,0,0,0.2); position: relative; cursor: pointer; transition: background 0.2s; }
+    .toggle-switch.is-on { background: var(--jh-blue); }
+    .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .toggle-switch.is-on::after { transform: translateX(20px); }
+    .recipient-card { background: var(--bg-0); border-radius: var(--radius-lg); border: 1px solid rgba(0,0,0,0.08); padding: 16px 20px; cursor: pointer; transition: background 0.15s, border-color 0.15s, box-shadow 0.15s; }
+    .recipient-card:hover { background: rgba(0,0,0,0.02); border-color: rgba(var(--jh-blue-rgb), 0.25); box-shadow: 0 0 0 1px rgba(var(--jh-blue-rgb), 0.1); }
+    .recipient-card-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(0,0,0,0.5); margin-bottom: 4px; }
+    .optional-expanded .optional-chevron { transform: rotate(180deg); }
+  </style>
+</head>
+<body>
+  <!-- 1. Wire list -->
+  <div id="view-list" class="view active">
+    <div style="height:44px; padding:12px 24px 0; display:flex; align-items:center; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#fff; background:var(--jh-navy);">
+      <span>9:41</span>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M1 9h2v3H1zM5 6h2v6H5zM9 3h2v9H9zM13 0h2v12h-2z"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2C5 2 2.4 3.6 1 6c1.4 2.4 4 4 7 4s5.6-1.6 7-4c-1.4-2.4-4-4-7-4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        <div style="width:24px; height:11px; border:1px solid rgba(255,255,255,0.5); border-radius:3px; padding:1px;"><div style="width:65%; height:100%; background:#fff; border-radius:1.5px;"></div></div>
+      </div>
+    </div>
+    <div class="jh-header-bar" style="border-radius:0; padding:8px 16px 14px;">
+      <button class="clickable" style="background:none; border:none; color:#fff; padding:4px; cursor:pointer;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      <span class="jh-header-bar-title">Wires</span>
+      <button class="clickable" style="background:none; border:none; color:#fff; padding:4px; cursor:pointer;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4-2v-8.54L22 3z"/></svg></button>
+    </div>
+    <main style="flex:1; padding:20px 16px; background:var(--bg-1); overflow-y:auto;">
+      <button class="clickable jh-btn-primary" data-next="send-wire" style="width:100%; padding:14px 20px; font-size:0.95rem; margin-bottom:24px; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Send wire
+      </button>
+      <div class="clickable jh-card" style="margin-bottom:12px;">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+          <div style="flex:1; min-width:0;">
+            <p style="font-size:1rem; font-weight:700; color:rgba(0,0,0,0.9); margin:0 0 4px 0;">Vendor payment</p>
+            <p style="font-size:0.8rem; color:var(--muted); margin:0;">Approval to Bank of America...</p>
+          </div>
+          <p style="font-size:1.1rem; font-weight:800; color:var(--jh-blue); margin:0; flex-shrink:0;">$235.00</p>
+        </div>
+      </div>
+      <div class="clickable jh-card" style="margin-bottom:12px;">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+          <div style="flex:1; min-width:0;">
+            <p style="font-size:1rem; font-weight:700; color:rgba(0,0,0,0.9); margin:0 0 4px 0;">Rent deposit</p>
+            <p style="font-size:0.8rem; color:var(--muted); margin:0;">Initiated to Bank of America (x1234)</p>
+          </div>
+          <p style="font-size:1.1rem; font-weight:800; color:var(--jh-blue); margin:0; flex-shrink:0;">$640.00</p>
+        </div>
+      </div>
+      <div class="clickable jh-card" style="margin-bottom:12px;">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+          <div style="flex:1; min-width:0;">
+            <p style="font-size:1rem; font-weight:700; color:rgba(0,0,0,0.9); margin:0 0 4px 0;">Materials payment</p>
+            <p style="font-size:0.8rem; color:var(--muted); margin:0;">Ready to Chase Bank (x1234)</p>
+          </div>
+          <p style="font-size:1.1rem; font-weight:800; color:var(--jh-blue); margin:0; flex-shrink:0;">$340.00</p>
+        </div>
+      </div>
+      <div class="clickable jh-card" style="margin-bottom:12px;">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+          <div style="flex:1; min-width:0;">
+            <p style="font-size:1rem; font-weight:700; color:rgba(0,0,0,0.9); margin:0 0 4px 0;">Equipment fee refund</p>
+            <p style="font-size:0.8rem; color:var(--muted); margin:0;">Processed to Chase Bank (x1234)</p>
+          </div>
+          <p style="font-size:1.1rem; font-weight:800; color:var(--jh-blue); margin:0; flex-shrink:0;">$800.00</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 2. Send wire (form) -->
+  <div id="view-send-wire" class="view">
+    <div style="height:44px; padding:12px 24px 0; display:flex; align-items:center; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#fff; background:var(--jh-navy);">
+      <span>9:41</span>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M1 9h2v3H1zM5 6h2v6H5zM9 3h2v9H9zM13 0h2v12h-2z"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2C5 2 2.4 3.6 1 6c1.4 2.4 4 4 7 4s5.6-1.6 7-4c-1.4-2.4-4-4-7-4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        <div style="width:24px; height:11px; border:1px solid rgba(255,255,255,0.5); border-radius:3px; padding:1px;"><div style="width:65%; height:100%; background:#fff; border-radius:1.5px;"></div></div>
+      </div>
+    </div>
+    <div class="jh-header-bar" style="border-radius:0; padding:8px 16px 14px;">
+      <div style="width:60px;"></div>
+      <span class="jh-header-bar-title">Send wire</span>
+      <button class="clickable" data-next="list" style="background:none; border:none; color:rgba(255,255,255,0.95); padding:4px 0; cursor:pointer; font-size:0.85rem; font-weight:700; font-family:inherit;">CANCEL</button>
+    </div>
+    <main style="flex:1; padding:20px 16px; background:var(--bg-1); overflow-y:auto;">
+      <p class="jh-section-label" style="margin:0 0 12px 0;">Wire details</p>
+      <div style="background:var(--bg-0); border-radius:var(--radius-lg); padding:20px; margin-bottom:20px;">
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Wire name</label>
+          <div class="input-wrap"><input type="text" id="wire-name" placeholder="e.g. Payment for materials"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">From account</label>
+          <div class="input-wrap clickable" id="from-account-picker" style="cursor:pointer;">
+            <span id="from-account-display" style="color:rgba(0,0,0,0.45);">Select account</span>
+            <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Amount</label>
+          <div class="input-wrap" style="padding:14px 16px;">
+            <span style="font-size:1.05rem; font-weight:600; color:rgba(0,0,0,0.5);">$</span>
+            <input type="text" id="wire-amount" placeholder="0.00" inputmode="decimal" style="text-align:right; font-weight:600; color:var(--jh-blue);">
+          </div>
+        </div>
+        <button id="toggle-optional" class="jh-link-action" style="background:none; border:none; padding:0; cursor:pointer; font-size:0.9rem; display:flex; align-items:center; gap:4px;">
+          <span id="optional-label">Show optional fields</span>
+          <svg class="optional-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="optional-fields" style="display:none; margin-top:16px;">
+          <div>
+            <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Remittance info (optional)</label>
+            <textarea id="wire-remittance" placeholder="Add up to four lines of notes or reference details." rows="4" style="width:100%; padding:12px 16px; border:1px solid rgba(0,0,0,0.08); border-radius:var(--radius-md); background:var(--bg-1); font-family:inherit; font-size:0.95rem; color:var(--text); resize:vertical; box-sizing:border-box;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <p class="jh-section-label" style="margin:0 0 12px 0;">Recipient details</p>
+      <div id="creditor-empty" class="creditor-block recipient-card clickable" data-next="creditor" style="margin-bottom:12px;">
+        <div style="display:flex; align-items:flex-start; gap:14px;">
+          <div style="width:44px; height:44px; border-radius:var(--radius-sm); background:rgba(var(--jh-blue-rgb),0.1); display:grid; place-items:center; flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--jh-blue)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <p class="recipient-card-label">Creditor</p>
+            <p style="font-size:0.85rem; color:rgba(0,0,0,0.6); margin:0 0 8px 0;">Person or company receiving the wire.</p>
+            <span class="jh-link-action" style="font-size:0.9rem;">Add creditor</span>
+          </div>
+        </div>
+      </div>
+      <div id="creditor-filled" class="creditor-block recipient-card clickable" data-next="creditor" style="display:none; margin-bottom:12px;">
+        <div style="display:flex; align-items:flex-start; gap:14px;">
+          <div style="width:44px; height:44px; border-radius:var(--radius-sm); background:rgba(var(--jh-blue-rgb),0.1); display:grid; place-items:center; flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--jh-blue)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <p id="creditor-name-display" style="font-size:0.95rem; font-weight:700; color:rgba(0,0,0,0.9); margin:0 0 2px 0;">Amy Smith</p>
+            <p id="creditor-address-display" style="font-size:0.8rem; color:var(--muted); margin:0;">****56678 - Elm Street, Maple Grove, CA</p>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="1.8" style="flex-shrink:0;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+      </div>
+
+      <div id="agent-empty" class="agent-block recipient-card clickable" data-next="creditor-agent">
+        <div style="display:flex; align-items:flex-start; gap:14px;">
+          <div style="width:44px; height:44px; border-radius:var(--radius-sm); background:rgba(var(--jh-blue-rgb),0.1); display:grid; place-items:center; flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--jh-blue)" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <p class="recipient-card-label">Creditor agent</p>
+            <p style="font-size:0.85rem; color:rgba(0,0,0,0.6); margin:0 0 8px 0;">Financial institution that is handling the wire.</p>
+            <span class="jh-link-action" style="font-size:0.9rem;">Add agent</span>
+          </div>
+        </div>
+      </div>
+      <div id="agent-filled" class="agent-block recipient-card clickable" data-next="creditor-agent" style="display:none;">
+        <div style="display:flex; align-items:flex-start; gap:14px;">
+          <div style="width:44px; height:44px; border-radius:var(--radius-sm); background:rgba(var(--jh-blue-rgb),0.1); display:grid; place-items:center; flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--jh-blue)" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <p id="agent-name-display" style="font-size:0.95rem; font-weight:700; color:rgba(0,0,0,0.9); margin:0 0 2px 0;">ABC Bank</p>
+            <p id="agent-address-display" style="font-size:0.8rem; color:var(--muted); margin:0;">123 Maple Street, Springfield, USA</p>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="1.8" style="flex-shrink:0;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+      </div>
+    </main>
+    <div style="padding:16px 20px 32px; background:var(--bg-1);">
+      <button id="btn-review-send" class="jh-btn-primary" style="width:100%; padding:16px; font-size:1rem; opacity:0.5; cursor:not-allowed;" disabled>Review & send</button>
+    </div>
+  </div>
+
+  <!-- 3. Creditor details -->
+  <div id="view-creditor" class="view">
+    <div style="height:44px; padding:12px 24px 0; display:flex; align-items:center; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#fff; background:var(--jh-navy);">
+      <span>9:41</span>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M1 9h2v3H1zM5 6h2v6H5zM9 3h2v9H9zM13 0h2v12h-2z"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2C5 2 2.4 3.6 1 6c1.4 2.4 4 4 7 4s5.6-1.6 7-4c-1.4-2.4-4-4-7-4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        <div style="width:24px; height:11px; border:1px solid rgba(255,255,255,0.5); border-radius:3px; padding:1px;"><div style="width:65%; height:100%; background:#fff; border-radius:1.5px;"></div></div>
+      </div>
+    </div>
+    <div class="jh-header-bar" style="border-radius:0; padding:8px 16px 14px;">
+      <button class="clickable" data-next="send-wire" style="background:none; border:none; color:#fff; padding:4px 0; cursor:pointer; display:flex; align-items:center; gap:4px; font-size:0.95rem; font-weight:600;">
+        <svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1L1 9l8 8"/></svg>
+        Back
+      </button>
+      <span class="jh-header-bar-title">Creditor details</span>
+      <div style="width:60px;"></div>
+    </div>
+    <main style="flex:1; padding:20px 16px; background:var(--bg-1); overflow-y:auto;">
+      <p style="font-size:0.85rem; color:rgba(0,0,0,0.6); margin:0 0 16px 0;">Person or company receiving the payment</p>
+      <div style="background:var(--bg-0); border-radius:var(--radius-lg); padding:20px; margin-bottom:20px;">
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Name</label>
+          <div class="input-wrap"><input type="text" id="creditor-name" placeholder="Full legal name"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Account number</label>
+          <div class="input-wrap"><input type="text" id="creditor-account" placeholder="Account number"></div>
+        </div>
+      </div>
+      <p class="jh-section-label" style="margin:0 0 12px 0;">Creditor address</p>
+      <div style="background:var(--bg-0); border-radius:var(--radius-lg); padding:20px; margin-bottom:20px;">
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Building/street #</label>
+          <div class="input-wrap"><input type="text" id="creditor-building" placeholder="Building or street number"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Street name</label>
+          <div class="input-wrap"><input type="text" id="creditor-street" placeholder="Street name"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Town name (city)</label>
+          <div class="input-wrap"><input type="text" id="creditor-city" placeholder="City"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Country subdivision (state)</label>
+          <div class="input-wrap"><input type="text" id="creditor-state" placeholder="State"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Post code (zip)</label>
+          <div class="input-wrap"><input type="text" id="creditor-zip" placeholder="ZIP code"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Country</label>
+          <div class="input-wrap">
+            <select id="creditor-country" style="border:none; background:none; font-family:inherit; font-size:0.95rem; color:var(--text); width:100%;">
+              <option>United States - US</option>
+            </select>
+            <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        <button class="jh-link-action" style="background:none; border:none; padding:0; cursor:pointer; font-size:0.9rem;">Show optional fields <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-left:4px;"><path d="M6 9l6 6 6-6"/></svg></button>
+      </div>
+    </main>
+    <div style="padding:16px 20px 32px; background:var(--bg-1);">
+      <button id="btn-creditor-done" class="jh-btn-primary" style="width:100%; padding:16px; font-size:1rem; opacity:0.5; cursor:not-allowed;" disabled>Done</button>
+    </div>
+  </div>
+
+  <!-- 4. Creditor agent details -->
+  <div id="view-creditor-agent" class="view">
+    <div style="height:44px; padding:12px 24px 0; display:flex; align-items:center; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#fff; background:var(--jh-navy);">
+      <span>9:41</span>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M1 9h2v3H1zM5 6h2v6H5zM9 3h2v9H9zM13 0h2v12h-2z"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2C5 2 2.4 3.6 1 6c1.4 2.4 4 4 7 4s5.6-1.6 7-4c-1.4-2.4-4-4-7-4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        <div style="width:24px; height:11px; border:1px solid rgba(255,255,255,0.5); border-radius:3px; padding:1px;"><div style="width:65%; height:100%; background:#fff; border-radius:1.5px;"></div></div>
+      </div>
+    </div>
+    <div class="jh-header-bar" style="border-radius:0; padding:8px 16px 14px;">
+      <button class="clickable" data-next="send-wire" style="background:none; border:none; color:#fff; padding:4px 0; cursor:pointer; display:flex; align-items:center; gap:4px; font-size:0.95rem; font-weight:600;">
+        <svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1L1 9l8 8"/></svg>
+        Back
+      </button>
+      <span class="jh-header-bar-title">Creditor agent details</span>
+      <div style="width:60px;"></div>
+    </div>
+    <main style="flex:1; padding:20px 16px; background:var(--bg-1); overflow-y:auto;">
+      <p style="font-size:0.85rem; color:rgba(0,0,0,0.6); margin:0 0 16px 0;">Beneficiary institution that holds the creditor's account.</p>
+      <div style="background:var(--bg-0); border-radius:var(--radius-lg); padding:20px; margin-bottom:20px;">
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Routing/ABA number</label>
+          <div class="input-wrap">
+            <input type="text" id="agent-routing" placeholder="9-digit routing number">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Institution name</label>
+          <div class="input-wrap"><input type="text" id="agent-institution" placeholder="Bank or institution name"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Reference beneficiary</label>
+          <div class="input-wrap"><input type="text" id="agent-reference" placeholder="Reference"></div>
+        </div>
+      </div>
+      <p class="jh-section-label" style="margin:0 0 12px 0;">Creditor agent address</p>
+      <div style="background:var(--bg-0); border-radius:var(--radius-lg); padding:20px; margin-bottom:20px;">
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Town name (city)</label>
+          <div class="input-wrap"><input type="text" id="agent-city" placeholder="City"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Country subdivision (state)</label>
+          <div class="input-wrap"><input type="text" id="agent-state" placeholder="State"></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:rgba(0,0,0,0.6); margin-bottom:6px;">Country</label>
+          <div class="input-wrap">
+            <select id="agent-country" style="border:none; background:none; font-family:inherit; font-size:0.95rem; color:var(--text); width:100%;">
+              <option>United States - US</option>
+            </select>
+            <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:0.85rem; color:rgba(0,0,0,0.6); margin:0 0 12px 0;">Creditor's receiving financial institution.</p>
+      <div style="background:var(--bg-0); border-radius:var(--radius-lg); padding:20px;">
+        <div class="toggle-row">
+          <label for="same-agent-toggle">Same details as creditor agent</label>
+          <div id="same-agent-toggle" class="toggle-switch is-on" role="button" tabindex="0" aria-pressed="true"></div>
+        </div>
+      </div>
+    </main>
+    <div style="padding:16px 20px 32px; background:var(--bg-1);">
+      <button id="btn-agent-done" class="jh-btn-primary" style="width:100%; padding:16px; font-size:1rem;">Done</button>
+    </div>
+  </div>
+
+  <script>
+    const views = ['list', 'send-wire', 'creditor', 'creditor-agent'];
+    const state = {
+      creditor: null,
+      agent: null,
+      wireName: '',
+      fromAccount: '',
+      amount: ''
+    };
+
+    function showView(id) {
+      views.forEach(v => {
+        const el = document.getElementById('view-' + v);
+        if (el) el.classList.toggle('active', v === id);
+      });
+      if (id === 'send-wire') updateSendWireUI();
+      if (id === 'creditor' && state.creditor) {
+        document.getElementById('creditor-name').value = state.creditor.name;
+        document.getElementById('creditor-account').value = state.creditor.account || '';
+      }
+      if (id === 'creditor-agent' && state.agent) {
+        document.getElementById('agent-institution').value = state.agent.name;
+      }
+      if (id === 'creditor') updateCreditorDoneButton();
+    }
+
+    function updateSendWireUI() {
+      const hasCreditor = !!state.creditor;
+      const hasAgent = !!state.agent;
+      document.getElementById('creditor-empty').style.display = hasCreditor ? 'none' : 'block';
+      document.getElementById('creditor-filled').style.display = hasCreditor ? 'block' : 'none';
+      document.getElementById('agent-empty').style.display = hasAgent ? 'none' : 'block';
+      document.getElementById('agent-filled').style.display = hasAgent ? 'block' : 'none';
+      if (hasCreditor) {
+        document.getElementById('creditor-name-display').textContent = state.creditor.name;
+        document.getElementById('creditor-address-display').textContent = state.creditor.address;
+      }
+      if (hasAgent) {
+        document.getElementById('agent-name-display').textContent = state.agent.name;
+        document.getElementById('agent-address-display').textContent = state.agent.address;
+      }
+      const disp = document.getElementById('from-account-display');
+      disp.textContent = state.fromAccount ? (state.fromAccountSub ? state.fromAccount + '\n' + state.fromAccountSub : state.fromAccount) : 'Select account';
+      disp.style.color = state.fromAccount ? 'var(--text)' : 'rgba(0,0,0,0.45)';
+      disp.style.whiteSpace = state.fromAccountSub ? 'pre-line' : 'normal';
+      document.getElementById('wire-name').value = state.wireName;
+      document.getElementById('wire-amount').value = state.amount;
+      updateReviewButton();
+    }
+
+    function updateReviewButton() {
+      const valid = state.creditor && state.agent && state.wireName && state.fromAccount && state.amount && parseFloat(state.amount) > 0;
+      const btn = document.getElementById('btn-review-send');
+      btn.disabled = !valid;
+      btn.style.opacity = valid ? '1' : '0.5';
+      btn.style.cursor = valid ? 'pointer' : 'not-allowed';
+    }
+
+    function creditorRequiredFilled() {
+      const name = document.getElementById('creditor-name').value.trim();
+      const account = document.getElementById('creditor-account').value.trim();
+      const building = document.getElementById('creditor-building').value.trim();
+      const street = document.getElementById('creditor-street').value.trim();
+      const city = document.getElementById('creditor-city').value.trim();
+      const stateVal = document.getElementById('creditor-state').value.trim();
+      const zip = document.getElementById('creditor-zip').value.trim();
+      return name && account && building && street && city && stateVal && zip;
+    }
+
+    function updateCreditorDoneButton() {
+      const btn = document.getElementById('btn-creditor-done');
+      const valid = creditorRequiredFilled();
+      btn.disabled = !valid;
+      btn.style.opacity = valid ? '1' : '0.5';
+      btn.style.cursor = valid ? 'pointer' : 'not-allowed';
+    }
+
+    function saveWireFormToState() {
+      state.wireName = document.getElementById('wire-name').value;
+      state.amount = document.getElementById('wire-amount').value;
+    }
+
+    document.querySelectorAll('.clickable[data-next]').forEach(el => {
+      el.addEventListener('click', () => {
+        if (el.dataset.next === 'creditor' || el.dataset.next === 'creditor-agent') saveWireFormToState();
+        showView(el.dataset.next);
+      });
+    });
+
+    document.getElementById('wire-name').addEventListener('input', (e) => {
+      state.wireName = e.target.value;
+      updateReviewButton();
+    });
+    document.getElementById('wire-amount').addEventListener('input', (e) => {
+      state.amount = e.target.value;
+      updateReviewButton();
+    });
+    document.getElementById('from-account-picker').addEventListener('click', () => {
+      state.fromAccount = 'Payment for materials';
+      state.fromAccountSub = 'Business checking (x1234)';
+      const display = document.getElementById('from-account-display');
+      display.textContent = state.fromAccountSub ? state.fromAccount + '\n' + state.fromAccountSub : state.fromAccount;
+      display.style.color = 'var(--text)';
+      display.style.whiteSpace = 'pre-line';
+      updateReviewButton();
+    });
+
+    document.getElementById('btn-creditor-done').addEventListener('click', () => {
+      if (!creditorRequiredFilled()) return;
+      const building = document.getElementById('creditor-building').value.trim();
+      const street = document.getElementById('creditor-street').value.trim();
+      const city = document.getElementById('creditor-city').value.trim();
+      const stateVal = document.getElementById('creditor-state').value.trim();
+      const zip = document.getElementById('creditor-zip').value.trim();
+      const account = document.getElementById('creditor-account').value.trim();
+      state.creditor = {
+        name: document.getElementById('creditor-name').value.trim(),
+        address: `****${account.slice(-5)} - ${street}, ${city}, ${stateVal}`,
+        account
+      };
+      showView('send-wire');
+    });
+
+    ['creditor-name','creditor-account','creditor-building','creditor-street','creditor-city','creditor-state','creditor-zip'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', updateCreditorDoneButton);
+    });
+
+    document.getElementById('btn-agent-done').addEventListener('click', () => {
+      const name = document.getElementById('agent-institution').value.trim() || 'ABC Bank';
+      const ref = document.getElementById('agent-reference').value.trim();
+      const city = document.getElementById('agent-city').value.trim() || 'Springfield';
+      const stateVal = document.getElementById('agent-state').value.trim() || 'USA';
+      const address = ref ? `${ref}, ${city}, ${stateVal}` : (city && stateVal ? `${city}, ${stateVal}` : '123 Maple Street, Springfield, USA');
+      state.agent = { name, address };
+      showView('send-wire');
+    });
+
+    document.getElementById('same-agent-toggle').addEventListener('click', function() {
+      this.classList.toggle('is-on');
+      this.setAttribute('aria-pressed', this.classList.contains('is-on'));
+    });
+
+    document.getElementById('btn-review-send').addEventListener('click', () => {
+      if (state.creditor && state.agent && state.wireName && state.fromAccount && state.amount) {
+        alert('Review & send — would navigate to confirmation screen.');
+      }
+    });
+
+    document.getElementById('toggle-optional').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const fields = document.getElementById('optional-fields');
+      const label = document.getElementById('optional-label');
+      const btn = document.getElementById('toggle-optional');
+      const isExpanded = fields.style.display !== 'none';
+      fields.style.display = isExpanded ? 'none' : 'block';
+      label.textContent = isExpanded ? 'Show optional fields' : 'Hide optional fields';
+      btn.classList.toggle('optional-expanded', !isExpanded);
+    });
+
+    updateSendWireUI();
+  </script>
+</body>
+</html>

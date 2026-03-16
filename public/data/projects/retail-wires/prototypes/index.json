@@ -5,6 +5,18 @@
       "name": "Wire flow",
       "description": "Complete click-through: wire list → details → confirm → success",
       "device": "mobile"
+    },
+    {
+      "id": "send-wire",
+      "name": "Send wire",
+      "description": "Wire list with filter, send wire form with creditor and creditor agent flows",
+      "device": "mobile"
+    },
+    {
+      "id": "send-wire-ios",
+      "name": "Send wire (iOS)",
+      "description": "Wire list and send wire flow with iOS 26 Liquid Glass–style components",
+      "device": "mobile"
     }
   ]
 }

@@ -1,38 +1,62 @@
 {
   "screens": [
     {
+      "file": "send-wire-current.html",
+      "x": 1729,
+      "y": 1688,
+      "width": 390
+    },
+    {
+      "file": "send-wire-step.html",
+      "x": 2679,
+      "y": 1695,
+      "width": 390
+    },
+    {
+      "file": "send-wire-minimal.html",
+      "x": 3104,
+      "y": 1698,
+      "width": 390
+    },
+    {
+      "file": "send-wire-filled.html",
+      "x": 2162,
+      "y": 1694,
+      "width": 390
+    },
+    {
       "file": "wire-details-modern.html",
-      "x": 430,
-      "y": 0,
-      "width": 390
-    },
-    {
-      "file": "wire-details-premium.html",
-      "x": 860,
-      "y": 0,
-      "width": 390
-    },
-    {
-      "file": "wire-details-full.html",
-      "x": 1290,
-      "y": 0,
-      "width": 390
-    },
-    {
-      "file": "wire-details-fintastic.html",
       "x": 1720,
       "y": 0,
       "width": 390
     },
     {
-      "file": "wire-details-editorial.html",
+      "file": "wire-details-premium.html",
       "x": 2150,
       "y": 0,
       "width": 390
     },
     {
-      "file": "wire-details-bento.html",
+      "file": "wire-details-full.html",
       "x": 2580,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "wire-details-fintastic.html",
+      "x": 3010,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "wire-details-editorial.html",
+      "x": 3440,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "wire-details-bento.html",
+      "x": 3870,
       "y": 0,
       "width": 390
     }
