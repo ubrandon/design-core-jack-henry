@@ -1,11 +1,3 @@
 {
-  "projects": [
-    {
-      "id": "sample-app",
-      "name": "Sample App",
-      "description": "Example project showing screens and prototypes.",
-      "createdBy": "Team",
-      "createdAt": "2026-01-01T00:00:00Z"
-    }
-  ]
+  "projects": []
 }

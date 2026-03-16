@@ -159,16 +159,46 @@
         }
 
         const groups = registry.groups || [{ id: "default", name: "Components" }];
+        const categories = registry.categories || [];
+
+        if (groups.length === 0 || categories.length === 0) {
+          stage.innerHTML = "";
+          if (!document.getElementById("ds-empty")) {
+            const el = document.createElement("div");
+            el.id = "ds-empty";
+            el.style.cssText = "position:fixed;inset:0;top:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;z-index:10;";
+            el.innerHTML = `
+              <div style="width:64px;height:64px;border-radius:50%;background:rgba(59,130,246,0.1);display:grid;place-items:center;margin-bottom:20px;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(59,130,246,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                  <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+                  <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                </svg>
+              </div>
+              <div style="font-size:1.15rem;font-weight:800;color:rgba(0,0,0,0.75);margin-bottom:8px;">Your design system is empty</div>
+              <div style="font-size:0.9rem;color:rgba(0,0,0,0.45);max-width:340px;line-height:1.55;">
+                Start by telling the AI what your app looks like — share screenshots, describe your brand colors, or ask it to create components for you.
+              </div>
+            `;
+            document.body.appendChild(el);
+          }
+          return;
+        }
+
+        const dsEmpty = document.getElementById("ds-empty");
+        if (dsEmpty) dsEmpty.remove();
+
         const byGroup = new Map();
         for (const g of groups) byGroup.set(g.id, []);
-        for (const cat of registry.categories) {
+        for (const cat of categories) {
           const gid = cat.group || "default";
           if (!byGroup.has(gid)) byGroup.set(gid, []);
           byGroup.get(gid).push(cat);
         }
 
         const componentFetches = [];
-        for (const cat of registry.categories) {
+        for (const cat of categories) {
           for (const comp of cat.components) {
             componentFetches.push(
               fetch("data/design-system/components/" + comp.file + bust)

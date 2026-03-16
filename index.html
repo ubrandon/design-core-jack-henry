@@ -34,11 +34,31 @@
       }
     });
 
+    const dsCard = `
+      <a href="design-system.html" class="ds-entry-card">
+        <div class="ds-entry-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--neon-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+          </svg>
+        </div>
+        <div class="ds-entry-card__name">Design System</div>
+        <div class="ds-entry-card__desc">Colors, typography, buttons, cards, and all shared components.</div>
+      </a>
+    `;
+
     fetchJSON("data/projects/index.json")
       .then(data => {
         const grid = document.getElementById("projects");
         if (!data.projects.length) {
-          grid.innerHTML = '<div class="empty-state">No projects yet.</div>';
+          grid.innerHTML = `
+            <div class="empty-state empty-state--in-grid">
+              <p class="empty-state__title">No projects yet</p>
+              <p class="empty-state__hint">Ask the AI to create your first project — just describe what you want to design.</p>
+            </div>
+          ` + dsCard;
           return;
         }
         const cards = data.projects.map(p => `
@@ -53,25 +73,10 @@
           </a>
         `).join("");
 
-        const dsCard = `
-          <a href="design-system.html" class="ds-entry-card">
-            <div class="ds-entry-card__icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--neon-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-                <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-                <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-                <rect x="14" y="14" width="7" height="7" rx="1.5"/>
-              </svg>
-            </div>
-            <div class="ds-entry-card__name">Design System</div>
-            <div class="ds-entry-card__desc">Colors, typography, buttons, cards, and all shared components.</div>
-          </a>
-        `;
-
         grid.innerHTML = cards + dsCard;
       })
       .catch(() => {
-        document.getElementById("projects").innerHTML = '<div class="empty-state">Could not load projects.</div>';
+        document.getElementById("projects").innerHTML = '<div class="empty-state">Could not load projects.</div>' + dsCard;
       });
   </script>
 </body>

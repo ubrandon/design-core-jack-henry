@@ -1,248 +1,5 @@
 /* Design System Components */
 
-/* ===== EXISTING COMPONENTS (converted to light mode) ===== */
-
-/* Location icon inline helper */
-.ds-location {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.ds-location svg {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-/* Type pills */
-.ds-type-pill {
-  --type-rgb: var(--neon-blue-rgb);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.78);
-  background: rgba(var(--type-rgb), 0.1);
-  border: 1px solid rgba(var(--type-rgb), 0.25);
-}
-.ds-type-plan { --type-rgb: var(--neon-blue-rgb); }
-.ds-type-activity { --type-rgb: var(--neon-teal-rgb); }
-.ds-type-event { --type-rgb: 234, 149, 20; }
-.ds-type-place { --type-rgb: 239, 68, 68; }
-
-/* Plan cards */
-.plan-card {
-  position: relative;
-  display: block;
-  padding: 0;
-  width: 100%;
-  max-width: 320px;
-  height: 220px;
-  flex-shrink: 0;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: var(--bg-0);
-  box-shadow: var(--shadow-soft);
-}
-.plan-card-bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  z-index: 0;
-}
-.plan-card-date {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  z-index: 2;
-}
-.plan-card-glass {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 14px 16px 12px;
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-  z-index: 2;
-  backdrop-filter: blur(28px);
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.75);
-}
-.plan-card-title {
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  font-size: 1.2rem;
-  margin-bottom: 4px;
-  color: rgba(0, 0, 0, 0.9);
-  line-height: 1.2;
-}
-.plan-card-location {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: rgba(0, 0, 0, 0.6);
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-.plan-card-attendees {
-  display: flex;
-  align-items: center;
-  margin-top: 8px;
-}
-.attendee-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  margin-left: -8px;
-  background: rgba(0, 0, 0, 0.08);
-}
-.attendee-avatar:first-child { margin-left: 0; }
-
-.plan-card-gaming .plan-card-bg { background-image: url("https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&w=800&h=600&q=80"); }
-.plan-card-hiking .plan-card-bg { background-image: url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&h=600&q=80"); }
-.plan-card-cafe .plan-card-bg { background-image: url("https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&h=600&q=80"); }
-.plan-card-food .plan-card-bg { background-image: url("https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&h=600&q=80"); }
-.plan-card-trivia .plan-card-bg { background-image: url("https://images.unsplash.com/photo-1527224857830-43a7acc85260?auto=format&fit=crop&w=800&h=600&q=80"); }
-.plan-card-cooking .plan-card-bg { background-image: url("https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&h=600&q=80"); }
-
-/* Plan carousel */
-.ds-plan-carousel {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding: 8px 0 12px;
-  scroll-snap-type: x mandatory;
-}
-.plan-card-mini {
-  width: 200px;
-  height: 140px;
-  border-radius: 20px;
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-.plan-card-mini-overlay {
-  position: absolute;
-  inset: auto 0 0 0;
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  border-radius: 0 0 20px 20px;
-  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 100%);
-}
-.plan-card-mini-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-}
-.plan-card-mini-time {
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.55);
-}
-.plan-card-mini-title {
-  font-size: 0.95rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  color: rgba(0, 0, 0, 0.88);
-}
-.plan-card-mini-location {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.72rem;
-  color: rgba(0, 0, 0, 0.55);
-}
-
-/* Activity rows */
-.ds-activity-row {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-0);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-.ds-activity-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(0, 0, 0, 0.08);
-}
-.ds-activity-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-  min-width: 0;
-}
-.ds-activity-top {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-.ds-activity-status {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: rgba(0, 0, 0, 0.5);
-}
-.ds-activity-status.ds-status-live { color: #16a34a; }
-.ds-activity-status.ds-status-recurring { color: rgba(0, 0, 0, 0.45); }
-.ds-activity-title {
-  font-weight: 800;
-  font-size: 0.95rem;
-  letter-spacing: -0.01em;
-  color: rgba(0, 0, 0, 0.88);
-}
-.ds-activity-meta {
-  font-size: 0.82rem;
-  color: rgba(0, 0, 0, 0.5);
-}
-.ds-activity-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 4px;
-}
-.ds-activity-note {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.75rem;
-  color: rgba(0, 0, 0, 0.45);
-}
-
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -277,74 +34,6 @@
   font-size: 0.82rem;
 }
 
-/* Event cards */
-.event-card {
-  display: grid;
-  grid-template-columns: 88px 1fr;
-  gap: 12px;
-  padding: 12px;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: var(--bg-0);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-}
-.event-card-media {
-  width: 88px;
-  height: 88px;
-  border-radius: 18px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.04);
-}
-.event-card-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.event-card-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 6px;
-}
-.event-card-pill {
-  display: inline-flex;
-  padding: 5px 10px;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.7);
-  background: rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-.event-card-title {
-  font-size: 1.1rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  color: rgba(0, 0, 0, 0.9);
-  line-height: 1.15;
-  margin-bottom: 4px;
-}
-.event-card-description {
-  color: rgba(0, 0, 0, 0.55);
-  font-size: 0.88rem;
-  line-height: 1.4;
-  margin-bottom: 6px;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.event-card-location {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: rgba(0, 0, 0, 0.55);
-  font-size: 0.82rem;
-  font-weight: 650;
-}
-
 /* Chips */
 .ds-chip-row {
   display: flex;
@@ -377,111 +66,6 @@
   font-weight: 700;
 }
 
-/* Recent activity avatars */
-.ds-recent-activity {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  padding: 8px 0 12px;
-  scroll-snap-type: x mandatory;
-}
-.ds-recent-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  text-align: center;
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-  width: 72px;
-}
-.ds-recent-avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  overflow: hidden;
-  position: relative;
-  border: 2px solid rgba(0, 0, 0, 0.08);
-  background: rgba(0, 0, 0, 0.04);
-}
-.ds-recent-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.ds-recent-count {
-  position: absolute;
-  right: -2px;
-  bottom: -2px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: #ffffff;
-  background: var(--neon-teal);
-  border: 2px solid var(--bg-0);
-}
-.ds-recent-name {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: rgba(0, 0, 0, 0.85);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-.ds-recent-detail {
-  font-size: 0.68rem;
-  color: rgba(0, 0, 0, 0.45);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-/* Interest cards */
-.ds-interests-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.ds-interest-card {
-  width: 140px;
-  padding: 12px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-0);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-.ds-interest-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: rgba(var(--neon-blue-rgb), 0.08);
-  border: 1px solid rgba(var(--neon-blue-rgb), 0.15);
-  font-size: 1.2rem;
-  position: relative;
-}
-.ds-interest-title {
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: rgba(0, 0, 0, 0.88);
-}
-.ds-interest-detail {
-  font-size: 0.78rem;
-  color: rgba(0, 0, 0, 0.45);
-}
-
 /* Section headers */
 .ds-section-title {
   font-size: 1.1rem;
@@ -501,279 +85,6 @@
   font-weight: 900;
   letter-spacing: -0.02em;
   color: rgba(0, 0, 0, 0.92);
-}
-
-/* Plan rows */
-.ds-plan-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.ds-plan-row {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 14px;
-  padding: 14px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-0);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-.ds-plan-row-media {
-  width: 120px;
-  height: 90px;
-  border-radius: 16px;
-  background-size: cover;
-  background-position: center;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-.ds-plan-row-content {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-}
-.ds-plan-row-top {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-.ds-plan-row-time {
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.45);
-}
-.ds-plan-row-badge {
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: rgba(0, 0, 0, 0.7);
-  background: rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-.ds-badge-gold {
-  background: rgba(234, 149, 20, 0.12);
-  border-color: rgba(234, 149, 20, 0.3);
-  color: #b45309;
-}
-.ds-plan-row-title {
-  font-size: 1.05rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  color: rgba(0, 0, 0, 0.9);
-}
-.ds-plan-row-desc {
-  color: rgba(0, 0, 0, 0.55);
-  font-size: 0.85rem;
-  line-height: 1.45;
-}
-.ds-plan-row-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-}
-.ds-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
-  color: rgba(0, 0, 0, 0.55);
-}
-.ds-meta-row svg {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  opacity: 0.6;
-}
-.ds-avatar-stack {
-  display: flex;
-  align-items: center;
-}
-.ds-avatar-stack img {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--bg-0);
-  margin-left: -6px;
-  background: rgba(0, 0, 0, 0.06);
-}
-.ds-avatar-stack img:first-child { margin-left: 0; }
-.ds-avatar-count {
-  margin-left: 6px;
-  padding: 3px 6px;
-  border-radius: 999px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: rgba(0, 0, 0, 0.6);
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* Groups */
-.ds-group-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.ds-group-card {
-  width: 150px;
-  padding: 12px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-0);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-.ds-group-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  overflow: hidden;
-  position: relative;
-  border: 2px solid rgba(0, 0, 0, 0.08);
-}
-.ds-group-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.ds-group-count {
-  position: absolute;
-  right: -4px;
-  bottom: -4px;
-  padding: 3px 5px;
-  border-radius: 999px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #ffffff;
-  background: var(--neon-blue);
-  border: 1px solid var(--bg-0);
-}
-.ds-group-title {
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: rgba(0, 0, 0, 0.88);
-}
-.ds-group-detail {
-  font-size: 0.78rem;
-  color: rgba(0, 0, 0, 0.45);
-}
-.ds-group-status {
-  font-size: 0.72rem;
-  color: rgba(0, 0, 0, 0.38);
-}
-
-/* Friends */
-.ds-friend-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.ds-friend-card {
-  width: 130px;
-  padding: 12px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-0);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-.ds-friend-card img {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(0, 0, 0, 0.08);
-}
-.ds-friend-name {
-  font-weight: 800;
-  font-size: 0.88rem;
-  color: rgba(0, 0, 0, 0.88);
-}
-.ds-friend-detail {
-  font-size: 0.75rem;
-  color: rgba(0, 0, 0, 0.45);
-}
-.ds-friend-status {
-  font-size: 0.72rem;
-  color: rgba(0, 0, 0, 0.38);
-}
-.ds-friend-status.ds-status-active {
-  color: #16a34a;
-}
-.ds-friend-status.ds-status-idle {
-  color: rgba(0, 0, 0, 0.35);
-}
-
-/* Event mini cards */
-.ds-event-mini-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-.ds-event-mini-card {
-  position: relative;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  min-height: 140px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(0, 0, 0, 0.03);
-}
-.ds-event-mini-card img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-}
-.ds-event-mini-overlay {
-  position: absolute;
-  inset: 0;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 6px;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.6) 100%);
-}
-.ds-event-mini-time {
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.88);
-}
-.ds-event-mini-title {
-  font-size: 0.92rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  color: rgba(255, 255, 255, 0.96);
-}
-.ds-event-mini-location {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.82);
-}
-.ds-event-mini-location svg {
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
 }
 
 /* Tags */
@@ -811,19 +122,6 @@
 .ds-tag-tone-gray { --tag-rgb: 100, 116, 139; }
 .ds-tag-tone-navy { --tag-rgb: var(--neon-blue-rgb); }
 
-/* Hero tags */
-.hero-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: var(--radius-lg);
-  background: rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-.hero-tag-emoji { font-size: 1.2rem; }
-.hero-tag-label { font-weight: 800; font-size: 0.95rem; color: rgba(0, 0, 0, 0.85); }
-
 /* Form elements */
 .form-group {
   display: flex;
@@ -850,24 +148,7 @@
 }
 .form-group textarea { min-height: 100px; resize: vertical; }
 
-/* Interest card with count */
-.ds-interest-count {
-  position: absolute;
-  right: -4px;
-  bottom: -4px;
-  padding: 3px 5px;
-  border-radius: 999px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #ffffff;
-  background: var(--neon-blue);
-  border: 1px solid var(--bg-0);
-}
-
-
-/* ===== NEW COMPONENTS ===== */
-
-/* 1. Navigation Bar */
+/* Navigation Bar */
 .ds-nav-bar {
   display: flex;
   align-items: center;
@@ -917,7 +198,7 @@
   margin-right: -8px;
 }
 
-/* 2. Bottom Tab Bar */
+/* Bottom Tab Bar */
 .ds-tab-bar {
   display: flex;
   align-items: stretch;
@@ -952,7 +233,7 @@
   color: var(--neon-blue);
 }
 
-/* 3. List Items */
+/* List Items */
 .ds-list {
   display: flex;
   flex-direction: column;
@@ -1008,7 +289,7 @@
   flex-shrink: 0;
 }
 
-/* 4. Toggle Switch */
+/* Toggle Switch */
 .ds-toggle {
   position: relative;
   width: 50px;
@@ -1039,7 +320,7 @@
   transform: translateX(20px);
 }
 
-/* 5. Badges */
+/* Badges */
 .ds-badge {
   display: inline-flex;
   align-items: center;
@@ -1063,7 +344,7 @@
   background: #16a34a;
 }
 
-/* 6. Search Bar */
+/* Search Bar */
 .ds-search-bar {
   display: flex;
   align-items: center;
@@ -1098,7 +379,7 @@
   color: rgba(0, 0, 0, 0.35);
 }
 
-/* 7. Bottom Sheet / Modal */
+/* Bottom Sheet / Modal */
 .ds-bottom-sheet {
   position: relative;
   width: 100%;
@@ -1116,7 +397,7 @@
   margin: 0 auto 16px;
 }
 
-/* 8. Alert Dialog */
+/* Alert Dialog */
 .ds-alert {
   width: 280px;
   padding: 24px;
@@ -1147,7 +428,7 @@
   min-width: 0;
 }
 
-/* 9. Skeleton Loaders */
+/* Skeleton Loaders */
 @keyframes ds-shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -1174,7 +455,7 @@
   min-height: 120px;
 }
 
-/* 10. Progress Bar */
+/* Progress Bar */
 .ds-progress {
   width: 100%;
   height: 6px;
@@ -1189,7 +470,7 @@
   transition: width 0.3s ease;
 }
 
-/* 11. Avatar Group (enhanced overlapping stack) */
+/* Avatar Group */
 .ds-avatar-group {
   display: flex;
   align-items: center;
@@ -1220,7 +501,7 @@
   color: rgba(0, 0, 0, 0.55);
 }
 
-/* 12. Divider */
+/* Divider */
 .ds-divider {
   height: 1px;
   background: rgba(0, 0, 0, 0.08);
@@ -1243,7 +524,7 @@
   background: rgba(0, 0, 0, 0.08);
 }
 
-/* 13. Status Dot */
+/* Status Dot */
 .ds-status-dot {
   width: 10px;
   height: 10px;
@@ -1264,7 +545,7 @@
   background: rgba(0, 0, 0, 0.2);
 }
 
-/* 14. Toast / Snackbar */
+/* Toast / Snackbar */
 .ds-snackbar {
   display: flex;
   align-items: center;
@@ -1292,7 +573,7 @@
   letter-spacing: 0.04em;
 }
 
-/* 15. Empty State */
+/* Empty State */
 .ds-empty-state {
   display: flex;
   flex-direction: column;

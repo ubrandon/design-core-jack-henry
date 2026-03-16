@@ -1,8 +1,0 @@
-{
-  "screens": [
-    { "file": "home.html", "width": 390 },
-    { "file": "profile.html", "width": 390 },
-    { "file": "settings.html", "width": 390 },
-    { "file": "feed.html", "width": 390 }
-  ]
-}

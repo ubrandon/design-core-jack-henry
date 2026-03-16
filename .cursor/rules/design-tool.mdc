@@ -52,8 +52,8 @@ There is no backend, no database, no framework. The tool itself is vanilla HTML 
 
 Vite serves the `public/` folder as the web root. All data files live under `public/` on disk, but are accessed without the `public/` prefix in the browser and in fetch URLs.
 
-- **Disk path**: `public/data/projects/sample-app/project.json`
-- **Browser/fetch path**: `data/projects/sample-app/project.json`
+- **Disk path**: `public/data/projects/my-app/project.json`
+- **Browser/fetch path**: `data/projects/my-app/project.json`
 
 When creating or editing files, always use the **full disk path** (with `public/`). When referencing URLs in HTML `src`, `href`, or `fetch()` calls, omit `public/`.
 
@@ -61,7 +61,7 @@ When creating or editing files, always use the **full disk path** (with `public/
 
 All paths below are **disk paths** (relative to repo root):
 
-- `public/data/projects/<project>/` -- One folder per project. The **project id** is the folder name (e.g. `sample-app`).
+- `public/data/projects/<project>/` -- One folder per project. The **project id** is the folder name (e.g. `my-app`).
 - `public/data/projects/<project>/project.json` -- **Project name and metadata.** Contains `name`, `description`, and optionally `createdBy`, `createdAt`.
 - `public/data/projects/index.json` -- List of all projects (`id`, `name`, `description`, `createdBy`, `createdAt`). Home page cards use this.
 - `public/data/projects/<project>/canvas.json` -- **Canvas screen layout.** Lists which screens appear on the canvas and their positions/sizes. Contains `{ "screens": [{ "file": "home.html", "x": 0, "y": 0, "width": 375 }, ...] }`. When adding a new screen, you MUST also add an entry here or it won't show on the canvas.
@@ -185,23 +185,19 @@ A prototype is a **self-contained interactive mini web app**. It lives in a sing
 
 ## Available Component Classes
 
+The design system ships with generic/foundational components. Teams add their own domain-specific components on top of these.
+
 ### Buttons
 `.btn`, `.btn-primary`, `.btn-dark`, `.btn-sm`
 
-### Cards
-`.plan-card`, `.plan-card-full`, `.plan-card-mini`, `.plan-card-mini-carousel` / `.ds-plan-carousel`, `.event-card`, `.ds-event-mini-card`, `.ds-event-mini-grid`, `.ds-activity-row`, `.ds-interest-card`, `.ds-group-card`, `.ds-friend-card`
-
-### Plan rows
-`.ds-plan-row`, `.ds-plan-rows`
-
-### Chips & pills
-`.ds-chip`, `.ds-chip.is-active`, `.ds-chip-row`, `.ds-type-pill`, `.ds-type-plan`, `.ds-type-activity`, `.ds-type-event`, `.ds-type-place`
+### Chips
+`.ds-chip`, `.ds-chip.is-active`, `.ds-chip-row`
 
 ### Tags
-`.ds-tag`, `.ds-tag-tone-sunset`, `.ds-tag-tone-teal`, `.ds-tag-tone-green`, `.ds-tag-tone-mint`, `.ds-tag-tone-gold`, `.ds-tag-tone-dark`, `.ds-hero-tag`
+`.ds-tag`, `.ds-tag-row`, `.ds-tag-tone-sunset`, `.ds-tag-tone-teal`, `.ds-tag-tone-green`, `.ds-tag-tone-mint`, `.ds-tag-tone-gold`, `.ds-tag-tone-dark`, `.ds-tag-tone-gray`, `.ds-tag-tone-navy`
 
 ### Badges & status
-`.ds-badge`, `.ds-badge-dot`, `.ds-status-dot`
+`.ds-badge`, `.ds-badge-red`, `.ds-badge-blue`, `.ds-badge-green`, `.ds-status-dot`, `.ds-status-dot-online`, `.ds-status-dot-away`, `.ds-status-dot-offline`
 
 ### Form inputs
 `.form-group`, `.form-group label`, `.form-group input`, `.ds-search-bar`
@@ -210,22 +206,118 @@ A prototype is a **self-contained interactive mini web app**. It lives in a sing
 `.ds-toggle`, `.ds-toggle.is-on`
 
 ### Navigation
-`.ds-nav-bar`, `.ds-tab-bar`, `.ds-tab-item`, `.ds-tab-item.is-active`, `.ds-bottom-sheet`
+`.ds-nav-bar`, `.ds-nav-bar-back`, `.ds-nav-bar-title`, `.ds-nav-bar-action`, `.ds-tab-bar`, `.ds-tab-item`, `.ds-tab-item.is-active`, `.ds-bottom-sheet`, `.ds-bottom-sheet-handle`
 
 ### Lists
-`.ds-list-item`, `.ds-list-item-leading`, `.ds-list-item-content`, `.ds-list-item-trailing`
+`.ds-list`, `.ds-list-item`, `.ds-list-item-icon`, `.ds-list-item-content`, `.ds-list-item-label`, `.ds-list-item-desc`, `.ds-list-item-chevron`
 
 ### Avatars
-`.ds-recent-activity`, `.ds-recent-item`, `.ds-avatar-stack`, `.ds-avatar-group`
+`.ds-avatar-group`, `.ds-avatar-group-more`
 
 ### Section titles
 `.ds-section-title`, `.ds-home-header`
 
 ### Feedback
-`.ds-progress`, `.ds-skeleton`, `.ds-alert`, `.ds-snackbar`, `.ds-empty-state`
+`.ds-progress`, `.ds-progress-fill`, `.ds-skeleton`, `.ds-skeleton-text`, `.ds-skeleton-circle`, `.ds-skeleton-card`, `.ds-alert`, `.ds-alert-title`, `.ds-alert-body`, `.ds-alert-actions`, `.ds-snackbar`, `.ds-snackbar-action`, `.ds-empty-state`, `.ds-empty-state-icon`, `.ds-empty-state-title`, `.ds-empty-state-desc`
 
 ### Layout
-`.ds-divider`
+`.ds-divider`, `.ds-divider-text`
+
+## How to Create Design System Components
+
+The design system starts empty. When a designer asks for components -- either by describing them, sharing screenshots, or asking for specific UI patterns -- follow these steps.
+
+### Creating a component
+
+1. **Add CSS classes** to `public/styles/ds.css`. Use design tokens from `shared.css` (colors, radii, fonts, spacing). Follow the naming convention: `.ds-<component>` for the main class, `.ds-<component>-<part>` for sub-elements.
+2. **Create a preview HTML file** at `public/data/design-system/components/<name>.html`. This is a pure HTML fragment -- no `<!doctype>`, no `<html>`, no `<head>`, no `<body>`, no style imports. The design system page injects it into a container that already has `shared.css` and `ds.css` loaded.
+3. **Register it** in `public/data/design-system/registry.json` -- add it to an existing group/category or create new ones.
+
+### Preview HTML file format
+
+- Pure HTML fragment (no document structure tags)
+- Can use inline styles for layout within the preview (e.g. wrapping in a flex container)
+- Must use CSS classes from `ds.css` and tokens from `shared.css`
+- Keep it minimal -- just enough to show the component in context
+- Example for a button preview:
+  ```html
+  <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+    <button class="btn btn-primary">Primary</button>
+    <button class="btn btn-primary btn-sm">Primary Small</button>
+  </div>
+  ```
+
+### Registry structure
+
+The `registry.json` file controls the design system page layout:
+
+```json
+{
+  "groups": [
+    { "id": "foundations", "name": "Foundations" },
+    { "id": "inputs", "name": "Inputs & Controls" }
+  ],
+  "categories": [
+    {
+      "group": "foundations",
+      "name": "Colors",
+      "layout": "row",
+      "components": [
+        { "id": "colors-bg", "file": "colors-bg.html", "label": "Backgrounds" }
+      ]
+    }
+  ]
+}
+```
+
+- **Groups** are top-level sections that stack vertically. Each gets a header row.
+- **Categories** belong to a group and appear as horizontal cards under that group.
+- Each category has a `components` array -- each component gets its own preview file.
+- Use `"layout": "row"` on a category to lay out its components side-by-side (good for color swatches, button variants, icon sets).
+- Group IDs should be lowercase, hyphenated (e.g. `cards-content`, `inputs-controls`).
+
+### When the designer shares screenshots or describes their brand
+
+This is a common flow: the designer shows what their app looks like and wants the design system to match. Follow this process:
+
+1. **Extract colors** from the screenshots or description. Map them to CSS custom properties in `public/styles/shared.css`:
+   - Update `--bg-0`, `--bg-1` for backgrounds
+   - Update `--neon-blue`, `--neon-blue-rgb` for the primary accent
+   - Update `--neon-teal`, `--neon-teal-rgb` for the secondary accent
+   - Add new tokens for any additional brand colors (e.g. `--brand-red`, `--brand-red-rgb`)
+   - Update `--text`, `--muted`, `--muted-2` for text hierarchy
+2. **Extract typography** -- if they want different fonts, update `--font-body` and `--font-display` in `shared.css` and add the corresponding Google Fonts `@import`.
+3. **Extract spacing and shape** -- update `--radius-*` tokens if their design uses different corner radii. Update `--shadow` and `--shadow-soft` if they use different elevation styles.
+4. **Build matching components** using the updated tokens. Each component needs:
+   - CSS class(es) in `ds.css`
+   - Preview HTML file in `components/`
+   - Entry in `registry.json`
+
+### Color component conventions
+
+When creating color palette components for the design system page, render visual swatches:
+
+```html
+<div style="display:flex;flex-wrap:wrap;gap:10px;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+    <div style="width:56px;height:56px;border-radius:10px;background:var(--bg-0);border:1px solid rgba(0,0,0,0.1);"></div>
+    <span style="font-size:0.65rem;font-weight:700;color:rgba(0,0,0,0.45);"><strong>BG 0</strong> #ffffff</span>
+  </div>
+</div>
+```
+
+Group colors logically: backgrounds, accent/brand colors, text colors, semantic colors (success, error, warning).
+
+### Suggested default groups
+
+When building a design system from scratch, use these groups as a starting point (add or rename as needed):
+
+- **Foundations** -- colors, typography, spacing, shadows
+- **Inputs & Controls** -- buttons, form fields, toggles, chips, search
+- **Feedback & Status** -- badges, tags, alerts, progress, skeleton loaders, toasts
+- **Navigation** -- nav bars, tab bars, list items, bottom sheets
+- **Cards & Content** -- any domain-specific card types, content rows, media layouts
+- **Layout & Structure** -- dividers, avatar groups, section headers
 
 ## Tone
 
