@@ -1,8 +1,22 @@
 {
   "screens": [
-    { "file": "wire-details-summary.html", "x": 0, "y": 0, "width": 390 },
-    { "file": "wire-details-icon.html", "x": 430, "y": 0, "width": 390 },
-    { "file": "wire-details-minimal.html", "x": 860, "y": 0, "width": 390 },
-    { "file": "wire-details-accent.html", "x": 1290, "y": 0, "width": 390 }
+    {
+      "file": "wire-details-icon.html",
+      "x": 430,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "wire-details-minimal.html",
+      "x": 860,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "wire-details-accent.html",
+      "x": 1290,
+      "y": 0,
+      "width": 390
+    }
   ]
 }
