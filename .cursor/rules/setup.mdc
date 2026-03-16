@@ -30,6 +30,8 @@ Walk the user through these steps conversationally. Ask one thing at a time -- d
 
 If the repo isn't already cloned and open in Cursor, clone it for them. The user's prompt should include the repo URL. Clone it to a sensible location (e.g. `~/Documents` or `~/Projects`), then open the folder in Cursor.
 
+**Important:** If the current workspace is already the `design-core` repo with origin pointing to `BUnglaub/design-core`, that's the **source/tool repo** -- not a company's working copy. Don't treat it as "already cloned." For company setup, this repo still needs to be forked to their org (step 4 handles that). Proceed with the setup flow normally.
+
 ### 2. Install Node.js
 
 Run `node --version` to check if Node.js is installed. If it's not:
