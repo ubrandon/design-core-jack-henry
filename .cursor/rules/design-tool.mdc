@@ -103,7 +103,7 @@ All paths below are **disk paths** (relative to repo root):
 - `public/data/projects/<project>/` -- One folder per project. The **project id** is the folder name (e.g. `my-app`).
 - `public/data/projects/<project>/project.json` -- **Project name and metadata.** Contains `name`, `description`, and optionally `createdBy`, `createdAt`.
 - `public/data/projects/index.json` -- List of all projects (`id`, `name`, `description`, `createdBy`, `createdAt`). Home page cards use this.
-- `public/data/projects/<project>/canvas.json` -- **Canvas screen layout.** Lists which screens appear on the canvas and their positions/sizes. Contains `{ "screens": [{ "file": "home.html", "x": 0, "y": 0, "width": 375 }, ...] }`. When adding a new screen, you MUST also add an entry here or it won't show on the canvas.
+- `public/data/projects/<project>/canvas.json` -- **Canvas screen layout.** Lists which screens appear on the canvas and their positions/sizes. Contains `{ "screens": [{ "file": "home.html", "x": 0, "y": 0, "width": 390 }, ...] }`. When adding a new screen, you MUST also add an entry here or it won't show on the canvas. Width must be **390** to match the standard screen content width.
 - `public/data/projects/<project>/screens/` -- Static screen HTML files for the ideation canvas
 - `public/data/projects/<project>/prototypes/<prototype>/index.html` -- Interactive prototype
 - `public/data/projects/<project>/prototypes/<prototype>/meta.json` -- Prototype name and description
@@ -157,9 +157,9 @@ The design system page (`design-system.html`) uses an **infinite canvas**: main 
 1. Create the HTML file: `public/data/projects/<project>/screens/<name>.html`
 2. **Add an entry to `canvas.json`** -- this is required or the screen won't appear on the canvas:
    ```json
-   { "file": "<name>.html", "x": 0, "y": 0, "width": 375 }
+   { "file": "<name>.html", "x": 0, "y": 0, "width": 390 }
    ```
-   Space screens apart by adjusting `x` (e.g. increment by 420 for each new screen).
+   Space screens apart by adjusting `x` (e.g. increment by 430 for each new screen). The width **must be 390** -- this matches the screen content width and the iframe that renders it. Using a smaller value (e.g. 375) will squeeze the content and clip text on the right edge.
 3. Use the standard screen wrapper:
    ```html
    <div style="padding: 16px; max-width: 390px; margin: 0 auto; background: var(--bg-0); border-radius: var(--radius-lg);">
@@ -167,6 +167,23 @@ The design system page (`design-system.html`) uses an **infinite canvas**: main 
    </div>
    ```
 4. **HTML + CSS only.** No JavaScript. No interactivity.
+
+#### Canvas screen content rules
+
+Screens render inside an iframe at exactly the width set in `canvas.json`. Content that overflows will be clipped by the device frame. Follow these rules to avoid layout breakage:
+
+- **Do NOT use `min-height: 100vh`.** The iframe auto-sizes to fit the content height. Using `100vh` creates unnecessarily tall cards on the canvas.
+- **Do NOT use full HTML document structure** (`<!DOCTYPE>`, `<html>`, `<head>`, `<body>`). Canvas screens are loaded into iframes that handle this. Write the screen as a simple HTML fragment with a root wrapper `<div>`. If you need design system styles, add `<link>` tags before the wrapper -- but do NOT wrap in `<html>`/`<body>`.
+- **Use flexible layouts for label/value rows.** Never use fixed-width grid columns (e.g. `grid-template-columns: 1fr 1fr`) for label/value pairs -- long values like addresses or account names will clip. Instead use flexbox with `justify-content: space-between` and let the value side wrap naturally:
+  ```html
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:10px 0;">
+    <span style="...label styles...">Label</span>
+    <span style="...value styles...; text-align:right;">Value text here</span>
+  </div>
+  ```
+- **Use design system classes** over inline styles whenever a matching class exists (e.g. use `jh-row`, `jh-card`, `jh-label` if the company has defined them, or `ds-list-item` from the base system). Only use inline styles for layout composition or one-off spacing.
+- **Do NOT hardcode `max-width` on value text** (e.g. `max-width: 55%`). Let the flex layout handle wrapping. If a value is long, the right-aligned text will wrap naturally within the available space.
+- **When creating multiple screen variants** for ideation, vary the composition and visual hierarchy (card grouping, section structure, emphasis on different elements) -- do NOT reinvent the underlying row/label mechanics each time. Reuse the same label/value pattern across variants.
 
 ### Creating a new prototype
 
