@@ -1,9 +1,9 @@
 {
   "projects": [
     {
-      "id": "new-project",
-      "name": "New Project",
-      "description": "",
+      "id": "retail-wires",
+      "name": "Retail Wires",
+      "description": "Wire transfer details screens for retail banking — ideation variants using the design system plus exploratory layouts.",
       "createdBy": "Brandon Unglaub",
       "createdAt": "2026-03-16T00:00:00Z"
     }

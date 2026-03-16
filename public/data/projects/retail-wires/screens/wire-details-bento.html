@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .bento { font-family: 'Outfit', sans-serif; }
+  .bento .mono { font-family: 'JetBrains Mono', monospace; }
+</style>
+<div class="bento" style="background:linear-gradient(165deg, #f0f4ff 0%, #e8eeff 100%); color:#1e293b; min-height:100%; display:flex; flex-direction:column;">
+  <div style="padding:44px 20px 16px; display:flex; align-items:center; justify-content:space-between;">
+    <span style="font-size:0.85rem; font-weight:600; color:#64748b;">‹ Back</span>
+    <span style="font-size:0.9rem; font-weight:700; color:#1e293b;">Wire</span>
+    <span style="width:48px;"></span>
+  </div>
+
+  <main style="flex:1; padding:0 20px;">
+    <!-- Bento grid -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+      <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(30,41,59,0.06);">
+        <p style="font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#94a3b8; margin:0 0 8px 0;">Amount</p>
+        <p style="font-size:1.75rem; font-weight:800; color:#6366f1; margin:0; letter-spacing:-0.03em;">$250</p>
+      </div>
+      <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(30,41,59,0.06);">
+        <p style="font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#94a3b8; margin:0 0 8px 0;">Status</p>
+        <p style="font-size:0.95rem; font-weight:700; color:#22c55e; margin:0;">Ready</p>
+      </div>
+    </div>
+
+    <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:12px; box-shadow:0 2px 12px rgba(30,41,59,0.06);">
+      <p style="font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#94a3b8; margin:0 0 14px 0;">Payment</p>
+      <p style="font-size:0.9rem; font-weight:600; color:#1e293b; margin:0 0 4px 0;">Materials payment</p>
+      <p style="font-size:0.8rem; color:#64748b; margin:0 0 12px 0;">From Business Checking (x1234)</p>
+      <p style="font-size:0.75rem; color:#94a3b8; margin:0;">This is a note</p>
+    </div>
+
+    <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:12px; box-shadow:0 2px 12px rgba(30,41,59,0.06);">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;">
+        <div style="width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); display:grid; place-items:center;">
+          <span style="font-size:1.2rem; font-weight:800; color:#fff;">E</span>
+        </div>
+        <div>
+          <p style="font-size:1rem; font-weight:700; color:#1e293b; margin:0 0 2px 0;">Emma Reed</p>
+          <p class="mono" style="font-size:0.75rem; color:#64748b; margin:0;">•••••6789</p>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding-top:14px; border-top:1px solid #f1f5f9;">
+        <span style="font-size:0.7rem; color:#94a3b8; flex-shrink:0;">Address</span>
+        <span style="font-size:0.8rem; font-weight:500; text-align:right; line-height:1.5; color:#475569;">500 W. 33rd St, 62nd Floor<br>30 Hudson Yards<br>10001 New York, NY, US</span>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div style="background:#fff; border-radius:16px; padding:16px; box-shadow:0 2px 12px rgba(30,41,59,0.06);">
+        <p style="font-size:0.6rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#94a3b8; margin:0 0 4px 0;">Ref</p>
+        <p class="mono" style="font-size:0.75rem; font-weight:600; color:#1e293b; margin:0;">WIR-089234</p>
+      </div>
+      <div style="background:#fff; border-radius:16px; padding:16px; box-shadow:0 2px 12px rgba(30,41,59,0.06);">
+        <p style="font-size:0.6rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#94a3b8; margin:0 0 4px 0;">Fee</p>
+        <p style="font-size:0.9rem; font-weight:700; color:#1e293b; margin:0;">$25.00</p>
+      </div>
+    </div>
+  </main>
+
+  <div style="padding:20px 20px 32px;">
+    <button style="width:100%; padding:16px; font-size:0.95rem; font-weight:700; background:linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color:#fff; border:none; border-radius:14px; cursor:pointer; font-family:inherit; box-shadow:0 4px 14px rgba(99,102,241,0.4);">Review and initiate</button>
+  </div>
+</div>

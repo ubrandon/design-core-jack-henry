@@ -1,0 +1,40 @@
+{
+  "screens": [
+    {
+      "file": "wire-details-modern.html",
+      "x": 430,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "wire-details-premium.html",
+      "x": 860,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "wire-details-full.html",
+      "x": 1290,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "wire-details-fintastic.html",
+      "x": 1720,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "wire-details-editorial.html",
+      "x": 2150,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "wire-details-bento.html",
+      "x": 2580,
+      "y": 0,
+      "width": 390
+    }
+  ]
+}

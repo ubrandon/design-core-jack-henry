@@ -1,0 +1,10 @@
+{
+  "prototypes": [
+    {
+      "id": "wire-flow",
+      "name": "Wire flow",
+      "description": "Complete click-through: wire list → details → confirm → success",
+      "device": "mobile"
+    }
+  ]
+}

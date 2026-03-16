@@ -1,0 +1,78 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .jh-row { align-items: flex-start; }
+  .jh-row .jh-label { flex-shrink: 0; }
+  .jh-row .jh-detail-value { min-width: 0; text-align: right; }
+</style>
+<div style="background:var(--bg-0); display:flex; flex-direction:column;">
+  <div style="height:44px; padding:12px 24px 0; display:flex; align-items:center; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#fff; background:var(--jh-navy);">
+    <span>9:41</span>
+    <div style="display:flex; align-items:center; gap:6px;">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M1 9h2v3H1zM5 6h2v6H5zM9 3h2v9H9zM13 0h2v12h-2z"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2C5 2 2.4 3.6 1 6c1.4 2.4 4 4 7 4s5.6-1.6 7-4c-1.4-2.4-4-4-7-4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      <div style="width:24px; height:11px; border:1px solid rgba(255,255,255,0.5); border-radius:3px; padding:1px;"><div style="width:65%; height:100%; background:#fff; border-radius:1.5px;"></div></div>
+    </div>
+  </div>
+
+  <div style="background:var(--jh-navy); padding:8px 16px 36px; position:relative;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+      <button style="background:none; border:none; color:#fff; padding:4px 0; cursor:pointer; display:flex; align-items:center; gap:4px; font-size:0.95rem; font-weight:600;">
+        <svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1L1 9l8 8"/></svg>
+        Back
+      </button>
+      <div style="display:flex; gap:12px;">
+        <button style="background:none; border:none; color:rgba(255,255,255,0.9); padding:4px; cursor:pointer;"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button style="background:none; border:none; color:rgba(255,255,255,0.9); padding:4px; cursor:pointer;"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <p style="font-size:0.78rem; font-weight:600; color:rgba(255,255,255,0.6); letter-spacing:0.06em; text-transform:uppercase; margin:0 0 6px 0;">Materials payment</p>
+      <p style="font-size:2.75rem; font-weight:800; color:#fff; letter-spacing:-0.03em; margin:0 0 10px 0; line-height:1;">$250.00</p>
+      <span style="display:inline-flex; align-items:center; padding:4px 14px; border-radius:999px; font-size:0.78rem; font-weight:700; background:rgba(255,255,255,0.15); color:#fff;">Ready</span>
+    </div>
+  </div>
+
+  <main style="flex:1; padding:16px 16px 0;">
+    <div style="background:var(--bg-0); border-radius:var(--radius-lg); box-shadow:var(--shadow-soft); padding:0 20px; margin-bottom:16px;">
+      <div class="jh-row" style="padding:16px 0;"><span class="jh-label">From account</span><span class="jh-detail-value">Business Checking (x1234)</span></div>
+      <div class="jh-row" style="padding:16px 0;"><span class="jh-label">Notes</span><span class="jh-detail-value">This is a note</span></div>
+    </div>
+
+    <div style="background:var(--bg-0); border-radius:var(--radius-lg); box-shadow:var(--shadow-soft); padding:20px; margin-bottom:16px;">
+      <p style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin:0 0 14px 0;">Recipient</p>
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;">
+        <div style="width:48px; height:48px; border-radius:50%; background:rgba(var(--jh-blue-rgb),0.12); display:grid; place-items:center; flex-shrink:0;">
+          <span style="font-size:1.15rem; font-weight:800; color:var(--jh-blue);">E</span>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <p style="font-size:1rem; font-weight:700; color:rgba(0,0,0,0.9); margin:0 0 2px 0;">Emma Reed</p>
+          <p style="font-size:0.78rem; color:var(--muted); margin:0;">Account •••••6789</p>
+        </div>
+      </div>
+      <div style="border-top:1px solid rgba(0,0,0,0.06); padding-top:12px;">
+        <div class="jh-row" style="padding:10px 0;"><span class="jh-label">Account number</span><span class="jh-detail-value">123456789</span></div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:10px 0;">
+          <span class="jh-label" style="flex-shrink:0;">Address</span>
+          <span class="jh-detail-value" style="text-align:right; line-height:1.55;">500 W. 33rd St, 62nd Floor<br>30 Hudson Yards<br>10001 New York, NY, US</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg-0); border-radius:var(--radius-lg); box-shadow:var(--shadow-soft); padding:0 20px; margin-bottom:24px;">
+      <p style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); padding:16px 0 0; margin:0;">Wire & bank</p>
+      <div class="jh-row" style="padding:14px 0;"><span class="jh-label">Reference</span><span class="jh-detail-value">WIR-2024-089234</span></div>
+      <div class="jh-row" style="padding:14px 0;"><span class="jh-label">Routing (ABA)</span><span class="jh-detail-value">021000021</span></div>
+      <div class="jh-row" style="padding:14px 0;"><span class="jh-label">Bank</span><span class="jh-detail-value">Chase Manhattan</span></div>
+      <div class="jh-row" style="padding:14px 0;"><span class="jh-label">SWIFT</span><span class="jh-detail-value">CHASUS33</span></div>
+      <div class="jh-row" style="padding:14px 0;"><span class="jh-label">Fee</span><span class="jh-detail-value">$25.00</span></div>
+      <div class="jh-row" style="padding:14px 0;"><span class="jh-label">Scheduled</span><span class="jh-detail-value">Today, 3:00 PM</span></div>
+    </div>
+  </main>
+
+  <div style="padding:16px 20px 32px;">
+    <button class="jh-btn-primary" style="width:100%; padding:16px; font-size:1rem;">Review and initiate</button>
+  </div>
+</div>
