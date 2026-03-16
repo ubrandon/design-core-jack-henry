@@ -1,9 +1,23 @@
 {
   "projects": [
     {
+      "id": "transactions",
+      "name": "Transactions",
+      "description": "Transaction history, details, and related flows.",
+      "createdBy": "Brandon Unglaub",
+      "createdAt": "2026-03-16T00:00:00Z"
+    },
+    {
       "id": "retail-wires",
       "name": "Retail Wires",
       "description": "Wire transfer details screens for retail banking — ideation variants using the design system plus exploratory layouts.",
+      "createdBy": "Brandon Unglaub",
+      "createdAt": "2026-03-16T00:00:00Z"
+    },
+    {
+      "id": "ach",
+      "name": "ACH",
+      "description": "Automated Clearing House — ACH transfers, direct deposits, and payment flows for banking.",
       "createdBy": "Brandon Unglaub",
       "createdAt": "2026-03-16T00:00:00Z"
     }

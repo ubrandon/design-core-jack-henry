@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .account-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; }
+  .account-row:last-child { border-bottom: none; }
+  .account-row:hover { background: rgba(0,0,0,0.02); }
+  .account-name { font-size: 0.95rem; font-weight: 600; color: rgba(0,0,0,0.88); }
+  .account-name.is-all { color: var(--jh-blue); }
+  .account-balance { font-size: 0.85rem; font-weight: 600; color: rgba(0,0,0,0.55); margin-top: 2px; }
+  .account-check { color: var(--jh-blue); flex-shrink: 0; }
+</style>
+<div style="background: var(--bg-0); display: flex; flex-direction: column;">
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,0.08); background: var(--bg-0);">
+    <button style="background: none; border: none; color: rgba(0,0,0,0.7); padding: 8px; cursor: pointer;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <span style="font-size: 1.05rem; font-weight: 700; color: rgba(0,0,0,0.9);">Account</span>
+    <button style="background: none; border: none; color: rgba(0,0,0,0.6); padding: 8px; cursor: pointer;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    </button>
+  </div>
+
+  <div style="background: var(--bg-0); overflow: hidden;">
+    <div class="account-row">
+      <div>
+        <span class="account-name is-all">All accounts</span>
+      </div>
+      <svg class="account-check" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="account-row">
+      <div>
+        <span class="account-name">Business Checking (x1234)</span>
+        <div class="account-balance">$1,250.00</div>
+      </div>
+    </div>
+    <div class="account-row">
+      <div>
+        <span class="account-name">Account Name (x1234)</span>
+        <div class="account-balance">$1,250.00</div>
+      </div>
+    </div>
+    <div class="account-row">
+      <div>
+        <span class="account-name">Account Name (x1234)</span>
+        <div class="account-balance">$1,250.00</div>
+      </div>
+    </div>
+    <div class="account-row">
+      <div>
+        <span class="account-name">Account Name (x1234)</span>
+        <div class="account-balance">$1,250.00</div>
+      </div>
+    </div>
+    <div class="account-row">
+      <div>
+        <span class="account-name">Account Name (x1234)</span>
+        <div class="account-balance">$1,250.00</div>
+      </div>
+    </div>
+  </div>
+</div>

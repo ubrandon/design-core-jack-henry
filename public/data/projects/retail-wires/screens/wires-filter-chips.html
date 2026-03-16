@@ -1,0 +1,85 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .wire-item { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .wire-item:last-child { border-bottom: none; }
+  .wire-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .wire-item-name { font-size: 0.95rem; font-weight: 600; color: rgba(0,0,0,0.88); }
+  .wire-item-amount { font-size: 0.95rem; font-weight: 700; color: var(--jh-blue); flex-shrink: 0; }
+  .wire-item-meta { font-size: 0.8rem; color: rgba(0,0,0,0.5); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .filter-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; }
+  .filter-row:last-of-type { border-bottom: none; }
+  .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+</style>
+<div style="background: var(--bg-1); display: flex; flex-direction: column;">
+  <div class="jh-header-bar" style="border-radius: 0; padding: 12px 16px;">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    <span class="jh-header-bar-title">Wires</span>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg>
+  </div>
+
+  <button class="jh-btn-primary" style="margin: 16px; width: calc(100% - 32px); padding: 14px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    Send wire
+  </button>
+
+  <div style="background: var(--bg-0); border-radius: var(--radius-lg); margin: 0 16px 16px; overflow: hidden;">
+    <div class="wire-item">
+      <div class="wire-item-top">
+        <span class="wire-item-name">Vendor payment</span>
+        <span class="wire-item-amount">$235.00</span>
+      </div>
+      <div class="wire-item-meta">
+        <span class="ds-tag ds-tag-tone-sunset">Approval</span>
+        to Bank of America...
+      </div>
+    </div>
+    <div class="wire-item">
+      <div class="wire-item-top">
+        <span class="wire-item-name">Rent deposit</span>
+        <span class="wire-item-amount">$640.00</span>
+      </div>
+      <div class="wire-item-meta">
+        <span class="ds-tag ds-tag-tone-gray">Initiated</span>
+        to Bank of America (x1234)
+      </div>
+    </div>
+    <div class="wire-item">
+      <div class="wire-item-top">
+        <span class="wire-item-name">Materials payment</span>
+        <span class="wire-item-amount">$340.00</span>
+      </div>
+      <div class="wire-item-meta">
+        <span class="ds-tag ds-tag-tone-teal">Processing</span>
+        to Chase (x5678)
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter bottom sheet with chips -->
+  <div class="ds-bottom-sheet" style="margin-top: auto; max-width: none;">
+    <div class="ds-bottom-sheet-handle"></div>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+      <span style="font-size: 1.1rem; font-weight: 700; color: rgba(0,0,0,0.9);">Filter wires</span>
+      <button style="background: none; border: none; font-size: 0.8rem; font-weight: 700; color: var(--jh-blue); cursor: pointer; font-family: inherit;">CLEAR ALL</button>
+    </div>
+    <div class="filter-row">
+      <span style="font-size: 0.9rem; font-weight: 600; color: rgba(0,0,0,0.85);">Accounts</span>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="font-size: 0.9rem; font-weight: 600; color: var(--jh-blue);">All accounts</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--jh-blue)" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <p class="jh-section-label" style="margin: 16px 0 8px 0;">Statuses</p>
+    <div class="filter-chips ds-chip-row">
+      <span class="ds-chip">Approval</span>
+      <span class="ds-chip">Ready</span>
+      <span class="ds-chip is-active">Completed</span>
+      <span class="ds-chip">Processing</span>
+      <span class="ds-chip">Rejected</span>
+    </div>
+    <button class="jh-btn-primary" style="width: 100%; padding: 14px; margin-top: 24px;">Apply</button>
+  </div>
+</div>
