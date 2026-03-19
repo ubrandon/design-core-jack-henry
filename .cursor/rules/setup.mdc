@@ -78,6 +78,8 @@ Now continue with:
 4. **Enable GitHub Pages** (optional, for shareable prototype links). After the user has published, tell them:
 
    > "If you want shareable prototype links, enable GitHub Pages: go to your repo on GitHub → **Settings → Pages → Source → GitHub Actions**. After that, prototypes will be live at `https://THEIR_ORG.github.io/design-core-COMPANY_SLUG/` after each push."
+   >
+   > Designers use the tool on **localhost** in Cursor, but people they share with open links in a normal browser on the **deployed** site. After Pages is set up, run **`npm run sync-public-url`** once (with the repo folder open in a terminal) so `public/data/site.json` gets the right `publicBaseUrl`. Then **Copy link** in the tool pastes the GitHub Pages URL, not localhost. Commit `site.json` so the whole team gets it."
 
 ### Pulling updates from the public repo later
 

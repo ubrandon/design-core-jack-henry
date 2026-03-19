@@ -14,8 +14,32 @@
       <p class="home-hero__subtitle">Your design projects — screens, prototypes, and explorations.</p>
     </div>
 
-    <div id="projects" class="home-grid">
-      <div class="empty-state">Loading projects...</div>
+    <div class="home-toolbar" id="home-toolbar" hidden>
+      <div class="home-toolbar__row">
+        <div class="home-search-wrap">
+          <label class="visually-hidden" for="project-filter">Filter projects by name</label>
+          <input type="search" id="project-filter" class="home-search" placeholder="Search by name or description…" autocomplete="off">
+        </div>
+        <div class="home-sort-wrap">
+          <label class="home-sort-label" for="project-sort">Sort</label>
+          <select id="project-sort" class="home-sort">
+            <option value="updated-desc" selected>Recently updated</option>
+            <option value="created-desc">Recently created</option>
+            <option value="name-asc">Name A–Z</option>
+            <option value="name-desc">Name Z–A</option>
+          </select>
+        </div>
+      </div>
+      <p class="home-count-hint" id="project-count-hint" hidden></p>
+    </div>
+
+    <div id="projects" class="home-grid" aria-busy="true">
+      <div class="project-card-skeleton" aria-hidden="true"></div>
+      <div class="project-card-skeleton" aria-hidden="true"></div>
+      <div class="project-card-skeleton" aria-hidden="true"></div>
+      <div class="project-card-skeleton" aria-hidden="true"></div>
+      <div class="project-card-skeleton" aria-hidden="true"></div>
+      <div class="project-card-skeleton" aria-hidden="true"></div>
     </div>
   </div>
 
@@ -24,41 +48,215 @@
   <script>
     renderNav();
 
-    document.addEventListener("mousemove", (e) => {
-      for (const card of document.querySelectorAll(".project-card")) {
-        const rect = card.getBoundingClientRect();
-        card.style.setProperty("--mouse-x", (e.clientX - rect.left) + "px");
-        card.style.setProperty("--mouse-y", (e.clientY - rect.top) + "px");
-      }
-    });
+    const grid = document.getElementById("projects");
+    const toolbar = document.getElementById("home-toolbar");
+    const filterInput = document.getElementById("project-filter");
+    const sortSelect = document.getElementById("project-sort");
+    const countHint = document.getElementById("project-count-hint");
 
-    fetchJSON("data/projects/index.json")
-      .then(data => {
-        const grid = document.getElementById("projects");
-        if (!data.projects.length) {
+    let allRows = [];
+
+    function debounce(fn, ms) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), ms);
+      };
+    }
+
+    function activityMs(row) {
+      return Math.max(parseDateMs(row._updatedAt), parseDateMs(row._createdAtResolved));
+    }
+
+    function sortRows(rows, key) {
+      const out = rows.slice();
+      if (key === "name-asc") {
+        out.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }));
+      } else if (key === "name-desc") {
+        out.sort((a, b) => (b.name || "").localeCompare(a.name || "", undefined, { sensitivity: "base" }));
+      } else if (key === "created-desc") {
+        out.sort((a, b) => parseDateMs(b._createdAtResolved) - parseDateMs(a._createdAtResolved));
+      } else {
+        out.sort((a, b) => activityMs(b) - activityMs(a));
+      }
+      return out;
+    }
+
+    function filterRows(rows, q) {
+      if (!q.trim()) return rows;
+      const n = q.trim().toLowerCase();
+      return rows.filter((r) => {
+        const name = (r.name || "").toLowerCase();
+        const desc = (r.description || "").toLowerCase();
+        return name.includes(n) || desc.includes(n);
+      });
+    }
+
+    function formatStats(row) {
+      const sc = row._screenCount;
+      const pc = row._protoCount;
+      const parts = [];
+      if (sc === null) parts.push("Screens unavailable");
+      else parts.push(sc === 1 ? "1 screen" : `${sc} screens`);
+      if (pc === null) parts.push("Prototypes unavailable");
+      else parts.push(pc === 1 ? "1 prototype" : `${pc} prototypes`);
+      return parts.join(" · ");
+    }
+
+    function formatUpdatedLine(row) {
+      const u = row._updatedAt && row._updatedAt !== row._createdAtResolved;
+      if (u) {
+        const rel = formatRelativeDate(row._updatedAt);
+        if (rel) return `Updated ${rel}`;
+      }
+      if (row._createdAtResolved) {
+        const rel = formatRelativeDate(row._createdAtResolved);
+        if (rel) return `Created ${rel}`;
+      }
+      return "";
+    }
+
+    function renderGrid(rows, totalUnfiltered) {
+      const q = filterInput.value;
+      const filtered = filterRows(rows, q);
+      const sorted = sortRows(filtered, sortSelect.value);
+
+      if (totalUnfiltered > 0) {
+        toolbar.hidden = false;
+        const filtering = q.trim().length > 0;
+        if (filtering) {
+          countHint.hidden = false;
+          countHint.textContent =
+            sorted.length === totalUnfiltered
+              ? `Showing all ${totalUnfiltered} project${totalUnfiltered === 1 ? "" : "s"}`
+              : `Showing ${sorted.length} of ${totalUnfiltered} project${totalUnfiltered === 1 ? "" : "s"}`;
+        } else {
+          countHint.hidden = true;
+        }
+      }
+
+      if (!sorted.length) {
+        if (q.trim()) {
+          grid.innerHTML = `
+            <div class="empty-state empty-state--in-grid">
+              <p class="empty-state__title">No matches</p>
+              <p class="empty-state__hint">Try a different search, or <button type="button" class="home-clear-search btn-tool">clear the filter</button>.</p>
+            </div>`;
+          const btn = grid.querySelector(".home-clear-search");
+          if (btn) btn.addEventListener("click", () => { filterInput.value = ""; renderGrid(allRows, allRows.length); filterInput.focus(); });
+        } else {
           grid.innerHTML = `
             <div class="empty-state empty-state--in-grid">
               <p class="empty-state__title">No projects yet</p>
               <p class="empty-state__hint">Ask the AI to create your first project — just describe what you want to design.</p>
-            </div>
-          `;
-          return;
+            </div>`;
         }
-        grid.innerHTML = data.projects.map(p => `
-          <a href="project.html?id=${p.id}" class="project-card">
-            <div class="project-card__name">${p.name}</div>
-            <div class="project-card__desc">${p.description}</div>
+        grid.setAttribute("aria-busy", "false");
+        return;
+      }
+
+      grid.innerHTML = sorted.map((p) => {
+        const id = encodeURIComponent(p.id);
+        const name = escapeHtml(p.name);
+        const desc = escapeHtml(p.description || "");
+        const by = escapeHtml(p.createdBy || "");
+        const createdShort = p.createdAt ? escapeHtml(formatDate(p.createdAt)) : "";
+        const metaBits = [];
+        if (by) metaBits.push(by);
+        if (createdShort) metaBits.push(createdShort);
+        const metaLine = metaBits.join(" · ");
+        const statsLine = escapeHtml(formatStats(p));
+        const updatedLine = formatUpdatedLine(p);
+        const updatedHtml = updatedLine ? `<span class="project-card__updated">${escapeHtml(updatedLine)}</span>` : "";
+        const hubHref = `project.html?id=${id}`;
+        return `
+          <a href="${hubHref}" class="project-card">
+            <div class="project-card__name">${name}</div>
+            <div class="project-card__desc">${desc}</div>
+            <div class="project-card__stats" aria-label="Canvas and prototype counts">${statsLine}</div>
+            ${updatedHtml}
             <div class="project-card__footer">
-              <div class="project-card__avatar">${initials(p.createdBy)}</div>
-              <span class="project-card__meta">${p.createdBy}${p.createdAt ? " · " + formatDate(p.createdAt) : ""}</span>
-              <span class="project-card__arrow">&rarr;</span>
+              <div class="project-card__avatar">${escapeHtml(initials(p.createdBy))}</div>
+              <span class="project-card__meta">${metaLine}</span>
+              <span class="project-card__arrow" aria-hidden="true">&rarr;</span>
             </div>
-          </a>
-        `).join("");
-      })
-      .catch(() => {
-        document.getElementById("projects").innerHTML = '<div class="empty-state">Could not load projects.</div>';
+          </a>`;
+      }).join("");
+
+      grid.setAttribute("aria-busy", "false");
+    }
+
+    function wireMouseGlow() {
+      document.addEventListener("mousemove", (e) => {
+        for (const card of document.querySelectorAll(".project-card:not(.project-card--skeleton)")) {
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty("--mouse-x", (e.clientX - rect.left) + "px");
+          card.style.setProperty("--mouse-y", (e.clientY - rect.top) + "px");
+        }
       });
+    }
+
+    function showLoadError() {
+      grid.innerHTML = `
+        <div class="empty-state empty-state--in-grid empty-state--error">
+          <p class="empty-state__title">Could not load projects</p>
+          <p class="empty-state__hint">Check that <code>data/projects/index.json</code> exists and is valid JSON.</p>
+          <p style="margin-top:16px;"><button type="button" class="btn-tool btn-tool--primary" id="projects-retry">Retry</button></p>
+        </div>`;
+      grid.setAttribute("aria-busy", "false");
+      document.getElementById("projects-retry").addEventListener("click", loadProjects);
+    }
+
+    function loadProjects() {
+      toolbar.hidden = true;
+      countHint.hidden = true;
+      filterInput.value = "";
+      grid.setAttribute("aria-busy", "true");
+      grid.innerHTML = `
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+        <div class="project-card-skeleton" aria-hidden="true"></div>`;
+
+      fetchJSON("data/projects/index.json")
+        .then((data) => {
+          const projects = data.projects || [];
+          if (!projects.length) {
+            allRows = [];
+            renderGrid([], 0);
+            return;
+          }
+          return Promise.all(
+            projects.map((p) =>
+              fetchProjectListDetails(p.id).then((d) => ({
+                ...p,
+                _updatedAt: d.updatedAt,
+                _createdAtResolved: d.createdAt || p.createdAt || null,
+                _screenCount: d.screenCount,
+                _protoCount: d.protoCount,
+              })),
+            ),
+          ).then((rows) => {
+            allRows = rows;
+            renderGrid(allRows, allRows.length);
+          });
+        })
+        .catch(showLoadError);
+    }
+
+    const onFilterSort = debounce(() => {
+      if (allRows.length) renderGrid(allRows, allRows.length);
+    }, 160);
+
+    filterInput.addEventListener("input", onFilterSort);
+    sortSelect.addEventListener("change", () => {
+      if (allRows.length) renderGrid(allRows, allRows.length);
+    });
+
+    wireMouseGlow();
+    loadProjects();
   </script>
 </body>
 </html>

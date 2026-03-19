@@ -1,11 +1,89 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync, rmSync } from "fs";
-import { spawn } from "child_process";
+import { spawn, execSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const LOCAL_CREDS_PATH = resolve(__dirname, ".app-screens.json");
+
+function parseGithubRemoteForPages(raw) {
+  if (!raw) return null;
+  const url = raw.trim().replace(/\.git$/i, "");
+  let m = url.match(/^git@github\.com:([^/]+)\/([^/]+)$/i);
+  if (m) return { owner: m[1], repo: m[2] };
+  m = url.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)/i);
+  if (m) return { owner: m[1], repo: m[2] };
+  return null;
+}
+
+function inferGithubPagesRootFromGit(cwd) {
+  try {
+    const remote = execSync("git remote get-url origin", {
+      cwd,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    }).trim();
+    const p = parseGithubRemoteForPages(remote);
+    if (!p) return null;
+    return `https://${p.owner.toLowerCase()}.github.io/${p.repo}/`;
+  } catch {
+    return null;
+  }
+}
+
+function normalizePublicBaseUrl(s) {
+  if (s == null || !String(s).trim()) return null;
+  try {
+    const t = String(s).trim();
+    const raw = /^https?:\/\//i.test(t) ? t : `https://${t.replace(/^\/+/, "")}`;
+    const u = new URL(raw);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return null;
+    let path = u.pathname || "/";
+    if (!path.endsWith("/")) path += "/";
+    return `${u.origin}${path}`;
+  } catch {
+    return null;
+  }
+}
+
+/** Dev only: serve merged data/site.json so Copy link uses GitHub Pages while on localhost. */
+function siteJsonDevPlugin(viteEnv) {
+  return {
+    name: "site-json-dev-merge",
+    enforce: "pre",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.method !== "GET") return next();
+        const pathOnly = req.url.split("?")[0];
+        if (pathOnly !== "/data/site.json") return next();
+
+        const fp = resolve(__dirname, "public/data/site.json");
+        let disk = {};
+        if (existsSync(fp)) {
+          try {
+            disk = JSON.parse(readFileSync(fp, "utf8"));
+          } catch {
+            disk = {};
+          }
+        }
+
+        const fromDisk = normalizePublicBaseUrl(disk.publicBaseUrl);
+        const fromEnv = normalizePublicBaseUrl(
+          viteEnv.DESIGN_CORE_PUBLIC_URL || process.env.DESIGN_CORE_PUBLIC_URL,
+        );
+        const inferred = normalizePublicBaseUrl(inferGithubPagesRootFromGit(__dirname));
+        const effective = fromDisk || fromEnv || inferred;
+
+        const out = { ...disk };
+        if (effective) out.publicBaseUrl = effective;
+
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify(out));
+      });
+    },
+  };
+}
 
 function dataFilesPlugin() {
   return {
@@ -305,29 +383,34 @@ function captureApiPlugin() {
   };
 }
 
-export default defineConfig({
-  base: "./",
-  server: { port: 3000 },
-  plugins: [
-    {
-      name: "suppress-public-reload",
-      handleHotUpdate({ file }) {
-        if (file.includes("/public/")) return [];
+export default defineConfig(({ mode }) => {
+  const viteEnv = loadEnv(mode, __dirname, "");
+
+  return {
+    base: "./",
+    server: { port: 3000 },
+    plugins: [
+      siteJsonDevPlugin(viteEnv),
+      {
+        name: "suppress-public-reload",
+        handleHotUpdate({ file }) {
+          if (file.includes("/public/")) return [];
+        },
+      },
+      dataFilesPlugin(),
+      captureApiPlugin(),
+    ],
+    build: {
+      rollupOptions: {
+        input: {
+          main: resolve(__dirname, "index.html"),
+          project: resolve(__dirname, "project.html"),
+          canvas: resolve(__dirname, "canvas.html"),
+          captures: resolve(__dirname, "captures.html"),
+          prototype: resolve(__dirname, "prototype.html"),
+          "design-system": resolve(__dirname, "design-system.html"),
+        },
       },
     },
-    dataFilesPlugin(),
-    captureApiPlugin(),
-  ],
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, "index.html"),
-        project: resolve(__dirname, "project.html"),
-        canvas: resolve(__dirname, "canvas.html"),
-        captures: resolve(__dirname, "captures.html"),
-        prototype: resolve(__dirname, "prototype.html"),
-        "design-system": resolve(__dirname, "design-system.html"),
-      },
-    },
-  },
+  };
 });

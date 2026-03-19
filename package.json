@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "capture": "node scripts/capture-screens.js"
+    "capture": "node scripts/capture-screens.js",
+    "sync-public-url": "node scripts/sync-public-site-url.js"
   },
   "devDependencies": {
     "playwright": "^1.58.2",
