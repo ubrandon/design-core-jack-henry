@@ -3,5 +3,126 @@
     "width": 390,
     "height": 844
   },
-  "captures": []
+  "captures": [
+    {
+      "name": "remote-deposits",
+      "file": "remote-deposits.jpg",
+      "group": "remote-deposits",
+      "path": "/remote-deposits",
+      "url": "https://digital.garden-fi.com/remote-deposits",
+      "capturedAt": "2026-03-19T19:46:18.474Z",
+      "x": 0,
+      "y": 48
+    },
+    {
+      "name": "ach",
+      "file": "ach.jpg",
+      "group": "payments",
+      "path": "/payments/ach",
+      "url": "https://digital.garden-fi.com/payments/ach",
+      "capturedAt": "2026-03-19T19:55:36.317Z",
+      "x": 0,
+      "y": 1229
+    },
+    {
+      "name": "home",
+      "file": "home.jpg",
+      "group": "home",
+      "path": "/",
+      "url": "https://digital.garden-fi.com/",
+      "capturedAt": "2026-03-19T19:55:04.372Z",
+      "x": 0,
+      "y": 2410
+    },
+    {
+      "name": "add-cashflow",
+      "file": "add-cashflow.jpg",
+      "group": "m2",
+      "path": "/m2",
+      "url": "https://bannogarden.mybankhq.com/m2?harvest=1773950129#/cashflow",
+      "capturedAt": "2026-03-19T19:55:33.934Z",
+      "x": 0,
+      "y": 3591
+    },
+    {
+      "name": "message",
+      "file": "message.jpg",
+      "group": "messages",
+      "path": "/messages/05f6b4ef-c118-476f-9a6b-0cd8574be1c6",
+      "url": "https://digital.garden-fi.com/messages/05f6b4ef-c118-476f-9a6b-0cd8574be1c6?support",
+      "capturedAt": "2026-03-19T19:53:16.169Z",
+      "x": 0,
+      "y": 4772
+    },
+    {
+      "name": "ach-create-ach",
+      "file": "ach-create-ach.jpg",
+      "group": "payments",
+      "path": "/payments/ach/batch/new",
+      "url": "https://digital.garden-fi.com/payments/ach/batch/new",
+      "capturedAt": "2026-03-19T19:55:43.287Z",
+      "x": 430,
+      "y": 1229
+    },
+    {
+      "name": "ach-create-ach-file-layouts",
+      "file": "ach-create-ach-file-layouts.jpg",
+      "group": "payments",
+      "path": "/payments/ach/import-settings",
+      "url": "https://digital.garden-fi.com/payments/ach/import-settings",
+      "capturedAt": "2026-03-19T19:55:57.723Z",
+      "x": 860,
+      "y": 1229
+    },
+    {
+      "name": "ach-upload-ach",
+      "file": "ach-upload-ach.jpg",
+      "group": "payments",
+      "path": "/payments/ach/upload",
+      "url": "https://digital.garden-fi.com/payments/ach/upload",
+      "capturedAt": "2026-03-19T19:56:05.068Z",
+      "x": 1290,
+      "y": 1229
+    },
+    {
+      "name": "ach-pay-taxes",
+      "file": "ach-pay-taxes.jpg",
+      "group": "payments",
+      "path": "/payments/ach/tax/new",
+      "url": "https://digital.garden-fi.com/payments/ach/tax/new",
+      "capturedAt": "2026-03-19T19:56:12.352Z",
+      "x": 1720,
+      "y": 1229
+    },
+    {
+      "name": "ach-search-recipients",
+      "file": "ach-search-recipients.jpg",
+      "group": "payments",
+      "path": "/payments/ach/search-recipients",
+      "url": "https://digital.garden-fi.com/payments/ach/search-recipients",
+      "capturedAt": "2026-03-19T19:56:24.952Z",
+      "x": 2150,
+      "y": 1229
+    },
+    {
+      "name": "accounts",
+      "file": "accounts.jpg",
+      "group": "accounts",
+      "path": "/accounts/",
+      "url": "https://digital.garden-fi.com/accounts/",
+      "capturedAt": "2026-03-19T19:55:22.916Z",
+      "x": 0,
+      "y": 5953
+    },
+    {
+      "name": "messages",
+      "file": "messages.jpg",
+      "group": "messages",
+      "path": "/messages",
+      "url": "https://digital.garden-fi.com/messages",
+      "capturedAt": "2026-03-19T19:55:27.277Z",
+      "x": 430,
+      "y": 4772
+    }
+  ]
 }

@@ -181,6 +181,19 @@ Run `npm run dev` and tell them the URL to open in their browser. Explain what t
 >
 > What would you like to build?"
 
+#### Quick reference
+
+After the next-steps message, show this cheat sheet so the user has it handy:
+
+> **Commands**
+> - `npm run dev` -- start the preview server
+>
+> **Prompts you can try**
+> - "Create a project called ___"
+> - "Create 5 screen designs the project ___"
+> - "Create a prototype for ___"
+> - "Add to the design system from these screenshots" (attach images)
+
 ## Important notes
 
 - The `.designer` file is gitignored -- each person on the team creates their own when they first set up
