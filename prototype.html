@@ -43,17 +43,24 @@
 
     if (!projectId || !protoId) window.location.href = "index.html";
 
-    renderNav({
-      breadcrumbs: [
-        { label: projectId, href: "project.html?id=" + projectId, id: "nav-project" },
-        { label: protoId, id: "nav-proto" },
-      ],
-      actions: [
-        { label: "Copy link", id: "copy-btn", href: "#", onclick: "event.preventDefault(); copyLink(window.location.href, document.getElementById('copy-btn'))" },
-      ],
-    });
-
     const basePath = "data/projects/" + projectId + "/prototypes/" + protoId + "/";
+
+    loadSiteConfig().then(() => {
+      renderNav({
+        breadcrumbs: [
+          { label: projectId, href: "project.html?id=" + projectId, id: "nav-project" },
+          { label: protoId, id: "nav-proto" },
+        ],
+        actions: [{ label: "Copy link", id: "copy-btn", href: "#" }],
+      });
+      const copyBtn = document.getElementById("copy-btn");
+      if (copyBtn) {
+        copyBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          copyLink(prototypeUrl(projectId, protoId), copyBtn);
+        });
+      }
+    });
 
     fetchJSON("data/projects/" + projectId + "/project.json")
       .then(data => {

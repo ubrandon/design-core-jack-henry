@@ -10,37 +10,57 @@
 <body>
   <div class="page-shell">
     <div class="page-content">
-      <header class="project-hero">
-        <h1 id="project-name" class="project-hero__title">Loading...</h1>
-        <p id="project-desc" class="project-hero__desc"></p>
-        <div id="project-meta" class="project-hero__meta"></div>
-      </header>
+      <div id="project-error" class="project-error" hidden>
+        <p class="project-error__title">Project not found</p>
+        <p class="project-error__desc">This link may be wrong or the project was removed. Open the project list and try again.</p>
+        <a class="btn-tool btn-tool--primary" href="index.html">All projects</a>
+      </div>
 
-      <section class="project-section">
-        <a id="canvas-link" href="#" class="canvas-cta">
-          <span class="canvas-cta__icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <path d="M3 9h18M9 21V9"/>
-            </svg>
-          </span>
-          <div class="canvas-cta__text">
-            <span class="canvas-cta__label">Ideation space</span>
-            <span class="canvas-cta__desc">Arrange screens, explore layouts, and iterate on ideas before building prototypes.</span>
+      <div id="project-main">
+        <header class="project-hero">
+          <h1 id="project-name" class="project-hero__title">Loading…</h1>
+          <p id="project-desc" class="project-hero__desc" hidden></p>
+          <div id="project-meta" class="project-hero__meta" hidden></div>
+        </header>
+
+        <section class="project-section project-section--ideation" id="section-ideation" hidden>
+          <div class="section-header section-header--lg">
+            <div>
+              <h2>Ideation space</h2>
+              <p id="ideation-subtitle" class="section-header__subtitle">Canvas screens for static layouts</p>
+            </div>
           </div>
-          <span class="canvas-cta__arrow">&rarr;</span>
-        </a>
-      </section>
+          <div class="canvas-block">
+            <div id="canvas-preview-host"></div>
+            <a id="canvas-link" href="#" class="canvas-cta">
+              <span class="canvas-cta__icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M3 9h18M9 21V9"/>
+                </svg>
+              </span>
+              <div class="canvas-cta__text">
+                <span class="canvas-cta__label">Open canvas</span>
+                <span class="canvas-cta__desc">Arrange screens, pan and zoom, and iterate before you build interactive prototypes.</span>
+              </div>
+              <span class="canvas-cta__arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </section>
 
-      <section class="project-section project-section--prototypes">
-        <div class="section-header section-header--lg">
-          <h2>Prototypes</h2>
-        </div>
-        <p class="project-section__intro">Interactive flows and click-through prototypes. Share links and open each prototype directly.</p>
-        <div id="prototypes" class="card-grid card-grid--prototypes">
-          <div class="empty-state">Loading prototypes...</div>
-        </div>
-      </section>
+        <section class="project-section project-section--prototypes" id="section-prototypes" hidden>
+          <div class="section-header section-header--lg">
+            <div>
+              <h2>Prototypes</h2>
+              <p id="prototypes-subtitle" class="section-header__subtitle">Interactive flows you can share</p>
+            </div>
+          </div>
+          <p class="project-section__intro">Click a card to preview in the tool, or open in a new tab. Copy link works great for GitHub Pages.</p>
+          <div id="prototypes" class="card-grid card-grid--prototypes">
+            <div class="empty-state">Loading prototypes…</div>
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 
@@ -50,13 +70,77 @@
     const projectId = getParam("id");
     if (!projectId) window.location.href = "index.html";
 
+    const MAX_CANVAS_PREVIEWS = 8;
+
     renderNav({
       breadcrumbs: [
-        { label: "Project", id: "nav-title" },
+        { label: "Projects", href: "index.html" },
+        { label: "Loading…", id: "nav-title" },
       ],
     });
 
-    document.getElementById("canvas-link").href = "canvas.html?project=" + projectId;
+    const el = {
+      error: document.getElementById("project-error"),
+      main: document.getElementById("project-main"),
+      name: document.getElementById("project-name"),
+      desc: document.getElementById("project-desc"),
+      meta: document.getElementById("project-meta"),
+      ideation: document.getElementById("section-ideation"),
+      ideationSub: document.getElementById("ideation-subtitle"),
+      canvasHost: document.getElementById("canvas-preview-host"),
+      canvasLink: document.getElementById("canvas-link"),
+      prototypesSection: document.getElementById("section-prototypes"),
+      prototypesSub: document.getElementById("prototypes-subtitle"),
+      prototypes: document.getElementById("prototypes"),
+    };
+
+    el.canvasLink.href = "canvas.html?project=" + encodeURIComponent(projectId);
+
+    function scrollToHashIfPresent() {
+      const id = (window.location.hash || "").replace(/^#/, "");
+      if (!id) return;
+      const target = document.getElementById(id);
+      if (!target) return;
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    function initCanvasPreviewLazyLoad(host) {
+      const pending = host.querySelectorAll("iframe[data-src]");
+      if (!pending.length) return;
+      if (!("IntersectionObserver" in window)) {
+        pending.forEach((iframe) => {
+          const src = iframe.getAttribute("data-src");
+          if (src) iframe.src = src;
+          iframe.removeAttribute("data-src");
+          iframe.closest(".canvas-preview-card__frame")?.classList.remove("canvas-preview-card__frame--lazy");
+        });
+        return;
+      }
+      const obs = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            const iframe = entry.target;
+            const src = iframe.getAttribute("data-src");
+            if (src) iframe.src = src;
+            iframe.removeAttribute("data-src");
+            iframe.closest(".canvas-preview-card__frame")?.classList.remove("canvas-preview-card__frame--lazy");
+            obs.unobserve(iframe);
+          }
+        },
+        { root: null, rootMargin: "120px 0px", threshold: 0.01 },
+      );
+      pending.forEach((iframe) => obs.observe(iframe));
+    }
+
+    document.getElementById("prototypes").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-copy-proto-url]");
+      if (!btn) return;
+      e.preventDefault();
+      copyLink(btn.getAttribute("data-copy-proto-url"), btn);
+    });
 
     function getPrototypeDevice(deviceRaw) {
       const device = (deviceRaw || "responsive").toLowerCase();
@@ -93,64 +177,219 @@
       };
     }
 
-    fetchJSON("data/projects/" + projectId + "/project.json")
-      .then(data => {
-        document.getElementById("project-name").textContent = data.name;
-        document.getElementById("project-desc").textContent = data.description;
+    function buildProjectMetaLine(data) {
+      const parts = [];
+      if (data.createdBy) parts.push(data.createdBy);
+      if (data.createdAt) {
+        const rel = formatRelativeDate(data.createdAt);
+        const abs = formatDate(data.createdAt);
+        parts.push(rel && rel !== abs ? `Created ${rel}` : `Created ${abs}`);
+      }
+      if (data.updatedAt && data.updatedAt !== data.createdAt) {
+        const relU = formatRelativeDate(data.updatedAt);
+        parts.push(relU ? `Updated ${relU}` : `Updated ${formatDate(data.updatedAt)}`);
+      }
+      return parts.join(" · ");
+    }
+
+    function screenLabel(file) {
+      return String(file || "")
+        .replace(/\.html$/i, "")
+        .replace(/[-_]+/g, " ")
+        .trim() || "Screen";
+    }
+
+    function renderCanvasStrip(screens, canvasFailed) {
+      const canvasHref = el.canvasLink.href;
+      if (canvasFailed) {
+        el.canvasHost.innerHTML = `
+          <div class="canvas-preview-empty canvas-preview-empty--warn">
+            <p class="canvas-preview-empty__title">Couldn’t load the screen list</p>
+            <p class="canvas-preview-empty__hint">You can still open the canvas — if the problem continues, check that <code>canvas.json</code> exists for this project.</p>
+            <p style="margin-top:14px;"><a class="btn-tool btn-tool--primary" href="${escapeHtml(canvasHref)}">Open canvas</a></p>
+          </div>`;
+        el.ideationSub.textContent = "Screen list unavailable";
+        return;
+      }
+      if (!screens.length) {
+        el.canvasHost.innerHTML = `
+          <div class="canvas-preview-empty">
+            <p class="canvas-preview-empty__title">No screens on the canvas yet</p>
+            <p class="canvas-preview-empty__hint">Add screen designs from the canvas, or ask the AI to create screens for this project.</p>
+          </div>`;
+        el.ideationSub.textContent = "No canvas screens yet";
+        return;
+      }
+
+      const n = screens.length;
+      const shown = screens.slice(0, MAX_CANVAS_PREVIEWS);
+      const more = n - shown.length;
+      el.ideationSub.textContent =
+        n === 1 ? "1 screen on the canvas" : `${n} screens on the canvas`;
+
+      const bust = "?t=" + Date.now();
+      const cards = shown.map((s) => {
+        const src = `data/projects/${encodeURIComponent(projectId)}/screens/${encodeURIComponent(s.file)}${bust}`;
+        const label = escapeHtml(screenLabel(s.file));
+        return `<a class="canvas-preview-card" href="${escapeHtml(canvasHref)}" title="Open canvas — ${label}">
+          <div class="canvas-preview-card__frame canvas-preview-card__frame--lazy">
+            <iframe data-src="${escapeHtml(src)}" title="${label}" tabindex="-1"></iframe>
+          </div>
+          <span class="canvas-preview-card__label">${label}</span>
+        </a>`;
+      }).join("");
+
+      const moreLink =
+        more > 0
+          ? `<a class="canvas-preview-more" href="${escapeHtml(canvasHref)}">+${more} more on canvas →</a>`
+          : "";
+
+      el.canvasHost.innerHTML = `<div class="canvas-preview-strip" role="list">${cards}${moreLink}</div>`;
+      initCanvasPreviewLazyLoad(el.canvasHost);
+    }
+
+    function fetchProtoMeta(protoId) {
+      return fetchJSON(
+        "data/projects/" + projectId + "/prototypes/" + encodeURIComponent(protoId) + "/meta.json",
+      ).catch(() => ({}));
+    }
+
+    function renderPrototypesGrid(protoList, loadFailed) {
+      const grid = el.prototypes;
+      if (loadFailed) {
+        grid.innerHTML = `
+          <div class="empty-state empty-state--in-grid empty-state--error">
+            <p class="empty-state__title">Couldn’t load prototypes</p>
+            <p class="empty-state__hint">Check that <code>prototypes/index.json</code> exists. Refresh the page after fixing the file.</p>
+          </div>`;
+        el.prototypesSub.textContent = "Prototype list failed to load";
+        return;
+      }
+      if (!protoList.length) {
+        grid.innerHTML = `
+          <div class="empty-state empty-state--in-grid">
+            <p class="empty-state__title">No prototypes yet</p>
+            <p class="empty-state__hint">Ask the AI to build an interactive prototype — describe the flow or feature you want to try.</p>
+          </div>`;
+        el.prototypesSub.textContent = "No prototypes yet";
+        return;
+      }
+
+      el.prototypesSub.textContent =
+        protoList.length === 1 ? "1 prototype" : `${protoList.length} prototypes`;
+
+      Promise.all(
+        protoList.map((p) =>
+          fetchProtoMeta(p.id).then((meta) => ({ p, meta })),
+        ),
+      ).then((rows) => {
+        grid.innerHTML = rows
+          .map(({ p, meta }) => {
+            const url = prototypeUrl(projectId, p.id);
+            const previewHref = "prototype.html?project=" + encodeURIComponent(projectId) + "&proto=" + encodeURIComponent(p.id);
+            const deviceMeta = getPrototypeDeviceMeta(p.device);
+            const name = escapeHtml(p.name);
+            const desc = escapeHtml(p.description || "Interactive prototype");
+            let thumbInner;
+            if (meta.thumbnail && typeof meta.thumbnail === "string") {
+              const thumbPath = meta.thumbnail
+                .split("/")
+                .filter(Boolean)
+                .map((seg) => encodeURIComponent(seg))
+                .join("/");
+              const thumbSrc =
+                "data/projects/" +
+                encodeURIComponent(projectId) +
+                "/prototypes/" +
+                encodeURIComponent(p.id) +
+                "/" +
+                thumbPath;
+              thumbInner = `<img src="${escapeHtml(thumbSrc)}" alt="" loading="lazy" />`;
+            } else {
+              const initial = escapeHtml((p.name || "?").trim().slice(0, 1).toUpperCase());
+              thumbInner = `<span class="tile-card__thumb-placeholder">${initial}</span>`;
+            }
+            const urlAttr = escapeHtml(url);
+            const previewEsc = escapeHtml(previewHref);
+            const ariaOpen = escapeHtml(`Open ${p.name || "prototype"} in preview`);
+            return `
+            <article class="tile-card tile-card--prototype">
+              <a class="tile-card__link-body" href="${previewEsc}" aria-label="${ariaOpen}">
+                <div class="tile-card__thumb">${thumbInner}</div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span class="tile-card__icon" aria-hidden="true">${deviceMeta.icon}</span>
+                  <span class="tile-meta">${escapeHtml(deviceMeta.label)}</span>
+                </div>
+                <span class="tile-title">${name}</span>
+                <p class="tile-desc">${desc}</p>
+              </a>
+              <div class="tile-actions">
+                <button type="button" class="btn-tool" data-copy-proto-url="${urlAttr}">Copy link</button>
+                <a class="btn-tool" href="${previewEsc}" target="_blank" rel="noopener noreferrer">New tab</a>
+              </div>
+            </article>`;
+          })
+          .join("");
+      });
+    }
+
+    Promise.all([loadSiteConfig(), fetchJSON("data/projects/" + projectId + "/project.json")])
+      .then(([, data]) => {
+        el.error.hidden = true;
+        el.main.hidden = false;
+
+        el.name.textContent = data.name;
         document.getElementById("nav-title").textContent = data.name;
         document.title = data.name + " — Design Core";
-        const meta = document.getElementById("project-meta");
-        if (data.createdBy || data.createdAt) {
-          meta.textContent = [data.createdBy, data.createdAt ? formatDate(data.createdAt) : ""].filter(Boolean).join(" · ");
-          meta.hidden = false;
+
+        if (data.description && String(data.description).trim()) {
+          el.desc.textContent = data.description;
+          el.desc.hidden = false;
         } else {
-          meta.hidden = true;
+          el.desc.textContent = "";
+          el.desc.hidden = true;
         }
+
+        const metaLine = buildProjectMetaLine(data);
+        if (metaLine) {
+          el.meta.textContent = metaLine;
+          el.meta.hidden = false;
+        } else {
+          el.meta.hidden = true;
+        }
+
+        el.ideation.hidden = false;
+        el.prototypesSection.hidden = false;
+
+        return Promise.all([
+          fetchJSON("data/projects/" + projectId + "/canvas.json").then(
+            (c) => ({ ok: true, screens: c.screens || [] }),
+            () => ({ ok: false, screens: [] }),
+          ),
+          fetchJSON("data/projects/" + projectId + "/prototypes/index.json").then(
+            (d) => ({ ok: true, list: d.prototypes || [] }),
+            () => ({ ok: false, list: [] }),
+          ),
+        ]).then(([canvasResult, protoResult]) => {
+          const screens = canvasResult.screens;
+          const protoList = protoResult.list;
+          renderCanvasStrip(screens, !canvasResult.ok);
+          renderPrototypesGrid(protoList, !protoResult.ok);
+          scrollToHashIfPresent();
+        });
       })
       .catch(() => {
-        document.getElementById("project-name").textContent = "Project not found";
+        el.error.hidden = false;
+        el.main.hidden = true;
+        document.getElementById("nav-title").textContent = "Project";
+        document.title = "Project — Design Core";
       });
 
-    fetchJSON("data/projects/" + projectId + "/prototypes/index.json")
-      .then(data => {
-        const grid = document.getElementById("prototypes");
-        if (!data.prototypes.length) {
-          grid.innerHTML = `
-            <div class="empty-state empty-state--in-grid">
-              <p class="empty-state__title">No prototypes yet</p>
-              <p class="empty-state__hint">Ask the AI to build an interactive prototype — describe the flow or feature you want to try.</p>
-            </div>`;
-          return;
-        }
-        grid.innerHTML = data.prototypes.map(p => {
-          const url = prototypeUrl(projectId, p.id);
-          const previewHref = "prototype.html?project=" + projectId + "&proto=" + p.id;
-          const deviceMeta = getPrototypeDeviceMeta(p.device);
-          return `
-            <a href="${previewHref}" class="tile-card tile-card--prototype">
-              <span class="tile-card__icon" aria-hidden="true">
-                ${deviceMeta.icon}
-              </span>
-              <p class="tile-meta">${deviceMeta.label}</p>
-              <span class="tile-title">${p.name}</span>
-              <p class="tile-desc">${p.description || "Interactive prototype"}</p>
-              <div class="tile-actions">
-                <span role="button" tabindex="0" class="btn-tool" onclick="event.preventDefault(); event.stopPropagation(); copyLink('${url}', this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); copyLink('${url}', this); }">Copy link</span>
-              </div>
-            </a>
-          `;
-        }).join("");
-      })
-      .catch(() => {
-        document.getElementById("prototypes").innerHTML = '<div class="empty-state">Could not load prototypes.</div>';
-      });
-
-    // Cursor-follow glow on canvas CTA and prototype cards
     document.addEventListener("mousemove", (e) => {
-      for (const el of document.querySelectorAll(".canvas-cta, .tile-card--prototype")) {
-        const rect = el.getBoundingClientRect();
-        el.style.setProperty("--mouse-x", (e.clientX - rect.left) + "px");
-        el.style.setProperty("--mouse-y", (e.clientY - rect.top) + "px");
+      for (const node of document.querySelectorAll(".canvas-cta, .tile-card--prototype")) {
+        const rect = node.getBoundingClientRect();
+        node.style.setProperty("--mouse-x", e.clientX - rect.left + "px");
+        node.style.setProperty("--mouse-y", e.clientY - rect.top + "px");
       }
     });
   </script>

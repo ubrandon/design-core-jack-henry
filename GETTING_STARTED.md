@@ -43,3 +43,27 @@ I'm joining my team's Design Core repo. Please:
 ---
 
 That's it. The AI handles everything else. You'll publish your company's repo to GitHub using Cursor's built-in Source Control panel -- no extra tools needed.
+
+---
+
+## Sharing prototypes (you in Cursor, them in a browser)
+
+You work in **Cursor** with **`npm run dev`** (localhost). People you share with **do not** use Cursor — they open a normal link in Chrome, Safari, etc.
+
+That link must be your **deployed** site on **GitHub Pages** (after you enable Pages and push). To make **Copy link** in the tool paste the public Pages URL while you're still on localhost, run **once** from your repo folder (after `origin` points at your GitHub repo):
+
+```bash
+npm run sync-public-url
+```
+
+That updates `public/data/site.json` with `publicBaseUrl` (derived from `git remote get-url origin`). Commit that file so everyone on the team gets the same behavior.
+
+While you use **`npm run dev`**, the dev server usually **infers the same URL from `origin` automatically** (no `site.json` needed). If **Copy link** still shows localhost, you don’t have a standard GitHub `origin` remote yet — run `sync-public-url` or set the URL explicitly:
+
+If your remote isn’t GitHub or parsing fails, set the URL explicitly:
+
+```bash
+DESIGN_CORE_PUBLIC_URL=https://your-org.github.io/your-repo/ npm run sync-public-url
+```
+
+See also `public/data/site.example.json` and the **Sharing** section in `README.md`.

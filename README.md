@@ -84,25 +84,37 @@ Built with vanilla HTML/CSS/JS + Vite. No framework, no database, no backend.
 
 ### File structure
 
+Vite serves `public/` at the site root. On disk, design data lives under `public/data/`; in the browser, paths start with `data/` (no `public/` prefix).
+
 ```
-data/
-  projects/
-    index.json
-    <project-id>/
-      project.json
-      canvas.json
-      screens/            Static HTML (no JS) for canvas ideation
-      prototypes/
-        index.json
-        <prototype-id>/
-          meta.json
-          index.html      Interactive prototype (HTML/CSS/JS)
-  design-system/
-    registry.json         Ships empty; company fills with their groups/categories
-    company.css           (Company repos) Brand overrides -- auto-loaded after shared.css/ds.css
-    components/           Component HTML snippets
-      <company-slug>/     Company repos put components here (e.g. acme/)
+public/
+  styles/                 # Tool + design tokens (shared.css, ds.css, app.css, …)
+  data/
+    site.json             Optional public site URL for prototype “Copy link” (local dev); see Sharing
+    projects/
+      index.json
+      <project-id>/
+        project.json
+        canvas.json
+        screens/            Static HTML (no JS) for canvas ideation
+        prototypes/
+          index.json
+          <prototype-id>/
+            meta.json
+            index.html      Interactive prototype (HTML/CSS/JS)
+    design-system/
+      registry.json         Ships empty; company fills with their groups/categories
+      company.css           (Company repos) Brand overrides -- auto-loaded after shared.css/ds.css
+      components/           Component HTML snippets
+        <company-slug>/     Company repos put components here (e.g. acme/)
+    captures/             Capture config + manifest (see docs/captures.md)
 ```
+
+Root HTML pages (`index.html`, `canvas.html`, …) sit at the repo root; browser JS lives in `public/scripts/` (so it ships with `vite build` / GitHub Pages). Node CLIs (`capture-screens.js`, …) stay in repo-root `scripts/`. See `docs/DESIGN_TOOL_PLAN.md` for the full tree.
+
+### Maintaining the tool
+
+Improvement ideas for core contributors (architecture, dev API safety, testing, captures): [docs/core-improvements.md](docs/core-improvements.md).
 
 ### Local development
 
@@ -114,6 +126,20 @@ npm run dev
 ### Sharing
 
 Push to `main` and prototypes deploy to GitHub Pages automatically.
+
+**Typical flow:** designers run the tool on **localhost** in Cursor; stakeholders open **Copy link** in a normal browser — that must be the **GitHub Pages** URL, not `localhost`.
+
+**Copy link** on the project hub and prototype preview uses your **deployed** URL, not `localhost`:
+
+- On **`*.github.io`**, the base URL is taken from the current path (no config needed).
+- On **`npm run dev` (localhost)**, Vite serves a merged `data/site.json`: it adds **`publicBaseUrl`** inferred from **`git remote get-url origin`** when your `public/data/site.json` doesn’t set it (standard `github.com` SSH/HTTPS remotes only). Restart dev if you change remotes.
+- To override or persist for CI / `vite preview`, run **`npm run sync-public-url`** or edit `public/data/site.json` manually:
+
+  ```json
+  { "publicBaseUrl": "https://your-org.github.io/your-repo/" }
+  ```
+
+  Commit `site.json` so teammates get the same share links. You can also set `DESIGN_CORE_PUBLIC_URL` when running the sync script, or use `window.__DESIGN_CORE_PUBLIC_BASE__` / `<meta name="design-core-public-url" content="https://…/">` for edge cases.
 
 ---
 

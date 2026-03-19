@@ -21,7 +21,7 @@ Check the **repo name** (the workspace folder name or `package.json` `name` fiel
 You are working with a **developer** who maintains the design tool. In this mode:
 
 - The goal is to improve, fix, or extend the tool -- its pages, scripts, styles, Vite config, Cursor rules, etc.
-- You **can and should** edit root-level HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`), files in `scripts/`, config files, shared styles, and anything else in the repo.
+- You **can and should** edit root-level HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`), **`public/scripts/`** (browser tool JS), repo-root **`scripts/`** (Node CLIs only), config files, shared styles, and anything else in the repo.
 - Do NOT create new design projects, screens, or prototypes unless the developer explicitly asks (e.g. for testing). The `public/data/projects/` folder contains sample/test data -- treat it as fixtures, not real design work.
 - Speak technically. The developer understands HTML, CSS, JS, Vite, and the codebase.
 - The "Critical Rules" section below about staying in a project folder and never editing the tool **does not apply** -- those rules protect designers in consumer repos.
@@ -31,7 +31,7 @@ You are working with a **developer** who maintains the design tool. In this mode
 You are helping a **designer** create UI screens and interactive prototypes. They may not be technical. Be helpful, visual, and avoid jargon.
 
 - All the rules below (project boundaries, prototype mode, design system usage, tone) apply fully.
-- If the designer tries to edit tool-level files (root HTML pages, `scripts/`, Vite config, Cursor rules, `package.json`), **stop and ask first**: "That would change the design tool itself, not your project. Are you sure you want to do that?" Only proceed if they confirm.
+- If the designer tries to edit tool-level files (root HTML pages, `public/scripts/`, repo-root `scripts/` CLIs, Vite config, Cursor rules, `package.json`), **stop and ask first**: "That would change the design tool itself, not your project. Are you sure you want to do that?" Only proceed if they confirm.
 - Never modify tool internals on your own initiative. Your job is to help them build screens and prototypes inside their project folder.
 
 ### NEVER make tool-level changes in a company repo
@@ -43,7 +43,8 @@ You are helping a **designer** create UI screens and interactive prototypes. The
 - `.cursor/rules/` -- all Cursor rule files (`design-tool.mdc`, `setup.mdc`, etc.)
 - `GETTING_STARTED.md`, `README.md`
 - Root HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`)
-- `scripts/` -- all JavaScript files that power the tool
+- `public/scripts/` -- JavaScript that powers the tool in the browser (must live here so `vite build` deploys it to GitHub Pages)
+- `scripts/` (repo root) -- Node-only CLIs (`capture-screens.js`, `sync-public-site-url.js`), not loaded by HTML
 - `public/styles/shared.css`, `public/styles/ds.css` -- shared design system styles
 - `vite.config.js`, `package.json`, `package-lock.json`
 - `.github/` -- GitHub Actions workflows
@@ -101,12 +102,13 @@ When creating or editing files, always use the **full disk path** (with `public/
 All paths below are **disk paths** (relative to repo root):
 
 - `public/data/projects/<project>/` -- One folder per project. The **project id** is the folder name (e.g. `my-app`).
-- `public/data/projects/<project>/project.json` -- **Project name and metadata.** Contains `name`, `description`, and optionally `createdBy`, `createdAt`.
-- `public/data/projects/index.json` -- List of all projects (`id`, `name`, `description`, `createdBy`, `createdAt`). Home page cards use this.
+- `public/data/projects/<project>/project.json` -- **Project name and metadata.** Contains `name`, `description`, and optionally `createdBy`, `createdAt`, `updatedAt` (shown on the project hub with relative dates when present). Set `updatedAt` when the project meaningfully changes — the **home** page uses it for "Recently updated" sorting.
+- `public/data/projects/index.json` -- List of all projects (`id`, `name`, `description`, `createdBy`, `createdAt`). The home page also loads each project's `project.json`, `canvas.json`, and `prototypes/index.json` for search, sort, and screen/prototype counts on cards.
+- `public/data/site.json` -- Optional tool config: `{ "publicBaseUrl": "https://org.github.io/repo/" }` so **Copy link** for prototypes uses the GitHub Pages URL while developing on localhost (people you share with open that link in a browser, not Cursor). Run **`npm run sync-public-url`** to fill it from `git remote get-url origin`. On `*.github.io`, the base is inferred from the current URL if this is omitted.
 - `public/data/projects/<project>/canvas.json` -- **Canvas screen layout.** Lists which screens appear on the canvas and their positions/sizes. Contains `{ "screens": [{ "file": "home.html", "x": 0, "y": 0, "width": 390 }, ...] }`. When adding a new screen, you MUST also add an entry here or it won't show on the canvas. Standard widths: **390** for mobile, **1024** for tablet, **1440** for desktop. Use whatever fits the screen being designed.
 - `public/data/projects/<project>/screens/` -- Static screen HTML files for the ideation canvas
 - `public/data/projects/<project>/prototypes/<prototype>/index.html` -- Interactive prototype
-- `public/data/projects/<project>/prototypes/<prototype>/meta.json` -- Prototype name and description
+- `public/data/projects/<project>/prototypes/<prototype>/meta.json` -- Prototype name and description; optional `thumbnail` (filename or path under the prototype folder, e.g. `preview.png`) for the project page card image.
 - `public/data/projects/<project>/prototypes/index.json` -- Prototype list (`id`, `name`, `description`, optional `device`)
 - `public/data/design-system/components/` -- Design system component HTML previews. In company repos, use `components/<company-slug>/` subfolder.
 - `public/data/design-system/registry.json` -- Category list + groups (order controls layout). Ships empty; company fills it.
@@ -133,7 +135,7 @@ The design system page (`design-system.html`) uses an **infinite canvas**: main 
 
 1. **Stay in your project.** Only create or edit files inside the designer's current project folder (`public/data/projects/<project>/`). NEVER modify files in other project folders.
 2. **Stay in your prototype.** If the designer is working on a prototype (`public/data/projects/<project>/prototypes/<prototype>/`), all work happens inside that prototype's folder. Never touch other prototypes or project-level screens.
-3. **Never edit the tool itself.** Do not touch root-level HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`), `scripts/`, or config files. If the designer asks to change these, stop and confirm: "That would change the design tool itself -- are you sure?"
+3. **Never edit the tool itself.** Do not touch root-level HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`), `public/scripts/`, repo-root `scripts/` CLIs, or config files. If the designer asks to change these, stop and confirm: "That would change the design tool itself -- are you sure?"
 4. **Never edit the design system** without being explicitly asked. The files in `public/data/design-system/` and `public/styles/` are shared across all projects.
 5. **Use the design system.** Always use existing CSS classes from `public/styles/ds.css` and design tokens from `public/styles/shared.css`. Read both files before creating anything.
 
@@ -157,8 +159,9 @@ When a designer asks you to create screens, prototypes, or any design work, **al
 2. Create the folder: `public/data/projects/<id>/`
 3. Create `public/data/projects/<id>/project.json`:
    ```json
-   { "name": "Mobile Redesign", "description": "...", "createdBy": "Ben", "createdAt": "2026-03-15T00:00:00Z" }
+   { "name": "Mobile Redesign", "description": "...", "createdBy": "Ben", "createdAt": "2026-03-15T00:00:00Z", "updatedAt": "2026-03-15T00:00:00Z" }
    ```
+   (`updatedAt` optional; omit on first creation or mirror `createdAt`. Refresh it when the project changes so the home page sort stays accurate.)
 4. Add an entry to `public/data/projects/index.json` with matching `id`, `name`, `description`, `createdBy`, `createdAt`
 5. Create `public/data/projects/<id>/canvas.json`: `{ "screens": [] }`
 6. Create `public/data/projects/<id>/screens/` directory
@@ -205,8 +208,9 @@ Screens render inside an iframe at exactly the width set in `canvas.json`. Conte
 3. Create the folder: `public/data/projects/<project>/prototypes/<id>/`
 4. Create `meta.json`:
    ```json
-   { "name": "Signup Flow", "description": "..." }
+   { "name": "Signup Flow", "description": "...", "thumbnail": "preview.png" }
    ```
+   (`thumbnail` is optional — image file in the prototype folder, used on the project hub.)
 5. Add an entry to `public/data/projects/<project>/prototypes/index.json`:
    ```json
    { "id": "<id>", "name": "Signup Flow", "description": "...", "device": "mobile" }
@@ -368,7 +372,7 @@ The `registry.json` file controls the design system page layout:
 
 ### User content separation
 
-All user-created content in a company repo must stay cleanly separated from tool files. The rule is simple: **everything the team creates goes under `public/data/`**. Never edit tool-level files (`shared.css`, `ds.css`, `scripts/`, root HTML pages, etc.).
+All user-created content in a company repo must stay cleanly separated from tool files. The rule is simple: **everything the team creates goes under `public/data/`**. Never edit tool-level files (`shared.css`, `ds.css`, `public/scripts/`, root HTML pages, etc.).
 
 #### Design system components: use a company subfolder
 
