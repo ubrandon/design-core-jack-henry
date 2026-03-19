@@ -220,6 +220,7 @@ Screens render inside an iframe at exactly the width set in `canvas.json`. Conte
    <link rel="stylesheet" href="../../../../../styles/shared.css">
    <link rel="stylesheet" href="../../../../../styles/ds.css">
    ```
+   **Path depth:** use exactly **five** `../` segments (`../../../../../`), not six. The prototype file lives at `data/projects/<project>/prototypes/<id>/index.html` under the site root; six levels escapes past the repo base on **GitHub project Pages** and breaks CSS (browser requests `/styles/...` on the `github.io` host instead of `/repo-name/styles/...`). Company CSS, if any: `../../../../../data/design-system/company.css`.
 
 ## Prototype Mode -- Interactive Features
 
