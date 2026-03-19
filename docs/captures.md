@@ -46,13 +46,18 @@ Configuration is split into two files — shared settings that the whole team se
 |-------|---------|-------------|
 | `appUrl` | — | Base URL of the app to capture (required) |
 | `viewport` | `{ width: 390, height: 844 }` | Browser viewport size |
-| `discover` | `false` | Automatically find screens by crawling navigation links |
+| `discover` | `true` | Automatically find screens by crawling navigation links |
 | `screens` | `[]` | Explicit list of screens to capture (used when `discover` is `false`) |
 | `dismissSelectors` | `[]` | Extra CSS selectors for app-specific close/dismiss buttons |
+| `dismissAcceptButtons` | `true` | When `true`, auto-dismiss may click **Accept** / **OK** (e.g. cookie banners). Set to `false` if that risks submitting real forms. |
+
+When you start a capture from the **Captures** UI, only `appUrl` is updated. All other keys in `config.json` are preserved so team settings (explicit `screens`, `dismissSelectors`, etc.) are not reset.
 
 ### Local credentials (gitignored)
 
 **`.app-screens.json`** — optional, only needed for apps behind login. Each designer creates their own copy with their credentials. Never committed to git.
+
+While `npm run dev` is running, the capture API can read and write saved username/password for the modal UI. Treat the dev server as **local-trust only** (same as any tool that stores credentials on disk).
 
 **Simple format** (recommended) — just provide your username and password. The script auto-detects login fields, handles single-page and multi-step login flows, finds submit buttons, and waits for MFA if needed:
 

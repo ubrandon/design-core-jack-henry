@@ -29,6 +29,33 @@ if (!config.appUrl) {
 
 const baseUrl = config.appUrl.replace(/\/$/, '');
 const viewport = config.viewport || { width: 390, height: 844 };
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Resolve an href from the page/DOM to an absolute URL (supports subpath deployments and relative links). */
+function resolveHref(href, basePageUrl) {
+  if (href == null || href === '') return basePageUrl;
+  const h = String(href).trim();
+  if (/^https?:\/\//i.test(h)) return h;
+  if (!basePageUrl) return h;
+  try {
+    const base = basePageUrl.endsWith('/') ? basePageUrl : `${basePageUrl}/`;
+    return new URL(h, base).href;
+  } catch {
+    try {
+      if (h.startsWith('/')) return `${new URL(basePageUrl).origin}${h}`;
+    } catch {}
+    return h;
+  }
+}
+
+function urlLooksLikeLoginPage(urlStr) {
+  const u = urlStr.toLowerCase();
+  return u.includes('/login') || u.includes('/sign-in') || u.includes('/signin') ||
+    u.includes('/auth/login') || u.includes('/auth/sign-in') || u.includes('/auth/signin');
+}
 const extraDismissSelectors = config.dismissSelectors || [];
 const SELECT_ALL_KEY = process.platform === 'darwin' ? 'Meta+a' : 'Control+a';
 const parallelPages = Math.min(config.parallelPages || 3, 6);
@@ -74,7 +101,7 @@ function cleanOrphanedFiles(manifestCaptures) {
   try {
     const files = readdirSync(OUTPUT_DIR);
     for (const file of files) {
-      if (!referencedFiles.has(file) && (file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg'))) {
+      if (!referencedFiles.has(file) && (file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg') || file.endsWith('.webp'))) {
         try {
           unlinkSync(join(OUTPUT_DIR, file));
           console.log(`  ⤷ Cleaned up orphaned file: ${file}`);
@@ -96,7 +123,7 @@ async function safeGoto(page, url, { retries = 1 } = {}) {
     } catch (err) {
       if (attempt < retries) {
         console.log(`    ⤷ Navigation failed, retrying (${attempt + 1}/${retries})...`);
-        await page.waitForTimeout(800);
+        await sleep(800);
       } else {
         console.log(`    ⚠ Navigation to ${url} failed after ${retries + 1} attempts: ${err.message.slice(0, 100)}`);
       }
@@ -206,14 +233,16 @@ async function scrollToTriggerLazy(page) {
 
 async function dismissModals(page) {
   // Brief pause to let modals/popups render after page load
-  await page.waitForTimeout(500);
+  await sleep(500);
 
   for (let i = 0; i < 3; i++) {
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(400);
+    await sleep(400);
   }
 
-  const dismissed = await page.evaluate((extraSelectors) => {
+  const matchAccept = config.dismissAcceptButtons !== false;
+
+  const dismissed = await page.evaluate(({ extraSelectors, matchAccept: allowAccept }) => {
     let closed = 0;
 
     function walkAndDismiss(root) {
@@ -244,8 +273,11 @@ async function dismissModals(page) {
 
       const dismissText = [
         'close', 'dismiss', 'not now', 'no thanks',
-        'maybe later', 'got it', 'accept', 'ok',
+        'maybe later', 'got it',
       ];
+      if (allowAccept) {
+        dismissText.push('accept', 'ok');
+      }
       for (const el of root.querySelectorAll('button, a, [role="button"]')) {
         const text = el.textContent.trim().toLowerCase();
         const rect = el.getBoundingClientRect();
@@ -259,11 +291,11 @@ async function dismissModals(page) {
 
     walkAndDismiss(document);
     return closed;
-  }, extraDismissSelectors);
+  }, { extraSelectors: extraDismissSelectors, matchAccept });
 
   if (dismissed > 0) {
     console.log(`    ⤷ Dismissed ${dismissed} modal(s)/popup(s).`);
-    await page.waitForTimeout(800);
+    await sleep(800);
   }
 }
 
@@ -282,11 +314,11 @@ async function runLoginSteps(page, steps) {
       }
       case 'submit': {
         await page.keyboard.press('Enter');
-        await page.waitForTimeout(800);
+        await sleep(800);
         break;
       }
       case 'wait': {
-        await page.waitForTimeout(step.ms || 2000);
+        await sleep(step.ms || 2000);
         break;
       }
       case 'waitForUrl': {
@@ -384,7 +416,7 @@ async function autoLogin(page, login) {
   if (usernameField) {
     console.log('    ⤷ Found username field');
     await usernameField.fill(username);
-    await page.waitForTimeout(200);
+    await sleep(200);
   } else {
     console.log('    ⤷ No username field found, trying password directly');
   }
@@ -394,7 +426,7 @@ async function autoLogin(page, login) {
   if (passwordField) {
     console.log('    ⤷ Found password field');
     await passwordField.fill(password);
-    await page.waitForTimeout(200);
+    await sleep(200);
 
     let submitBtn = await findVisible(page, SUBMIT_SELECTORS);
     if (submitBtn) {
@@ -404,7 +436,7 @@ async function autoLogin(page, login) {
       console.log('    ⤷ Pressing Enter to submit');
       await page.keyboard.press('Enter');
     }
-    await page.waitForTimeout(1000);
+    await sleep(1000);
   } else {
     console.log('    ⤷ No password field yet — trying multi-step login');
     let submitBtn = await findVisible(page, SUBMIT_SELECTORS);
@@ -413,13 +445,13 @@ async function autoLogin(page, login) {
     } else {
       await page.keyboard.press('Enter');
     }
-    await page.waitForTimeout(1500);
+    await sleep(1500);
 
     passwordField = await findVisible(page, PASSWORD_SELECTORS);
     if (passwordField) {
       console.log('    ⤷ Found password field on step 2');
       await passwordField.fill(password);
-      await page.waitForTimeout(200);
+      await sleep(200);
 
       submitBtn = await findVisible(page, SUBMIT_SELECTORS);
       if (submitBtn) {
@@ -429,7 +461,7 @@ async function autoLogin(page, login) {
         console.log('    ⤷ Pressing Enter to submit');
         await page.keyboard.press('Enter');
       }
-      await page.waitForTimeout(1000);
+      await sleep(1000);
     } else {
       console.log('    ⤷ Still no password field — login form may need manual steps');
     }
@@ -523,7 +555,7 @@ async function captureCurrentPage(page, name, usedNames, screens, retries = 1) {
     } catch (err) {
       if (attempt < retries) {
         console.log(`    ⤷ Screenshot failed, retrying: ${err.message.slice(0, 80)}`);
-        await page.waitForTimeout(500);
+        await sleep(500);
       } else {
         console.log(`    ⚠ Screenshot failed for "${name}": ${err.message.slice(0, 120)}`);
         seenContentSignatures.delete(sig);
@@ -691,7 +723,7 @@ async function discoverTabs(page, parentName, usedNames, screens) {
   }
 }
 
-async function discoverScreens(context, page, baseOrigin) {
+async function discoverScreens(context, page, linkOrigin) {
   const visitedPaths = new Set();
   const screens = [];
   const usedNames = new Set();
@@ -701,13 +733,15 @@ async function discoverScreens(context, page, baseOrigin) {
   const skipUuids = config.skipUuids !== false;
   const exploreTabs = config.exploreTabs !== false;
 
-  // Use actual page origin (may differ from config URL after login redirect)
   const actualOrigin = new URL(homeUrl).origin;
-  const origins = new Set([baseOrigin, actualOrigin]);
-  const effectiveOrigin = actualOrigin;
+  const effectiveOrigin = linkOrigin;
+  let configOrigin = actualOrigin;
+  try {
+    configOrigin = new URL(baseUrl).origin;
+  } catch { /* keep actualOrigin */ }
 
-  if (actualOrigin !== baseOrigin) {
-    console.log(`  Note: App redirected to ${actualOrigin} (config URL: ${baseOrigin})`);
+  if (actualOrigin !== configOrigin) {
+    console.log(`  Note: App origin is ${actualOrigin} (configured URL origin: ${configOrigin})`);
   }
 
   console.log(`  Capturing landing page: ${homePath}`);
@@ -733,7 +767,7 @@ async function discoverScreens(context, page, baseOrigin) {
   if (hamburger) {
     console.log(`  Opening hamburger menu...`);
     await page.mouse.click(hamburger.x, hamburger.y);
-    await page.waitForTimeout(1500);
+    await sleep(1500);
 
     await captureCurrentPage(page, 'menu', usedNames, screens);
 
@@ -746,7 +780,7 @@ async function discoverScreens(context, page, baseOrigin) {
     }
 
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(300);
+    await sleep(300);
     await safeGoto(page, homeUrl);
     await dismissModals(page);
   }
@@ -768,7 +802,7 @@ async function discoverScreens(context, page, baseOrigin) {
         if (myIdx >= navItems.length) break;
 
         const item = navItems[myIdx];
-        const pathOnly = item.href.split('?')[0];
+        const pathOnly = (item.href || '').split('?')[0];
 
         if (visitedPaths.has(pathOnly)) continue;
         visitedPaths.add(pathOnly);
@@ -776,15 +810,13 @@ async function discoverScreens(context, page, baseOrigin) {
         console.log(`  [${myIdx + 1}/${navItems.length}] "${item.label}" → ${item.href}`);
 
         try {
-          const targetUrl = item.href.startsWith('http')
-            ? item.href
-            : `${effectiveOrigin}${item.href}`;
+          const targetUrl = resolveHref(item.href, homeUrl);
 
           await safeGoto(workerPage, targetUrl);
           await dismissModals(workerPage);
 
           const currentUrl = workerPage.url();
-          if (currentUrl.includes('/login') || currentUrl.includes('/sign-in')) {
+          if (urlLooksLikeLoginPage(currentUrl)) {
             console.log(`    ⤷ Redirected to login, skipping.`);
             continue;
           }
@@ -801,7 +833,10 @@ async function discoverScreens(context, page, baseOrigin) {
 
           if (newSubs.length > 0) {
             console.log(`    ⤷ Found ${newSubs.length} sub-links.`);
-            navItems.push(...newSubs);
+            const here = workerPage.url();
+            for (const si of newSubs) {
+              navItems.push({ ...si, href: resolveHref(si.href, here) });
+            }
           }
         } catch (err) {
           console.log(`    ⤷ Failed: ${err.message.slice(0, 120)}`);
@@ -827,7 +862,7 @@ async function captureExplicitScreens(page, explicitScreens) {
     const screen = explicitScreens[i];
     const url = screen.path.startsWith('http')
       ? screen.path
-      : `${baseUrl}${screen.path}`;
+      : resolveHref(screen.path, baseUrl);
 
     console.log(`  [${i + 1}/${total}] ${screen.name} → ${url}`);
     await safeGoto(page, url);
@@ -838,7 +873,7 @@ async function captureExplicitScreens(page, explicitScreens) {
       catch (e) { console.log(`    ⚠ waitFor "${screen.waitFor}" timed out`); }
     }
     if (screen.delay) {
-      await page.waitForTimeout(screen.delay);
+      await sleep(Number(screen.delay) || 0);
     }
 
     await scrollToTriggerLazy(page);
@@ -858,11 +893,18 @@ async function captureExplicitScreens(page, explicitScreens) {
       continue;
     }
 
+    const landedUrl = page.url();
+    let pathField = screen.path;
+    try {
+      pathField = new URL(landedUrl).pathname + new URL(landedUrl).search;
+    } catch { /* keep screen.path */ }
+
     manifest.push({
       name: screen.name,
       file: filename,
       group: screen.group || groupFromPath(screen.path),
-      path: screen.path,
+      path: pathField,
+      url: landedUrl,
       capturedAt: new Date().toISOString()
     });
   }
@@ -875,11 +917,8 @@ async function loginIfNeeded(page) {
 
   console.log('\n  Checking login status...');
   await safeGoto(page, baseUrl);
-  const currentUrl = page.url().toLowerCase();
-  const isOnLogin = currentUrl.includes('/login') || currentUrl.includes('/sign-in') ||
-    currentUrl.includes('/signin') || currentUrl.includes('/auth');
-
-  if (!isOnLogin) {
+  const currentUrl = page.url();
+  if (!urlLooksLikeLoginPage(currentUrl)) {
     console.log('  ✓ Already logged in.\n');
     return;
   }
@@ -887,12 +926,12 @@ async function loginIfNeeded(page) {
   const loginPath = config.login.url || '/login';
   const loginUrl = loginPath.startsWith('http')
     ? loginPath
-    : `${baseUrl}${loginPath}`;
+    : resolveHref(loginPath, baseUrl);
 
   if (page.url() !== loginUrl) {
     console.log(`  Navigating to login at ${loginUrl}`);
     await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
-    await page.waitForTimeout(1500);
+    await sleep(1500);
   }
 
   if (config.login.steps && config.login.steps.length > 0) {
@@ -904,21 +943,15 @@ async function loginIfNeeded(page) {
     console.log('  Login config found but no credentials or steps — skipping auto-login.');
   }
 
-  const isStillOnLogin = (() => {
-    const url = page.url().toLowerCase();
-    return url.includes('/login') || url.includes('/sign-in') || url.includes('/signin') || url.includes('/auth');
-  })();
+  const isStillOnLogin = urlLooksLikeLoginPage(page.url());
 
   if (isStillOnLogin) {
     console.log('\n  ⏳ Waiting for you to complete login (MFA, etc) in the browser window...');
     console.log('  The script will continue automatically once you\'re past the login page.\n');
-    await page.waitForURL(url => {
-      const u = url.toString().toLowerCase();
-      return !u.includes('/login') && !u.includes('/sign-in') && !u.includes('/signin') && !u.includes('/auth');
-    }, { timeout: 120000 });
+    await page.waitForURL(url => !urlLooksLikeLoginPage(url.toString()), { timeout: 120000 });
   }
 
-  await page.waitForTimeout(2000);
+  await sleep(2000);
   console.log(`  ✓ Logged in. Now at: ${page.url()}\n`);
   await dismissModals(page);
 }
@@ -1084,7 +1117,7 @@ async function scoutNavItems(page, baseOrigin) {
   if (hamburger) {
     console.log(`  Found menu button at (${hamburger.x}, ${hamburger.y}), opening...`);
     await page.mouse.click(hamburger.x, hamburger.y);
-    await page.waitForTimeout(2000);
+    await sleep(2000);
 
     const menuAllItems = await getNavItems(page, baseOrigin);
     const beforeLabels = new Set(pageItems.map(i => i.label.toLowerCase()));
@@ -1098,7 +1131,7 @@ async function scoutNavItems(page, baseOrigin) {
     console.log(`  Found ${menuItems.length} new items in menu`);
 
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(300);
+    await sleep(300);
 
     const stillOpen = await page.evaluate(() => {
       const els = document.querySelectorAll('[class*="open"], [class*="active"], [class*="expanded"]');
@@ -1111,7 +1144,7 @@ async function scoutNavItems(page, baseOrigin) {
     });
     if (stillOpen) {
       await page.mouse.click(hamburger.x, hamburger.y);
-      await page.waitForTimeout(300);
+      await sleep(300);
     }
   } else {
     console.log('  No hamburger/menu button found');
@@ -1129,7 +1162,7 @@ async function scoutNavItems(page, baseOrigin) {
         for (const el of nav.querySelectorAll('a[href], button, [role="menuitem"], [role="link"]')) {
           const rect = el.getBoundingClientRect();
           if (rect.width === 0 || rect.height === 0) continue;
-          const text = el.textContent.trim().replace(/\\s+/g, ' ').slice(0, 80);
+          const text = el.textContent.trim().replace(/\s+/g, ' ').slice(0, 80);
           if (!text) continue;
           const href = el.getAttribute('href') || null;
           if (href && (href.startsWith('tel:') || href.startsWith('mailto:') || href === '#')) continue;
@@ -1358,17 +1391,17 @@ async function fillAndCaptureForms(page, parentName, usedNames, screens, depth) 
         if (field.type === 'checkbox' || field.type === 'radio') {
           if (!field.checked) {
             await page.mouse.click(field.x, field.y);
-            await page.waitForTimeout(100);
+            await sleep(100);
           }
           continue;
         }
 
         if (field.tag === 'select') {
           await page.mouse.click(field.x, field.y);
-          await page.waitForTimeout(200);
+          await sleep(200);
           await page.keyboard.press('ArrowDown');
           await page.keyboard.press('Enter');
-          await page.waitForTimeout(100);
+          await sleep(100);
           continue;
         }
 
@@ -1376,10 +1409,10 @@ async function fillAndCaptureForms(page, parentName, usedNames, screens, depth) 
         if (!value) continue;
 
         await page.mouse.click(field.x, field.y);
-        await page.waitForTimeout(100);
+        await sleep(100);
         await page.keyboard.press(SELECT_ALL_KEY);
         await page.keyboard.type(value, { delay: 15 });
-        await page.waitForTimeout(50);
+        await sleep(50);
       } catch (e) {
         console.log(`${pad}  ⚠ Field fill failed: ${e.message.slice(0, 60)}`);
       }
@@ -1408,7 +1441,7 @@ async function fillAndCaptureForms(page, parentName, usedNames, screens, depth) 
       });
       for (const toggle of toggles) {
         await page.mouse.click(toggle.x, toggle.y);
-        await page.waitForTimeout(100);
+        await sleep(100);
       }
     } catch (e) { /* toggles optional */ }
 
@@ -1439,7 +1472,7 @@ const GLOBAL_NAV_PATHS = [
   '/sign-out', '/signout', '/enroll', '/register',
 ];
 
-function isInScope(href, scopePath, baseOrigin) {
+function isInScope(href, scopePath) {
   let pathname;
   try {
     if (href.startsWith('http')) pathname = new URL(href).pathname;
@@ -1459,11 +1492,11 @@ function isInScope(href, scopePath, baseOrigin) {
   return false;
 }
 
-async function deepCaptureItem(page, item, baseOrigin, sharedUsedNames) {
+async function deepCaptureItem(page, item, linkOrigin, sessionEntryUrl, sharedUsedNames) {
   const visitedUrls = new Set();
   const screens = [];
   const usedNames = sharedUsedNames || new Set();
-  const startUrl = item.href.startsWith('http') ? item.href : `${baseOrigin}${item.href}`;
+  const startUrl = resolveHref(item.href, sessionEntryUrl);
   const itemName = slugify(item.label) || slugify(item.path) || 'screen';
   const MAX_PER_ITEM = 40;
   const MAX_DEPTH = 4;
@@ -1499,7 +1532,7 @@ async function deepCaptureItem(page, item, baseOrigin, sharedUsedNames) {
     const actualUrl = page.url();
     const actualKey = actualUrl.split('?')[0];
 
-    if (actualUrl.includes('/login') || actualUrl.includes('/sign-in')) {
+    if (urlLooksLikeLoginPage(actualUrl)) {
       console.log(`${pad}⤷ Redirected to login, skipping`);
       return;
     }
@@ -1514,14 +1547,14 @@ async function deepCaptureItem(page, item, baseOrigin, sharedUsedNames) {
     await captureCurrentPage(page, name, usedNames, screens);
 
     // Collect sub-links BEFORE tabs/forms change the page state
-    const subItems = await getAllClickableItems(page, baseOrigin);
+    const subItems = await getAllClickableItems(page, linkOrigin);
     const subLinks = subItems.filter(si => {
       if (si.type !== 'link' || !si.href) return false;
       if (si.href.startsWith('tel:') || si.href.startsWith('mailto:')) return false;
       if (si.label === '(unlabeled)') return false;
       const sp = si.href.split('?')[0];
       if (visitedUrls.has(sp)) return false;
-      if (!isInScope(si.href, scopePath, baseOrigin)) return false;
+      if (!isInScope(si.href, scopePath)) return false;
       return true;
     });
 
@@ -1537,7 +1570,7 @@ async function deepCaptureItem(page, item, baseOrigin, sharedUsedNames) {
     const cap = Math.min(subLinks.length, 20);
     for (let i = 0; i < cap && screens.length < MAX_PER_ITEM; i++) {
       const sub = subLinks[i];
-      const subUrl = sub.href.startsWith('http') ? sub.href : `${baseOrigin}${sub.href}`;
+      const subUrl = resolveHref(sub.href, page.url());
       const subName = `${name}-${slugify(sub.label) || `sub-${i}`}`;
 
       await explorePage(subUrl, subName, depth + 1);
@@ -1574,16 +1607,18 @@ async function main() {
   await safeGoto(page, baseUrl);
   await dismissModals(page);
 
-  // Detect actual origin (may differ from config after login redirect)
-  const actualOrigin = new URL(page.url()).origin;
-  const effectiveOrigin = actualOrigin !== baseUrl ? actualOrigin : baseUrl;
-  if (actualOrigin !== baseUrl) {
-    console.log(`  Note: App redirected to ${actualOrigin} (config URL: ${baseUrl})\n`);
-  }
+  let sessionEntryUrl = page.url();
+  let sessionOrigin = new URL(sessionEntryUrl).origin;
+  try {
+    const configOrigin = new URL(baseUrl).origin;
+    if (sessionOrigin !== configOrigin) {
+      console.log(`  Note: App origin is ${sessionOrigin} (configured URL origin: ${configOrigin})\n`);
+    }
+  } catch { /* invalid configured URL */ }
 
   if (MODE === 'scout') {
     console.log('  Scout mode: finding navigation items...\n');
-    const items = await scoutNavItems(page, effectiveOrigin);
+    const items = await scoutNavItems(page, sessionOrigin);
     console.log('__SCOUT_RESULT__' + JSON.stringify(items));
     await context.close();
     return;
@@ -1609,6 +1644,9 @@ async function main() {
       await dismissModals(page);
     }
 
+    sessionEntryUrl = page.url();
+    sessionOrigin = new URL(sessionEntryUrl).origin;
+
     const numWorkers = Math.min(parallelPages, Math.max(selected.length, 1));
     const workerPages = [page];
     try {
@@ -1625,7 +1663,7 @@ async function main() {
           const myIdx = nextItemIdx++;
           if (myIdx >= selected.length) break;
 
-          const captures = await deepCaptureItem(workerPage, selected[myIdx], effectiveOrigin, sharedUsedNames);
+          const captures = await deepCaptureItem(workerPage, selected[myIdx], sessionOrigin, sessionEntryUrl, sharedUsedNames);
           allCaptures.push(...captures);
         }
       }
@@ -1647,7 +1685,7 @@ async function main() {
   let captures;
   if (config.discover) {
     console.log('  Discovery mode: finding screens by clicking through the app...\n');
-    captures = await discoverScreens(context, page, effectiveOrigin);
+    captures = await discoverScreens(context, page, sessionOrigin);
   } else {
     captures = await captureExplicitScreens(page, config.screens || []);
   }

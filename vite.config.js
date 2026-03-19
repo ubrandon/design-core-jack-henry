@@ -64,13 +64,21 @@ function captureApiPlugin() {
     const capturesDir = resolve(__dirname, "public", "data", "captures");
     mkdirSync(capturesDir, { recursive: true });
     const configPath = resolve(capturesDir, "config.json");
-    const config = {
-      appUrl,
+    const defaults = {
       viewport: { width: 390, height: 844 },
       discover: true,
       dismissSelectors: [],
     };
-    writeFileSync(configPath, JSON.stringify(config, null, 2));
+    let existing = {};
+    if (existsSync(configPath)) {
+      try {
+        existing = JSON.parse(readFileSync(configPath, "utf-8"));
+      } catch {
+        existing = {};
+      }
+    }
+    const merged = { ...defaults, ...existing, appUrl };
+    writeFileSync(configPath, JSON.stringify(merged, null, 2));
   }
 
   function readBody(req) {
@@ -111,6 +119,7 @@ function captureApiPlugin() {
 
     activeCapture = child;
     let stdoutBuffer = "";
+    let stderrBuffer = "";
     let stderrOutput = "";
     let connectionOpen = true;
 
@@ -134,9 +143,13 @@ function captureApiPlugin() {
     });
 
     child.stderr.on("data", chunk => {
-      stderrOutput += chunk.toString();
-      const lines = chunk.toString().split("\n").filter(Boolean);
+      const text = chunk.toString();
+      stderrOutput += text;
+      stderrBuffer += text;
+      const lines = stderrBuffer.split("\n");
+      stderrBuffer = lines.pop();
       for (const line of lines) {
+        if (!line.trim()) continue;
         send("log", { text: line.replace(/^\s+/, "") });
       }
     });
@@ -152,6 +165,9 @@ function captureApiPlugin() {
         } else {
           send("log", { text: stdoutBuffer.replace(/^\s+/, "") });
         }
+      }
+      if (stderrBuffer.trim()) {
+        send("log", { text: stderrBuffer.replace(/^\s+/, "") });
       }
       activeCapture = null;
       if (!connectionOpen) return;
