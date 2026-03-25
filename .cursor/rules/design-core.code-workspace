@@ -1,0 +1,25 @@
+{
+  "folders": [],
+  "settings": {
+    "java.import.exclusions": [
+      "**/node_modules/**",
+      "**/rooted-server/**",
+      "**/functions/**",
+    ],
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.project.sourcePaths": [
+      "android/app/src/main/java",
+      "android/app/src/main/kotlin",
+    ],
+    "java.project.outputPath": "android/app/build/intermediates/javac",
+    "java.project.referencedLibraries": ["android/app/libs/**/*.jar"],
+    "terminal.integrated.automationProfile.osx": {
+      "path": "/bin/zsh",
+      "args": ["-l"],
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "git.ignoreLimitWarning": true,
+  },
+}

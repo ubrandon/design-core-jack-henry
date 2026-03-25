@@ -656,9 +656,7 @@ async function discoverTabs(page, parentName, usedNames, screens) {
       '[role="tablist"] a',
       '.tab', '.tab-item',
       '[data-tab]',
-      '[data-state]',
       '.segment', '.segment-item', '.segmented-control > *',
-      '[aria-controls]:not([role="combobox"])',
       '.nav-pills > li > a', '.nav-pills > li > button',
       '.nav-tabs > li > a', '.nav-tabs > li > button',
       '[class*="tab-btn"]', '[class*="tab-link"]',
@@ -797,7 +795,7 @@ async function discoverScreens(context, page, linkOrigin) {
     let nextIdx = 0;
 
     async function processNavItem(workerPage) {
-      while (nextIdx < navItems.length && screens.length < maxScreens && !isTimedOut()) {
+      while (nextIdx < navItems.length && screens.length < maxScreens && !shouldStopAutomation()) {
         const myIdx = nextIdx++;
         if (myIdx >= navItems.length) break;
 
@@ -1514,8 +1512,9 @@ async function deepCaptureItem(page, item, linkOrigin, sessionEntryUrl, sharedUs
 
     const pad = '  '.repeat(depth + 2);
 
-    if (isTimedOut()) {
-      console.log(`${pad}⏱ Timed out (${MAX_TOTAL_TIME / 60000}min), stopping`);
+    if (shouldStopAutomation()) {
+      if (skipToManual) console.log(`${pad}⏩ Skipping to manual mode`);
+      else console.log(`${pad}⏱ Timed out (${MAX_TOTAL_TIME / 60000}min), stopping`);
       return;
     }
 
@@ -1584,115 +1583,428 @@ async function deepCaptureItem(page, item, linkOrigin, sessionEntryUrl, sharedUs
   return screens;
 }
 
-const MODE = process.argv[2] || 'default';
+async function manualCapture(page, usedNames, screens) {
+  const url = page.url();
+  let path;
+  try { path = new URL(url).pathname; } catch { path = '/'; }
+  const name = slugify(path.replace(/^\//, '').replace(/\/$/, '')) || 'manual-screen';
 
-const MAX_TOTAL_TIME = 10 * 60 * 1000;
-const captureStartTime = Date.now();
+  await scrollToTriggerLazy(page);
+  await waitForContentReady(page, 2000);
 
-function isTimedOut() {
-  return Date.now() - captureStartTime > MAX_TOTAL_TIME;
+  const dims = await page.evaluate(() => {
+    const host = document.querySelector('[data-dc-toolbar-host]');
+    const tbH = host ? host.offsetHeight : 0;
+    if (host) host.style.display = 'none';
+    return { width: window.innerWidth, height: window.innerHeight + tbH };
+  }).catch(() => ({ width: viewport.width, height: viewport.height }));
+
+  const dedupedName = dedupeFilename(name, usedNames);
+  const filename = `${dedupedName}${screenshotExt}`;
+
+  const screenshotOpts = {
+    path: join(OUTPUT_DIR, filename),
+    type: screenshotType,
+    ...(screenshotQuality != null && { quality: screenshotQuality }),
+  };
+
+  try {
+    await page.screenshot({
+      ...screenshotOpts,
+      clip: { x: 0, y: 0, width: dims.width, height: dims.height },
+    });
+  } catch (err) {
+    await page.evaluate(() => {
+      const host = document.querySelector('[data-dc-toolbar-host]');
+      if (host) host.style.display = '';
+    }).catch(() => {});
+    console.log(`    ⚠ Screenshot failed: ${err.message.slice(0, 120)}`);
+    return false;
+  }
+
+  await page.evaluate(() => {
+    const host = document.querySelector('[data-dc-toolbar-host]');
+    if (host) host.style.display = '';
+  }).catch(() => {});
+
+  screens.push({
+    name: dedupedName,
+    file: filename,
+    group: groupFromPath(path),
+    path,
+    url,
+    width: dims.width,
+    height: dims.height,
+    capturedAt: new Date().toISOString(),
+  });
+  console.log(`    ✓ Saved ${filename}`);
+  return true;
 }
+
+const TOOLBAR_HEIGHT = 60;
+
+function injectToolbar() {
+  return function () {
+    var existingHost = document.querySelector('[data-dc-toolbar-host]');
+    if (existingHost && existingHost.shadowRoot && existingHost.shadowRoot.getElementById('__dc-done-btn')) return;
+    if (existingHost) existingHost.remove();
+
+    var host = document.createElement('div');
+    host.setAttribute('data-dc-toolbar-host', '');
+    host.style.cssText =
+      'position:fixed;bottom:0;left:0;right:0;z-index:2147483647;height:60px;margin:0;padding:0;border:0;background:transparent;pointer-events:auto;';
+
+    var shadow = host.attachShadow({ mode: 'open' });
+    var isolate = document.createElement('style');
+    isolate.textContent =
+      'button{-webkit-appearance:none;appearance:none;margin:0;font:inherit;' +
+      'flex-shrink:0;white-space:nowrap;box-sizing:border-box;}';
+
+    var bar = document.createElement('div');
+    bar.id = '__dc-toolbar';
+    bar.style.cssText =
+      'position:absolute;bottom:0;left:0;right:0;height:60px;font-family:-apple-system,system-ui,sans-serif;display:flex;align-items:center;gap:10px;padding:0 20px;box-sizing:border-box;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,0.08);';
+
+    var statusEl = document.createElement('span');
+    statusEl.id = '__dc-status';
+    statusEl.style.cssText =
+      'font-size:13px;font-weight:600;color:rgba(255,255,255,0.45);margin-right:auto;display:flex;align-items:center;gap:8px;flex-shrink:0;';
+    statusEl.innerHTML =
+      '<span style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;"></span> Live';
+
+    function makeBtn(label, bg, color) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.style.cssText =
+        'background:' +
+        bg +
+        ';color:' +
+        color +
+        ';border:none;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;transition:opacity 0.12s;flex-shrink:0;white-space:nowrap;';
+      btn.innerHTML = label;
+      btn.onmouseenter = function () {
+        btn.style.opacity = '0.8';
+      };
+      btn.onmouseleave = function () {
+        btn.style.opacity = '1';
+      };
+      return btn;
+    }
+
+    var captureBtn = makeBtn(
+      '<kbd style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:5px;font-size:11px;font-family:inherit;">C</kbd> Capture',
+      'rgba(255,255,255,0.12)',
+      'rgba(255,255,255,0.8)'
+    );
+    captureBtn.id = '__dc-capture-btn';
+
+    var fillBtn = makeBtn(
+      '<kbd style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:5px;font-size:11px;font-family:inherit;">F</kbd> Auto Fill',
+      'rgba(255,255,255,0.12)',
+      'rgba(255,255,255,0.8)'
+    );
+    fillBtn.id = '__dc-fill-btn';
+
+    var doneBtn = makeBtn('Done', 'rgba(59,130,246,0.9)', '#fff');
+    doneBtn.id = '__dc-done-btn';
+
+    shadow.appendChild(isolate);
+    shadow.appendChild(bar);
+
+    bar.appendChild(statusEl);
+    bar.appendChild(captureBtn);
+    bar.appendChild(fillBtn);
+    bar.appendChild(doneBtn);
+
+    var captureBtnDefault = captureBtn.innerHTML;
+
+    function flashCapture(ok) {
+      captureBtn.innerHTML = ok ? '✓' : '✕';
+      captureBtn.style.background = ok ? 'rgba(34,197,94,0.9)' : 'rgba(220,38,38,0.85)';
+      setTimeout(function () {
+        captureBtn.innerHTML = captureBtnDefault;
+        captureBtn.style.background = 'rgba(255,255,255,0.12)';
+      }, 1200);
+    }
+
+    function append() {
+      if (!document.body) return;
+      document.body.appendChild(host);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', append);
+    } else {
+      append();
+    }
+
+    function doCapture() {
+      captureBtn.disabled = true;
+      captureBtn.style.opacity = '0.5';
+      window.__designCoreCapture().then(function (r) {
+        captureBtn.disabled = false;
+        captureBtn.style.opacity = '1';
+        flashCapture(r && r.ok);
+      }).catch(function () {
+        captureBtn.disabled = false;
+        captureBtn.style.opacity = '1';
+        flashCapture(false);
+      });
+    }
+
+    function doFill() {
+      fillBtn.disabled = true;
+      fillBtn.style.opacity = '0.5';
+      window.__designCoreAutoFill().then(function () {
+        fillBtn.disabled = false;
+        fillBtn.style.opacity = '1';
+      }).catch(function () {
+        fillBtn.disabled = false;
+        fillBtn.style.opacity = '1';
+      });
+    }
+
+    captureBtn.onclick = doCapture;
+    fillBtn.onclick = doFill;
+    doneBtn.onclick = function () {
+      window.__designCoreDone();
+    };
+
+    if (!window.__dcManualToolbarKeys) {
+      window.__dcManualToolbarKeys = true;
+      document.addEventListener('keydown', function (e) {
+        if (
+          e.target.tagName === 'INPUT' ||
+          e.target.tagName === 'TEXTAREA' ||
+          e.target.tagName === 'SELECT' ||
+          e.target.isContentEditable
+        )
+          return;
+        var h = document.querySelector('[data-dc-toolbar-host]');
+        var sr = h && h.shadowRoot;
+        if (!sr) return;
+        if (e.key === 'c' || e.key === 'C') {
+          e.preventDefault();
+          var cap = sr.getElementById('__dc-capture-btn');
+          if (cap && !cap.disabled) cap.click();
+        }
+        if (e.key === 'f' || e.key === 'F') {
+          e.preventDefault();
+          var fb = sr.getElementById('__dc-fill-btn');
+          if (fb && !fb.disabled) fb.click();
+        }
+      });
+    }
+  };
+}
+
+async function autoFillCurrentPage(page) {
+  const forms = await page.evaluate(() => {
+    const inputSel =
+      'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([readonly]):not([disabled]), ' +
+      'textarea:not([readonly]):not([disabled]), ' +
+      'select:not([disabled])';
+    const allInputs = [];
+    function findInputs(root) {
+      if (!root) return;
+      for (const el of root.querySelectorAll('*')) { if (el.shadowRoot) findInputs(el.shadowRoot); }
+      for (const inp of root.querySelectorAll(inputSel)) allInputs.push(inp);
+    }
+    findInputs(document);
+    if (allInputs.length === 0) return [];
+
+    const skipTypes = ['search', 'password'];
+    const skipNames = ['search', 'query', 'q', 'filter', 'keyword'];
+    const fields = [];
+    for (const inp of allInputs) {
+      const rect = inp.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) continue;
+      const iType = (inp.getAttribute('type') || '').toLowerCase();
+      if (skipTypes.includes(iType)) continue;
+      const iName = (inp.getAttribute('name') || '').toLowerCase();
+      const iId = (inp.id || '').toLowerCase();
+      const iRole = (inp.getAttribute('role') || '').toLowerCase();
+      if (iRole === 'searchbox' || iRole === 'combobox') continue;
+      if (skipNames.some(s => iName.includes(s) || iId.includes(s))) continue;
+      let labelText = '';
+      if (inp.id) { const lbl = document.querySelector('label[for="' + inp.id + '"]'); if (lbl) labelText = lbl.textContent.trim(); }
+      if (!labelText) { const parent = inp.closest('label, .form-group, .field, [class*="field"], [class*="input"]'); if (parent) { const lbl = parent.querySelector('label, .label, [class*="label"]'); if (lbl) labelText = lbl.textContent.trim(); } }
+      fields.push({ tag: inp.tagName.toLowerCase(), type: inp.getAttribute('type') || '', name: inp.getAttribute('name') || '', id: inp.id || '', placeholder: inp.getAttribute('placeholder') || '', label: labelText, x: Math.round(rect.x + rect.width / 2), y: Math.round(rect.y + rect.height / 2), value: inp.value || '', checked: inp.checked || false });
+    }
+    return fields;
+  });
+
+  let filled = 0;
+  for (const field of forms) {
+    if (field.value || field.checked) continue;
+    try {
+      if (field.type === 'checkbox' || field.type === 'radio') {
+        await page.mouse.click(field.x, field.y);
+        await sleep(100);
+        filled++;
+        continue;
+      }
+      if (field.tag === 'select') {
+        await page.mouse.click(field.x, field.y);
+        await sleep(200);
+        await page.keyboard.press('ArrowDown');
+        await page.keyboard.press('Enter');
+        await sleep(100);
+        filled++;
+        continue;
+      }
+      const value = guessFieldValue(field);
+      if (!value) continue;
+      await page.mouse.click(field.x, field.y);
+      await sleep(100);
+      await page.keyboard.press(SELECT_ALL_KEY);
+      await page.keyboard.type(value, { delay: 15 });
+      await sleep(50);
+      filled++;
+    } catch (e) {
+      console.log(`    ⚠ Field fill failed: ${e.message.slice(0, 60)}`);
+    }
+  }
+  console.log(`    ✓ Filled ${filled} field(s)`);
+  return filled;
+}
+
+async function setupBrowserBridge(context, screens, usedNames) {
+  let capturing = false;
+  let filling = false;
+
+  async function doCapture() {
+    if (capturing) return false;
+    capturing = true;
+    try {
+      const activePage = context.pages().find(p => !p.isClosed());
+      if (!activePage) return false;
+      const ok = await manualCapture(activePage, usedNames, screens);
+      if (ok) {
+        writeManifest(screens);
+        const last = screens[screens.length - 1];
+        console.log('__MANUAL_CAPTURED__' + JSON.stringify({ captured: screens.length, name: last.name, file: last.file }));
+      }
+      return ok;
+    } finally {
+      capturing = false;
+    }
+  }
+
+  async function doFill() {
+    if (filling) return 0;
+    filling = true;
+    try {
+      const activePage = context.pages().find(p => !p.isClosed());
+      if (!activePage) return 0;
+      return await autoFillCurrentPage(activePage);
+    } finally {
+      filling = false;
+    }
+  }
+
+  try { await context.exposeFunction('__designCoreCapture', async () => ({ ok: await doCapture() })); } catch {}
+  try { await context.exposeFunction('__designCoreAutoFill', async () => ({ filled: await doFill() })); } catch {}
+  try { await context.exposeFunction('__designCoreDone', () => { handleGlobalCommand('quit'); }); } catch {}
+
+  globalCaptureHandler = doCapture;
+
+  const toolbarFn = injectToolbar();
+  await context.addInitScript(toolbarFn);
+  for (const p of context.pages()) {
+    await p.evaluate(toolbarFn).catch(() => {});
+  }
+}
+
+async function waitForDone(context) {
+  return new Promise((resolve) => {
+    manualDoneResolve = resolve;
+    context.on('close', () => {
+      manualDoneResolve = null;
+      resolve();
+    });
+  });
+}
+
+let manualDoneResolve = null;
+
+function startStdinListener() {
+  const isTTY = process.stdin.isTTY;
+  if (isTTY) {
+    try { process.stdin.setRawMode(true); } catch {}
+  }
+  process.stdin.resume();
+  process.stdin.setEncoding('utf8');
+
+  let lineBuffer = '';
+
+  process.stdin.on('data', (data) => {
+    if (isTTY) {
+      if (data === '\u0003') { handleGlobalCommand('quit'); return; }
+      if (data === 'q' || data === 'Q') { handleGlobalCommand('quit'); return; }
+      if (data === '\r' || data === '\n' || data === 'c' || data === 'C') {
+        handleGlobalCommand('capture');
+        return;
+      }
+    } else {
+      lineBuffer += data;
+      const lines = lineBuffer.split('\n');
+      lineBuffer = lines.pop() || '';
+      for (const line of lines) {
+        const cmd = line.trim().toLowerCase();
+        if (cmd === 'capture') handleGlobalCommand('capture');
+        else if (cmd === 'quit') handleGlobalCommand('quit');
+      }
+    }
+  });
+}
+
+function handleGlobalCommand(cmd) {
+  if (cmd === 'capture') {
+    if (globalCaptureHandler) globalCaptureHandler();
+  } else if (cmd === 'quit') {
+    if (manualDoneResolve) {
+      manualDoneResolve();
+      manualDoneResolve = null;
+    }
+  }
+}
+
+let globalCaptureHandler = null;
 
 async function main() {
   mkdirSync(BROWSER_DATA_DIR, { recursive: true });
+
+  const winW = viewport.width;
+  const winH = viewport.height + TOOLBAR_HEIGHT;
+
   const context = await chromium.launchPersistentContext(BROWSER_DATA_DIR, {
     headless: false,
-    viewport,
+    viewport: null,
+    args: [`--window-size=${winW},${winH}`],
   });
   browserContext = context;
   const page = context.pages()[0] || await context.newPage();
 
-  await loginIfNeeded(page);
+  const screens = [];
+  const usedNames = new Set();
+
+  startStdinListener();
+  await setupBrowserBridge(context, screens, usedNames);
+
+  console.log('\n  ── Manual capture mode ──');
+  console.log('  Browser is open. Navigate to your app, log in, and capture screens.');
+  console.log('  Toolbar: C = Capture, F = Auto Fill forms, Done = finish.\n');
+  console.log('__MANUAL_MODE__' + JSON.stringify({ captured: 0 }));
 
   await safeGoto(page, baseUrl);
-  await dismissModals(page);
 
-  let sessionEntryUrl = page.url();
-  let sessionOrigin = new URL(sessionEntryUrl).origin;
-  try {
-    const configOrigin = new URL(baseUrl).origin;
-    if (sessionOrigin !== configOrigin) {
-      console.log(`  Note: App origin is ${sessionOrigin} (configured URL origin: ${configOrigin})\n`);
-    }
-  } catch { /* invalid configured URL */ }
+  await waitForDone(context);
 
-  if (MODE === 'scout') {
-    console.log('  Scout mode: finding navigation items...\n');
-    const items = await scoutNavItems(page, sessionOrigin);
-    console.log('__SCOUT_RESULT__' + JSON.stringify(items));
-    await context.close();
-    return;
-  }
-
-  if (MODE === 'deep') {
-    const selected = JSON.parse(process.env.CAPTURE_ITEMS || '[]');
-    const includeHome = process.env.CAPTURE_INCLUDE_HOME === '1';
-    if (selected.length === 0 && !includeHome) {
-      console.error('  No items selected for deep capture.');
-      process.exit(1);
-    }
-
-    console.log(`  Deep capture mode: ${selected.length} items selected${includeHome ? ' + home' : ''}\n`);
-    let allCaptures = [];
-    const sharedUsedNames = new Set();
-
-    if (includeHome) {
-      console.log('  Capturing home page...');
-      await captureCurrentPage(page, 'home', sharedUsedNames, allCaptures);
-      await discoverTabs(page, 'home', sharedUsedNames, allCaptures);
-      await safeGoto(page, baseUrl);
-      await dismissModals(page);
-    }
-
-    sessionEntryUrl = page.url();
-    sessionOrigin = new URL(sessionEntryUrl).origin;
-
-    const numWorkers = Math.min(parallelPages, Math.max(selected.length, 1));
-    const workerPages = [page];
-    try {
-      for (let i = 1; i < numWorkers; i++) {
-        workerPages.push(await context.newPage());
-      }
-
-      if (numWorkers > 1) console.log(`  Using ${numWorkers} parallel workers.\n`);
-
-      let nextItemIdx = 0;
-
-      async function deepWorker(workerPage) {
-        while (nextItemIdx < selected.length && !isTimedOut()) {
-          const myIdx = nextItemIdx++;
-          if (myIdx >= selected.length) break;
-
-          const captures = await deepCaptureItem(workerPage, selected[myIdx], sessionOrigin, sessionEntryUrl, sharedUsedNames);
-          allCaptures.push(...captures);
-        }
-      }
-
-      await Promise.all(workerPages.map(p => deepWorker(p)));
-    } finally {
-      for (let i = 1; i < workerPages.length; i++) {
-        await workerPages[i].close().catch(() => {});
-      }
-    }
-
-    const totalInManifest = writeManifest(allCaptures);
-    await context.close();
-    console.log(`\n  ✓ Done! ${allCaptures.length} new screenshots. ${totalInManifest} total in manifest.`);
-    return;
-  }
-
-  // Default mode: full discover or explicit (replaces manifest)
-  let captures;
-  if (config.discover) {
-    console.log('  Discovery mode: finding screens by clicking through the app...\n');
-    captures = await discoverScreens(context, page, sessionOrigin);
-  } else {
-    captures = await captureExplicitScreens(page, config.screens || []);
-  }
-
-  writeManifest(captures, true);
-  await context.close();
-  console.log(`\n  ✓ Done! ${captures.length} screenshots saved to public/data/captures/`);
+  writeManifest(screens);
+  try { await context.close(); } catch {}
+  console.log(`\n  ✓ Finished. ${screens.length} screenshots saved to public/data/captures/`);
+  process.exit(0);
 }
 
 main().catch(err => {

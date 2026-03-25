@@ -191,7 +191,7 @@ function captureApiPlugin() {
 
     const child = spawn("node", ["scripts/capture-screens.js", ...args], {
       cwd: __dirname,
-      stdio: ["ignore", "pipe", "pipe"],
+      stdio: ["pipe", "pipe", "pipe"],
       env: { ...process.env, ...env },
     });
 
@@ -201,7 +201,17 @@ function captureApiPlugin() {
     let stderrOutput = "";
     let connectionOpen = true;
 
-    req.on("close", () => { connectionOpen = false; });
+    req.on("close", () => {
+      connectionOpen = false;
+      if (child && !child.killed) {
+        try { child.stdin.write("quit\n"); } catch {}
+        setTimeout(() => {
+          if (!child.killed) {
+            try { child.kill("SIGTERM"); } catch {}
+          }
+        }, 3000);
+      }
+    });
 
     child.stdout.on("data", chunk => {
       stdoutBuffer += chunk.toString();
@@ -209,10 +219,15 @@ function captureApiPlugin() {
       stdoutBuffer = lines.pop();
       for (const line of lines) {
         if (!line.trim()) continue;
-        if (line.startsWith("__SCOUT_RESULT__")) {
+        if (line.startsWith("__MANUAL_MODE__")) {
           try {
-            const items = JSON.parse(line.slice("__SCOUT_RESULT__".length));
-            send("scout", { items });
+            const data = JSON.parse(line.slice("__MANUAL_MODE__".length));
+            send("manual", data);
+          } catch { send("manual", {}); }
+        } else if (line.startsWith("__MANUAL_CAPTURED__")) {
+          try {
+            const data = JSON.parse(line.slice("__MANUAL_CAPTURED__".length));
+            send("manual_captured", data);
           } catch {}
         } else {
           send("log", { text: line.replace(/^\s+/, "") });
@@ -233,13 +248,11 @@ function captureApiPlugin() {
     });
 
     child.on("close", (code, signal) => {
-      // Flush remaining stdout
       if (stdoutBuffer.trim()) {
-        if (stdoutBuffer.startsWith("__SCOUT_RESULT__")) {
-          try {
-            const items = JSON.parse(stdoutBuffer.slice("__SCOUT_RESULT__".length));
-            send("scout", { items });
-          } catch {}
+        if (stdoutBuffer.startsWith("__MANUAL_MODE__")) {
+          try { send("manual", JSON.parse(stdoutBuffer.slice("__MANUAL_MODE__".length))); } catch { send("manual", {}); }
+        } else if (stdoutBuffer.startsWith("__MANUAL_CAPTURED__")) {
+          try { send("manual_captured", JSON.parse(stdoutBuffer.slice("__MANUAL_CAPTURED__".length))); } catch {}
         } else {
           send("log", { text: stdoutBuffer.replace(/^\s+/, "") });
         }
@@ -272,38 +285,7 @@ function captureApiPlugin() {
     name: "capture-api",
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
-        // Scout: find nav items without taking screenshots
-        if (req.url === "/api/capture/scout" && req.method === "POST") {
-          try {
-            const params = await readBody(req);
-            if (!params.url) { res.writeHead(400); res.end('{"error":"url required"}'); return; }
-            ensureConfig(params.url);
-            streamCapture(req, res, ["scout"], {});
-          } catch (e) {
-            res.writeHead(400); res.end(`{"error":"${e.message}"}`);
-          }
-          return;
-        }
-
-        // Deep capture: capture selected items deeply
-        if (req.url === "/api/capture/deep" && req.method === "POST") {
-          try {
-            const params = await readBody(req);
-            if ((!params.items || !params.items.length) && !params.includeHome) {
-              res.writeHead(400); res.end('{"error":"items required"}'); return;
-            }
-            streamCapture(req, res, ["deep"], {
-              CAPTURE_ITEMS: JSON.stringify(params.items || []),
-              CAPTURE_INCLUDE_HOME: params.includeHome ? "1" : "0",
-            });
-          } catch (e) {
-            res.writeHead(400); res.end(`{"error":"${e.message}"}`);
-          }
-          return;
-        }
-
-        // Full discover capture (original)
-        if (req.url === "/api/capture" && req.method === "POST") {
+        if (req.url === "/api/capture/launch" && req.method === "POST") {
           try {
             const params = await readBody(req);
             if (!params.url) { res.writeHead(400); res.end('{"error":"url required"}'); return; }
@@ -317,7 +299,27 @@ function captureApiPlugin() {
 
         if (req.url === "/api/capture/status" && req.method === "GET") {
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ running: !!activeCapture }));
+          res.end(JSON.stringify({ running: !!activeCapture, pid: activeCapture ? activeCapture.pid : null }));
+          return;
+        }
+
+        if (req.url === "/api/capture/stop" && req.method === "POST") {
+          if (!activeCapture) {
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end('{"ok":true,"message":"No active capture"}');
+            return;
+          }
+          try { activeCapture.stdin.write("quit\n"); } catch {}
+          setTimeout(() => {
+            if (activeCapture && !activeCapture.killed) {
+              try { activeCapture.kill("SIGTERM"); } catch {}
+            }
+            setTimeout(() => {
+              activeCapture = null;
+            }, 1000);
+          }, 2000);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end('{"ok":true,"message":"Stopping capture"}');
           return;
         }
 

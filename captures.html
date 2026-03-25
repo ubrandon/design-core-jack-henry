@@ -167,6 +167,15 @@
 
     #cap-empty .cap-form {
       pointer-events: auto;
+      align-self: stretch;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    #cap-empty {
+      padding-left: 24px;
+      padding-right: 24px;
+      box-sizing: border-box;
     }
 
     .cap-form-row {
@@ -267,6 +276,96 @@
       max-width: 420px;
       text-align: center;
       line-height: 1.5;
+    }
+
+    #cap-empty .cap-form-row {
+      width: 100%;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #cap-empty .cap-progress {
+      width: 100%;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #cap-empty .cap-form-input {
+      padding: 16px 20px;
+      font-size: 1rem;
+      border-radius: 14px;
+    }
+    #cap-empty .cap-form-btn {
+      padding: 16px 28px;
+      font-size: 1rem;
+      border-radius: 14px;
+    }
+
+    .cap-empty-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: linear-gradient(155deg, #dbeafe 0%, #bfdbfe 48%, #93c5fd 100%);
+      border: 1px solid rgba(29, 78, 216, 0.35);
+      box-shadow:
+        0 10px 32px rgba(37, 99, 235, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.65);
+      display: grid;
+      place-items: center;
+      margin-bottom: 22px;
+      color: #1d4ed8;
+    }
+    .cap-empty-icon-svg {
+      display: block;
+      filter: drop-shadow(0 1px 2px rgba(30, 64, 175, 0.25));
+    }
+
+    .cap-empty-steps {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 20px;
+      width: 100%;
+      max-width: 360px;
+      counter-reset: cap-empty-step;
+      text-align: left;
+      font-size: 0.875rem;
+      color: rgba(0, 0, 0, 0.52);
+      line-height: 1.5;
+    }
+    .cap-empty-steps li {
+      counter-increment: cap-empty-step;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .cap-empty-steps li:last-child {
+      margin-bottom: 0;
+    }
+    .cap-empty-steps li::before {
+      content: counter(cap-empty-step);
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 1);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      margin-top: 2px;
+    }
+    .cap-empty-steps-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .cap-empty-steps strong {
+      color: rgba(0, 0, 0, 0.68);
+      font-weight: 700;
     }
 
     /* ---- Capture modal ---- */
@@ -549,59 +648,25 @@
     <div class="cap-modal" style="position:relative;" onclick="event.stopPropagation()">
       <button class="cap-modal-close" onclick="closeCaptureModal()" title="Close">&times;</button>
 
-      <!-- Step 1: URL input + scout -->
       <div id="modal-step-url">
         <div class="cap-modal-title">New Capture</div>
-        <div class="cap-modal-desc">Enter your app's URL to discover available screens.</div>
-        <form class="cap-form" onsubmit="startScout(event)">
+        <div class="cap-modal-desc">Opens a browser where you can navigate, log in, and capture screens manually. Press <kbd style="background:rgba(0,0,0,0.08);padding:1px 6px;border-radius:4px;font-size:0.85em;font-weight:700;">C</kbd> in the browser to capture any screen.</div>
+        <form class="cap-form" onsubmit="launchCaptureBrowser(event)">
           <div class="cap-form-row">
             <input id="modal-cap-url" class="cap-form-input" type="url" placeholder="https://your-app.com" required>
           </div>
-          <div style="display:flex;gap:8px;width:100%;">
-            <input id="modal-cap-user" class="cap-form-input" type="text" placeholder="Username (optional)" autocomplete="off" style="flex:1;">
-            <input id="modal-cap-pass" class="cap-form-input" type="password" placeholder="Password" autocomplete="off" style="flex:1;">
-          </div>
           <div class="cap-form-actions">
-            <button id="modal-scout-btn" class="cap-form-btn" type="submit">Find Screens</button>
-            <button type="button" id="cap-prev-results-btn" class="cap-form-btn cap-form-btn--secondary" style="display:none;" onclick="showScoutResults()">Use previous results</button>
-            <button type="button" id="cap-capture-all-btn" class="cap-form-btn cap-form-btn--secondary" onclick="skipToCapture()">Capture All</button>
+            <button id="modal-launch-btn" class="cap-form-btn" type="submit">Launch Browser</button>
           </div>
-          <div id="modal-scout-progress" class="cap-progress">
+          <div id="modal-capture-progress" class="cap-progress">
             <div class="cap-progress-header">
-              <div id="modal-scout-status" class="cap-progress-status"></div>
-              <button class="cap-copy-btn" onclick="copyLog('modal-scout-log')">Copy log</button>
+              <div id="modal-capture-status" class="cap-progress-status"></div>
+              <button class="cap-copy-btn" onclick="copyLog('modal-capture-log')">Copy log</button>
             </div>
-            <div id="modal-scout-log" class="cap-progress-log"></div>
-          </div>
-          <div class="cap-form-hint">
-            Login credentials are stored locally and never committed to Git.
+            <div id="modal-capture-log" class="cap-progress-log"></div>
           </div>
           <button type="button" class="cap-reset-session" onclick="resetBrowserSession()">Reset browser session</button>
         </form>
-      </div>
-
-      <!-- Step 2: Scout results checklist + deep capture -->
-      <div id="modal-step-select" style="display:none;">
-        <div class="cap-modal-top-row">
-          <button class="cap-back-btn" onclick="backToUrl()">← Back</button>
-        </div>
-        <div class="cap-modal-title">Select screens to capture</div>
-        <div class="cap-modal-desc">Pick the features you want to deep-capture. Each one will be explored for sub-pages, tabs, and interactions.</div>
-        <div id="modal-scout-list" class="cap-scout-list"></div>
-        <div class="cap-scout-actions">
-          <button class="cap-scout-toggle" onclick="toggleAllScout()">Select all</button>
-          <div class="cap-scout-buttons">
-            <button id="modal-deep-btn" class="cap-form-btn" onclick="startDeepCapture()">Capture Selected</button>
-            <button type="button" id="modal-capture-all-btn" class="cap-form-btn cap-form-btn--secondary" onclick="skipToCaptureFromResults()">Capture All</button>
-          </div>
-        </div>
-        <div id="modal-deep-progress" class="cap-progress" style="margin-top:12px;">
-          <div class="cap-progress-header">
-            <div id="modal-deep-status" class="cap-progress-status"></div>
-            <button class="cap-copy-btn" onclick="copyLog('modal-deep-log')">Copy log</button>
-          </div>
-          <div id="modal-deep-log" class="cap-progress-log"></div>
-        </div>
       </div>
     </div>
   </div>
@@ -640,8 +705,8 @@
     var CARD_GAP = 40;
     var DRAG_THRESHOLD = 5;
     var captures = [];
-    var capWidth = 390;
-    var capHeight = 928;
+    var defaultCapWidth = 390;
+    var defaultCapHeight = 928;
 
     /* ── Selection ── */
     var selected = new Set();
@@ -715,9 +780,11 @@
 
     function saveManifest() {
       var payload = {
-        viewport: { width: capWidth, height: capHeight },
         captures: captures.map(function(c) {
-          return { name: c.name, file: c.file, group: c.group, path: c.path, url: c.url, capturedAt: c.capturedAt, x: Math.round(c.x), y: Math.round(c.y) };
+          var entry = { name: c.name, file: c.file, group: c.group, path: c.path, url: c.url, capturedAt: c.capturedAt, x: Math.round(c.x), y: Math.round(c.y) };
+          if (c.width) entry.width = c.width;
+          if (c.height) entry.height = c.height;
+          return entry;
         })
       };
       fetch("data/captures/manifest.json", {
@@ -999,21 +1066,21 @@
         var indices = info.groups[gName];
         var rowY = cursorY + HEADER_HEIGHT;
         var cursorX = 0;
+        var tallest = 0;
         for (var ci = 0; ci < indices.length; ci++) {
           var idx = indices[ci];
+          var cw = captures[idx].width || defaultCapWidth;
+          var ch = captures[idx].height || defaultCapHeight;
           captures[idx].x = cursorX;
           captures[idx].y = rowY;
-          cursorX += capWidth + CARD_GAP;
+          cursorX += cw + CARD_GAP;
+          var h = Math.round(ch * 1.2) + 40;
+          if (h > tallest) tallest = h;
         }
-        var tallest = estimateRowHeight();
         cursorY = rowY + tallest + GROUP_GAP;
       }
       renderCards();
       saveManifest();
-    }
-
-    function estimateRowHeight() {
-      return Math.round(capHeight * 1.2) + 40;
     }
 
     function hasStoredPositions(items) {
@@ -1057,8 +1124,8 @@
         })
         .then(function(data) {
           var items = data.captures || [];
-          capWidth = (data.viewport && data.viewport.width) || 390;
-          capHeight = (data.viewport && data.viewport.height) || 844;
+          var fallbackW = (data.viewport && data.viewport.width) || defaultCapWidth;
+          var fallbackH = (data.viewport && data.viewport.height) || defaultCapHeight;
 
           if (items.length === 0) {
             captures = [];
@@ -1073,6 +1140,8 @@
             return {
               name: c.name, file: c.file, group: c.group, path: c.path,
               url: c.url, capturedAt: c.capturedAt,
+              width: c.width || fallbackW,
+              height: c.height || fallbackH,
               x: (c.x != null) ? c.x : 0,
               y: (c.y != null) ? c.y : 0,
             };
@@ -1092,7 +1161,6 @@
 
     function renderCards() {
       var bust = "?t=" + Date.now();
-      var collapseH = Math.round(capHeight * 1.1);
       var info = buildGroups();
 
       var html = "";
@@ -1115,11 +1183,14 @@
 
       for (var i = 0; i < captures.length; i++) {
         var c = captures[i];
+        var cw = c.width || defaultCapWidth;
+        var ch = c.height || defaultCapHeight;
+        var collapseH = Math.round(ch * 1.1);
         var displayName = c.name.replace(/-/g, " ");
         displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
 
         html +=
-          '<div class="cap-card' + (selected.has(i) ? ' is-selected' : '') + '" id="cap-card-' + i + '" style="left:' + c.x + 'px;top:' + c.y + 'px;width:' + capWidth + 'px;">' +
+          '<div class="cap-card' + (selected.has(i) ? ' is-selected' : '') + '" id="cap-card-' + i + '" style="left:' + c.x + 'px;top:' + c.y + 'px;width:' + cw + 'px;">' +
             '<div class="cap-card-header">' +
               '<div class="cap-card-name">' + displayName + '</div>' +
               '<div class="cap-card-path">' + (c.path || "") + '</div>' +
@@ -1140,7 +1211,7 @@
         })(i);
       }
 
-      hideExpandIfNotNeeded(collapseH);
+      hideExpandIfNotNeeded();
     }
 
     function toggleExpand(btn) {
@@ -1158,19 +1229,21 @@
       }
     }
 
-    function hideExpandIfNotNeeded(collapseH) {
+    function hideExpandIfNotNeeded() {
       var cards = document.querySelectorAll(".cap-card");
       for (var i = 0; i < cards.length; i++) {
-        var img = cards[i].querySelector(".cap-card-image-wrap img");
-        if (!img) continue;
+        var wrap = cards[i].querySelector(".cap-card-image-wrap");
+        var img = wrap ? wrap.querySelector("img") : null;
+        if (!img || !wrap) continue;
+        var collapseH = parseInt(wrap.dataset.capHeight) || 1000;
         if (img.complete) {
           checkExpandNeeded(img, cards[i], collapseH);
         } else {
-          (function(imgEl, cardEl) {
+          (function(imgEl, cardEl, ch) {
             imgEl.addEventListener("load", function() {
-              checkExpandNeeded(imgEl, cardEl, collapseH);
+              checkExpandNeeded(imgEl, cardEl, ch);
             });
-          })(img, cards[i]);
+          })(img, cards[i], collapseH);
         }
       }
     }
@@ -1192,19 +1265,24 @@
       el.id = "cap-empty";
       el.style.cssText = "position:fixed;inset:0;top:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;z-index:10;";
       el.innerHTML =
-        '<div style="width:64px;height:64px;border-radius:50%;background:rgba(59,130,246,0.1);display:grid;place-items:center;margin-bottom:20px;">' +
-          '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(59,130,246,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<div class="cap-empty-icon-wrap" aria-hidden="true">' +
+          '<svg class="cap-empty-icon-svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
             '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>' +
           '</svg>' +
         '</div>' +
         '<div style="font-size:1.15rem;font-weight:800;color:rgba(0,0,0,0.75);margin-bottom:8px;">No captures yet</div>' +
-        '<div style="font-size:0.9rem;color:rgba(0,0,0,0.45);max-width:380px;line-height:1.55;margin-bottom:4px;">' +
-          'Enter your app\'s URL to automatically discover and screenshot every screen.' +
+        '<div style="font-size:0.95rem;color:rgba(0,0,0,0.45);max-width:520px;line-height:1.55;margin-bottom:4px;">' +
+          'Enter your app\'s URL to open the capture browser and save screens to this canvas.' +
         '</div>' +
+        '<ol class="cap-empty-steps">' +
+          '<li><span class="cap-empty-steps-body"><strong>Start</strong> — Enter the URL below and click Capture, or use <strong>New Capture</strong> in the toolbar anytime.</span></li>' +
+          '<li><span class="cap-empty-steps-body"><strong>Browser</strong> — Log in if needed. Press <strong>C</strong> to save the current screen, <strong>F</strong> to auto-fill forms, <strong>Done</strong> when finished.</span></li>' +
+          '<li><span class="cap-empty-steps-body"><strong>Canvas</strong> — Drag cards to arrange; <strong>Refresh</strong> loads new screenshots from disk.</span></li>' +
+        '</ol>' +
         '<form class="cap-form" onsubmit="startCapture(event)">' +
           '<div class="cap-form-row">' +
-            '<input id="cap-url" class="cap-form-input" type="url" placeholder="https://your-app.com" required>' +
-            '<button id="cap-submit" class="cap-form-btn" type="submit">Capture</button>' +
+            '<input id="cap-url" class="cap-form-input" style="padding:16px 20px;font-size:1rem;border-radius:14px;" type="url" placeholder="https://your-app.com" required>' +
+            '<button id="cap-submit" class="cap-form-btn" style="padding:16px 28px;font-size:1rem;border-radius:14px;" type="submit">Capture</button>' +
           '</div>' +
           '<div id="cap-progress" class="cap-progress">' +
             '<div class="cap-progress-header">' +
@@ -1212,10 +1290,6 @@
               '<button class="cap-copy-btn" onclick="copyLog(\'cap-log\')">Copy log</button>' +
             '</div>' +
             '<div id="cap-log" class="cap-progress-log"></div>' +
-          '</div>' +
-          '<div class="cap-form-hint">' +
-            'The tool opens a browser, finds navigation links, and screenshots each page. ' +
-            'For apps behind login, set up <code style="padding:1px 6px;border-radius:5px;background:rgba(0,0,0,0.06);font-size:0.9em;font-weight:600;">.app-screens.json</code> instead.' +
           '</div>' +
         '</form>';
       document.body.appendChild(el);
@@ -1246,35 +1320,10 @@
       });
     }
 
-    var SCOUT_CACHE_KEY = "design-core-captures-scout-cache";
-    var scoutedItems = [];
-
-    function loadScoutedItemsCache() {
-      try {
-        var raw = localStorage.getItem(SCOUT_CACHE_KEY);
-        if (!raw) return [];
-        var parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return [];
-        return parsed;
-      } catch (_) {
-        return [];
-      }
-    }
-
-    function saveScoutedItemsCache(items) {
-      try {
-        localStorage.setItem(SCOUT_CACHE_KEY, JSON.stringify(items || []));
-      } catch (_) {}
-    }
-
-    scoutedItems = loadScoutedItemsCache();
-
     function openCaptureModal() {
       var overlay = document.getElementById("cap-modal-overlay");
       overlay.classList.add("is-open");
       var urlInput = document.getElementById("modal-cap-url");
-      var userInput = document.getElementById("modal-cap-user");
-      var passInput = document.getElementById("modal-cap-pass");
 
       if (!urlInput.value) {
         fetch("data/captures/config.json?t=" + Date.now())
@@ -1283,41 +1332,12 @@
           .catch(function() {});
       }
 
-      if (!userInput.value && !passInput.value) {
-        fetch("/api/capture/creds")
-          .then(function(r) { return r.ok ? r.json() : null; })
-          .then(function(creds) {
-            if (creds) {
-              if (creds.username) userInput.value = creds.username;
-              if (creds.password) passInput.value = creds.password;
-            }
-          })
-          .catch(function() {});
-      }
-
-      var prevBtn = document.getElementById("cap-prev-results-btn");
-      var captureAllBtn = document.getElementById("cap-capture-all-btn");
-      var hasItems = scoutedItems.length > 0;
-      if (prevBtn) {
-        prevBtn.style.display = hasItems ? "" : "none";
-        if (hasItems) prevBtn.textContent = "Use previous results (" + scoutedItems.length + ")";
-      }
-      if (captureAllBtn) captureAllBtn.style.display = hasItems ? "none" : "";
-
-      document.getElementById("modal-step-url").style.display = "";
-      document.getElementById("modal-step-select").style.display = "none";
-
       setTimeout(function() { urlInput.focus(); }, 200);
     }
 
     function closeCaptureModal(e) {
       if (e && e.target && !e.target.classList.contains("cap-modal-overlay")) return;
       document.getElementById("cap-modal-overlay").classList.remove("is-open");
-    }
-
-    function backToUrl() {
-      document.getElementById("modal-step-url").style.display = "";
-      document.getElementById("modal-step-select").style.display = "none";
     }
 
     function resetBrowserSession() {
@@ -1374,221 +1394,25 @@
       });
     }
 
-    function saveCreds() {
-      var user = document.getElementById("modal-cap-user").value.trim();
-      var pass = document.getElementById("modal-cap-pass").value.trim();
-      if (user || pass) {
-        return fetch("/api/capture/creds", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: user, password: pass }),
-        }).catch(function() {});
-      }
-      return Promise.resolve();
-    }
-
-    function runCaptureAll(progressEl, statusEl, logEl) {
-      var urlInput = document.getElementById("modal-cap-url");
-      var appUrl = urlInput.value.trim();
-      if (!appUrl) { urlInput.focus(); return; }
-
-      var scoutBtn = document.getElementById("modal-scout-btn");
-      var deepBtn = document.getElementById("modal-deep-btn");
-      var captureAllBtn = document.getElementById("modal-capture-all-btn");
-
-      urlInput.disabled = true;
-      if (scoutBtn) scoutBtn.disabled = true;
-      if (deepBtn) deepBtn.disabled = true;
-      if (captureAllBtn) captureAllBtn.disabled = true;
-      progressEl.classList.add("is-active");
-      statusEl.textContent = "Saving credentials...";
-      statusEl.style.color = "";
-      logEl.innerHTML = "";
-
-      saveCreds().then(function() {
-        statusEl.textContent = "Capturing all screens...";
-        return streamSSE("/api/capture", { url: appUrl }, {
-          log: function(d) {
-            var div = document.createElement("div");
-            div.textContent = d.text;
-            logEl.appendChild(div);
-            logEl.scrollTop = logEl.scrollHeight;
-          },
-          status: function(d) { statusEl.textContent = d.message; },
-          done: function() {
-            statusEl.textContent = "Done! Loading screenshots...";
-            urlInput.disabled = false;
-            if (scoutBtn) scoutBtn.disabled = false;
-            if (deepBtn) deepBtn.disabled = false;
-            if (captureAllBtn) captureAllBtn.disabled = false;
-            removeEmpty();
-            closeCaptureModal();
-            loadCaptures();
-          },
-          error: function(d) {
-            statusEl.textContent = "Error: " + d.message;
-            statusEl.style.color = "rgba(220, 38, 38, 0.9)";
-            urlInput.disabled = false;
-            if (scoutBtn) scoutBtn.disabled = false;
-            if (deepBtn) deepBtn.disabled = false;
-            if (captureAllBtn) captureAllBtn.disabled = false;
-          },
-        });
-      }).catch(function(err) {
-        statusEl.textContent = "Error: " + err.message;
-        statusEl.style.color = "rgba(220, 38, 38, 0.9)";
-        urlInput.disabled = false;
-        if (scoutBtn) scoutBtn.disabled = false;
-        if (deepBtn) deepBtn.disabled = false;
-        if (captureAllBtn) captureAllBtn.disabled = false;
-      });
-    }
-
-    function skipToCapture() {
-      runCaptureAll(
-        document.getElementById("modal-scout-progress"),
-        document.getElementById("modal-scout-status"),
-        document.getElementById("modal-scout-log")
-      );
-    }
-
-    function skipToCaptureFromResults() {
-      runCaptureAll(
-        document.getElementById("modal-deep-progress"),
-        document.getElementById("modal-deep-status"),
-        document.getElementById("modal-deep-log")
-      );
-    }
-
-    function startScout(e) {
+    function launchCaptureBrowser(e) {
       e.preventDefault();
       var urlInput = document.getElementById("modal-cap-url");
-      var btn = document.getElementById("modal-scout-btn");
-      var progress = document.getElementById("modal-scout-progress");
-      var status = document.getElementById("modal-scout-status");
-      var log = document.getElementById("modal-scout-log");
+      var btn = document.getElementById("modal-launch-btn");
+      var progress = document.getElementById("modal-capture-progress");
+      var status = document.getElementById("modal-capture-status");
+      var log = document.getElementById("modal-capture-log");
       var appUrl = urlInput.value.trim();
       if (!appUrl) return;
 
       urlInput.disabled = true;
       btn.disabled = true;
-      btn.textContent = "Saving...";
+      btn.textContent = "Launching...";
       progress.classList.add("is-active");
-      status.textContent = "Saving credentials...";
+      status.textContent = "Opening browser...";
       status.style.color = "";
       log.innerHTML = "";
 
-      saveCreds().then(function() {
-        btn.textContent = "Scanning...";
-        status.textContent = "Opening browser and scanning...";
-        return streamSSE("/api/capture/scout", { url: appUrl }, {
-          log: function(d) {
-            var div = document.createElement("div");
-            div.textContent = d.text;
-            log.appendChild(div);
-            log.scrollTop = log.scrollHeight;
-          },
-          status: function(d) { status.textContent = d.message; },
-          scout: function(d) {
-            scoutedItems = d.items || [];
-            saveScoutedItemsCache(scoutedItems);
-            showScoutResults();
-          },
-          done: function() {
-            urlInput.disabled = false;
-            btn.disabled = false;
-            btn.textContent = "Find Screens";
-            if (scoutedItems.length > 0) {
-              showScoutResults();
-            } else {
-              status.textContent = "No screens found. Try a different URL.";
-            }
-          },
-          error: function(d) {
-            status.textContent = "Error: " + d.message;
-            status.style.color = "rgba(220, 38, 38, 0.9)";
-            urlInput.disabled = false;
-            btn.disabled = false;
-            btn.textContent = "Retry";
-          },
-        });
-      }).catch(function(err) {
-        status.textContent = "Error: " + err.message;
-        status.style.color = "rgba(220, 38, 38, 0.9)";
-        urlInput.disabled = false;
-        btn.disabled = false;
-        btn.textContent = "Retry";
-      });
-    }
-
-    function showScoutResults() {
-      document.getElementById("modal-step-url").style.display = "none";
-      document.getElementById("modal-step-select").style.display = "";
-      var list = document.getElementById("modal-scout-list");
-      list.innerHTML = "";
-
-      // Add Home as the first item
-      var homeRow = document.createElement("label");
-      homeRow.className = "cap-scout-item";
-      homeRow.innerHTML =
-        '<input type="checkbox" data-idx="home">' +
-        '<span class="cap-scout-item-label">Home</span>' +
-        '<span class="cap-scout-item-path">/</span>';
-      list.appendChild(homeRow);
-
-      for (var i = 0; i < scoutedItems.length; i++) {
-        var item = scoutedItems[i];
-        var displayLabel = item.label.replace(/-/g, " ");
-        if (displayLabel === "(unlabeled)") displayLabel = item.path;
-        var row = document.createElement("label");
-        row.className = "cap-scout-item";
-        row.innerHTML =
-          '<input type="checkbox" data-idx="' + i + '">' +
-          '<span class="cap-scout-item-label">' + displayLabel + '</span>' +
-          '<span class="cap-scout-item-path">' + (item.path || "") + '</span>' +
-          (item.source && item.source !== 'content' ? '<span class="cap-scout-item-badge">' + item.source.replace('-', ' ') + '</span>' : '');
-        list.appendChild(row);
-      }
-    }
-
-    function toggleAllScout() {
-      var boxes = document.querySelectorAll("#modal-scout-list input[type='checkbox']");
-      var allChecked = true;
-      for (var i = 0; i < boxes.length; i++) {
-        if (!boxes[i].checked) { allChecked = false; break; }
-      }
-      for (var i = 0; i < boxes.length; i++) {
-        boxes[i].checked = !allChecked;
-      }
-    }
-
-    function startDeepCapture() {
-      var boxes = document.querySelectorAll("#modal-scout-list input[type='checkbox']");
-      var selected = [];
-      var includeHome = false;
-      for (var i = 0; i < boxes.length; i++) {
-        if (!boxes[i].checked) continue;
-        if (boxes[i].dataset.idx === "home") {
-          includeHome = true;
-        } else {
-          selected.push(scoutedItems[parseInt(boxes[i].dataset.idx)]);
-        }
-      }
-      if (selected.length === 0 && !includeHome) return;
-
-      var btn = document.getElementById("modal-deep-btn");
-      var progress = document.getElementById("modal-deep-progress");
-      var status = document.getElementById("modal-deep-status");
-      var log = document.getElementById("modal-deep-log");
-
-      btn.disabled = true;
-      btn.textContent = "Capturing...";
-      progress.classList.add("is-active");
-      status.textContent = "Starting deep capture...";
-      status.style.color = "";
-      log.innerHTML = "";
-
-      streamSSE("/api/capture/deep", { items: selected, includeHome: includeHome }, {
+      streamSSE("/api/capture/launch", { url: appUrl }, {
         log: function(d) {
           var div = document.createElement("div");
           div.textContent = d.text;
@@ -1596,10 +1420,23 @@
           log.scrollTop = log.scrollHeight;
         },
         status: function(d) { status.textContent = d.message; },
+        manual: function(d) {
+          status.textContent = "Browser open — " + (d.captured || 0) + " captured. Use the toolbar in the browser.";
+          status.style.color = "rgba(34, 197, 94, 0.9)";
+          btn.textContent = "Browser Open";
+        },
+        manual_captured: function(d) {
+          status.textContent = d.captured + " screen" + (d.captured === 1 ? "" : "s") + " captured";
+          var div = document.createElement("div");
+          div.textContent = "✓ " + (d.name || "screen") + " captured";
+          log.appendChild(div);
+          log.scrollTop = log.scrollHeight;
+        },
         done: function() {
           status.textContent = "Done! Loading screenshots...";
+          urlInput.disabled = false;
           btn.disabled = false;
-          btn.textContent = "Capture Selected";
+          btn.textContent = "Launch Browser";
           removeEmpty();
           closeCaptureModal();
           loadCaptures();
@@ -1607,73 +1444,28 @@
         error: function(d) {
           status.textContent = "Error: " + d.message;
           status.style.color = "rgba(220, 38, 38, 0.9)";
+          urlInput.disabled = false;
           btn.disabled = false;
-          btn.textContent = "Retry";
-        },
-      }).catch(function(err) {
-        status.textContent = "Error: " + err.message;
-        status.style.color = "rgba(220, 38, 38, 0.9)";
-        btn.disabled = false;
-        btn.textContent = "Retry";
-      });
-    }
-
-    function startCapture(e, source) {
-      e.preventDefault();
-      var urlInput = document.getElementById("cap-url");
-      var submitBtn = document.getElementById("cap-submit");
-      var progress = document.getElementById("cap-progress");
-      var status = document.getElementById("cap-status");
-      var log = document.getElementById("cap-log");
-      var appUrl = urlInput.value.trim();
-      if (!appUrl) return;
-
-      urlInput.disabled = true;
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Scanning...";
-      progress.classList.add("is-active");
-      status.textContent = "Scanning for screens...";
-      status.style.color = "";
-      log.innerHTML = "";
-
-      streamSSE("/api/capture/scout", { url: appUrl }, {
-        log: function(d) {
-          var div = document.createElement("div");
-          div.textContent = d.text;
-          log.appendChild(div);
-          log.scrollTop = log.scrollHeight;
-        },
-        status: function(d) { status.textContent = d.message; },
-        scout: function(d) {
-          scoutedItems = d.items || [];
-          saveScoutedItemsCache(scoutedItems);
-        },
-        done: function() {
-          if (scoutedItems.length > 0) {
-            removeEmpty();
-            openCaptureModal();
-            showScoutResults();
-          } else {
-            status.textContent = "No screens found.";
-          }
-          urlInput.disabled = false;
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Capture";
-        },
-        error: function(d) {
-          status.textContent = "Error: " + d.message;
-          status.style.color = "rgba(220, 38, 38, 0.9)";
-          urlInput.disabled = false;
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Retry";
+          btn.textContent = "Launch Browser";
         },
       }).catch(function(err) {
         status.textContent = "Error: " + err.message;
         status.style.color = "rgba(220, 38, 38, 0.9)";
         urlInput.disabled = false;
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Retry";
+        btn.disabled = false;
+        btn.textContent = "Launch Browser";
       });
+    }
+
+    function startCapture(e) {
+      e.preventDefault();
+      var urlInput = document.getElementById("cap-url");
+      var appUrl = urlInput.value.trim();
+      if (!appUrl) return;
+      removeEmpty();
+      document.getElementById("modal-cap-url").value = appUrl;
+      openCaptureModal();
+      launchCaptureBrowser(e);
     }
 
     function refreshCaptures() {
