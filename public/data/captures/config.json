@@ -1,9 +1,9 @@
 {
-  "appUrl": "https://digital.garden-fi.com/",
   "viewport": {
     "width": 390,
     "height": 844
   },
   "discover": true,
-  "dismissSelectors": []
+  "dismissSelectors": [],
+  "appUrl": "https://devbank.banno-staging.com/"
 }

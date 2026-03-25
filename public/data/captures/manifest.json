@@ -1,8 +1,4 @@
 {
-  "viewport": {
-    "width": 390,
-    "height": 844
-  },
   "captures": [
     {
       "name": "home",
@@ -12,7 +8,9 @@
       "url": "https://digital.garden-fi.com/",
       "capturedAt": "2026-03-16T22:46:35.631Z",
       "x": 0,
-      "y": 48
+      "y": 48,
+      "width": 390,
+      "height": 844
     },
     {
       "name": "accounts",
@@ -22,7 +20,9 @@
       "url": "https://digital.garden-fi.com/accounts/",
       "capturedAt": "2026-03-16T22:46:53.864Z",
       "x": 0,
-      "y": 1229
+      "y": 1268,
+      "width": 390,
+      "height": 844
     },
     {
       "name": "ach",
@@ -32,7 +32,9 @@
       "url": "https://digital.garden-fi.com/payments/ach",
       "capturedAt": "2026-03-16T22:47:16.992Z",
       "x": 0,
-      "y": 2410
+      "y": 2449,
+      "width": 390,
+      "height": 844
     },
     {
       "name": "ach-create-ach",
@@ -42,7 +44,9 @@
       "url": "https://digital.garden-fi.com/payments/ach/batch/new",
       "capturedAt": "2026-03-16T22:47:35.669Z",
       "x": 430,
-      "y": 2410
+      "y": 2449,
+      "width": 390,
+      "height": 844
     },
     {
       "name": "ach-create-ach-filled",
@@ -52,7 +56,9 @@
       "url": "https://digital.garden-fi.com/payments/ach/batch/new",
       "capturedAt": "2026-03-16T22:47:39.971Z",
       "x": 860,
-      "y": 2410
+      "y": 2449,
+      "width": 390,
+      "height": 844
     },
     {
       "name": "ach-create-ach-file-layouts",
@@ -62,7 +68,9 @@
       "url": "https://digital.garden-fi.com/payments/ach/import-settings",
       "capturedAt": "2026-03-16T22:47:54.295Z",
       "x": 1290,
-      "y": 2410
+      "y": 2449,
+      "width": 390,
+      "height": 844
     },
     {
       "name": "ach-upload-ach",
@@ -72,7 +80,9 @@
       "url": "https://digital.garden-fi.com/payments/ach/upload",
       "capturedAt": "2026-03-16T22:48:23.536Z",
       "x": 1720,
-      "y": 2410
+      "y": 2449,
+      "width": 390,
+      "height": 844
     },
     {
       "name": "ach-pay-taxes",
@@ -82,7 +92,9 @@
       "url": "https://digital.garden-fi.com/payments/ach/tax/new",
       "capturedAt": "2026-03-16T22:48:45.134Z",
       "x": 2150,
-      "y": 2410
+      "y": 2449,
+      "width": 390,
+      "height": 844
     },
     {
       "name": "ach-pay-taxes-filled",
@@ -92,7 +104,9 @@
       "url": "https://digital.garden-fi.com/payments/ach/tax/new",
       "capturedAt": "2026-03-16T22:48:48.800Z",
       "x": 2580,
-      "y": 2410
+      "y": 2449,
+      "width": 390,
+      "height": 844
     },
     {
       "name": "ach-search-recipients",
@@ -102,7 +116,9 @@
       "url": "https://digital.garden-fi.com/payments/ach/search-recipients",
       "capturedAt": "2026-03-16T22:49:21.492Z",
       "x": 3010,
-      "y": 2410
+      "y": 2449,
+      "width": 390,
+      "height": 844
     },
     {
       "name": "ach-search-recipients-filled",
@@ -112,7 +128,57 @@
       "url": "https://digital.garden-fi.com/payments/ach/search-recipients",
       "capturedAt": "2026-03-16T22:49:22.057Z",
       "x": 3440,
-      "y": 2410
+      "y": 2449,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "manual-screen",
+      "file": "manual-screen.jpg",
+      "group": "home",
+      "path": "/",
+      "url": "https://devbank.banno-staging.com/",
+      "capturedAt": "2026-03-25T17:45:20.283Z",
+      "x": 430,
+      "y": 48,
+      "width": 500,
+      "height": 877
+    },
+    {
+      "name": "transfers",
+      "file": "transfers.jpg",
+      "group": "transfers",
+      "path": "/transfers",
+      "url": "https://devbank.banno-staging.com/transfers",
+      "capturedAt": "2026-03-25T17:45:25.043Z",
+      "x": 0,
+      "y": 3669,
+      "width": 500,
+      "height": 877
+    },
+    {
+      "name": "transfers-2",
+      "file": "transfers-2.jpg",
+      "group": "transfers",
+      "path": "/transfers",
+      "url": "https://devbank.banno-staging.com/transfers",
+      "capturedAt": "2026-03-25T17:45:28.308Z",
+      "x": 581,
+      "y": 3660,
+      "width": 500,
+      "height": 877
+    },
+    {
+      "name": "payments-ach-batch-new",
+      "file": "payments-ach-batch-new.jpg",
+      "group": "payments",
+      "path": "/payments/ach/batch/new",
+      "url": "https://devbank.banno-staging.com/payments/ach/batch/new",
+      "capturedAt": "2026-03-25T17:46:50.865Z",
+      "x": 3870,
+      "y": 2449,
+      "width": 500,
+      "height": 877
     }
   ]
 }

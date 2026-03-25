@@ -6,6 +6,13 @@
       "description": "Wire transfer details screens for retail banking — ideation variants using the design system plus exploratory layouts.",
       "createdBy": "Brandon Unglaub",
       "createdAt": "2026-03-16T00:00:00Z"
+    },
+    {
+      "id": "rapid-transfer",
+      "name": "Rapid Transfer",
+      "description": "Rapid transfer flows and screens — quick-send money movement, ideation and prototypes.",
+      "createdBy": "Brandon Unglaub",
+      "createdAt": "2026-03-25T00:00:00Z"
     }
   ]
 }
