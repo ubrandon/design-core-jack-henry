@@ -17,11 +17,28 @@
       height: 768px;
       border-radius: 12px;
     }
+    .phone-frame--desktop .phone-iframe {
+      width: 1024px;
+      height: 768px;
+    }
+    .phone-frame--online {
+      width: 1280px;
+      height: 800px;
+      border-radius: 12px;
+    }
+    .phone-frame--online .phone-iframe {
+      width: 1280px;
+      height: 800px;
+    }
     .phone-frame--responsive {
       width: 90vw;
       max-width: 1200px;
       height: 80vh;
       border-radius: 12px;
+    }
+    .phone-frame--responsive .phone-iframe {
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
@@ -88,6 +105,8 @@
           var container = document.getElementById("proto-container");
           if (device === "desktop") {
             container.classList.add("phone-frame--desktop");
+          } else if (device === "online") {
+            container.classList.add("phone-frame--online");
           } else if (device === "responsive") {
             container.classList.add("phone-frame--responsive");
           }
