@@ -109,7 +109,7 @@ All paths below are **disk paths** (relative to repo root):
 - `public/data/projects/<project>/screens/` -- Static screen HTML files for the ideation canvas
 - `public/data/projects/<project>/prototypes/<prototype>/index.html` -- Interactive prototype
 - `public/data/projects/<project>/prototypes/<prototype>/meta.json` -- Prototype name and description; optional `thumbnail` (filename or path under the prototype folder, e.g. `preview.png`) for the project page card image.
-- `public/data/projects/<project>/prototypes/index.json` -- Prototype list (`id`, `name`, `description`, optional `device`)
+- `public/data/projects/<project>/prototypes/index.json` -- Prototype list (`id`, `name`, `description`, optional `device`). Device can be `"mobile"` (phone frame, 390x844), `"online"` (small desktop frame, 1280x800), `"desktop"` (1024x768), or `"responsive"` (fluid).
 - `public/data/design-system/components/` -- Design system component HTML previews. In company repos, use `components/<company-slug>/` subfolder.
 - `public/data/design-system/registry.json` -- Category list + groups (order controls layout). Ships empty; company fills it.
 - `public/data/design-system/company.css` -- (Company repos only) Brand overrides for colors, fonts, radii. Auto-loaded after `shared.css` and `ds.css`.
@@ -203,7 +203,7 @@ Screens render inside an iframe at exactly the width set in `canvas.json`. Conte
 
 ### Creating a new prototype
 
-1. Ask the designer: "Should this be mobile, desktop, or responsive?"
+1. Ask the designer: "Should this be mobile or online (desktop)?" Only ask if they haven't already specified. If they say "online" or "desktop" or "web", use `"device": "online"`. If they say "mobile" or "phone" or "app", use `"device": "mobile"`. The `responsive` option also exists but rarely needed.
 2. Choose a prototype id (lowercase, hyphenated, e.g. `signup-flow`)
 3. Create the folder: `public/data/projects/<project>/prototypes/<id>/`
 4. Create `meta.json`:
