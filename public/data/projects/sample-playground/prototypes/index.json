@@ -1,0 +1,22 @@
+{
+  "prototypes": [
+    {
+      "id": "hello-mobile",
+      "name": "Hello (mobile)",
+      "description": "Tiny interactive example in the phone frame.",
+      "device": "mobile"
+    },
+    {
+      "id": "hello-online",
+      "name": "Hello (online)",
+      "description": "Same idea in the small desktop frame (1280×800).",
+      "device": "online"
+    },
+    {
+      "id": "yourfi-desktop",
+      "name": "YourFI desktop flows",
+      "description": "Dashboard, Transfer menu, move-money modal, Standard transfers.",
+      "device": "online"
+    }
+  ]
+}
