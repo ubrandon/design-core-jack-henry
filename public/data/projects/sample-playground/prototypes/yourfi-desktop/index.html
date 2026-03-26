@@ -986,19 +986,14 @@
       padding: 14px 16px;
       border: none;
       border-radius: var(--yf-radius-md);
-      background: #93c5fd;
+      background: var(--yf-blue);
       color: #fff;
       font-size: 0.9375rem;
       font-weight: 700;
-      cursor: not-allowed;
-      opacity: 0.85;
-    }
-    .yf-card-form__submit.is-ready {
-      background: var(--yf-blue);
       cursor: pointer;
       opacity: 1;
     }
-    .yf-card-form__submit.is-ready:hover { background: var(--yf-blue-active); }
+    .yf-card-form__submit:hover { background: var(--yf-blue-active); }
 
     /* Card added success */
     .yf-modal--card-success {
@@ -1662,7 +1657,7 @@
             <input id="debit-cvv" name="cvv" type="password" inputmode="numeric" autocomplete="cc-csc" placeholder="CVV/CVC" maxlength="4">
             <p class="yf-field-hint">3-digit security code</p>
           </div>
-          <button type="submit" class="yf-card-form__submit" id="debit-submit">Submit</button>
+          <button type="button" class="yf-card-form__submit" id="debit-submit">Submit</button>
         </form>
         <p class="yf-modal__fine">* Fund availability may vary depending on the receiving financial institution.</p>
       </div>
@@ -1881,7 +1876,6 @@
       var navDash = document.getElementById("nav-dash");
       var navStd = document.getElementById("nav-std");
       var formDebit = document.getElementById("form-debit");
-      var debitSubmit = document.getElementById("debit-submit");
       var hideT;
 
       var TRANSFER_FEE = 2;
@@ -2078,11 +2072,6 @@
 
       function openAddCardForm() {
         showModalPane("card");
-        requestAnimationFrame(function () {
-          syncDebitSubmit();
-          setTimeout(syncDebitSubmit, 50);
-          setTimeout(syncDebitSubmit, 300);
-        });
       }
 
       function closeModal() {
@@ -2090,52 +2079,19 @@
         overlay.setAttribute("aria-hidden", "true");
         showModalPane("choice");
         formDebit.reset();
-        syncDebitSubmit();
         resetRapidFlow();
       }
 
-      function syncDebitSubmit() {
+      function finishDebitCardAdd() {
         var n = document.getElementById("debit-number").value.trim();
-        var x = document.getElementById("debit-exp").value.trim();
-        var c = document.getElementById("debit-cvv").value.trim();
-        var ok = n.length > 0 && x.length > 0 && c.length > 0;
-        debitSubmit.classList.toggle("is-ready", ok);
-      }
-
-      function focusFirstEmptyDebitField() {
-        var order = ["debit-number", "debit-exp", "debit-cvv"];
-        for (var i = 0; i < order.length; i++) {
-          var inp = document.getElementById(order[i]);
-          if (!String(inp.value || "").trim()) {
-            inp.focus();
-            return;
-          }
-        }
-      }
-
-      ["debit-number", "debit-exp", "debit-cvv"].forEach(function (id) {
-        var el = document.getElementById(id);
-        ["input", "change", "blur", "keyup"].forEach(function (ev) {
-          el.addEventListener(ev, function () {
-            requestAnimationFrame(syncDebitSubmit);
-          });
-        });
-        el.addEventListener("paste", function () {
-          setTimeout(syncDebitSubmit, 0);
-        });
-      });
-
-      formDebit.addEventListener("submit", function (e) {
-        e.preventDefault();
-        syncDebitSubmit();
-        if (!debitSubmit.classList.contains("is-ready")) {
-          focusFirstEmptyDebitField();
-          return;
-        }
-        var last4 = lastFourDigits(document.getElementById("debit-number").value);
-        document.getElementById("card-success-last4").textContent = last4 || "0000";
+        document.getElementById("card-success-last4").textContent = lastFourDigits(n) || "0000";
         resetRapidFlow();
-        showModalPane("rapidForm");
+        showModalPane("cardSuccess");
+        openOverlay();
+      }
+
+      document.getElementById("debit-submit").addEventListener("click", function () {
+        finishDebitCardAdd();
       });
 
       btnTransfer.addEventListener("click", function (e) {
@@ -2167,9 +2123,9 @@
       });
 
       document.getElementById("btn-add-debit").addEventListener("click", openAddCardForm);
-      document.getElementById("btn-debit-later").addEventListener("click", function (e) {
-        e.stopPropagation();
-        closeModal();
+      document.getElementById("btn-debit-later").addEventListener("click", function () {
+        resetRapidFlow();
+        showModalPane("rapidForm");
       });
       document.getElementById("card-back").addEventListener("click", function () {
         showModalPane("rapidPromo");
@@ -2178,15 +2134,15 @@
       document.getElementById("card-success-ok").addEventListener("click", function () {
         resetRapidFlow();
         showModalPane("rapidForm");
+        openOverlay();
       });
       document.getElementById("card-success-add-another").addEventListener("click", function () {
         formDebit.reset();
-        syncDebitSubmit();
         showModalPane("card");
       });
 
       document.getElementById("rapid-form-back").addEventListener("click", function () {
-        showModalPane("card");
+        showModalPane("rapidPromo");
       });
       document.getElementById("rapid-pick-from").addEventListener("click", function () {
         showModalPane("rapidFrom");
@@ -2275,7 +2231,6 @@
         }
       });
 
-      syncDebitSubmit();
     })();
   </script>
 </body>

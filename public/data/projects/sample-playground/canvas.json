@@ -1,5 +1,10 @@
 {
   "screens": [
-    { "file": "welcome.html", "x": 0, "y": 0, "width": 390 }
+    {
+      "file": "welcome.html",
+      "x": -9,
+      "y": -13,
+      "width": 390
+    }
   ]
 }
