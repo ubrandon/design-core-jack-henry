@@ -5,12 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prototype — Design Core</title>
   <link rel="stylesheet" href="styles/shared.css">
+  <link rel="stylesheet" href="styles/ds.css">
   <link rel="stylesheet" href="styles/app.css">
   <style>
+    .proto-meta {
+      margin-top: 14px;
+      text-align: center;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
     .proto-label {
       color: var(--muted);
       font-size: 0.85rem;
       font-weight: 600;
+      line-height: 1.45;
+    }
+    .proto-copy-btn {
+      margin-top: 14px;
+      min-width: 160px;
+    }
+    .proto-meta .btn-primary.proto-copy-btn.is-copied {
+      background: linear-gradient(
+        135deg,
+        rgba(var(--neon-teal-rgb), 0.95),
+        rgba(var(--neon-teal-rgb), 0.82)
+      );
+      border-color: rgba(0, 0, 0, 0.06);
+      color: #fff;
     }
     .phone-frame--desktop {
       width: 1024px;
@@ -41,31 +63,20 @@
       height: 100%;
     }
     body.is-embed .site-nav,
-    body.is-embed .proto-label { display: none !important; }
+    body.is-embed .proto-meta { display: none !important; }
     body.is-embed .preview-page {
-      padding: 0;
+      min-height: 100vh;
+      padding: 24px;
+      padding-top: 24px;
       display: flex;
-      align-items: stretch;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-1, #f8f9fb);
     }
     body.is-embed .phone-frame-wrap {
       display: flex;
-      flex: 1;
-      align-items: stretch;
-    }
-    body.is-embed .phone-frame,
-    body.is-embed .phone-frame--desktop,
-    body.is-embed .phone-frame--online,
-    body.is-embed .phone-frame--responsive {
-      width: 100% !important;
-      height: 100vh !important;
-      max-width: none;
-      border-radius: 0;
-      border: none;
-      box-shadow: none;
-    }
-    body.is-embed .phone-iframe {
-      width: 100% !important;
-      height: 100% !important;
+      justify-content: center;
     }
   </style>
 </head>
@@ -76,7 +87,10 @@
         <iframe id="proto-frame" class="phone-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
     </div>
-    <div id="proto-name" class="proto-label"></div>
+    <div class="proto-meta">
+      <div id="proto-name" class="proto-label"></div>
+      <button type="button" class="btn btn-primary proto-copy-btn" id="copy-proto-link">Copy link</button>
+    </div>
   </div>
 
   <script src="scripts/shared.js"></script>
@@ -99,13 +113,12 @@
             { label: projectId, href: "project.html?id=" + projectId, id: "nav-project" },
             { label: protoId, id: "nav-proto" },
           ],
-          actions: [{ label: "Copy link", id: "copy-btn", href: "#" }],
         });
-        const copyBtn = document.getElementById("copy-btn");
-        if (copyBtn) {
-          copyBtn.addEventListener("click", (e) => {
+        const copyProtoBtn = document.getElementById("copy-proto-link");
+        if (copyProtoBtn) {
+          copyProtoBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            copyLink(prototypeUrl(projectId, protoId), copyBtn);
+            copyLink(prototypeUrl(projectId, protoId), copyProtoBtn);
           });
         }
       });
@@ -140,24 +153,22 @@
         document.getElementById("proto-frame").src = basePath + "index.html";
       });
 
-    if (!isEmbed) {
-      fetchJSON("data/projects/" + projectId + "/prototypes/index.json")
-        .then(data => {
-          var proto = data.prototypes.find(p => p.id === protoId);
-          if (proto && proto.device) {
-            var device = proto.device.toLowerCase();
-            var container = document.getElementById("proto-container");
-            if (device === "desktop") {
-              container.classList.add("phone-frame--desktop");
-            } else if (device === "online") {
-              container.classList.add("phone-frame--online");
-            } else if (device === "responsive") {
-              container.classList.add("phone-frame--responsive");
-            }
+    fetchJSON("data/projects/" + projectId + "/prototypes/index.json")
+      .then(data => {
+        var proto = data.prototypes.find(p => p.id === protoId);
+        if (proto && proto.device) {
+          var device = proto.device.toLowerCase();
+          var container = document.getElementById("proto-container");
+          if (device === "desktop") {
+            container.classList.add("phone-frame--desktop");
+          } else if (device === "online") {
+            container.classList.add("phone-frame--online");
+          } else if (device === "responsive") {
+            container.classList.add("phone-frame--responsive");
           }
-        })
-        .catch(() => {});
-    }
+        }
+      })
+      .catch(() => {});
   </script>
 </body>
 </html>
