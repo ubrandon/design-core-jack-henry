@@ -859,3 +859,95 @@
   font-size: 0.8rem;
   color: rgba(0, 0, 0, 0.45);
 }
+
+/* Dashboard — YourFi-style support card (white, circular icon actions) */
+.jh-support-widget {
+  background: var(--bg-0);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 24px rgba(15, 40, 70, 0.07);
+  padding: 22px 20px 20px;
+  text-align: center;
+  max-width: 320px;
+}
+
+.jh-support-widget__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--jh-blue);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.jh-support-widget__mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(155deg, #3b82f6 0%, var(--jh-navy) 100%);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.jh-support-widget__title {
+  margin: 0 0 18px;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.88);
+  letter-spacing: -0.02em;
+}
+
+.jh-support-widget__actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.jh-support-widget__action {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 56px;
+  font-family: inherit;
+}
+
+.jh-support-widget__action-ico {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(var(--jh-blue-rgb), 0.08);
+  border: 1px solid rgba(var(--jh-blue-rgb), 0.18);
+  display: grid;
+  place-items: center;
+  transition: background 0.15s, border-color 0.15s;
+  color: var(--jh-blue);
+}
+
+.jh-support-widget__action-ico svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: block;
+}
+
+.jh-support-widget__action:hover .jh-support-widget__action-ico {
+  background: rgba(var(--jh-blue-rgb), 0.14);
+  border-color: rgba(var(--jh-blue-rgb), 0.35);
+}

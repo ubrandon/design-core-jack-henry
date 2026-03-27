@@ -48,7 +48,8 @@
         { "id": "jh-card-base", "file": "jack-henry/card-base.html", "label": "Base card" },
         { "id": "jh-card-payment", "file": "jack-henry/card-payment.html", "label": "Payment card" },
         { "id": "jh-card-credit-usage", "file": "jack-henry/card-credit-usage.html", "label": "Credit usage" },
-        { "id": "jh-card-details", "file": "jack-henry/card-details.html", "label": "Details card" }
+        { "id": "jh-card-details", "file": "jack-henry/card-details.html", "label": "Details card" },
+        { "id": "jh-dashboard-support", "file": "jack-henry/dashboard-support-widget.html", "label": "Dashboard support widget" }
       ]
     },
     {
