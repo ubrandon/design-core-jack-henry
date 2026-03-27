@@ -92,9 +92,18 @@
         document.title = data.name + " — Design Core";
         var el = document.getElementById("nav-proto");
         if (el) el.textContent = data.name;
+        var bust =
+          data.updatedAt != null && String(data.updatedAt).trim() !== ""
+            ? String(data.updatedAt).trim()
+            : data.cacheKey != null && String(data.cacheKey).trim() !== ""
+              ? String(data.cacheKey).trim()
+              : "";
+        document.getElementById("proto-frame").src =
+          basePath + "index.html" + (bust !== "" ? "?v=" + encodeURIComponent(bust) : "");
       })
       .catch(() => {
         document.getElementById("proto-name").textContent = protoId;
+        document.getElementById("proto-frame").src = basePath + "index.html";
       });
 
     fetchJSON("data/projects/" + projectId + "/prototypes/index.json")
@@ -113,8 +122,6 @@
         }
       })
       .catch(() => {});
-
-    document.getElementById("proto-frame").src = basePath + "index.html";
   </script>
 </body>
 </html>
