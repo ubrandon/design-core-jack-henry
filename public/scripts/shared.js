@@ -183,7 +183,7 @@ function parseDateMs(iso) {
 
 function prototypeUrl(projectId, protoId) {
   const base = shareBaseUrl();
-  const q = `prototype.html?project=${encodeURIComponent(projectId)}&proto=${encodeURIComponent(protoId)}`;
+  const q = `prototype.html?project=${encodeURIComponent(projectId)}&proto=${encodeURIComponent(protoId)}&view=embed`;
   try {
     return new URL(q, base).href;
   } catch {
