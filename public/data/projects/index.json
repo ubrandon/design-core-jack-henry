@@ -12,15 +12,8 @@
       "name": "Rapid Transfer",
       "description": "Rapid transfer flows and screens — quick-send money movement, ideation and prototypes.",
       "createdBy": "Brandon Unglaub",
-      "createdAt": "2026-03-25T00:00:00Z"
-    },
-    {
-      "id": "sample-playground",
-      "name": "Sample Playground",
-      "description": "Example project with a canvas screen and prototypes (mobile, online, YourFI desktop) for testing the tool.",
-      "createdBy": "Brandon Unglaub",
       "createdAt": "2026-03-25T00:00:00Z",
-      "updatedAt": "2026-03-25T12:00:00Z"
+      "updatedAt": "2026-03-27T21:00:00Z"
     }
   ]
 }

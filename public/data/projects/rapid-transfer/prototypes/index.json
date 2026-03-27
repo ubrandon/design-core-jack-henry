@@ -1,3 +1,10 @@
 {
-  "prototypes": []
+  "prototypes": [
+    {
+      "id": "rapid-transfer-test",
+      "name": "Rapid Transfer Test",
+      "description": "Dashboard, Transfer menu, move-money modal, Standard transfers — interactive desktop flows.",
+      "device": "online"
+    }
+  ]
 }
