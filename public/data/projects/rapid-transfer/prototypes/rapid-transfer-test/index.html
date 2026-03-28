@@ -64,6 +64,7 @@
     html, body {
       margin: 0;
       height: 100%;
+      min-height: 100vh;
       font-family: var(--yf-font);
       color: var(--yf-text);
       background: var(--yf-page);
@@ -75,6 +76,7 @@
     .yf-app {
       display: flex;
       height: 100%;
+      min-height: 100vh;
     }
 
     /* Sidebar */
@@ -782,7 +784,27 @@
     }
     .view-std.is-visible { display: flex; }
 
+    .view-std-hub {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    .view-std.is-flow .view-std-hub { display: none; }
+    .view-std-flow {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--yf-page);
+    }
+    .view-std.is-flow .view-std-flow { display: flex; }
+
     .yf-std-hero {
+      flex-shrink: 0;
       background: linear-gradient(118deg, var(--yf-hero-start) 0%, #1a4f7a 100%);
       padding: 28px 32px 32px;
       color: #fff;
@@ -793,14 +815,20 @@
       font-weight: 800;
       letter-spacing: -0.02em;
     }
+    .yf-view-flow-hero__sub {
+      margin: 8px 0 0;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.88);
+      max-width: 36rem;
+      line-height: 1.4;
+    }
     .yf-std-body {
-      flex: 1;
-      min-height: 0;
+      flex: 0 0 auto;
       display: grid;
       grid-template-columns: 1fr 288px;
       gap: 20px;
       padding: 20px 28px 0;
-      overflow-y: auto;
     }
     @media (max-width: 960px) {
       .yf-std-body { grid-template-columns: 1fr; }
@@ -848,15 +876,58 @@
     }
     .yf-std-row:hover { background: #fafbfc; }
     .yf-std-date {
-      width: 48px;
+      width: 52px;
+      min-height: 54px;
+      flex-shrink: 0;
+      padding: 8px 4px;
+      border-radius: var(--yf-radius-sm);
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      font-size: 0.625rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: var(--yf-muted);
-      line-height: 1.2;
+      line-height: 1.15;
     }
-    .yf-std-date b { display: block; font-size: 1rem; color: var(--yf-text); }
+    .yf-std-date__mo {
+      font-size: 0.5625rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--yf-muted);
+      text-transform: uppercase;
+    }
+    .yf-std-date b {
+      margin-top: 2px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--yf-text);
+    }
+    .yf-std-make-card {
+      margin-bottom: 16px;
+    }
+    .yf-std-make-card__row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      font: inherit;
+      text-align: left;
+    }
+    .yf-std-make-card__row:hover { background: #fafbfc; }
+    .yf-std-make-card__row:focus-visible {
+      outline: 2px solid var(--yf-blue);
+      outline-offset: -2px;
+    }
+    .yf-std-make-card__label {
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--yf-text);
+    }
     .yf-std-row__meta { flex: 1; min-width: 0; }
     .yf-std-row__meta strong { font-size: 0.875rem; }
     .yf-std-row__meta span {
@@ -894,6 +965,7 @@
       color: var(--yf-muted);
     }
     .yf-cal-grid div { padding: 4px 0; }
+    .yf-cal-pad { min-height: 0; }
     .yf-cal-day {
       aspect-ratio: 1;
       display: grid;
@@ -941,6 +1013,14 @@
       font-size: 0.8125rem;
       color: var(--yf-text);
     }
+    button.yf-promo {
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+    }
 
     /* Rapid transfers activity hub (post–add-card) */
     .view-rapid {
@@ -957,7 +1037,8 @@
       flex-direction: column;
       flex: 1;
       min-height: 0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
     .view-rapid.is-flow .view-rapid-hub { display: none; }
     .view-rapid-flow {
@@ -1009,27 +1090,6 @@
       max-height: min(calc(100vh - 280px), 640px);
     }
 
-    /* Rapid flow — amount row & primary actions */
-    .yf-rapid-flow-card .yf-txf-row--amount {
-      align-items: stretch;
-    }
-    .yf-rapid-flow-card .yf-txf-amt-wrap {
-      flex: 1;
-      min-width: 0;
-      min-height: 52px;
-      padding: 12px 16px;
-      border: 1px solid var(--yf-border);
-      background: #f8fafc;
-    }
-    .yf-rapid-flow-card .yf-txf-amt {
-      font-size: 1.375rem;
-      letter-spacing: -0.02em;
-      min-width: 5rem;
-    }
-    .yf-rapid-flow-card .yf-txf-amt::placeholder {
-      color: #94a3b8;
-      font-weight: 600;
-    }
     .yf-rapid-flow-card .yf-flow-actions {
       padding: 20px 20px 12px;
     }
@@ -1042,12 +1102,8 @@
       font-weight: 700;
     }
     .yf-rapid-flow-card .yf-card-success__actions {
-      padding: 0 12px 8px !important;
-    }
-    .yf-rapid-flow-card .yf-card-success__actions .btn,
-    .yf-rapid-flow-card .yf-card-success__actions .yf-btn-outline-blue {
-      min-height: 48px;
-      font-size: 1rem;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
     }
 
     /* Rapid flow — submitted state */
@@ -1058,12 +1114,9 @@
       margin-top: 36px;
       margin-bottom: 20px;
     }
-    .yf-rapid-flow-card .yf-rapid-done__amt {
-      color: var(--yf-text);
-    }
     .yf-rapid-th {
       display: grid;
-      grid-template-columns: 56px minmax(0, 1fr) minmax(100px, 140px) 88px 24px;
+      grid-template-columns: 58px minmax(0, 1fr) minmax(100px, 140px) 88px 24px;
       gap: 10px;
       align-items: center;
       padding: 10px 20px;
@@ -1076,7 +1129,7 @@
     }
     .yf-rapid-tr {
       display: grid;
-      grid-template-columns: 56px minmax(0, 1fr) minmax(100px, 140px) 88px 24px;
+      grid-template-columns: 58px minmax(0, 1fr) minmax(100px, 140px) 88px 24px;
       gap: 10px;
       align-items: center;
       padding: 14px 20px;
@@ -1151,7 +1204,426 @@
       box-shadow: 0 6px 24px rgba(29, 86, 200, 0.35);
       z-index: 5;
     }
-    body:not(.show-std):not(.show-rapid) .yf-fab { display: none; }
+    body:not(.show-std):not(.show-rapid):not(.show-zelle):not(.show-bill) .yf-fab { display: none; }
+
+    /* Zelle hub + send flow */
+    .view-zelle {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--yf-page);
+    }
+    .view-zelle.is-visible {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+    .view-zelle-hub {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    .view-zelle.is-flow .view-zelle-hub { display: none; }
+    .view-zelle-flow {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--yf-page);
+    }
+    .view-zelle.is-flow .view-zelle-flow { display: flex; }
+    .yf-zelle-hero {
+      flex-shrink: 0;
+      padding: 28px 32px 36px;
+      position: relative;
+      overflow: hidden;
+      background-color: #042042;
+      background-image:
+        linear-gradient(
+          105deg,
+          rgba(0, 38, 77, 0.94) 0%,
+          rgba(0, 55, 105, 0.78) 42%,
+          rgba(12, 90, 150, 0.55) 100%
+        ),
+        url("hero-bg.jpg");
+      background-size: cover;
+      background-position: 72% 28%;
+      color: #fff;
+    }
+    .yf-zelle-hero h1 {
+      margin: 0;
+      position: relative;
+      z-index: 1;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      max-width: 28rem;
+      line-height: 1.2;
+    }
+    .yf-zelle-body {
+      flex: 0 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 20px;
+      padding: 20px 28px 0;
+    }
+    @media (max-width: 960px) {
+      .yf-zelle-body { grid-template-columns: 1fr; }
+    }
+    .yf-zelle-activity-hd {
+      padding: 14px 20px 0;
+      font-size: 0.6875rem;
+      font-weight: 800;
+      color: var(--yf-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .yf-zelle-tabs {
+      display: flex;
+      gap: 28px;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--yf-border);
+    }
+    .yf-zelle-tabs button {
+      padding: 14px 0;
+      border: none;
+      background: none;
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--yf-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+    }
+    .yf-zelle-tabs button.is-active {
+      color: var(--yf-blue);
+      border-bottom-color: var(--yf-blue);
+    }
+    .yf-zelle-section-hd {
+      padding: 16px 20px 8px;
+      font-size: 0.6875rem;
+      font-weight: 800;
+      color: var(--yf-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .yf-zelle-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--yf-border);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+      background: var(--yf-white);
+      font: inherit;
+    }
+    .yf-zelle-row:hover { background: #fafbfc; }
+    .yf-zelle-row:last-of-type { border-bottom: none; }
+    .yf-zelle-av {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .yf-zelle-row__meta { flex: 1; min-width: 0; }
+    .yf-zelle-row__title { font-weight: 700; font-size: 0.875rem; }
+    .yf-zelle-row__sub { font-size: 0.75rem; color: var(--yf-muted); margin-top: 2px; }
+    .yf-zelle-row__sub strong { color: var(--yf-text); font-weight: 700; }
+    .yf-zelle-row__amt { font-weight: 800; font-size: 0.875rem; white-space: nowrap; }
+    .yf-zelle-viewmore {
+      display: block;
+      margin: 16px auto 18px;
+      padding: 10px 28px;
+      border-radius: var(--yf-radius-sm);
+      border: 1px solid var(--yf-blue);
+      background: var(--yf-white);
+      color: var(--yf-blue);
+      font-weight: 700;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .yf-zelle-viewmore:hover { background: var(--yf-nav-active-bg); }
+    .yf-zelle-empty {
+      padding: 36px 24px 40px;
+      text-align: center;
+      color: var(--yf-muted);
+      font-size: 0.8125rem;
+    }
+    .yf-zelle-empty__ico {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      display: grid;
+      place-items: center;
+      color: #94a3b8;
+    }
+    .yf-zelle-empty__ico svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+    .yf-zelle-panel[hidden] { display: none !important; }
+    .yf-zelle-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--yf-border);
+      border-radius: var(--yf-radius-md);
+      overflow: hidden;
+      border: 1px solid var(--yf-border);
+    }
+    .yf-zelle-actions button {
+      padding: 20px 12px;
+      border: none;
+      background: var(--yf-white);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.8125rem;
+      color: var(--yf-text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .yf-zelle-actions button:hover { background: #fafbfc; }
+    .yf-zelle-actions__ico {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--yf-nav-active-bg);
+      display: grid;
+      place-items: center;
+      color: var(--yf-blue);
+    }
+    .yf-zelle-actions__ico svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .yf-zelle-pref__hd {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--yf-border);
+      font-weight: 800;
+      font-size: 0.9375rem;
+    }
+    .yf-zelle-pref__row {
+      display: block;
+      width: 100%;
+      padding: 14px 18px;
+      border: none;
+      border-bottom: 1px solid var(--yf-border);
+      background: none;
+      font: inherit;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--yf-text);
+      text-align: left;
+      cursor: pointer;
+    }
+    .yf-zelle-pref__row:last-child { border-bottom: none; }
+    .yf-zelle-pref__row:hover { background: #fafbfc; }
+    .yf-zelle-flow-shell {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 24px 28px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .yf-zelle-flow-card {
+      width: 100%;
+      max-width: 480px;
+    }
+    #zelle-step-recipient .yf-modal--flow {
+      position: relative;
+      padding-right: 48px;
+    }
+    #zelle-step-recipient .yf-modal--flow .yf-modal__x {
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+    }
+
+    /* Zelle — select recipient (reference layout) */
+    .yf-zelle-flow-card .yf-zelle-recipient-hd {
+      display: grid;
+      grid-template-columns: 40px 1fr 40px;
+      align-items: center;
+      padding: 12px 12px 14px 8px;
+      border-bottom: 1px solid var(--yf-border);
+    }
+    .yf-zelle-flow-card .yf-zelle-recipient-hd h2 {
+      margin: 0;
+      font-size: 1.0625rem;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.25;
+    }
+    .yf-zelle-flow-card .yf-zelle-recipient-add {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: var(--yf-text);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      justify-self: end;
+    }
+    .yf-zelle-flow-card .yf-zelle-recipient-add:hover { background: #e2e8f0; }
+    .yf-zelle-flow-card .yf-zelle-recipient-add svg {
+      width: 22px;
+      height: 22px;
+    }
+    .yf-zelle-recipient-body {
+      padding: 16px 20px 20px;
+    }
+    .yf-zelle-search {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--yf-border);
+      border-radius: var(--yf-radius-sm);
+      background: var(--yf-white);
+      margin-bottom: 24px;
+    }
+    .yf-zelle-search svg {
+      flex-shrink: 0;
+      color: var(--yf-muted);
+    }
+    .yf-zelle-search input {
+      border: none;
+      background: none;
+      font: inherit;
+      font-size: 0.9375rem;
+      width: 100%;
+      min-width: 0;
+      color: var(--yf-text);
+    }
+    .yf-zelle-search input:focus { outline: none; }
+    .yf-zelle-search input::placeholder { color: #94a3b8; }
+    .yf-zelle-recent-hd {
+      font-size: 0.9375rem;
+      font-weight: 800;
+      color: var(--yf-text);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--yf-border);
+      margin-bottom: 16px;
+    }
+    .yf-zelle-recent-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px 28px;
+      margin-bottom: 8px;
+    }
+    .yf-zelle-recent-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 112px;
+      min-width: 112px;
+      padding: 0;
+      border: none;
+      background: none;
+      font: inherit;
+      cursor: pointer;
+      border-radius: var(--yf-radius-sm);
+    }
+    .yf-zelle-recent-tile:hover .yf-zelle-recent-av { background: #e2e8f0; }
+    .yf-zelle-recent-tile:focus-visible {
+      outline: 2px solid var(--yf-blue);
+      outline-offset: 4px;
+    }
+    .yf-zelle-recent-av {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #e8ecf1;
+      color: #475569;
+      font-size: 0.8125rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: grid;
+      place-items: center;
+      margin-bottom: 10px;
+    }
+    .yf-zelle-recent-name {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--yf-text);
+      line-height: 1.3;
+      width: 100%;
+    }
+    .yf-zelle-recent-detail {
+      font-size: 0.6875rem;
+      color: var(--yf-muted);
+      margin-top: 4px;
+      line-height: 1.35;
+      width: 100%;
+      word-break: break-word;
+    }
+    .yf-zelle-contacts-hd {
+      font-size: 0.6875rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--yf-muted);
+      padding: 18px 0 8px;
+    }
+    .yf-zelle-contact-row.yf-pick-row {
+      gap: 14px;
+    }
+    .yf-zelle-contact-row .yf-zelle-av {
+      flex-shrink: 0;
+    }
+    .yf-zelle-flow-card .yf-flow-actions {
+      padding: 20px 20px 16px;
+    }
+    .yf-zelle-flow-card .yf-flow-actions .yf-review-submit {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 48px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: var(--yf-radius-md);
+    }
+    .yf-zelle-flow-card .yf-card-success__actions {
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+    }
 
     /* Modal */
     .yf-overlay {
@@ -1455,24 +1927,43 @@
       text-align: center;
     }
     .yf-success-ico {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto 20px;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 18px;
       border-radius: 50%;
-      background: #22c55e;
+      background: linear-gradient(160deg, #4ade80 0%, #16a34a 55%, #15803d 100%);
       color: #fff;
       display: grid;
       place-items: center;
+      box-shadow: 0 8px 24px rgba(22, 163, 74, 0.32);
     }
-    .yf-success-ico svg { width: 36px; height: 36px; }
+    .yf-success-ico svg {
+      width: 42px;
+      height: 42px;
+      display: block;
+    }
     .yf-card-success__msg {
       margin: 0 8px 24px;
       font-size: 1.0625rem;
       font-weight: 700;
       line-height: 1.4;
     }
-    .yf-card-success__actions { display: flex; flex-direction: column; gap: 10px; }
-    .yf-card-success__actions .btn { width: 100%; padding: 14px 16px; font-size: 0.9375rem; font-weight: 700; }
+    .yf-card-success__actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 4px 0 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .yf-card-success__actions .btn,
+    .yf-card-success__actions .yf-btn-outline-blue {
+      box-sizing: border-box;
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      min-height: 48px;
+    }
     .yf-btn-outline-blue {
       width: 100%;
       padding: 14px 16px;
@@ -1533,28 +2024,53 @@
     .yf-txf-row__main { display: block; font-size: 0.9375rem; font-weight: 600; color: var(--yf-blue); }
     .yf-txf-row__sub { display: block; font-size: 0.75rem; color: var(--yf-muted); margin-top: 2px; }
     .yf-txf-row__chev { color: #cbd5e1; font-size: 1.125rem; flex-shrink: 0; }
-    .yf-txf-amt-wrap {
+    /* Amount entry — compact right-aligned field (same look on all flows) */
+    .yf-txf-row--amount {
+      align-items: center;
+      border-bottom: none !important;
+      cursor: default;
+    }
+    .yf-txf-row--amount .yf-txf-amt-wrap {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 8px;
-      flex: 1;
-      background: #f1f5f9;
-      border-radius: var(--yf-radius-sm);
+      gap: 6px;
+      flex: 0 0 auto;
+      width: auto;
+      max-width: min(11.25rem, 58vw);
+      min-width: 6.75rem;
+      min-height: 48px;
       padding: 10px 12px;
+      border: 1px solid var(--yf-border);
+      border-radius: var(--yf-radius-sm);
+      background: #f8fafc;
+      box-sizing: border-box;
     }
-    .yf-txf-amt-wrap span { color: var(--yf-muted); font-weight: 600; }
-    .yf-txf-amt {
+    .yf-txf-row--amount .yf-txf-amt-wrap span {
+      color: var(--yf-muted);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .yf-txf-row--amount .yf-txf-amt {
       border: none;
-      background: none;
-      font-size: 1rem;
+      background: transparent;
+      font-size: 1.375rem;
       font-weight: 700;
+      letter-spacing: -0.02em;
       color: var(--yf-blue);
       text-align: right;
       width: 100%;
       min-width: 0;
+      flex: 1 1 auto;
+      min-height: 0;
     }
-    .yf-txf-amt:focus { outline: none; }
+    .yf-txf-row--amount .yf-txf-amt:focus {
+      outline: none;
+    }
+    .yf-txf-row--amount .yf-txf-amt::placeholder {
+      color: #94a3b8;
+      font-weight: 600;
+    }
     .yf-flow-review {
       padding: 20px 20px 0;
     }
@@ -1575,7 +2091,7 @@
     .yf-flow-review__grid dt { color: var(--yf-muted); font-weight: 600; margin: 0; }
     .yf-flow-review__grid dd { margin: 0; font-weight: 700; text-align: right; }
     .yf-flow-review__grid dd small { display: block; font-weight: 500; color: var(--yf-muted); margin-top: 2px; }
-    .yf-dotted { border: none; border-top: 1px dashed var(--yf-border); margin: 16px 0; }
+    .yf-dotted { border: none; border-top: 1px dotted #cbd5e1; margin: 16px 0; }
     .yf-flow-review__total dd { font-size: 1rem; }
     .yf-flow-actions { padding: 16px 20px 8px; }
     .yf-flow-actions .btn {
@@ -1650,36 +2166,529 @@
 
     .yf-modal--rapid-done {
       max-width: 480px;
-      padding: 28px 24px 16px;
+      padding: 28px 24px 20px;
       text-align: center;
+    }
+    .yf-rapid-done__sep {
+      border: none;
+      border-top: 1px dotted #cbd5e1;
+      margin: 16px 0 18px;
+      width: 100%;
+    }
+    .yf-rapid-done__payee {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--yf-text);
+      line-height: 1.35;
+    }
+    .yf-rapid-done__acct-line {
+      margin: 0 0 18px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--yf-text);
+      line-height: 1.4;
+    }
+    .yf-rapid-done__acct-line .yf-rapid-done__acct-lbl {
+      color: var(--yf-muted);
+      font-weight: 600;
+      margin-right: 6px;
+    }
+    .yf-modal--rapid-done .yf-card-success__actions,
+    .yf-modal--rapid-done .yf-bill-success-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 8px 0;
+      margin-top: 4px;
+      border-top: 1px solid var(--yf-border);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .yf-modal--rapid-done .yf-card-success__actions .btn.btn-primary,
+    .yf-modal--rapid-done .yf-bill-success-actions .btn.btn-primary {
+      width: auto;
+      min-width: 140px;
+      max-width: min(100%, 280px);
+      padding: 12px 28px;
+      min-height: 44px;
+      border-radius: var(--yf-radius-md);
+      background: var(--yf-blue);
+      background-image: none;
+      border: none;
+      color: #fff;
+      font-size: 0.9375rem;
+      font-weight: 700;
+    }
+    .yf-modal--rapid-done .yf-card-success__actions .btn.btn-primary:hover,
+    .yf-modal--rapid-done .yf-bill-success-actions .btn.btn-primary:hover {
+      background: var(--yf-blue-active);
+    }
+    .yf-modal--rapid-done .yf-card-success__actions .yf-btn-outline-blue,
+    .yf-modal--rapid-done .yf-bill-success-actions .yf-btn-outline-blue {
+      width: auto;
+      min-width: 140px;
+      max-width: min(100%, 280px);
+      padding: 11px 26px;
+      min-height: 44px;
+      border-radius: var(--yf-radius-md);
+      border: 2px solid var(--yf-blue);
+      background: var(--yf-white);
+      color: var(--yf-blue);
+      font-size: 0.9375rem;
+      font-weight: 700;
+    }
+    .yf-modal--card-success .yf-card-success__actions {
+      align-items: center;
+      padding-top: 8px;
+    }
+    .yf-modal--card-success .yf-card-success__actions .btn.btn-primary {
+      width: auto;
+      min-width: 140px;
+      padding: 12px 28px;
+      min-height: 44px;
+      border-radius: var(--yf-radius-md);
+      background: var(--yf-blue);
+      background-image: none;
+      border: none;
+      color: #fff;
+      font-size: 0.9375rem;
+      font-weight: 700;
+    }
+    .yf-modal--card-success .yf-card-success__actions .yf-btn-outline-blue {
+      width: auto;
+      min-width: 140px;
+      padding: 11px 26px;
+      min-height: 44px;
+      border-radius: var(--yf-radius-md);
     }
     .yf-rapid-done__title {
       margin: 0 0 8px;
       font-size: 1.25rem;
-      font-weight: 800;
+      font-weight: 700;
+      color: var(--yf-text);
     }
     .yf-rapid-done__sub {
-      margin: 0 0 20px;
+      margin: 0 0 12px;
       font-size: 0.875rem;
       color: var(--yf-muted);
+      line-height: 1.45;
+      max-width: 28rem;
+      margin-left: auto;
+      margin-right: auto;
     }
     .yf-rapid-done__amt {
       margin: 0 0 20px;
       font-size: 2.25rem;
       font-weight: 800;
-      color: #e2e8f0;
+      color: var(--yf-text);
       letter-spacing: -0.02em;
     }
     .yf-rapid-done__detail {
       text-align: left;
       font-size: 0.8125rem;
-      margin-bottom: 16px;
+      margin: 0 auto 20px;
+      max-width: 100%;
+      padding: 16px 18px;
+      background: #f8fafc;
+      border: 1px solid var(--yf-border);
+      border-radius: var(--yf-radius-sm);
+      box-sizing: border-box;
     }
     .yf-rapid-done__detail dt { color: var(--yf-muted); font-weight: 600; margin: 0 0 4px; }
     .yf-rapid-done__detail dd { margin: 0 0 14px; font-weight: 700; }
     .yf-rapid-done__detail dd small { display: block; font-weight: 500; color: var(--yf-muted); margin-top: 4px; }
     .review-to-extra:empty { display: none; }
     .review-to-extra[hidden] { display: none !important; }
+
+    /* Standard transfer (overlay) — scheduling fields */
+    .yf-std-more-link {
+      display: block;
+      padding: 4px 20px 14px;
+      border: none;
+      background: none;
+      font: inherit;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--yf-blue);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+    }
+    .yf-std-more-link:hover { text-decoration: underline; }
+    .yf-std-more-hint {
+      margin: 0;
+      padding: 0 20px 10px;
+      font-size: 0.75rem;
+      color: var(--yf-muted);
+      line-height: 1.35;
+    }
+    .yf-std-optional {
+      font-weight: 600;
+      color: var(--yf-muted);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .yf-std-more-fields { padding: 0 20px 16px; border-bottom: 1px solid var(--yf-border); }
+    .yf-std-more-fields[hidden] { display: none !important; }
+    .yf-std-field { margin-bottom: 14px; }
+    .yf-std-field:last-child { margin-bottom: 0; }
+    .yf-std-field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--yf-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+    .yf-std-field input,
+    .yf-std-field select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--yf-border);
+      border-radius: var(--yf-radius-sm);
+      font: inherit;
+      font-size: 0.875rem;
+      box-sizing: border-box;
+    }
+    .yf-std-success-extras {
+      font-size: 0.8125rem;
+      margin: 12px 0 0;
+      padding-top: 12px;
+      border-top: 1px dashed var(--yf-border);
+    }
+    .yf-std-success-extras[hidden] { display: none !important; }
+    .yf-std-success-extras dt { color: var(--yf-muted); font-weight: 600; margin: 0 0 4px; }
+    .yf-std-success-extras dd { margin: 0 0 12px; font-weight: 700; }
+
+    /* Bill pay — full main view (same pattern as Transfers / Zelle) */
+    .view-bill {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background: var(--yf-page);
+    }
+    .view-bill.is-visible { display: flex; }
+    .yf-bill-page {
+      flex: 0 0 auto;
+      padding: 20px 28px 24px;
+      display: flex;
+      justify-content: center;
+    }
+    .yf-bill-shell {
+      width: 100%;
+      max-width: 560px;
+    }
+    .yf-bill-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--yf-white);
+      border-radius: var(--yf-radius-md);
+      box-shadow: 0 2px 24px rgba(15, 40, 70, 0.08);
+      border: 1px solid var(--yf-border);
+      position: relative;
+    }
+    .yf-bill-card .yf-modal--flow,
+    .yf-bill-card .yf-modal--picker {
+      max-width: none;
+      width: 100%;
+      box-shadow: none;
+      border-radius: 0;
+      background: transparent;
+      padding: 0 0 12px;
+      margin: 0;
+    }
+    .yf-bill-card .yf-modal__x { top: 10px; right: 10px; }
+    .yf-bill-card .yf-flow-hd { padding-top: 16px; }
+    .yf-bill-card .yf-flow-actions {
+      padding: 20px 20px 12px;
+    }
+    .yf-bill-card .yf-flow-actions .yf-review-submit {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 48px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .yf-bill-list-scroll {
+      max-height: min(58vh, 520px);
+      overflow-y: auto;
+      border-top: 1px solid var(--yf-border);
+      border-bottom: 1px solid var(--yf-border);
+    }
+    .yf-bill-payee {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-bottom: 1px solid var(--yf-border);
+      background: var(--yf-white);
+      font: inherit;
+      cursor: pointer;
+      text-align: left;
+    }
+    .yf-bill-payee:last-child { border-bottom: none; }
+    .yf-bill-payee:hover { background: #fafbfc; }
+    .yf-bill-payee__meta { flex: 1; min-width: 0; }
+    .yf-bill-payee__meta strong {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--yf-text);
+    }
+    .yf-bill-payee__suffix {
+      font-weight: 600;
+      color: var(--yf-muted);
+      margin-left: 6px;
+    }
+    .yf-bill-payee__hint {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--yf-muted);
+      margin-top: 4px;
+    }
+    .yf-bill-search-row {
+      display: flex;
+      gap: 10px;
+      padding: 12px 20px 14px;
+      align-items: center;
+    }
+    .yf-bill-search {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--yf-border);
+      border-radius: var(--yf-radius-sm);
+      background: #f8fafc;
+    }
+    .yf-bill-search input {
+      border: none;
+      background: none;
+      font: inherit;
+      font-size: 0.875rem;
+      width: 100%;
+      min-width: 0;
+    }
+    .yf-bill-search input:focus { outline: none; }
+    .yf-bill-filter-btn {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      border: 1px solid var(--yf-border);
+      border-radius: var(--yf-radius-sm);
+      background: var(--yf-white);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      color: var(--yf-muted);
+    }
+    .yf-bill-add {
+      display: block;
+      width: 100%;
+      padding: 16px 20px;
+      border: none;
+      background: none;
+      font: inherit;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--yf-blue);
+      cursor: pointer;
+      text-align: center;
+    }
+    .yf-bill-add:hover { text-decoration: underline; }
+    .yf-bill-fee-banner {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin: 0 20px 16px;
+      padding: 12px 14px;
+      border-radius: var(--yf-radius-sm);
+      background: #f1f5f9;
+      font-size: 0.8125rem;
+      line-height: 1.45;
+      color: var(--yf-text);
+    }
+    .yf-bill-fee-banner__ico {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid var(--yf-muted);
+      color: var(--yf-muted);
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+    }
+    .yf-bill-foot {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--yf-muted);
+      padding: 0 24px 16px;
+      line-height: 1.4;
+    }
+    .yf-bill-dlv-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-bottom: 1px solid var(--yf-border);
+      background: var(--yf-white);
+      font: inherit;
+      cursor: pointer;
+      text-align: left;
+    }
+    .yf-bill-dlv-btn:hover { background: #fafbfc; }
+    .yf-bill-dlv-btn__lbl { font-size: 0.9375rem; font-weight: 700; color: var(--yf-text); }
+    .yf-bill-dlv-btn__meta { text-align: right; }
+    .yf-bill-dlv-btn__main { font-size: 0.875rem; font-weight: 600; color: var(--yf-text); }
+    .yf-bill-dlv-btn__sub { font-size: 0.75rem; color: var(--yf-muted); margin-top: 2px; }
+    .yf-bill-sched-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-bottom: 1px solid var(--yf-border);
+      background: var(--yf-white);
+      font: inherit;
+      cursor: pointer;
+      text-align: left;
+    }
+    .yf-bill-sched-row:hover { background: #fafbfc; }
+    .yf-bill-sched-row__left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--yf-blue);
+    }
+    .yf-bill-cal-note {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      font-size: 0.8125rem;
+      color: var(--yf-muted);
+    }
+    .yf-bill-cal-grid .yf-cal-day {
+      cursor: pointer;
+      border: none;
+      font: inherit;
+      padding: 0;
+    }
+    .yf-bill-cal-grid .yf-cal-day:hover { background: var(--yf-nav-active-bg); }
+    .yf-bill-cal-grid .yf-cal-day.is-picked {
+      background: var(--yf-blue);
+      color: #fff;
+    }
+    .yf-bill-notes-input {
+      margin: 0 20px 12px;
+      width: calc(100% - 40px);
+      box-sizing: border-box;
+      padding: 12px 14px;
+      border: 1px solid var(--yf-border);
+      border-radius: var(--yf-radius-sm);
+      background: #f8fafc;
+      font: inherit;
+      font-size: 0.875rem;
+    }
+    .yf-bill-card .yf-modal--rapid-done {
+      padding: 20px 20px 24px;
+    }
+    .yf-bill-card .yf-modal--rapid-done .yf-success-ico {
+      margin: 8px auto 18px;
+    }
+    .yf-bill-timeline {
+      margin: 0;
+      padding: 18px 0 0;
+      border-top: 1px dotted #cbd5e1;
+      text-align: left;
+    }
+    .yf-bill-timeline--grid {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      column-gap: 12px;
+      row-gap: 0;
+      align-items: start;
+    }
+    .yf-bill-tl-dot {
+      width: 11px;
+      height: 11px;
+      margin-top: 4px;
+      border-radius: 50%;
+      border: 2px solid #94a3b8;
+      background: var(--yf-white);
+      box-sizing: border-box;
+      justify-self: center;
+    }
+    .yf-bill-tl-dot.is-done {
+      border-color: var(--yf-text);
+      background: var(--yf-text);
+    }
+    .yf-bill-tl-body {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding-bottom: 16px;
+    }
+    .yf-bill-timeline--grid .yf-bill-tl-body:last-of-type { padding-bottom: 0; }
+    .yf-bill-tl-label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--yf-muted);
+      line-height: 1.3;
+    }
+    .yf-bill-tl-date {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--yf-text);
+      line-height: 1.25;
+    }
+    .yf-bill-tl-connector {
+      grid-column: 1;
+      width: 0;
+      height: 18px;
+      margin: 0 auto;
+      border-left: 1px dashed #94a3b8;
+      background: transparent;
+    }
+    .yf-bill-tl-skip {
+      grid-column: 2;
+      min-height: 0;
+    }
+    .yf-bill-success-note {
+      margin: 16px 0 0 !important;
+      padding: 16px 0 0 !important;
+      border-top: 1px solid var(--yf-border);
+      border-radius: 0;
+      background: transparent;
+      text-align: left;
+    }
+    .yf-bill-success-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
@@ -1706,8 +2715,8 @@
           Transfers
         </button></li>
         <li><button type="button" data-go="noop"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Remote deposits</button></li>
-        <li><button type="button" data-go="noop"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Bill pay</button></li>
-        <li><button type="button" data-go="noop"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h11M7 17h11M17 7 7 17"/></svg>Send money with Zelle®</button></li>
+        <li><button type="button" id="nav-bill" data-go="bill"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Bill pay</button></li>
+        <li><button type="button" data-go="zelle" id="nav-zelle"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5c0-1 1-2 2.5-2s2.5 1 2.5 2c0 1.5-1.5 2-2.5 2.5S10 13 10 14.5h4"/><circle cx="12" cy="17" r="0.75" fill="currentColor" stroke="none"/></svg>Send money with Zelle®</button></li>
         <li><button type="button" data-go="noop"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>Insights<svg class="yf-nav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></li>
         <li><button type="button" data-go="noop"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg>Support</button></li>
       </ul>
@@ -1779,7 +2788,7 @@
               </div>
             </div>
           </div>
-          <button type="button" class="yf-action">
+          <button type="button" class="yf-action" id="btn-pay-bill-hero">
             <span class="yf-action__ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
             Pay a bill
           </button>
@@ -1787,8 +2796,8 @@
             <span class="yf-action__ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
             Pay a person
           </button>
-          <button type="button" class="yf-action">
-            <span class="yf-action__ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h11M7 17h11M17 7 7 17"/></svg></span>
+          <button type="button" class="yf-action" id="dash-btn-zelle">
+            <span class="yf-action__ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5c0-1 1-2 2.5-2s2.5 1 2.5 2c0 1.5-1.5 2-2.5 2.5S10 13 10 14.5h4"/><circle cx="12" cy="17" r="0.75" fill="currentColor" stroke="none"/></svg></span>
             Send money<br>with Zelle®
           </button>
           </div>
@@ -1926,14 +2935,15 @@
       </div>
 
       <div class="view-std" id="view-std">
+        <div class="view-std-hub" id="view-std-hub">
         <header class="yf-std-hero">
-          <h1>Standard transfers</h1>
+          <h1>Transfers</h1>
         </header>
         <div class="yf-std-body">
           <div>
             <div class="yf-card">
               <div class="yf-panel__hd">
-                <h2>Standard transfers</h2>
+                <h2>Transfers</h2>
                 <a href="#" onclick="return false;">+ External account</a>
               </div>
               <div class="yf-tabs">
@@ -1941,81 +2951,58 @@
                 <button type="button" class="yf-tab">External accounts</button>
               </div>
               <div class="yf-std-row">
-                <div class="yf-std-date">Jan<br><b>24</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Jan</span><b>24</b></div>
                 <div class="yf-std-row__meta"><strong>$100.00 to Savings</strong><span>Every month on the 24th, from Checking</span></div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-std-row">
-                <div class="yf-std-date">Feb<br><b>5</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Feb</span><b>5</b></div>
                 <div class="yf-std-row__meta"><strong>$100.00 to Savings</strong><span>With unknown frequency, from Checking</span></div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-std-row">
-                <div class="yf-std-date">Feb<br><b>10</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Feb</span><b>10</b></div>
                 <div class="yf-std-row__meta"><strong>$100.00 to Savings</strong><span>Leaves from Checking today and should...</span></div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-std-row">
-                <div class="yf-std-date">Feb<br><b>11</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Feb</span><b>11</b></div>
                 <div class="yf-std-row__meta"><strong>$100.00 to Savings</strong><span>On Apr 15 with unknown frequency, from...</span></div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-std-row">
-                <div class="yf-std-date">Feb<br><b>20</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Feb</span><b>20</b></div>
                 <div class="yf-std-row__meta"><strong>$100.00 to Savings</strong><span>With unknown frequency, from Checking</span></div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-std-row">
-                <div class="yf-std-date">Mar<br><b>7</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Mar</span><b>7</b></div>
                 <div class="yf-std-row__meta"><strong>$100.00 to Savings</strong><span>Leaves from Checking today and should...</span></div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-std-row">
-                <div class="yf-std-date">Mar<br><b>11</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Mar</span><b>11</b></div>
                 <div class="yf-std-row__meta"><strong>$100.00 to Savings</strong><span>With unknown frequency, from Checking</span></div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-std-row">
-                <div class="yf-std-date">Mar<br><b>30</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Mar</span><b>30</b></div>
                 <div class="yf-std-row__meta"><strong>$100.00 to Savings</strong><span>Leaves from Checking today and should...</span></div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-std-row">
-                <div class="yf-std-date">Apr<br><b>29</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Apr</span><b>29</b></div>
                 <div class="yf-std-row__meta"><strong>$100.00 to Savings</strong><span>On Apr 15 with unknown frequency, from...</span></div>
-                <span class="yf-chev">›</span>
-              </div>
-              <div class="yf-std-row">
-                <div class="yf-std-date"><span style="font-size:0.5rem;">JAN</span><br><b>1</b><br><span style="font-size:0.45rem;opacity:0.7;">2023</span></div>
-                <div class="yf-std-row__meta"><strong>$100.00 to Savings</strong><span>With unknown frequency, from Checking</span></div>
                 <span class="yf-chev">›</span>
               </div>
             </div>
           </div>
           <div>
-            <button type="button" class="yf-make-tx yf-make-tx--prominent" style="margin:0 0 20px;width:100%;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-              Make a standard transfer
-            </button>
-            <div class="yf-card yf-cal">
-              <div class="yf-cal__top">
-                <h3>January</h3>
-                <div class="yf-cal__nav">
-                  <button type="button" aria-label="Previous month">‹</button>
-                  <button type="button" aria-label="Next month">›</button>
-                </div>
-              </div>
-              <div class="yf-cal-grid">
-                <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
-              </div>
-              <div class="yf-cal-grid" style="margin-top:6px;">
-                <div class="yf-cal-day">1</div><div class="yf-cal-day">2</div><div class="yf-cal-day">3</div><div class="yf-cal-day">4</div><div class="yf-cal-day">5</div><div class="yf-cal-day">6</div><div class="yf-cal-day">7</div>
-                <div class="yf-cal-day">8</div><div class="yf-cal-day">9</div><div class="yf-cal-day">10</div><div class="yf-cal-day">11</div><div class="yf-cal-day">12</div><div class="yf-cal-day">13</div><div class="yf-cal-day">14</div>
-                <div class="yf-cal-day">15</div><div class="yf-cal-day is-today">16</div><div class="yf-cal-day">17</div><div class="yf-cal-day">18</div><div class="yf-cal-day">19</div><div class="yf-cal-day">20</div><div class="yf-cal-day">21</div>
-                <div class="yf-cal-day">22</div><div class="yf-cal-day">23</div><div class="yf-cal-day">24</div><div class="yf-cal-day">25</div><div class="yf-cal-day has-dot">26</div><div class="yf-cal-day">27</div><div class="yf-cal-day">28</div>
-                <div class="yf-cal-day">29</div><div class="yf-cal-day">30</div><div class="yf-cal-day">31</div>
-              </div>
-              <p class="yf-cal-note">Only the next scheduled transaction is shown for your recurring transfers.</p>
+            <div class="yf-card yf-std-make-card">
+              <button type="button" class="yf-std-make-card__row" id="std-make-tx">
+                <span class="yf-make-tx__circle" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>
+                <span class="yf-std-make-card__label">Make a transfer</span>
+              </button>
             </div>
             <div class="yf-promo">
               <strong>
@@ -2025,6 +3012,27 @@
                 Need to move money quickly?
               </strong>
               Rapid transfers allow you to use an eligible debit card to move money in minutes.
+            </div>
+            <div class="yf-card yf-cal" style="margin-top:16px;">
+              <div class="yf-cal__top">
+                <h3>April 2026</h3>
+                <div class="yf-cal__nav">
+                  <button type="button" aria-label="Previous month">‹</button>
+                  <button type="button" aria-label="Next month">›</button>
+                </div>
+              </div>
+              <div class="yf-cal-grid">
+                <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+              </div>
+              <div class="yf-cal-grid" style="margin-top:6px;">
+                <div class="yf-cal-pad" aria-hidden="true"></div><div class="yf-cal-pad" aria-hidden="true"></div><div class="yf-cal-pad" aria-hidden="true"></div>
+                <div class="yf-cal-day">1</div><div class="yf-cal-day">2</div><div class="yf-cal-day">3</div><div class="yf-cal-day">4</div>
+                <div class="yf-cal-day">5</div><div class="yf-cal-day has-dot">6</div><div class="yf-cal-day">7</div><div class="yf-cal-day">8</div><div class="yf-cal-day">9</div><div class="yf-cal-day">10</div><div class="yf-cal-day">11</div>
+                <div class="yf-cal-day">12</div><div class="yf-cal-day">13</div><div class="yf-cal-day">14</div><div class="yf-cal-day">15</div><div class="yf-cal-day">16</div><div class="yf-cal-day">17</div><div class="yf-cal-day">18</div>
+                <div class="yf-cal-day">19</div><div class="yf-cal-day">20</div><div class="yf-cal-day">21</div><div class="yf-cal-day">22</div><div class="yf-cal-day">23</div><div class="yf-cal-day has-dot">24</div><div class="yf-cal-day">25</div>
+                <div class="yf-cal-day">26</div><div class="yf-cal-day">27</div><div class="yf-cal-day">28</div><div class="yf-cal-day">29</div><div class="yf-cal-day">30</div><div class="yf-cal-pad" aria-hidden="true"></div><div class="yf-cal-pad" aria-hidden="true"></div>
+              </div>
+              <p class="yf-cal-note">Only the next scheduled transaction is shown for your recurring transfers.</p>
             </div>
           </div>
         </div>
@@ -2040,6 +3048,190 @@
           <span>Equal Housing Lender</span>
         </footer>
         <button type="button" class="yf-fab" aria-label="Help">?</button>
+        </div>
+
+        <div class="view-std-flow" id="view-std-flow">
+          <header class="yf-std-hero">
+            <h1 id="std-flow-hero-title">Standard transfer</h1>
+            <p id="std-flow-hero-sub" class="yf-view-flow-hero__sub">Schedule transfers between your accounts</p>
+          </header>
+          <div class="yf-rapid-flow-shell">
+            <div class="yf-rapid-flow-card" id="std-flow-step-form" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+                <button type="button" class="yf-modal__x" id="std-form-close-x" aria-label="Close">×</button>
+                <div class="yf-flow-hd">
+                  <button type="button" class="yf-modal-back" id="std-form-back" aria-label="Back">‹</button>
+                  <div>
+                    <h2 id="std-form-title">Transfer</h2>
+                    <p class="yf-flow-sub" style="margin-top:4px;">Standard delivery (1–3 business days)</p>
+                  </div>
+                  <span aria-hidden="true"></span>
+                </div>
+                <div class="yf-flow-body">
+                  <button type="button" class="yf-txf-row" id="std-pick-from" aria-haspopup="dialog">
+                    <span class="yf-txf-row__lbl">From</span>
+                    <span class="yf-txf-row__val">
+                      <span class="yf-txf-row__main" id="std-from-label">Select account</span>
+                      <span class="yf-txf-row__sub" id="std-from-bal" hidden></span>
+                    </span>
+                    <span class="yf-txf-row__chev" aria-hidden="true">›</span>
+                  </button>
+                  <button type="button" class="yf-txf-row" id="std-pick-to" aria-haspopup="dialog">
+                    <span class="yf-txf-row__lbl">To</span>
+                    <span class="yf-txf-row__val">
+                      <span class="yf-txf-row__main" id="std-to-label">Select account</span>
+                      <span class="yf-txf-row__sub" id="std-to-sub" hidden></span>
+                    </span>
+                    <span class="yf-txf-row__chev" aria-hidden="true">›</span>
+                  </button>
+                  <div class="yf-txf-row yf-txf-row--amount">
+                    <span class="yf-txf-row__lbl">Amount</span>
+                    <div class="yf-txf-amt-wrap">
+                      <span>$</span>
+                      <input class="yf-txf-amt" id="std-amount" type="text" inputmode="decimal" autocomplete="off" value="" placeholder="0.00" aria-label="Amount">
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="yf-std-more-link" id="std-more-toggle" aria-expanded="false" aria-controls="std-more-fields">More options</button>
+                <p class="yf-std-more-hint" id="std-more-hint">Optional — not required to submit.</p>
+                <div class="yf-std-more-fields" id="std-more-fields" hidden>
+                  <div class="yf-std-field">
+                    <label for="std-frequency">Frequency <span class="yf-std-optional">(optional)</span></label>
+                    <select id="std-frequency">
+                      <option value="once">One-time</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                  <div class="yf-std-field">
+                    <label for="std-send-date">Send on <span class="yf-std-optional">(optional)</span></label>
+                    <input id="std-send-date" type="date" value="">
+                  </div>
+                  <div class="yf-std-field">
+                    <label for="std-memo">Memo (optional)</label>
+                    <input id="std-memo" type="text" maxlength="80" placeholder="e.g. Rent, allowance" autocomplete="off">
+                  </div>
+                </div>
+                <div class="yf-flow-actions">
+                  <button type="button" class="yf-review-submit" id="std-btn-submit" disabled>Submit</button>
+                </div>
+                <p class="yf-modal__fine">Fund availability may vary depending on the receiving financial institution.</p>
+              </div>
+            </div>
+
+            <div class="yf-rapid-flow-card" id="std-flow-step-from" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--picker" style="padding-top:0;">
+                <div class="yf-flow-hd">
+                  <button type="button" class="yf-modal-back" id="std-pick-from-back" aria-label="Back">‹</button>
+                  <h2 id="std-pick-from-title">Transfer from</h2>
+                  <span aria-hidden="true"></span>
+                </div>
+                <div class="yf-pick-scroll">
+                  <div class="yf-pick-section">YourFi accounts</div>
+                  <button type="button" class="yf-pick-row" data-std-pick-from="checking">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Checking x1234</div>
+                    </div>
+                    <div>
+                      <div class="yf-pick-row__bal">$1,512.03</div>
+                      <div class="yf-pick-row__avail">Available</div>
+                    </div>
+                  </button>
+                  <button type="button" class="yf-pick-row" data-std-pick-from="savings">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Savings x5677</div>
+                    </div>
+                    <div>
+                      <div class="yf-pick-row__bal">$2,564.13</div>
+                      <div class="yf-pick-row__avail">Available</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="yf-rapid-flow-card" id="std-flow-step-to" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--picker" style="padding-top:0;">
+                <div class="yf-flow-hd">
+                  <button type="button" class="yf-modal-back" id="std-pick-to-back" aria-label="Back">‹</button>
+                  <h2 id="std-pick-to-title">Transfer to</h2>
+                  <span aria-hidden="true"></span>
+                </div>
+                <div class="yf-pick-scroll">
+                  <div class="yf-pick-section">YourFi accounts</div>
+                  <button type="button" class="yf-pick-row" data-std-pick-to="checking-dest">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Checking x1234</div>
+                    </div>
+                    <div>
+                      <div class="yf-pick-row__bal">$1,512.03</div>
+                      <div class="yf-pick-row__avail">Available</div>
+                    </div>
+                  </button>
+                  <button type="button" class="yf-pick-row" data-std-pick-to="savings-dest">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Savings x5677</div>
+                    </div>
+                    <div>
+                      <div class="yf-pick-row__bal">$2,564.13</div>
+                      <div class="yf-pick-row__avail">Available</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="yf-rapid-flow-card" id="std-flow-step-success" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
+                <button type="button" class="yf-modal__x" id="std-success-close-x" aria-label="Close">×</button>
+                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
+                <h2 class="yf-rapid-done__title" id="std-done-title">Transfer submitted</h2>
+                <p class="yf-rapid-done__sub" id="std-done-sub">Funds typically arrive in 1–3 business days.</p>
+                <hr class="yf-rapid-done__sep" aria-hidden="true">
+                <p class="yf-rapid-done__amt" id="std-done-amt">$200.00</p>
+                <div class="yf-rapid-done__detail">
+                  <dl style="margin:0;">
+                    <dt>From</dt>
+                    <dd id="std-done-from">Checking (x1234)</dd>
+                    <dt>To</dt>
+                    <dd id="std-done-to">Savings (x5677)</dd>
+                  </dl>
+                  <dl class="yf-std-success-extras" id="std-done-extras" hidden>
+                    <dt>Frequency</dt>
+                    <dd id="std-done-freq">One-time</dd>
+                    <dt>Send on</dt>
+                    <dd id="std-done-when">—</dd>
+                    <dt>Memo</dt>
+                    <dd id="std-done-memo">—</dd>
+                  </dl>
+                  <hr class="yf-dotted">
+                  <dl class="yf-flow-review__grid yf-flow-review__total" style="margin:0;">
+                    <dt>Transfer fee</dt>
+                    <dd id="std-done-fee">$0.00</dd>
+                    <dt>Total</dt>
+                    <dd id="std-done-total">$200.00</dd>
+                  </dl>
+                </div>
+                <div class="yf-card-success__actions">
+                  <button type="button" class="btn btn-primary" id="std-done-ok">Done</button>
+                </div>
+                <p class="yf-modal__fine">Fund availability may vary depending on the receiving financial institution.</p>
+              </div>
+            </div>
+          </div>
+          <footer class="yf-footer">
+            <span>©2024 YourFi</span>
+            <span>·</span>
+            <span>(555) 555-5555</span>
+            <span>·</span>
+            <a href="#" onclick="return false;">Privacy policy</a>
+            <span>·</span>
+            <span>Member FDIC</span>
+            <span>·</span>
+            <span>Equal Housing Lender</span>
+          </footer>
+          <button type="button" class="yf-fab" aria-label="Help">?</button>
+        </div>
       </div>
 
       <div class="view-rapid" id="view-rapid">
@@ -2066,56 +3258,56 @@
                 <div></div>
               </div>
               <div class="yf-rapid-tr">
-                <div class="yf-std-date">Nov<br><b>22</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Nov</span><b>22</b></div>
                 <div class="yf-rapid-meta"><strong>Savings (x1234)</strong><span>From Issuing FI via Mastercard (x1234)</span></div>
                 <div class="yf-rapid-st yf-rapid-st--pending"><span class="yf-rapid-st__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>Created</div>
                 <div class="yf-rapid-amt">$500.00</div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-rapid-tr">
-                <div class="yf-std-date">Nov<br><b>21</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Nov</span><b>21</b></div>
                 <div class="yf-rapid-meta"><strong>Checking (x1234)</strong><span>From Issuing FI via Mastercard (x1234)</span></div>
                 <div class="yf-rapid-st yf-rapid-st--pending"><span class="yf-rapid-st__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>Pending</div>
                 <div class="yf-rapid-amt">$500.00</div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-rapid-tr">
-                <div class="yf-std-date">Nov<br><b>20</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Nov</span><b>20</b></div>
                 <div class="yf-rapid-meta"><strong>Savings (x1234)</strong><span>To Checking (x5678)</span></div>
                 <div class="yf-rapid-st yf-rapid-st--pending"><span class="yf-rapid-st__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>Queued</div>
                 <div class="yf-rapid-amt">$500.00</div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-rapid-tr">
-                <div class="yf-std-date">Nov<br><b>19</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Nov</span><b>19</b></div>
                 <div class="yf-rapid-meta"><strong>Checking (x5678)</strong><span>From Issuing FI via Visa (x9012)</span></div>
                 <div class="yf-rapid-st yf-rapid-st--pending"><span class="yf-rapid-st__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>Delayed</div>
                 <div class="yf-rapid-amt">$500.00</div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-rapid-tr">
-                <div class="yf-std-date">Nov<br><b>18</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Nov</span><b>18</b></div>
                 <div class="yf-rapid-meta"><strong>Savings (x1234)</strong><span>From Issuing FI via Mastercard (x1234)</span></div>
                 <div class="yf-rapid-st yf-rapid-st--ok"><span class="yf-rapid-st__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Completed</div>
                 <div class="yf-rapid-amt">$500.00</div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-rapid-tr">
-                <div class="yf-std-date">Nov<br><b>17</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Nov</span><b>17</b></div>
                 <div class="yf-rapid-meta"><strong>Checking (x1234)</strong><span>From external account (x4400)</span></div>
                 <div class="yf-rapid-st yf-rapid-st--bad"><span class="yf-rapid-st__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></span>Failed</div>
                 <div class="yf-rapid-amt">$500.00</div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-rapid-tr">
-                <div class="yf-std-date">Nov<br><b>16</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Nov</span><b>16</b></div>
                 <div class="yf-rapid-meta"><strong>Savings (x1234)</strong><span>From Issuing FI via Mastercard (x1234)</span></div>
                 <div class="yf-rapid-st yf-rapid-st--bad"><span class="yf-rapid-st__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></span>Canceled</div>
                 <div class="yf-rapid-amt">$500.00</div>
                 <span class="yf-chev">›</span>
               </div>
               <div class="yf-rapid-tr">
-                <div class="yf-std-date">Nov<br><b>15</b></div>
+                <div class="yf-std-date"><span class="yf-std-date__mo">Nov</span><b>15</b></div>
                 <div class="yf-rapid-meta"><strong>Checking (x5678)</strong><span>From Issuing FI via Mastercard (x1234)</span></div>
                 <div class="yf-rapid-st yf-rapid-st--bad"><span class="yf-rapid-st__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></span>Reversed</div>
                 <div class="yf-rapid-amt">$500.00</div>
@@ -2128,7 +3320,7 @@
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               Make a rapid transfer
             </button>
-            <div class="yf-promo">
+            <button type="button" class="yf-promo" id="rapid-hub-standard-cta" aria-label="Need to schedule a transfer? Choose rapid or standard transfer.">
               <strong>
                 <span style="width:32px;height:32px;border-radius:50%;background:var(--yf-nav-active-bg);display:grid;place-items:center;flex-shrink:0;">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
@@ -2136,7 +3328,7 @@
                 Need to schedule a transfer?
               </strong>
               Use standard transfers to schedule transfers between your accounts.
-            </div>
+            </button>
           </div>
         </div>
         <footer class="yf-footer">
@@ -2156,7 +3348,7 @@
         <div class="view-rapid-flow" id="view-rapid-flow">
           <header class="yf-std-hero">
             <h1 id="rapid-flow-hero-title">Rapid transfer</h1>
-            <p id="rapid-flow-hero-sub" style="margin:8px 0 0;font-size:0.875rem;font-weight:500;color:rgba(255,255,255,0.88);max-width:36rem;">Transfer money within minutes</p>
+            <p id="rapid-flow-hero-sub" class="yf-view-flow-hero__sub">Transfer money within minutes</p>
           </header>
           <div class="yf-rapid-flow-shell">
             <div class="yf-rapid-flow-card" id="rapid-flow-step-form" hidden>
@@ -2187,7 +3379,7 @@
                     </span>
                     <span class="yf-txf-row__chev" aria-hidden="true">›</span>
                   </button>
-                  <div class="yf-txf-row yf-txf-row--amount" style="cursor:default;border-bottom:none;">
+                  <div class="yf-txf-row yf-txf-row--amount">
                     <span class="yf-txf-row__lbl">Amount</span>
                     <div class="yf-txf-amt-wrap">
                       <span>$</span>
@@ -2333,9 +3525,10 @@
             <div class="yf-rapid-flow-card" id="rapid-flow-step-success" hidden>
               <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
                 <button type="button" class="yf-modal__x" id="rapid-success-close-x" aria-label="Close">×</button>
-                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
                 <h2 class="yf-rapid-done__title" id="rapid-done-title">Rapid transfer submitted</h2>
                 <p class="yf-rapid-done__sub">The money should arrive in your account within minutes*</p>
+                <hr class="yf-rapid-done__sep" aria-hidden="true">
                 <p class="yf-rapid-done__amt" id="done-amt-display">$200.00</p>
                 <div class="yf-rapid-done__detail">
                   <dl style="margin:0;">
@@ -2353,8 +3546,8 @@
                   </dl>
                 </div>
                 <div class="yf-card-success__actions">
-                  <button type="button" class="btn btn-primary" id="rapid-done-close">Done</button>
                   <button type="button" class="yf-btn-outline-blue" id="rapid-done-another">Make another rapid transfer</button>
+                  <button type="button" class="btn btn-primary" id="rapid-done-close">Done</button>
                 </div>
                 <p class="yf-modal__fine">*Fund availability may vary depending on the receiving financial institution.</p>
               </div>
@@ -2374,6 +3567,582 @@
           <button type="button" class="yf-fab" aria-label="Help">?</button>
         </div>
       </div>
+
+      <div class="view-zelle" id="view-zelle">
+        <div class="view-zelle-hub" id="view-zelle-hub">
+          <header class="yf-zelle-hero">
+            <h1>Send money with Zelle®</h1>
+          </header>
+          <div class="yf-zelle-body">
+            <div>
+              <div class="yf-card">
+                <div class="yf-zelle-activity-hd">Activity</div>
+                <div class="yf-zelle-tabs" role="tablist">
+                  <button type="button" class="is-active" id="zelle-tab-pay" role="tab" aria-selected="true">Payments</button>
+                  <button type="button" id="zelle-tab-req" role="tab" aria-selected="false">Requests</button>
+                </div>
+                <div id="zelle-panel-pay">
+                  <div class="yf-zelle-section-hd">Pending (6)</div>
+                  <button type="button" class="yf-zelle-row">
+                    <span class="yf-zelle-av" aria-hidden="true">AS</span>
+                    <span class="yf-zelle-row__meta">
+                      <span class="yf-zelle-row__title">Amy Smith</span>
+                      <span class="yf-zelle-row__sub"><strong>↑ Payment sent</strong> · Recipient must enroll</span>
+                    </span>
+                    <span class="yf-zelle-row__amt">$32.00</span>
+                    <span class="yf-chev" aria-hidden="true">›</span>
+                  </button>
+                  <button type="button" class="yf-zelle-row">
+                    <span class="yf-zelle-av" aria-hidden="true">AS</span>
+                    <span class="yf-zelle-row__meta">
+                      <span class="yf-zelle-row__title">Amy Smith</span>
+                      <span class="yf-zelle-row__sub"><strong>↑ Payment sent</strong> · Recipient must enroll</span>
+                    </span>
+                    <span class="yf-zelle-row__amt">$32.00</span>
+                    <span class="yf-chev" aria-hidden="true">›</span>
+                  </button>
+                  <button type="button" class="yf-zelle-row">
+                    <span class="yf-zelle-av" aria-hidden="true">AS</span>
+                    <span class="yf-zelle-row__meta">
+                      <span class="yf-zelle-row__title">Amy Smith</span>
+                      <span class="yf-zelle-row__sub"><strong>↑ Payment sent</strong> · Recipient must enroll</span>
+                    </span>
+                    <span class="yf-zelle-row__amt">$32.00</span>
+                    <span class="yf-chev" aria-hidden="true">›</span>
+                  </button>
+                  <button type="button" class="yf-zelle-viewmore">View more</button>
+                  <div class="yf-zelle-section-hd">History (Completed)</div>
+                  <div class="yf-zelle-empty">
+                    <div class="yf-zelle-empty__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7-7 7 7"/></svg></div>
+                    No completed payments.
+                  </div>
+                </div>
+                <div id="zelle-panel-req" class="yf-zelle-panel" hidden>
+                  <div class="yf-zelle-empty" style="padding:48px 24px;">
+                    <div class="yf-zelle-empty__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7 7 7-7"/></svg></div>
+                    No pending requests.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="yf-card" style="margin-bottom:16px;">
+                <div class="yf-zelle-actions">
+                  <button type="button" id="zelle-hub-send">
+                    <span class="yf-zelle-actions__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
+                    Send
+                  </button>
+                  <button type="button" id="zelle-hub-request">
+                    <span class="yf-zelle-actions__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></span>
+                    Request
+                  </button>
+                </div>
+              </div>
+              <div class="yf-card">
+                <div class="yf-zelle-pref__hd">Zelle® preferences</div>
+                <button type="button" class="yf-zelle-pref__row">Manage payment profiles</button>
+                <button type="button" class="yf-zelle-pref__row">Manage recipients</button>
+              </div>
+            </div>
+          </div>
+          <footer class="yf-footer">
+            <span>©2024 YourFi</span>
+            <span>·</span>
+            <span>(555) 555-5555</span>
+            <span>·</span>
+            <a href="#" onclick="return false;">Privacy policy</a>
+            <span>·</span>
+            <span>Member FDIC</span>
+            <span>·</span>
+            <span>Equal Housing Lender</span>
+          </footer>
+          <button type="button" class="yf-fab" aria-label="Help">?</button>
+        </div>
+
+        <div class="view-zelle-flow" id="view-zelle-flow">
+          <header class="yf-std-hero">
+            <h1 id="zelle-flow-hero-title">Send with Zelle®</h1>
+            <p id="zelle-flow-hero-sub" class="yf-view-flow-hero__sub" hidden></p>
+          </header>
+          <div class="yf-zelle-flow-shell">
+            <div class="yf-zelle-flow-card" id="zelle-step-recipient" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+                <button type="button" class="yf-modal__x" id="zelle-flow-close" aria-label="Close">×</button>
+                <div class="yf-zelle-recipient-hd">
+                  <button type="button" class="yf-modal-back" id="zelle-recipient-back" aria-label="Back">‹</button>
+                  <h2 id="zelle-recipient-title">Select recipient</h2>
+                  <button type="button" class="yf-zelle-recipient-add" id="zelle-header-add" aria-label="Add contact">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                  </button>
+                </div>
+                <div class="yf-zelle-recipient-body">
+                  <div class="yf-zelle-search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="search" id="zelle-recipient-search" placeholder="Name, U.S. mobile, email" autocomplete="off" aria-label="Search recipients">
+                  </div>
+                  <div class="yf-zelle-recent">
+                    <div class="yf-zelle-recent-hd">Recent recipients</div>
+                    <div class="yf-zelle-recent-grid">
+                      <button type="button" class="yf-zelle-recent-tile" data-zelle-to="Ava M." data-zelle-detail="(555) 555-5555" data-zelle-search="ava m 555">
+                        <span class="yf-zelle-recent-av" aria-hidden="true">AM</span>
+                        <span class="yf-zelle-recent-name">Ava M.</span>
+                        <span class="yf-zelle-recent-detail">(555) 555-5555</span>
+                      </button>
+                      <button type="button" class="yf-zelle-recent-tile" data-zelle-to="Shanice Alston" data-zelle-detail="(963) 555-2623" data-zelle-search="shanice alston 963">
+                        <span class="yf-zelle-recent-av" aria-hidden="true">SA</span>
+                        <span class="yf-zelle-recent-name">Shanice Alston</span>
+                        <span class="yf-zelle-recent-detail">(963) 555-2623</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="yf-zelle-contacts-hd">All contacts</div>
+                  <button type="button" class="yf-pick-row yf-zelle-contact-row" data-zelle-to="Amy Smith" data-zelle-detail="amysmith@email.com" data-zelle-search="amy smith email">
+                    <span class="yf-zelle-av" aria-hidden="true">AS</span>
+                    <div class="yf-pick-row__left" style="flex:1;min-width:0;">
+                      <div class="yf-pick-row__name">Amy Smith</div>
+                      <small style="display:block;font-size:0.75rem;color:var(--yf-muted);margin-top:4px;">amysmith@email.com</small>
+                    </div>
+                    <span class="yf-chev">›</span>
+                  </button>
+                  <button type="button" class="yf-pick-row yf-zelle-contact-row" data-zelle-to="Jordan Lee" data-zelle-detail="(555) 234-8899" data-zelle-search="jordan lee 555">
+                    <span class="yf-zelle-av" aria-hidden="true">JL</span>
+                    <div class="yf-pick-row__left" style="flex:1;min-width:0;">
+                      <div class="yf-pick-row__name">Jordan Lee</div>
+                      <small style="display:block;font-size:0.75rem;color:var(--yf-muted);margin-top:4px;">(555) 234-8899</small>
+                    </div>
+                    <span class="yf-chev">›</span>
+                  </button>
+                  <button type="button" class="yf-pick-row" id="zelle-add-recipient">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name" style="color:var(--yf-blue);">+ Add new recipient</div>
+                    </div>
+                    <span class="yf-chev">›</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="yf-zelle-flow-card" id="zelle-step-add" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+                <div class="yf-flow-hd">
+                  <button type="button" class="yf-modal-back" id="zelle-add-back" aria-label="Back">‹</button>
+                  <div>
+                    <h2>New recipient</h2>
+                    <p class="yf-flow-sub">Email or U.S. mobile number</p>
+                  </div>
+                  <span aria-hidden="true"></span>
+                </div>
+                <div class="yf-flow-body" style="padding-top:8px;">
+                  <div class="form-group" style="margin-bottom:16px;">
+                    <label for="zelle-new-contact">Email or mobile</label>
+                    <input type="text" id="zelle-new-contact" placeholder="Name, U.S. mobile, or email" autocomplete="off">
+                  </div>
+                  <div class="form-group" style="margin-bottom:8px;">
+                    <label for="zelle-new-name">Recipient name (optional)</label>
+                    <input type="text" id="zelle-new-name" placeholder="First Last" autocomplete="name">
+                  </div>
+                </div>
+                <div class="yf-flow-actions">
+                  <button type="button" class="yf-review-submit" id="zelle-add-continue" disabled>Continue</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="yf-zelle-flow-card" id="zelle-step-amount" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+                <div class="yf-flow-hd">
+                  <button type="button" class="yf-modal-back" id="zelle-amt-back" aria-label="Back">‹</button>
+                  <div>
+                    <h2>Amount</h2>
+                    <p class="yf-flow-sub" id="zelle-amt-sub">To Amy Smith</p>
+                  </div>
+                  <span aria-hidden="true"></span>
+                </div>
+                <div class="yf-flow-body">
+                  <button type="button" class="yf-txf-row" style="cursor:default;border-bottom:1px solid var(--yf-border);">
+                    <span class="yf-txf-row__lbl">From</span>
+                    <span class="yf-txf-row__val">
+                      <span class="yf-txf-row__main">Checking x1234</span>
+                      <span class="yf-txf-row__sub">$1,512.03 available</span>
+                    </span>
+                  </button>
+                  <div class="yf-txf-row yf-txf-row--amount">
+                    <span class="yf-txf-row__lbl">Amount</span>
+                    <div class="yf-txf-amt-wrap">
+                      <span>$</span>
+                      <input class="yf-txf-amt" id="zelle-amount" type="text" inputmode="decimal" autocomplete="off" value="" placeholder="0.00" aria-label="Amount">
+                    </div>
+                  </div>
+                </div>
+                <div class="yf-flow-actions">
+                  <button type="button" class="yf-review-submit" id="zelle-btn-review" disabled>Review</button>
+                </div>
+                <p class="yf-modal__fine">Zelle® payments typically arrive in minutes when the recipient is enrolled.</p>
+              </div>
+            </div>
+
+            <div class="yf-zelle-flow-card" id="zelle-step-review" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+                <div class="yf-flow-hd">
+                  <button type="button" class="yf-modal-back" id="zelle-review-back" aria-label="Back">‹</button>
+                  <div>
+                    <h2>Review payment</h2>
+                    <p class="yf-flow-sub">Send with Zelle®</p>
+                  </div>
+                  <span aria-hidden="true"></span>
+                </div>
+                <div class="yf-flow-review">
+                  <p class="yf-flow-review__big" id="zelle-review-amt">$0.00</p>
+                  <dl class="yf-flow-review__grid" style="margin:0;">
+                    <dt>To</dt>
+                    <dd id="zelle-review-to">—</dd>
+                    <dt>From</dt>
+                    <dd>Checking (x1234)</dd>
+                    <dt>Deliver to</dt>
+                    <dd id="zelle-review-deliver">Recipient’s linked account</dd>
+                  </dl>
+                </div>
+                <div class="yf-flow-actions">
+                  <button type="button" class="yf-review-submit is-ready" id="zelle-submit-pay">Send</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="yf-zelle-flow-card" id="zelle-step-success" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
+                <button type="button" class="yf-modal__x" id="zelle-success-x" aria-label="Close">×</button>
+                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
+                <h2 class="yf-rapid-done__title">Payment sent</h2>
+                <p class="yf-rapid-done__sub" id="zelle-success-sub">If your recipient isn’t enrolled with Zelle® yet, they’ll get instructions to claim the money.</p>
+                <hr class="yf-rapid-done__sep" aria-hidden="true">
+                <p class="yf-rapid-done__amt" id="zelle-success-amt">$32.00</p>
+                <div class="yf-rapid-done__detail">
+                  <dl style="margin:0;">
+                    <dt>To</dt>
+                    <dd id="zelle-success-to">Amy Smith</dd>
+                    <dt>From</dt>
+                    <dd>Checking (x1234)</dd>
+                  </dl>
+                </div>
+                <div class="yf-card-success__actions">
+                  <button type="button" class="yf-btn-outline-blue" id="zelle-another-btn">Send another</button>
+                  <button type="button" class="btn btn-primary" id="zelle-done-btn">Done</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="yf-zelle-flow-card" id="zelle-step-req-success" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
+                <button type="button" class="yf-modal__x" id="zelle-req-success-x" aria-label="Close">×</button>
+                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
+                <h2 class="yf-rapid-done__title">Request sent</h2>
+                <p class="yf-rapid-done__sub">We’ll notify your contact if they use Zelle® at another bank.</p>
+                <hr class="yf-rapid-done__sep" aria-hidden="true">
+                <p class="yf-rapid-done__amt" id="zelle-req-success-amt">$25.00</p>
+                <div class="yf-card-success__actions">
+                  <button type="button" class="btn btn-primary" id="zelle-req-done">Done</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer class="yf-footer">
+            <span>©2024 YourFi</span>
+            <span>·</span>
+            <span>(555) 555-5555</span>
+            <span>·</span>
+            <a href="#" onclick="return false;">Privacy policy</a>
+            <span>·</span>
+            <span>Member FDIC</span>
+            <span>·</span>
+            <span>Equal Housing Lender</span>
+          </footer>
+          <button type="button" class="yf-fab" aria-label="Help">?</button>
+        </div>
+      </div>
+
+      <div class="view-bill" id="view-bill">
+        <header class="yf-std-hero yf-view-flow-hero" aria-labelledby="bill-flow-hero-title">
+          <h1 id="bill-flow-hero-title">Bill pay</h1>
+          <p id="bill-flow-hero-sub" class="yf-view-flow-hero__sub">Choose a payee to get started</p>
+        </header>
+        <div class="yf-bill-page">
+          <div class="yf-bill-shell">
+      <div class="yf-bill-card" id="bill-step-list" hidden>
+        <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+          <button type="button" class="yf-modal__x" id="bill-close-list" aria-label="Back to dashboard">×</button>
+          <div class="yf-tabs" style="margin:14px 20px 0;">
+            <button type="button" class="yf-tab is-active" id="bill-tab-single">Single</button>
+            <button type="button" class="yf-tab" id="bill-tab-multi">Multiple</button>
+          </div>
+          <div class="yf-bill-search-row">
+            <div class="yf-bill-search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="search" id="bill-payee-filter" placeholder="Search for a…" autocomplete="off" aria-label="Search payees">
+            </div>
+            <button type="button" class="yf-bill-filter-btn" aria-label="Filter"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></button>
+          </div>
+          <div class="yf-bill-list-scroll" id="bill-payee-list">
+            <button type="button" class="yf-bill-payee" data-bill-payee="ABC Loans" data-bill-suffix="x1234" data-bill-hint="Scheduled: Feb 3, $103.49">
+              <div class="yf-bill-payee__meta"><strong>ABC Loans<span class="yf-bill-payee__suffix">x1234</span></strong><span class="yf-bill-payee__hint">Scheduled: Feb 3, $103.49</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="Aspire Student Loans" data-bill-suffix="x8891" data-bill-hint="Last paid: Aug 12, $180.00">
+              <div class="yf-bill-payee__meta"><strong>Aspire Student Loans<span class="yf-bill-payee__suffix">x8891</span></strong><span class="yf-bill-payee__hint">Last paid: Aug 12, $180.00</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="Bill's Auto Body" data-bill-suffix="x4420" data-bill-hint="Last paid: Jan 2, $89.00">
+              <div class="yf-bill-payee__meta"><strong>Bill's Auto Body<span class="yf-bill-payee__suffix">x4420</span></strong><span class="yf-bill-payee__hint">Last paid: Jan 2, $89.00</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="Cedar Falls Utilities" data-bill-suffix="" data-bill-hint="Last paid: Sep 4, $200.00">
+              <div class="yf-bill-payee__meta"><strong>Cedar Falls Utilities</strong><span class="yf-bill-payee__hint">Last paid: Sep 4, $200.00</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="Jazzercise classes" data-bill-suffix="x2211" data-bill-hint="Last paid: Mar 1, $55.00">
+              <div class="yf-bill-payee__meta"><strong>Jazzercise classes<span class="yf-bill-payee__suffix">x2211</span></strong><span class="yf-bill-payee__hint">Last paid: Mar 1, $55.00</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="PECO Energy" data-bill-suffix="x3344" data-bill-hint="Scheduled: Mar 30, $142.18">
+              <div class="yf-bill-payee__meta"><strong>PECO Energy<span class="yf-bill-payee__suffix">x3344</span></strong><span class="yf-bill-payee__hint">Scheduled: Mar 30, $142.18</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="Sandwich insurance" data-bill-suffix="x9901" data-bill-hint="Last paid: Dec 18, $310.00">
+              <div class="yf-bill-payee__meta"><strong>Sandwich insurance<span class="yf-bill-payee__suffix">x9901</span></strong><span class="yf-bill-payee__hint">Last paid: Dec 18, $310.00</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+          </div>
+          <button type="button" class="yf-bill-add" id="bill-add-payee">+ Add another bill</button>
+        </div>
+      </div>
+
+      <div class="yf-bill-card" id="bill-step-pay" hidden>
+        <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+          <div class="yf-flow-hd">
+            <button type="button" class="yf-modal-back" id="bill-back-pay" aria-label="Back">‹</button>
+            <div>
+              <p class="yf-flow-sub" style="margin:0;font-weight:600;">Payment to</p>
+              <h2 id="bill-pay-title" style="margin:4px 0 0;">Cedar Falls Utilities</h2>
+            </div>
+            <span aria-hidden="true"></span>
+          </div>
+          <div class="yf-flow-body">
+            <button type="button" class="yf-txf-row" id="bill-open-from">
+              <span class="yf-txf-row__lbl">From</span>
+              <span class="yf-txf-row__val">
+                <span class="yf-txf-row__main" id="bill-from-main">Checking</span>
+                <span class="yf-txf-row__sub" id="bill-from-sub">$1,500.00</span>
+              </span>
+              <span class="yf-txf-row__chev" aria-hidden="true">›</span>
+            </button>
+            <div class="yf-txf-row yf-txf-row--amount">
+              <span class="yf-txf-row__lbl">Amount</span>
+              <div class="yf-txf-amt-wrap">
+                <span>$</span>
+                <input class="yf-txf-amt" id="bill-amount" type="text" inputmode="decimal" autocomplete="off" value="" placeholder="0.00" aria-label="Payment amount">
+              </div>
+            </div>
+            <div id="bill-more-rows" hidden>
+              <button type="button" class="yf-txf-row" id="bill-open-freq">
+                <span class="yf-txf-row__lbl">Frequency</span>
+                <span class="yf-txf-row__val"><span class="yf-txf-row__main" id="bill-freq-label">Once</span></span>
+                <span class="yf-txf-row__chev" aria-hidden="true">›</span>
+              </button>
+              <button type="button" class="yf-txf-row" id="bill-open-send">
+                <span class="yf-txf-row__lbl">Send</span>
+                <span class="yf-txf-row__val">
+                  <span class="yf-txf-row__main" id="bill-send-main">Tomorrow</span>
+                  <span class="yf-txf-row__sub" id="bill-send-sub">Arrives by Apr 2</span>
+                </span>
+                <span class="yf-txf-row__chev" aria-hidden="true">›</span>
+              </button>
+              <button type="button" class="yf-txf-row" id="bill-open-notes">
+                <span class="yf-txf-row__lbl">Notes</span>
+                <span class="yf-txf-row__val"><span class="yf-txf-row__main" id="bill-notes-label">Add memo or comment</span></span>
+                <span class="yf-txf-row__chev" aria-hidden="true">›</span>
+              </button>
+            </div>
+            <button type="button" class="yf-std-more-link" id="bill-more-toggle">More options</button>
+          </div>
+          <div class="yf-bill-fee-banner" role="note">
+            <span class="yf-bill-fee-banner__ico" aria-hidden="true">i</span>
+            <span>There is a $1.00 servicing fee for bill payments.</span>
+          </div>
+          <div class="yf-flow-actions">
+            <button type="button" class="yf-review-submit" id="bill-btn-submit" disabled>Submit</button>
+          </div>
+          <p class="yf-bill-foot" id="bill-pay-foot">Sends tomorrow by check, arrives by Apr 2</p>
+        </div>
+      </div>
+
+      <div class="yf-bill-card" id="bill-step-from" hidden>
+        <div class="yf-modal yf-modal--pane yf-modal--picker" style="padding-top:0;">
+          <div class="yf-flow-hd">
+            <button type="button" class="yf-modal-back" id="bill-back-from" aria-label="Back">‹</button>
+            <h2>Delivers electronically from</h2>
+            <span aria-hidden="true"></span>
+          </div>
+          <div class="yf-pick-scroll">
+            <button type="button" class="yf-pick-row" data-bill-from="checking">
+              <div class="yf-pick-row__left">
+                <div class="yf-pick-row__name">Checking</div>
+                <div class="yf-pick-row__avail">x1234</div>
+              </div>
+              <span class="yf-bill-check" data-bill-check="checking" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span>
+            </button>
+            <button type="button" class="yf-pick-row" data-bill-from="savings">
+              <div class="yf-pick-row__left">
+                <div class="yf-pick-row__name">Savings</div>
+                <div class="yf-pick-row__avail">x1234</div>
+              </div>
+              <span class="yf-bill-check" data-bill-check="savings" hidden aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="yf-bill-card" id="bill-step-freq" hidden>
+        <div class="yf-modal yf-modal--pane yf-modal--picker" style="padding-top:0;">
+          <div class="yf-flow-hd">
+            <button type="button" class="yf-modal-back" id="bill-back-freq" aria-label="Back">‹</button>
+            <h2>Frequency</h2>
+            <span aria-hidden="true"></span>
+          </div>
+          <div class="yf-pick-scroll">
+            <button type="button" class="yf-pick-row" data-bill-freq="Once"><div class="yf-pick-row__name">Once</div><span class="yf-bill-check" data-freq-check="Once" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+            <button type="button" class="yf-pick-row" data-bill-freq="Weekly"><div class="yf-pick-row__name">Weekly</div><span class="yf-bill-check" data-freq-check="Weekly" hidden aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+            <button type="button" class="yf-pick-row" data-bill-freq="Every other week"><div class="yf-pick-row__name">Every other week</div><span class="yf-bill-check" data-freq-check="Every other week" hidden aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+            <button type="button" class="yf-pick-row" data-bill-freq="Every four weeks"><div class="yf-pick-row__name">Every four weeks</div><span class="yf-bill-check" data-freq-check="Every four weeks" hidden aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+            <button type="button" class="yf-pick-row" data-bill-freq="Monthly"><div class="yf-pick-row__name">Monthly</div><span class="yf-bill-check" data-freq-check="Monthly" hidden aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+            <button type="button" class="yf-pick-row" data-bill-freq="Every other month"><div class="yf-pick-row__name">Every other month</div><span class="yf-bill-check" data-freq-check="Every other month" hidden aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+            <button type="button" class="yf-pick-row" data-bill-freq="Twice monthly"><div class="yf-pick-row__name">Twice monthly</div><span class="yf-bill-check" data-freq-check="Twice monthly" hidden aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+            <button type="button" class="yf-pick-row" data-bill-freq="Every three months"><div class="yf-pick-row__name">Every three months</div><span class="yf-bill-check" data-freq-check="Every three months" hidden aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+            <button type="button" class="yf-pick-row" data-bill-freq="Every six months"><div class="yf-pick-row__name">Every six months</div><span class="yf-bill-check" data-freq-check="Every six months" hidden aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+            <button type="button" class="yf-pick-row" data-bill-freq="Annually"><div class="yf-pick-row__name">Annually</div><span class="yf-bill-check" data-freq-check="Annually" hidden aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yf-blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="yf-bill-card" id="bill-step-delivery" hidden>
+        <div class="yf-modal yf-modal--pane yf-modal--picker" style="padding-top:0;">
+          <div class="yf-flow-hd">
+            <button type="button" class="yf-modal-back" id="bill-back-delivery" aria-label="Back">‹</button>
+            <h2>Delivery</h2>
+            <span aria-hidden="true"></span>
+          </div>
+          <div class="yf-pick-scroll">
+            <button type="button" class="yf-bill-dlv-btn" data-bill-dlv="standard">
+              <span class="yf-bill-dlv-btn__lbl">Standard</span>
+              <div class="yf-bill-dlv-btn__meta"><div class="yf-bill-dlv-btn__main" id="bill-dlv-std-arr">Arrives Apr 2</div><div class="yf-bill-dlv-btn__sub">Free, by check</div></div>
+            </button>
+            <button type="button" class="yf-bill-dlv-btn" data-bill-dlv="secondday">
+              <span class="yf-bill-dlv-btn__lbl">Second day</span>
+              <div class="yf-bill-dlv-btn__meta"><div class="yf-bill-dlv-btn__main" id="bill-dlv-2d-arr">Arrives Apr 1</div><div class="yf-bill-dlv-btn__sub">$14.95, by check</div></div>
+            </button>
+            <button type="button" class="yf-bill-dlv-btn" data-bill-dlv="overnight">
+              <span class="yf-bill-dlv-btn__lbl">Overnight</span>
+              <div class="yf-bill-dlv-btn__meta"><div class="yf-bill-dlv-btn__main" id="bill-dlv-ov-arr">Arrives Mar 31</div><div class="yf-bill-dlv-btn__sub">$19.95, by check</div></div>
+            </button>
+            <div class="yf-pick-section">Send later</div>
+            <button type="button" class="yf-bill-sched-row" id="bill-open-schedule">
+              <span class="yf-bill-sched-row__left">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Schedule a date
+              </span>
+              <span class="yf-chev">›</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="yf-bill-card" id="bill-step-schedule" hidden>
+        <div class="yf-modal yf-modal--pane yf-modal--picker" style="padding-top:0;">
+          <div class="yf-flow-hd">
+            <button type="button" class="yf-modal-back" id="bill-back-schedule" aria-label="Back">‹</button>
+            <h2>Schedule</h2>
+            <span aria-hidden="true"></span>
+          </div>
+          <div style="padding:8px 20px 0;">
+            <div class="yf-cal__top">
+              <h3 id="bill-cal-title">March 2026</h3>
+              <div class="yf-cal__nav">
+                <button type="button" id="bill-cal-prev" aria-label="Previous month">‹</button>
+                <button type="button" id="bill-cal-next" aria-label="Next month">›</button>
+              </div>
+            </div>
+            <div class="yf-cal-grid yf-bill-cal-grid" id="bill-cal-grid"></div>
+          </div>
+          <div class="yf-bill-cal-note">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Select a date to send your payment.
+          </div>
+        </div>
+      </div>
+
+      <div class="yf-bill-card" id="bill-step-notes" hidden>
+        <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+          <div class="yf-flow-hd">
+            <button type="button" class="yf-modal-back" id="bill-back-notes" aria-label="Back">‹</button>
+            <h2>Notes</h2>
+            <span aria-hidden="true"></span>
+          </div>
+          <input type="text" class="yf-bill-notes-input" id="bill-memo" placeholder="Check memo" autocomplete="off">
+          <input type="text" class="yf-bill-notes-input" id="bill-comment" placeholder="Comment" autocomplete="off" style="margin-top:0;">
+          <div class="yf-flow-actions">
+            <button type="button" class="yf-review-submit is-ready" id="bill-notes-save">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="yf-bill-card" id="bill-step-success" hidden>
+        <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
+          <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
+          <h2 class="yf-rapid-done__title">Payment submitted</h2>
+          <p class="yf-rapid-done__sub">Your payment is being processed.</p>
+          <hr class="yf-rapid-done__sep" aria-hidden="true">
+          <p class="yf-rapid-done__payee" id="bill-success-payee">Cedar Falls Utilities</p>
+          <p class="yf-rapid-done__amt" id="bill-success-amt">$1,000.00</p>
+          <p class="yf-rapid-done__acct-line"><span class="yf-rapid-done__acct-lbl">From</span> <span id="bill-success-from">Checking</span></p>
+          <hr class="yf-rapid-done__sep" aria-hidden="true">
+          <div class="yf-bill-timeline yf-bill-timeline--grid">
+            <span class="yf-bill-tl-dot" aria-hidden="true"></span>
+            <div class="yf-bill-tl-body">
+              <span class="yf-bill-tl-label">Processing</span>
+              <span class="yf-bill-tl-date" id="bill-tl-process">Mar 29</span>
+            </div>
+            <div class="yf-bill-tl-connector" aria-hidden="true"></div>
+            <div class="yf-bill-tl-skip" aria-hidden="true"></div>
+            <span class="yf-bill-tl-dot is-done" aria-hidden="true"></span>
+            <div class="yf-bill-tl-body">
+              <span class="yf-bill-tl-label">Estimated arrival</span>
+              <span class="yf-bill-tl-date" id="bill-tl-arrive">Apr 3</span>
+            </div>
+          </div>
+          <div class="yf-bill-fee-banner yf-bill-success-note">
+            <span class="yf-bill-fee-banner__ico" aria-hidden="true">i</span>
+            <span>You can change or cancel a scheduled payment before it's processed.</span>
+          </div>
+          <div class="yf-bill-success-actions">
+            <button type="button" class="yf-btn-outline-blue" id="bill-success-another">Pay another bill</button>
+            <button type="button" class="btn btn-primary" id="bill-success-done">Done</button>
+          </div>
+        </div>
+      </div>
+          </div>
+        </div>
+        <footer class="yf-footer">
+          <span>©2024 YourFi</span>
+          <span>·</span>
+          <span>(555) 555-5555</span>
+          <span>·</span>
+          <a href="#" onclick="return false;">Privacy policy</a>
+          <span>·</span>
+          <span>Member FDIC</span>
+          <span>·</span>
+          <span>Equal Housing Lender</span>
+        </footer>
+        <button type="button" class="yf-fab" aria-label="Help">?</button>
+      </div>
+
     </div>
   </div>
 
@@ -2464,14 +4233,15 @@
 
     <div class="yf-modal yf-modal--pane yf-modal--card-success" id="modal-pane-card-success" role="dialog" aria-modal="true" aria-labelledby="card-success-title" hidden>
       <button type="button" class="yf-modal__x" data-close-modal aria-label="Close">×</button>
-      <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
       <p class="yf-card-success__msg" id="card-success-title">Your debit card ending in <span id="card-success-last4">0000</span> was added.</p>
       <div class="yf-card-success__actions">
-        <button type="button" class="btn btn-primary" id="card-success-ok">Ok</button>
         <button type="button" class="yf-btn-outline-blue" id="card-success-add-another">Add another debit card</button>
+        <button type="button" class="btn btn-primary" id="card-success-ok">Ok</button>
       </div>
     </div>
   </div>
+
 
   <script>
     (function () {
@@ -2484,10 +4254,59 @@
       var viewDash = document.getElementById("view-dash");
       var viewStd = document.getElementById("view-std");
       var viewRapid = document.getElementById("view-rapid");
+      var viewZelle = document.getElementById("view-zelle");
       var navDash = document.getElementById("nav-dash");
       var navStd = document.getElementById("nav-std");
+      var navZelle = document.getElementById("nav-zelle");
+
+      var zelleStepEls = {
+        recipient: document.getElementById("zelle-step-recipient"),
+        add: document.getElementById("zelle-step-add"),
+        amount: document.getElementById("zelle-step-amount"),
+        review: document.getElementById("zelle-step-review"),
+        success: document.getElementById("zelle-step-success"),
+        reqSuccess: document.getElementById("zelle-step-req-success")
+      };
+
+      var zelleState = {
+        mode: "send",
+        recipientName: "",
+        recipientDetail: "",
+        fromAdd: false
+      };
       var formDebit = document.getElementById("form-debit");
       var hideT;
+
+      var viewBill = document.getElementById("view-bill");
+      var navBill = document.getElementById("nav-bill");
+      var billSteps = {
+        list: document.getElementById("bill-step-list"),
+        pay: document.getElementById("bill-step-pay"),
+        from: document.getElementById("bill-step-from"),
+        freq: document.getElementById("bill-step-freq"),
+        delivery: document.getElementById("bill-step-delivery"),
+        schedule: document.getElementById("bill-step-schedule"),
+        notes: document.getElementById("bill-step-notes"),
+        success: document.getElementById("bill-step-success")
+      };
+
+      var BILL_FROM = {
+        checking: { main: "Checking", sub: "$1,500.00", success: "From Checking" },
+        savings: { main: "Savings", sub: "$2,564.13", success: "From Savings" }
+      };
+
+      var billState = {
+        payeeName: "",
+        fromId: "checking",
+        frequency: "Once",
+        deliveryMode: "standard",
+        scheduledDate: null,
+        memo: "",
+        comment: "",
+        moreExpanded: false,
+        calYear: 2026,
+        calMonth: 2
+      };
 
       var TRANSFER_FEE = 2;
 
@@ -2496,6 +4315,13 @@
         rapidPromo: document.getElementById("modal-pane-rapid"),
         card: document.getElementById("modal-pane-card"),
         cardSuccess: document.getElementById("modal-pane-card-success")
+      };
+
+      var stdFlowSteps = {
+        form: document.getElementById("std-flow-step-form"),
+        from: document.getElementById("std-flow-step-from"),
+        to: document.getElementById("std-flow-step-to"),
+        success: document.getElementById("std-flow-step-success")
       };
 
       var flowSteps = {
@@ -2524,6 +4350,18 @@
 
       var rapidState = { fromId: null, toId: null };
 
+      var standardState = { fromId: null, toId: null };
+
+      var STD_FROM_META = {
+        checking: { formMain: "Checking x1234", formSub: "$1,512.03", review: "Checking (x1234)" },
+        savings: { formMain: "Savings x5677", formSub: "$2,564.13", review: "Savings (x5677)" }
+      };
+
+      var STD_TO_META = {
+        "checking-dest": { formMain: "Checking x1234", review: "Checking (x1234)" },
+        "savings-dest": { formMain: "Savings x5677", review: "Savings (x5677)" }
+      };
+
       function showModalPane(active) {
         Object.keys(panes).forEach(function (k) {
           panes[k].hidden = k !== active;
@@ -2536,10 +4374,12 @@
         if (!title || !sub) return;
         if (step === "from") {
           title.textContent = "Transfer from";
-          sub.hidden = true;
+          sub.textContent = "Select an account";
+          sub.hidden = false;
         } else if (step === "to") {
           title.textContent = "Transfer to";
-          sub.hidden = true;
+          sub.textContent = "Select an account";
+          sub.hidden = false;
         } else if (step === "review") {
           title.textContent = "Review transfer";
           sub.textContent = "Transfer money within minutes";
@@ -2575,6 +4415,51 @@
           flowSteps[k].hidden = true;
         });
         resetRapidFlow();
+      }
+
+      function syncStdFlowHero(step) {
+        var title = document.getElementById("std-flow-hero-title");
+        var sub = document.getElementById("std-flow-hero-sub");
+        if (!title || !sub) return;
+        if (step === "from") {
+          title.textContent = "Transfer from";
+          sub.textContent = "Select an account";
+          sub.hidden = false;
+        } else if (step === "to") {
+          title.textContent = "Transfer to";
+          sub.textContent = "Select an account";
+          sub.hidden = false;
+        } else if (step === "success") {
+          title.textContent = "Standard transfer";
+          sub.textContent = "Transfer submitted";
+          sub.hidden = false;
+        } else {
+          title.textContent = "Standard transfer";
+          sub.textContent = "Schedule transfers between your accounts";
+          sub.hidden = false;
+        }
+      }
+
+      function showStdFlowStep(active) {
+        Object.keys(stdFlowSteps).forEach(function (k) {
+          stdFlowSteps[k].hidden = k !== active;
+        });
+        syncStdFlowHero(active);
+      }
+
+      function enterStdFlow() {
+        resetStandardFlow();
+        viewStd.classList.add("is-flow");
+        showStdFlowStep("form");
+      }
+
+      function exitStdFlow() {
+        if (!viewStd.classList.contains("is-flow")) return;
+        viewStd.classList.remove("is-flow");
+        Object.keys(stdFlowSteps).forEach(function (k) {
+          stdFlowSteps[k].hidden = true;
+        });
+        resetStandardFlow();
       }
 
       function lastFourDigits(num) {
@@ -2731,7 +4616,216 @@
       btnTransfer.addEventListener("focus", openDd);
       btnTransfer.addEventListener("blur", schedCloseDd);
 
+      function closeBillFlow() {
+        if (!viewBill || !viewBill.classList.contains("is-visible")) return;
+        viewBill.classList.remove("is-visible");
+        document.body.classList.remove("show-bill");
+        if (navBill) navBill.classList.remove("is-active");
+        viewDash.classList.remove("is-hidden");
+        navDash.classList.add("is-active");
+      }
+
+      function openBillFlow() {
+        closeModal();
+        exitStdFlow();
+        exitZelleFlow();
+        document.body.classList.remove("show-std");
+        document.body.classList.remove("show-rapid");
+        document.body.classList.remove("show-zelle");
+        document.body.classList.add("show-bill");
+        viewStd.classList.remove("is-visible");
+        viewRapid.classList.remove("is-visible");
+        if (viewZelle) viewZelle.classList.remove("is-visible");
+        viewDash.classList.add("is-hidden");
+        if (viewBill) viewBill.classList.add("is-visible");
+        navStd.classList.remove("is-active");
+        if (navZelle) navZelle.classList.remove("is-active");
+        navDash.classList.remove("is-active");
+        if (navBill) navBill.classList.add("is-active");
+        resetBillFlow();
+        showBillStep("list");
+      }
+
+      function syncBillFlowHero(step) {
+        var title = document.getElementById("bill-flow-hero-title");
+        var sub = document.getElementById("bill-flow-hero-sub");
+        if (!title || !sub) return;
+        title.textContent = "Bill pay";
+        if (step === "pay") {
+          sub.textContent = billState.payeeName
+            ? "Paying " + billState.payeeName
+            : "Enter payment details";
+        } else if (step === "list") {
+          sub.textContent = "Choose a payee to get started";
+        } else if (step === "from") {
+          sub.textContent = "Choose an account to pay from";
+        } else if (step === "freq") {
+          sub.textContent = "How often should we pay this bill?";
+        } else if (step === "delivery") {
+          sub.textContent = "How should we deliver your payment?";
+        } else if (step === "schedule") {
+          sub.textContent = "Pick a send date";
+        } else if (step === "notes") {
+          sub.textContent = "Optional memo and comment";
+        } else if (step === "success") {
+          sub.textContent = "Payment submitted";
+        } else {
+          sub.textContent = "Choose a payee to get started";
+        }
+      }
+
+      function showBillStep(name) {
+        Object.keys(billSteps).forEach(function (k) {
+          billSteps[k].hidden = k !== name;
+        });
+        syncBillFlowHero(name);
+        if (name === "schedule") renderBillCalendar();
+      }
+
+      function fmtBillShort(d) {
+        return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      }
+
+      function addDays(d, n) {
+        var x = new Date(d.getTime());
+        x.setDate(x.getDate() + n);
+        return x;
+      }
+
+      function billTomorrow() {
+        return addDays(new Date(), 1);
+      }
+
+      function syncBillDeliveryDates() {
+        var t = billTomorrow();
+        var dStd = addDays(t, 5);
+        var d2 = addDays(t, 4);
+        var dOv = addDays(t, 3);
+        var elStd = document.getElementById("bill-dlv-std-arr");
+        var el2 = document.getElementById("bill-dlv-2d-arr");
+        var elOv = document.getElementById("bill-dlv-ov-arr");
+        if (elStd) elStd.textContent = "Arrives " + fmtBillShort(dStd);
+        if (el2) el2.textContent = "Arrives " + fmtBillShort(d2);
+        if (elOv) elOv.textContent = "Arrives " + fmtBillShort(dOv);
+      }
+
+      function syncBillPayFoot() {
+        var foot = document.getElementById("bill-pay-foot");
+        var sendMain = document.getElementById("bill-send-main");
+        var sendSub = document.getElementById("bill-send-sub");
+        if (!foot || !sendMain || !sendSub) return;
+        var t = billTomorrow();
+        if (billState.deliveryMode === "scheduled" && billState.scheduledDate) {
+          var s = billState.scheduledDate;
+          var arr = addDays(s, 5);
+          sendMain.textContent = fmtBillShort(s);
+          sendSub.textContent = "Arrives by " + fmtBillShort(arr);
+          foot.textContent = "Sends " + fmtBillShort(s) + " by check, arrives by " + fmtBillShort(arr);
+          return;
+        }
+        var arrive = addDays(t, billState.deliveryMode === "overnight" ? 3 : billState.deliveryMode === "secondday" ? 4 : 5);
+        sendMain.textContent = "Tomorrow";
+        sendSub.textContent = "Arrives by " + fmtBillShort(arrive);
+        foot.textContent = "Sends tomorrow by check, arrives by " + fmtBillShort(arrive);
+      }
+
+      function syncBillFromRow() {
+        var f = BILL_FROM[billState.fromId];
+        document.getElementById("bill-from-main").textContent = f.main;
+        document.getElementById("bill-from-sub").textContent = f.sub;
+        document.querySelectorAll("[data-bill-check]").forEach(function (chk) {
+          var id = chk.getAttribute("data-bill-check");
+          chk.hidden = id !== billState.fromId;
+        });
+      }
+
+      function syncBillFreqChecks() {
+        document.querySelectorAll("[data-freq-check]").forEach(function (chk) {
+          var v = chk.getAttribute("data-freq-check");
+          chk.hidden = v !== billState.frequency;
+        });
+      }
+
+      function parseBillAmount() {
+        var raw = document.getElementById("bill-amount").value.replace(/[^0-9.]/g, "");
+        var n = parseFloat(raw);
+        return !isFinite(n) || n <= 0 ? 0 : n;
+      }
+
+      function syncBillSubmit() {
+        var btn = document.getElementById("bill-btn-submit");
+        var ok = parseBillAmount() > 0;
+        btn.disabled = !ok;
+        btn.classList.toggle("is-ready", ok);
+      }
+
+      function resetBillFlow() {
+        billState.payeeName = "Cedar Falls Utilities";
+        billState.fromId = "checking";
+        billState.frequency = "Once";
+        billState.deliveryMode = "standard";
+        billState.scheduledDate = null;
+        billState.memo = "";
+        billState.comment = "";
+        billState.moreExpanded = false;
+        billState.calYear = 2026;
+        billState.calMonth = 2;
+        document.getElementById("bill-amount").value = "";
+        document.getElementById("bill-pay-title").textContent = billState.payeeName;
+        document.getElementById("bill-memo").value = "";
+        document.getElementById("bill-comment").value = "";
+        document.getElementById("bill-more-rows").hidden = true;
+        document.getElementById("bill-more-toggle").textContent = "More options";
+        document.getElementById("bill-freq-label").textContent = "Once";
+        document.getElementById("bill-notes-label").textContent = "Add memo or comment";
+        var filter = document.getElementById("bill-payee-filter");
+        if (filter) filter.value = "";
+        document.querySelectorAll(".yf-bill-payee").forEach(function (row) {
+          row.hidden = false;
+        });
+        syncBillFromRow();
+        syncBillFreqChecks();
+        syncBillDeliveryDates();
+        syncBillPayFoot();
+        syncBillSubmit();
+      }
+
+      function renderBillCalendar() {
+        var title = document.getElementById("bill-cal-title");
+        var grid = document.getElementById("bill-cal-grid");
+        if (!title || !grid) return;
+        var y = billState.calYear;
+        var m = billState.calMonth;
+        title.textContent = new Date(y, m, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+        var first = new Date(y, m, 1).getDay();
+        var lastDay = new Date(y, m + 1, 0).getDate();
+        var html = "";
+        var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        for (var i = 0; i < 7; i++) html += "<div>" + days[i] + "</div>";
+        for (var p = 0; p < first; p++) html += "<div class=\"yf-cal-pad\" aria-hidden=\"true\"></div>";
+        for (var d = 1; d <= lastDay; d++) {
+          var picked = billState.scheduledDate &&
+            billState.scheduledDate.getFullYear() === y &&
+            billState.scheduledDate.getMonth() === m &&
+            billState.scheduledDate.getDate() === d;
+          html += "<button type=\"button\" class=\"yf-cal-day" + (picked ? " is-picked" : "") + "\" data-bill-cal-day=\"" + d + "\">" + d + "</button>";
+        }
+        grid.innerHTML = html;
+        grid.className = "yf-cal-grid yf-bill-cal-grid";
+        grid.style.marginTop = "6px";
+        grid.querySelectorAll("[data-bill-cal-day]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var day = parseInt(btn.getAttribute("data-bill-cal-day"), 10);
+            billState.scheduledDate = new Date(y, m, day, 12, 0, 0);
+            billState.deliveryMode = "scheduled";
+            syncBillPayFoot();
+            showBillStep("pay");
+          });
+        });
+      }
+
       function openOverlay() {
+        closeBillFlow();
         overlay.classList.add("is-open");
         overlay.setAttribute("aria-hidden", "false");
       }
@@ -2760,7 +4854,97 @@
         showModalPane("card");
       }
 
+      function parseStdAmount() {
+        var raw = document.getElementById("std-amount").value.replace(/[^0-9.]/g, "");
+        var n = parseFloat(raw);
+        return !isFinite(n) || n <= 0 ? 0 : n;
+      }
+
+      function stdAccountsConflict() {
+        if (!standardState.fromId || !standardState.toId) return true;
+        if (standardState.fromId === "checking" && standardState.toId === "checking-dest") return true;
+        if (standardState.fromId === "savings" && standardState.toId === "savings-dest") return true;
+        return false;
+      }
+
+      function syncStdFormFrom() {
+        var fromLabel = document.getElementById("std-from-label");
+        var fromBal = document.getElementById("std-from-bal");
+        if (!standardState.fromId) {
+          fromLabel.textContent = "Select account";
+          fromBal.hidden = true;
+          return;
+        }
+        var m = STD_FROM_META[standardState.fromId];
+        fromLabel.textContent = m.formMain;
+        fromBal.textContent = m.formSub;
+        fromBal.hidden = false;
+      }
+
+      function syncStdFormTo() {
+        var toLabel = document.getElementById("std-to-label");
+        var toSub = document.getElementById("std-to-sub");
+        if (!standardState.toId) {
+          toLabel.textContent = "Select account";
+          toSub.hidden = true;
+          return;
+        }
+        var m = STD_TO_META[standardState.toId];
+        toLabel.textContent = m.formMain;
+        toSub.hidden = true;
+      }
+
+      function syncStdSubmit() {
+        var btn = document.getElementById("std-btn-submit");
+        /* Submit only needs From, To, and Amount. More options are never required. */
+        var ok = standardState.fromId && standardState.toId && parseStdAmount() > 0 && !stdAccountsConflict();
+        btn.disabled = !ok;
+        btn.classList.toggle("is-ready", ok);
+      }
+
+      function resetStandardFlow() {
+        standardState.fromId = null;
+        standardState.toId = null;
+        document.getElementById("std-amount").value = "";
+        var more = document.getElementById("std-more-fields");
+        var toggle = document.getElementById("std-more-toggle");
+        more.hidden = true;
+        toggle.setAttribute("aria-expanded", "false");
+        document.getElementById("std-frequency").value = "once";
+        document.getElementById("std-send-date").value = "";
+        document.getElementById("std-memo").value = "";
+        syncStdFormFrom();
+        syncStdFormTo();
+        syncStdSubmit();
+      }
+
+      function fillStdSuccess(amount) {
+        document.getElementById("std-done-amt").textContent = formatMoney(amount);
+        document.getElementById("std-done-from").textContent = STD_FROM_META[standardState.fromId].review;
+        document.getElementById("std-done-to").textContent = STD_TO_META[standardState.toId].review;
+        document.getElementById("std-done-fee").textContent = formatMoney(0);
+        document.getElementById("std-done-total").textContent = formatMoney(amount);
+
+        var moreOpen = !document.getElementById("std-more-fields").hidden;
+        var extras = document.getElementById("std-done-extras");
+        if (moreOpen) {
+          extras.hidden = false;
+          var freqEl = document.getElementById("std-frequency");
+          var freqLabel = freqEl.options[freqEl.selectedIndex].textContent;
+          document.getElementById("std-done-freq").textContent = freqLabel;
+          var d = document.getElementById("std-send-date").value;
+          document.getElementById("std-done-when").textContent = d
+            ? new Date(d + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })
+            : "—";
+          var memo = document.getElementById("std-memo").value.trim();
+          document.getElementById("std-done-memo").textContent = memo || "—";
+        } else {
+          extras.hidden = true;
+        }
+      }
+
       function closeModal() {
+        closeBillFlow();
         overlay.classList.remove("is-open");
         overlay.setAttribute("aria-hidden", "true");
         showModalPane("choice");
@@ -2897,13 +5081,86 @@
         goStd();
       });
       document.getElementById("make-tx-dash").addEventListener("click", openModal);
+      document.getElementById("std-make-tx").addEventListener("click", function () {
+        enterStdFlow();
+      });
+
+      document.getElementById("std-form-back").addEventListener("click", function () {
+        exitStdFlow();
+      });
+      document.getElementById("std-form-close-x").addEventListener("click", function () {
+        exitStdFlow();
+      });
+      document.getElementById("std-success-close-x").addEventListener("click", function () {
+        exitStdFlow();
+      });
+
+      document.getElementById("std-pick-from").addEventListener("click", function () {
+        showStdFlowStep("from");
+      });
+      document.getElementById("std-pick-from-back").addEventListener("click", function () {
+        showStdFlowStep("form");
+      });
+      document.querySelectorAll("[data-std-pick-from]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          standardState.fromId = btn.getAttribute("data-std-pick-from");
+          syncStdFormFrom();
+          syncStdSubmit();
+          showStdFlowStep("form");
+        });
+      });
+
+      document.getElementById("std-pick-to").addEventListener("click", function () {
+        showStdFlowStep("to");
+      });
+      document.getElementById("std-pick-to-back").addEventListener("click", function () {
+        showStdFlowStep("form");
+      });
+      document.querySelectorAll("[data-std-pick-to]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          standardState.toId = btn.getAttribute("data-std-pick-to");
+          syncStdFormTo();
+          syncStdSubmit();
+          showStdFlowStep("form");
+        });
+      });
+
+      document.getElementById("std-more-toggle").addEventListener("click", function () {
+        var el = document.getElementById("std-more-fields");
+        var open = el.hidden;
+        el.hidden = !open;
+        this.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+
+      document.getElementById("std-amount").addEventListener("input", syncStdSubmit);
+      document.getElementById("std-amount").addEventListener("focus", function () {
+        var el = this;
+        if (!el.value) return;
+        requestAnimationFrame(function () {
+          el.select();
+        });
+      });
+      document.getElementById("std-amount").addEventListener("blur", function () {
+        var n = parseStdAmount();
+        document.getElementById("std-amount").value = n > 0 ? n.toFixed(2) : "";
+        syncStdSubmit();
+      });
+
+      document.getElementById("std-btn-submit").addEventListener("click", function () {
+        if (document.getElementById("std-btn-submit").disabled) return;
+        fillStdSuccess(parseStdAmount());
+        showStdFlowStep("success");
+      });
+
+      document.getElementById("std-done-ok").addEventListener("click", function () {
+        exitStdFlow();
+      });
 
       overlay.addEventListener("click", function (e) {
         if (e.target === overlay || e.target.closest("[data-close-modal]")) closeModal();
       });
 
       document.getElementById("m-standard").addEventListener("click", function () {
-        closeModal();
         goStd();
       });
       document.getElementById("m-rapid").addEventListener("click", function () {
@@ -3011,39 +5268,244 @@
 
       function goRapidActivity() {
         closeModal();
+        exitStdFlow();
+        exitZelleFlow();
         document.body.classList.remove("show-std");
+        document.body.classList.remove("show-zelle");
+        document.body.classList.remove("show-bill");
         document.body.classList.add("show-rapid");
         viewDash.classList.add("is-hidden");
         viewStd.classList.remove("is-visible");
+        viewZelle.classList.remove("is-visible");
+        if (viewBill) viewBill.classList.remove("is-visible");
         viewRapid.classList.add("is-visible");
         navDash.classList.remove("is-active");
+        navZelle.classList.remove("is-active");
+        if (navBill) navBill.classList.remove("is-active");
         navStd.classList.add("is-active");
       }
 
       function goStd() {
         closeModal();
+        exitStdFlow();
+        exitZelleFlow();
         document.body.classList.remove("show-rapid");
+        document.body.classList.remove("show-zelle");
+        document.body.classList.remove("show-bill");
         document.body.classList.add("show-std");
         viewDash.classList.add("is-hidden");
         viewRapid.classList.remove("is-visible");
+        viewZelle.classList.remove("is-visible");
+        if (viewBill) viewBill.classList.remove("is-visible");
         viewStd.classList.add("is-visible");
         navDash.classList.remove("is-active");
+        navZelle.classList.remove("is-active");
+        if (navBill) navBill.classList.remove("is-active");
         navStd.classList.add("is-active");
       }
       function goDash() {
         closeModal();
+        exitStdFlow();
+        exitZelleFlow();
         document.body.classList.remove("show-std");
         document.body.classList.remove("show-rapid");
+        document.body.classList.remove("show-zelle");
+        document.body.classList.remove("show-bill");
         viewStd.classList.remove("is-visible");
         viewRapid.classList.remove("is-visible");
+        viewZelle.classList.remove("is-visible");
+        if (viewBill) viewBill.classList.remove("is-visible");
         viewDash.classList.remove("is-hidden");
         navStd.classList.remove("is-active");
+        navZelle.classList.remove("is-active");
+        if (navBill) navBill.classList.remove("is-active");
         navDash.classList.add("is-active");
+      }
+
+      function resetZelleHubPanels() {
+        var payTab = document.getElementById("zelle-tab-pay");
+        var reqTab = document.getElementById("zelle-tab-req");
+        var payPanel = document.getElementById("zelle-panel-pay");
+        var reqPanel = document.getElementById("zelle-panel-req");
+        if (payTab && reqTab) {
+          payTab.classList.add("is-active");
+          reqTab.classList.remove("is-active");
+          payTab.setAttribute("aria-selected", "true");
+          reqTab.setAttribute("aria-selected", "false");
+        }
+        if (payPanel) payPanel.hidden = false;
+        if (reqPanel) reqPanel.hidden = true;
+      }
+
+      function goZelle() {
+        closeModal();
+        closeBillFlow();
+        exitStdFlow();
+        if (!viewZelle) return;
+        document.body.classList.remove("show-std");
+        document.body.classList.remove("show-rapid");
+        document.body.classList.remove("show-bill");
+        document.body.classList.add("show-zelle");
+        viewDash.classList.add("is-hidden");
+        viewStd.classList.remove("is-visible");
+        viewRapid.classList.remove("is-visible");
+        if (viewBill) viewBill.classList.remove("is-visible");
+        viewZelle.classList.add("is-visible");
+        navDash.classList.remove("is-active");
+        navStd.classList.remove("is-active");
+        if (navBill) navBill.classList.remove("is-active");
+        if (navZelle) navZelle.classList.add("is-active");
+        exitZelleFlow();
+        resetZelleHubPanels();
+      }
+
+      function syncZelleFlowHero(step) {
+        var sub = document.getElementById("zelle-flow-hero-sub");
+        if (!sub) return;
+        var req = zelleState.mode === "request";
+        var map = {
+          recipient: req ? "Choose who to request from" : "Choose someone to pay",
+          add: "Add a new contact",
+          amount: req ? "How much are you requesting?" : "How much are you sending?",
+          review: req ? "Review your request" : "Review your payment",
+          success: req ? "Request sent" : "Payment sent",
+          reqSuccess: "Request sent"
+        };
+        sub.textContent = map[step] || (req ? "Request money with Zelle®" : "Send money with Zelle®");
+        sub.hidden = false;
+      }
+
+      function showZelleStep(name) {
+        Object.keys(zelleStepEls).forEach(function (k) {
+          var el = zelleStepEls[k];
+          if (!el) return;
+          el.hidden = k !== name;
+        });
+        syncZelleFlowChrome();
+        syncZelleFlowHero(name);
+      }
+
+      function exitZelleFlow() {
+        if (viewZelle) viewZelle.classList.remove("is-flow");
+        Object.keys(zelleStepEls).forEach(function (k) {
+          if (zelleStepEls[k]) zelleStepEls[k].hidden = true;
+        });
+        zelleState.mode = "send";
+        zelleState.recipientName = "";
+        zelleState.recipientDetail = "";
+        zelleState.fromAdd = false;
+        var za = document.getElementById("zelle-amount");
+        var zc = document.getElementById("zelle-new-contact");
+        var zn = document.getElementById("zelle-new-name");
+        if (za) za.value = "";
+        if (zc) zc.value = "";
+        if (zn) zn.value = "";
+        syncZelleAddContinue();
+        syncZelleAmountReviewBtn();
+        var sub = document.getElementById("zelle-flow-hero-sub");
+        if (sub) sub.hidden = true;
+      }
+
+      function syncZelleFlowChrome() {
+        var h = document.getElementById("zelle-flow-hero-title");
+        var t = document.getElementById("zelle-recipient-title");
+        if (zelleState.mode === "request") {
+          if (h) h.textContent = "Request with Zelle®";
+          if (t) t.textContent = "Select recipient";
+        } else {
+          if (h) h.textContent = "Send with Zelle®";
+          if (t) t.textContent = "Select recipient";
+        }
+      }
+
+      function filterZelleRecipients() {
+        var inp = document.getElementById("zelle-recipient-search");
+        if (!inp) return;
+        var q = inp.value.trim().toLowerCase().replace(/\s+/g, " ");
+        document.querySelectorAll(".yf-zelle-recent-tile").forEach(function (el) {
+          var hay = (el.getAttribute("data-zelle-search") || "").toLowerCase();
+          el.style.display = !q || hay.indexOf(q) !== -1 ? "" : "none";
+        });
+        document.querySelectorAll(".yf-zelle-contact-row").forEach(function (el) {
+          var hay = (el.getAttribute("data-zelle-search") || "").toLowerCase();
+          el.hidden = !!(q && hay.indexOf(q) === -1);
+        });
+        var recentSection = document.querySelector(".yf-zelle-recent");
+        if (recentSection) {
+          var anyVis = false;
+          recentSection.querySelectorAll(".yf-zelle-recent-tile").forEach(function (el) {
+            if (el.style.display !== "none") anyVis = true;
+          });
+          recentSection.style.display = !q || anyVis ? "" : "none";
+        }
+      }
+
+      function enterZelleFlow(mode) {
+        if (!viewZelle) return;
+        zelleState.mode = mode === "request" ? "request" : "send";
+        zelleState.recipientName = "";
+        zelleState.recipientDetail = "";
+        zelleState.fromAdd = false;
+        viewZelle.classList.add("is-flow");
+        showZelleStep("recipient");
+        var zs = document.getElementById("zelle-recipient-search");
+        if (zs) zs.value = "";
+        filterZelleRecipients();
+        var za = document.getElementById("zelle-amount");
+        if (za) za.value = "";
+        syncZelleAmountReviewBtn();
+      }
+
+      function parseZelleAmount() {
+        var el = document.getElementById("zelle-amount");
+        if (!el) return 0;
+        var raw = el.value.replace(/[^0-9.]/g, "");
+        var n = parseFloat(raw);
+        return !isFinite(n) || n <= 0 ? 0 : n;
+      }
+
+      function syncZelleAmountReviewBtn() {
+        var btn = document.getElementById("zelle-btn-review");
+        if (!btn) return;
+        var ok = parseZelleAmount() > 0;
+        btn.disabled = !ok;
+        btn.classList.toggle("is-ready", ok);
+        btn.textContent = zelleState.mode === "request" ? "Send request" : "Review";
+      }
+
+      function syncZelleAddContinue() {
+        var btn = document.getElementById("zelle-add-continue");
+        var inp = document.getElementById("zelle-new-contact");
+        if (!btn || !inp) return;
+        var ok = inp.value.trim().length >= 5;
+        btn.disabled = !ok;
+        btn.classList.toggle("is-ready", ok);
+      }
+
+      function fillZelleReview() {
+        var amt = parseZelleAmount();
+        document.getElementById("zelle-review-amt").textContent = formatMoney(amt);
+        document.getElementById("zelle-review-to").textContent = zelleState.recipientName || "—";
+        var del = document.getElementById("zelle-review-deliver");
+        if (del) {
+          del.textContent = zelleState.recipientDetail
+            ? zelleState.recipientDetail
+            : "Recipient’s linked account";
+        }
+      }
+
+      function fillZelleSuccess() {
+        var amt = parseZelleAmount();
+        document.getElementById("zelle-success-amt").textContent = formatMoney(amt);
+        document.getElementById("zelle-success-to").textContent = zelleState.recipientName || "—";
       }
 
       document.getElementById("rapid-hub-make").addEventListener("click", function () {
         resetRapidFlow();
         enterRapidFlow("hub");
+      });
+      document.getElementById("rapid-hub-standard-cta").addEventListener("click", function () {
+        openModal();
       });
       document.getElementById("rapid-hub-add-card").addEventListener("click", function (e) {
         e.preventDefault();
@@ -3057,13 +5519,331 @@
         e.preventDefault();
         openModal();
       });
+      navZelle.addEventListener("click", function (e) {
+        e.preventDefault();
+        goZelle();
+      });
+
+      if (navBill) {
+        navBill.addEventListener("click", function (e) {
+          e.preventDefault();
+          openBillFlow();
+        });
+      }
+
+      document.getElementById("btn-pay-bill-hero").addEventListener("click", function () {
+        openBillFlow();
+      });
+
+      (function () {
+        var dz = document.getElementById("dash-btn-zelle");
+        if (dz) dz.addEventListener("click", goZelle);
+      })();
+
+      document.getElementById("zelle-tab-pay").addEventListener("click", function () {
+        document.getElementById("zelle-tab-pay").classList.add("is-active");
+        document.getElementById("zelle-tab-req").classList.remove("is-active");
+        document.getElementById("zelle-tab-pay").setAttribute("aria-selected", "true");
+        document.getElementById("zelle-tab-req").setAttribute("aria-selected", "false");
+        document.getElementById("zelle-panel-pay").hidden = false;
+        document.getElementById("zelle-panel-req").hidden = true;
+      });
+      document.getElementById("zelle-tab-req").addEventListener("click", function () {
+        document.getElementById("zelle-tab-req").classList.add("is-active");
+        document.getElementById("zelle-tab-pay").classList.remove("is-active");
+        document.getElementById("zelle-tab-req").setAttribute("aria-selected", "true");
+        document.getElementById("zelle-tab-pay").setAttribute("aria-selected", "false");
+        document.getElementById("zelle-panel-pay").hidden = true;
+        document.getElementById("zelle-panel-req").hidden = false;
+      });
+
+      document.getElementById("zelle-hub-send").addEventListener("click", function () {
+        enterZelleFlow("send");
+      });
+      document.getElementById("zelle-hub-request").addEventListener("click", function () {
+        enterZelleFlow("request");
+      });
+
+      document.querySelectorAll("[data-zelle-to]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          zelleState.fromAdd = false;
+          zelleState.recipientName = btn.getAttribute("data-zelle-to") || "";
+          var dAttr = btn.getAttribute("data-zelle-detail");
+          if (dAttr) zelleState.recipientDetail = dAttr;
+          else {
+            var small = btn.querySelector("small");
+            zelleState.recipientDetail = small ? small.textContent.trim() : "";
+          }
+          var sub = document.getElementById("zelle-amt-sub");
+          if (sub) {
+            sub.textContent = zelleState.mode === "request"
+              ? "Request from " + zelleState.recipientName
+              : "To " + zelleState.recipientName;
+          }
+          showZelleStep("amount");
+          syncZelleAmountReviewBtn();
+        });
+      });
+
+      document.getElementById("zelle-header-add").addEventListener("click", function () {
+        showZelleStep("add");
+        syncZelleAddContinue();
+      });
+
+      document.getElementById("zelle-recipient-search").addEventListener("input", filterZelleRecipients);
+
+      document.getElementById("zelle-add-recipient").addEventListener("click", function () {
+        showZelleStep("add");
+        syncZelleAddContinue();
+      });
+      document.getElementById("zelle-add-back").addEventListener("click", function () {
+        showZelleStep("recipient");
+      });
+      document.getElementById("zelle-new-contact").addEventListener("input", syncZelleAddContinue);
+      document.getElementById("zelle-add-continue").addEventListener("click", function () {
+        var c = document.getElementById("zelle-new-contact").value.trim();
+        var n = document.getElementById("zelle-new-name").value.trim();
+        if (c.length < 5) return;
+        zelleState.fromAdd = true;
+        zelleState.recipientDetail = c;
+        zelleState.recipientName = n || (c.indexOf("@") !== -1 ? c.split("@")[0] : c);
+        var sub = document.getElementById("zelle-amt-sub");
+        if (sub) {
+          sub.textContent = zelleState.mode === "request"
+            ? "Request from " + zelleState.recipientName
+            : "To " + zelleState.recipientName;
+        }
+        showZelleStep("amount");
+        syncZelleAmountReviewBtn();
+      });
+
+      document.getElementById("zelle-amt-back").addEventListener("click", function () {
+        if (zelleState.fromAdd) showZelleStep("add");
+        else showZelleStep("recipient");
+      });
+      document.getElementById("zelle-recipient-back").addEventListener("click", exitZelleFlow);
+      document.getElementById("zelle-flow-close").addEventListener("click", exitZelleFlow);
+
+      document.getElementById("zelle-amount").addEventListener("input", syncZelleAmountReviewBtn);
+      document.getElementById("zelle-amount").addEventListener("blur", function () {
+        var n = parseZelleAmount();
+        var el = document.getElementById("zelle-amount");
+        el.value = n > 0 ? n.toFixed(2) : "";
+        syncZelleAmountReviewBtn();
+      });
+
+      document.getElementById("zelle-btn-review").addEventListener("click", function () {
+        if (document.getElementById("zelle-btn-review").disabled) return;
+        if (zelleState.mode === "request") {
+          var ra = document.getElementById("zelle-req-success-amt");
+          if (ra) ra.textContent = formatMoney(parseZelleAmount());
+          showZelleStep("reqSuccess");
+          return;
+        }
+        fillZelleReview();
+        showZelleStep("review");
+      });
+
+      document.getElementById("zelle-review-back").addEventListener("click", function () {
+        showZelleStep("amount");
+      });
+      document.getElementById("zelle-submit-pay").addEventListener("click", function () {
+        fillZelleSuccess();
+        showZelleStep("success");
+      });
+
+      function zelleFinishToHub() {
+        exitZelleFlow();
+      }
+      document.getElementById("zelle-done-btn").addEventListener("click", zelleFinishToHub);
+      document.getElementById("zelle-success-x").addEventListener("click", zelleFinishToHub);
+      document.getElementById("zelle-req-done").addEventListener("click", zelleFinishToHub);
+      document.getElementById("zelle-req-success-x").addEventListener("click", zelleFinishToHub);
+      document.getElementById("zelle-another-btn").addEventListener("click", function () {
+        enterZelleFlow("send");
+      });
 
       document.querySelectorAll(".yf-nav button[data-go='noop']").forEach(function (b) {
         b.addEventListener("click", function (e) { e.preventDefault(); });
       });
 
+      document.getElementById("bill-close-list").addEventListener("click", closeBillFlow);
+
+      document.querySelectorAll(".yf-bill-payee").forEach(function (row) {
+        row.addEventListener("click", function () {
+          billState.payeeName = row.getAttribute("data-bill-payee") || "Payee";
+          document.getElementById("bill-pay-title").textContent = billState.payeeName;
+          showBillStep("pay");
+        });
+      });
+
+      document.getElementById("bill-back-pay").addEventListener("click", function () {
+        showBillStep("list");
+      });
+
+      document.getElementById("bill-open-from").addEventListener("click", function () {
+        showBillStep("from");
+      });
+
+      document.getElementById("bill-back-from").addEventListener("click", function () {
+        showBillStep("pay");
+      });
+
+      document.querySelectorAll("[data-bill-from]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          billState.fromId = btn.getAttribute("data-bill-from");
+          syncBillFromRow();
+          showBillStep("pay");
+        });
+      });
+
+      document.getElementById("bill-more-toggle").addEventListener("click", function () {
+        billState.moreExpanded = !billState.moreExpanded;
+        document.getElementById("bill-more-rows").hidden = !billState.moreExpanded;
+        this.textContent = billState.moreExpanded ? "Hide options" : "More options";
+      });
+
+      document.getElementById("bill-open-freq").addEventListener("click", function () {
+        syncBillFreqChecks();
+        showBillStep("freq");
+      });
+
+      document.getElementById("bill-back-freq").addEventListener("click", function () {
+        showBillStep("pay");
+      });
+
+      document.querySelectorAll("[data-bill-freq]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          billState.frequency = btn.getAttribute("data-bill-freq");
+          document.getElementById("bill-freq-label").textContent = billState.frequency;
+          syncBillFreqChecks();
+          showBillStep("pay");
+        });
+      });
+
+      document.getElementById("bill-open-send").addEventListener("click", function () {
+        syncBillDeliveryDates();
+        showBillStep("delivery");
+      });
+
+      document.getElementById("bill-back-delivery").addEventListener("click", function () {
+        showBillStep("pay");
+      });
+
+      document.querySelectorAll("[data-bill-dlv]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          billState.deliveryMode = btn.getAttribute("data-bill-dlv");
+          billState.scheduledDate = null;
+          syncBillPayFoot();
+          showBillStep("pay");
+        });
+      });
+
+      document.getElementById("bill-open-schedule").addEventListener("click", function () {
+        showBillStep("schedule");
+      });
+
+      document.getElementById("bill-back-schedule").addEventListener("click", function () {
+        showBillStep("delivery");
+      });
+
+      document.getElementById("bill-cal-prev").addEventListener("click", function () {
+        billState.calMonth--;
+        if (billState.calMonth < 0) {
+          billState.calMonth = 11;
+          billState.calYear--;
+        }
+        renderBillCalendar();
+      });
+
+      document.getElementById("bill-cal-next").addEventListener("click", function () {
+        billState.calMonth++;
+        if (billState.calMonth > 11) {
+          billState.calMonth = 0;
+          billState.calYear++;
+        }
+        renderBillCalendar();
+      });
+
+      document.getElementById("bill-open-notes").addEventListener("click", function () {
+        document.getElementById("bill-memo").value = billState.memo;
+        document.getElementById("bill-comment").value = billState.comment;
+        showBillStep("notes");
+      });
+
+      document.getElementById("bill-back-notes").addEventListener("click", function () {
+        showBillStep("pay");
+      });
+
+      document.getElementById("bill-notes-save").addEventListener("click", function () {
+        billState.memo = document.getElementById("bill-memo").value.trim();
+        billState.comment = document.getElementById("bill-comment").value.trim();
+        var lbl = document.getElementById("bill-notes-label");
+        if (billState.memo || billState.comment) {
+          lbl.textContent = billState.memo || billState.comment || "Edit notes";
+        } else {
+          lbl.textContent = "Add memo or comment";
+        }
+        showBillStep("pay");
+      });
+
+      document.getElementById("bill-amount").addEventListener("input", syncBillSubmit);
+      document.getElementById("bill-amount").addEventListener("blur", function () {
+        var n = parseBillAmount();
+        document.getElementById("bill-amount").value = n > 0 ? n.toFixed(2) : "";
+        syncBillSubmit();
+      });
+
+      document.getElementById("bill-btn-submit").addEventListener("click", function () {
+        if (document.getElementById("bill-btn-submit").disabled) return;
+        var amt = parseBillAmount();
+        var sendD = billState.deliveryMode === "scheduled" && billState.scheduledDate
+          ? billState.scheduledDate
+          : billTomorrow();
+        var arrD = addDays(sendD, 5);
+        document.getElementById("bill-success-payee").textContent = billState.payeeName;
+        document.getElementById("bill-success-amt").textContent = formatMoney(amt);
+        document.getElementById("bill-success-from").textContent = BILL_FROM[billState.fromId].main;
+        document.getElementById("bill-tl-process").textContent = fmtBillShort(sendD);
+        document.getElementById("bill-tl-arrive").textContent = fmtBillShort(arrD);
+        showBillStep("success");
+      });
+
+      document.getElementById("bill-success-done").addEventListener("click", closeBillFlow);
+
+      document.getElementById("bill-success-another").addEventListener("click", function () {
+        resetBillFlow();
+        showBillStep("list");
+      });
+
+      document.getElementById("bill-tab-single").addEventListener("click", function () {
+        document.getElementById("bill-tab-single").classList.add("is-active");
+        document.getElementById("bill-tab-multi").classList.remove("is-active");
+      });
+
+      document.getElementById("bill-tab-multi").addEventListener("click", function () {
+        document.getElementById("bill-tab-multi").classList.add("is-active");
+        document.getElementById("bill-tab-single").classList.remove("is-active");
+      });
+
+      document.getElementById("bill-payee-filter").addEventListener("input", function () {
+        var q = this.value.trim().toLowerCase();
+        document.querySelectorAll(".yf-bill-payee").forEach(function (row) {
+          var name = (row.getAttribute("data-bill-payee") || "").toLowerCase();
+          row.hidden = q.length > 0 && name.indexOf(q) === -1;
+        });
+      });
+
+      document.getElementById("bill-add-payee").addEventListener("click", function (e) {
+        e.preventDefault();
+      });
+
       document.addEventListener("keydown", function (e) {
         if (e.key === "Escape") {
+          if (viewBill && viewBill.classList.contains("is-visible")) {
+            closeBillFlow();
+            return;
+          }
           if (overlay.classList.contains("is-open")) closeModal();
           else closeDd();
         }
