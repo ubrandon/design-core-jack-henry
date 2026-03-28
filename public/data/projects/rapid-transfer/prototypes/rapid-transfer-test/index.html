@@ -181,15 +181,22 @@
     }
     .yf-profile__chev { margin-left: auto; opacity: 0.35; }
 
-    /* Main */
+    /* Main — flex column so rapid flow (and siblings) can pin footer to viewport bottom */
     .yf-main {
       flex: 1;
       min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .view-dash {
+      flex: 1;
+      min-height: 0;
       overflow-y: auto;
       overflow-x: hidden;
     }
-
-    .view-dash {}
     .view-dash.is-hidden { display: none; }
 
     /* Hero — photo + blue wash (matches YourFi dashboard reference) */
@@ -770,6 +777,7 @@
       flex-direction: column;
       flex: 1;
       min-height: 0;
+      overflow: hidden;
       background: var(--yf-page);
     }
     .view-std.is-visible { display: flex; }
@@ -787,6 +795,7 @@
     }
     .yf-std-body {
       flex: 1;
+      min-height: 0;
       display: grid;
       grid-template-columns: 1fr 288px;
       gap: 20px;
@@ -939,9 +948,119 @@
       flex-direction: column;
       flex: 1;
       min-height: 0;
+      overflow: hidden;
       background: var(--yf-page);
     }
     .view-rapid.is-visible { display: flex; }
+    .view-rapid-hub {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .view-rapid.is-flow .view-rapid-hub { display: none; }
+    .view-rapid-flow {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--yf-page);
+    }
+    .view-rapid.is-flow .view-rapid-flow { display: flex; }
+    .yf-rapid-flow-shell {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 24px 28px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .yf-rapid-flow-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--yf-white);
+      border-radius: var(--yf-radius-md);
+      box-shadow: 0 2px 24px rgba(15, 40, 70, 0.08);
+      border: 1px solid var(--yf-border);
+      position: relative;
+    }
+    .yf-rapid-flow-card .yf-flow-hd {
+      padding-top: 16px;
+    }
+    .yf-rapid-flow-card .yf-modal__x {
+      top: 10px;
+      right: 10px;
+    }
+    .yf-rapid-flow-card .yf-modal--flow,
+    .yf-rapid-flow-card .yf-modal--picker,
+    .yf-rapid-flow-card .yf-modal--rapid-done {
+      max-width: none;
+      width: 100%;
+      box-shadow: none;
+      border-radius: 0;
+      background: transparent;
+      padding-top: 0;
+      margin: 0;
+    }
+    .yf-rapid-flow-card .yf-modal--picker {
+      max-height: min(calc(100vh - 280px), 640px);
+    }
+
+    /* Rapid flow — amount row & primary actions */
+    .yf-rapid-flow-card .yf-txf-row--amount {
+      align-items: stretch;
+    }
+    .yf-rapid-flow-card .yf-txf-amt-wrap {
+      flex: 1;
+      min-width: 0;
+      min-height: 52px;
+      padding: 12px 16px;
+      border: 1px solid var(--yf-border);
+      background: #f8fafc;
+    }
+    .yf-rapid-flow-card .yf-txf-amt {
+      font-size: 1.375rem;
+      letter-spacing: -0.02em;
+      min-width: 5rem;
+    }
+    .yf-rapid-flow-card .yf-txf-amt::placeholder {
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .yf-rapid-flow-card .yf-flow-actions {
+      padding: 20px 20px 12px;
+    }
+    .yf-rapid-flow-card .yf-flow-actions .yf-review-submit {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 48px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .yf-rapid-flow-card .yf-card-success__actions {
+      padding: 0 12px 8px !important;
+    }
+    .yf-rapid-flow-card .yf-card-success__actions .btn,
+    .yf-rapid-flow-card .yf-card-success__actions .yf-btn-outline-blue {
+      min-height: 48px;
+      font-size: 1rem;
+    }
+
+    /* Rapid flow — submitted state */
+    .yf-rapid-flow-card .yf-modal--rapid-done {
+      padding: 20px 24px 20px;
+    }
+    .yf-rapid-flow-card .yf-modal--rapid-done .yf-success-ico {
+      margin-top: 36px;
+      margin-bottom: 20px;
+    }
+    .yf-rapid-flow-card .yf-rapid-done__amt {
+      color: var(--yf-text);
+    }
     .yf-rapid-th {
       display: grid;
       grid-template-columns: 56px minmax(0, 1fr) minmax(100px, 140px) 88px 24px;
@@ -1924,6 +2043,7 @@
       </div>
 
       <div class="view-rapid" id="view-rapid">
+        <div class="view-rapid-hub" id="view-rapid-hub">
         <header class="yf-std-hero">
           <h1>Rapid transfers</h1>
         </header>
@@ -2031,6 +2151,228 @@
           <span>Equal Housing Lender</span>
         </footer>
         <button type="button" class="yf-fab" aria-label="Help">?</button>
+        </div>
+
+        <div class="view-rapid-flow" id="view-rapid-flow">
+          <header class="yf-std-hero">
+            <h1 id="rapid-flow-hero-title">Rapid transfer</h1>
+            <p id="rapid-flow-hero-sub" style="margin:8px 0 0;font-size:0.875rem;font-weight:500;color:rgba(255,255,255,0.88);max-width:36rem;">Transfer money within minutes</p>
+          </header>
+          <div class="yf-rapid-flow-shell">
+            <div class="yf-rapid-flow-card" id="rapid-flow-step-form" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+                <button type="button" class="yf-modal__x" id="rapid-form-close-full" aria-label="Close">×</button>
+                <div class="yf-flow-hd">
+                  <button type="button" class="yf-modal-back" id="rapid-form-back" aria-label="Back">‹</button>
+                  <div>
+                    <h2 id="rapid-form-title">Rapid transfer</h2>
+                    <p class="yf-flow-sub">Transfer money within minutes</p>
+                  </div>
+                  <span aria-hidden="true"></span>
+                </div>
+                <div class="yf-flow-body">
+                  <button type="button" class="yf-txf-row" id="rapid-pick-from" aria-haspopup="dialog">
+                    <span class="yf-txf-row__lbl">From</span>
+                    <span class="yf-txf-row__val">
+                      <span class="yf-txf-row__main" id="rapid-from-label">Select account</span>
+                      <span class="yf-txf-row__sub" id="rapid-from-bal" hidden></span>
+                    </span>
+                    <span class="yf-txf-row__chev" aria-hidden="true">›</span>
+                  </button>
+                  <button type="button" class="yf-txf-row" id="rapid-pick-to" aria-haspopup="dialog">
+                    <span class="yf-txf-row__lbl">To</span>
+                    <span class="yf-txf-row__val">
+                      <span class="yf-txf-row__main" id="rapid-to-label">Select account</span>
+                      <span class="yf-txf-row__sub" id="rapid-to-sub" hidden></span>
+                    </span>
+                    <span class="yf-txf-row__chev" aria-hidden="true">›</span>
+                  </button>
+                  <div class="yf-txf-row yf-txf-row--amount" style="cursor:default;border-bottom:none;">
+                    <span class="yf-txf-row__lbl">Amount</span>
+                    <div class="yf-txf-amt-wrap">
+                      <span>$</span>
+                      <input class="yf-txf-amt" id="rapid-amount" type="text" inputmode="decimal" autocomplete="off" value="" placeholder="0.00" aria-label="Amount">
+                    </div>
+                  </div>
+                </div>
+                <div class="yf-flow-actions">
+                  <button type="button" class="yf-review-submit" id="rapid-btn-review" disabled>Review</button>
+                </div>
+                <p class="yf-modal__fine">Fund availability may vary depending on the receiving financial institution.</p>
+              </div>
+            </div>
+
+            <div class="yf-rapid-flow-card" id="rapid-flow-step-from" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--picker" style="padding-top:0;">
+                <div class="yf-flow-hd">
+                  <button type="button" class="yf-modal-back" id="pick-from-back" aria-label="Back">‹</button>
+                  <h2 id="pick-from-title">Transfer from</h2>
+                  <span aria-hidden="true"></span>
+                </div>
+                <div class="yf-pick-scroll">
+                  <button type="button" class="yf-pick-row" data-pick-from="checking">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Checking x1234</div>
+                    </div>
+                    <div>
+                      <div class="yf-pick-row__bal">$1,512.03</div>
+                      <div class="yf-pick-row__avail">Available</div>
+                    </div>
+                  </button>
+                  <button type="button" class="yf-pick-row" data-pick-from="savings">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Savings x1234</div>
+                    </div>
+                    <div>
+                      <div class="yf-pick-row__bal">$2,564.13</div>
+                      <div class="yf-pick-row__avail">Available</div>
+                    </div>
+                  </button>
+                  <button type="button" class="yf-pick-row" data-pick-from="mortgage">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Mortgage x1234</div>
+                    </div>
+                    <div>
+                      <div class="yf-pick-row__bal">$165,215.36</div>
+                      <div class="yf-pick-row__avail">Balance</div>
+                    </div>
+                  </button>
+                  <button type="button" class="yf-pick-row" data-pick-from="auto">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Auto Loan x1234</div>
+                    </div>
+                    <div>
+                      <div class="yf-pick-row__bal">$7,457.39</div>
+                      <div class="yf-pick-row__avail">Balance</div>
+                    </div>
+                  </button>
+                  <div class="yf-pick-section">Rapid transfer external accounts</div>
+                  <button type="button" class="yf-pick-row yf-pick-ext" data-pick-from="issuing">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Issuing FI</div>
+                      <small>via debit (x1234)</small>
+                      <span class="yf-pick-visa" aria-hidden="true">VISA</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="yf-rapid-flow-card" id="rapid-flow-step-to" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--picker" style="padding-top:0;">
+                <div class="yf-flow-hd">
+                  <button type="button" class="yf-modal-back" id="pick-to-back" aria-label="Back">‹</button>
+                  <h2 id="pick-to-title">Transfer to</h2>
+                  <span aria-hidden="true"></span>
+                </div>
+                <div class="yf-pick-scroll">
+                  <button type="button" class="yf-pick-row" data-pick-to="savings-dest">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Savings x1234</div>
+                    </div>
+                    <div>
+                      <div class="yf-pick-row__bal">$2,564.13</div>
+                      <div class="yf-pick-row__avail">Available</div>
+                    </div>
+                  </button>
+                  <button type="button" class="yf-pick-row" data-pick-to="checking-dest">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Checking x1234</div>
+                    </div>
+                    <div>
+                      <div class="yf-pick-row__bal">$1,512.03</div>
+                      <div class="yf-pick-row__avail">Available</div>
+                    </div>
+                  </button>
+                  <div class="yf-pick-section">Rapid transfer external accounts</div>
+                  <button type="button" class="yf-pick-row yf-pick-ext" data-pick-to="issuing">
+                    <div class="yf-pick-row__left">
+                      <div class="yf-pick-row__name">Issuing FI</div>
+                      <small>via debit (x1234)</small>
+                      <span class="yf-pick-visa" aria-hidden="true">VISA</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="yf-rapid-flow-card" id="rapid-flow-step-review" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+                <div class="yf-flow-hd">
+                  <button type="button" class="yf-modal-back" id="rapid-review-back" aria-label="Back">‹</button>
+                  <div>
+                    <h2 id="rapid-review-title">Review rapid transfer</h2>
+                    <p class="yf-flow-sub">Transfer money within minutes</p>
+                  </div>
+                  <span aria-hidden="true"></span>
+                </div>
+                <div class="yf-flow-review">
+                  <p class="yf-flow-review__big" id="review-amt-display">$200.00</p>
+                  <dl class="yf-flow-review__grid">
+                    <dt>From</dt>
+                    <dd id="review-from-display">Checking (x1234)</dd>
+                    <dt>To</dt>
+                    <dd><span id="review-to-main"></span><br><small id="review-to-extra" class="review-to-extra"></small></dd>
+                  </dl>
+                  <hr class="yf-dotted">
+                  <dl class="yf-flow-review__grid yf-flow-review__total">
+                    <dt>Transfer fee</dt>
+                    <dd id="review-fee-display">$2.00</dd>
+                    <dt>Total</dt>
+                    <dd id="review-total-display">$202.00</dd>
+                  </dl>
+                </div>
+                <div class="yf-flow-actions">
+                  <button type="button" class="yf-review-submit is-ready" id="rapid-review-submit">Submit</button>
+                </div>
+                <p class="yf-legal-note">YourFi fee ($2.00 minimum) when sending out to an external account via debit card. Fees are not counted towards the daily limit. Daily limits are refreshed at 12:00 a.m. CT.</p>
+                <p class="yf-modal__fine" style="padding-top:0;">Fund availability may vary depending on the receiving financial institution.</p>
+              </div>
+            </div>
+
+            <div class="yf-rapid-flow-card" id="rapid-flow-step-success" hidden>
+              <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
+                <button type="button" class="yf-modal__x" id="rapid-success-close-x" aria-label="Close">×</button>
+                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+                <h2 class="yf-rapid-done__title" id="rapid-done-title">Rapid transfer submitted</h2>
+                <p class="yf-rapid-done__sub">The money should arrive in your account within minutes*</p>
+                <p class="yf-rapid-done__amt" id="done-amt-display">$200.00</p>
+                <div class="yf-rapid-done__detail">
+                  <dl style="margin:0;">
+                    <dt>From</dt>
+                    <dd id="done-from-display">Checking (x1234)</dd>
+                    <dt>To</dt>
+                    <dd><span id="done-to-main"></span><br><small id="done-to-extra" class="review-to-extra"></small></dd>
+                  </dl>
+                  <hr class="yf-dotted">
+                  <dl class="yf-flow-review__grid yf-flow-review__total" style="margin:0;">
+                    <dt>Transfer fee</dt>
+                    <dd id="done-fee-display">$2.00</dd>
+                    <dt>Total</dt>
+                    <dd id="done-total-display">$202.00</dd>
+                  </dl>
+                </div>
+                <div class="yf-card-success__actions">
+                  <button type="button" class="btn btn-primary" id="rapid-done-close">Done</button>
+                  <button type="button" class="yf-btn-outline-blue" id="rapid-done-another">Make another rapid transfer</button>
+                </div>
+                <p class="yf-modal__fine">*Fund availability may vary depending on the receiving financial institution.</p>
+              </div>
+            </div>
+          </div>
+          <footer class="yf-footer">
+            <span>©2024 YourFi</span>
+            <span>·</span>
+            <span>(555) 555-5555</span>
+            <span>·</span>
+            <a href="#" onclick="return false;">Privacy policy</a>
+            <span>·</span>
+            <span>Member FDIC</span>
+            <span>·</span>
+            <span>Equal Housing Lender</span>
+          </footer>
+          <button type="button" class="yf-fab" aria-label="Help">?</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2103,16 +2445,16 @@
         <form id="form-debit" novalidate>
           <div class="yf-field">
             <label for="debit-number">Card number</label>
-            <input id="debit-number" name="cardnumber" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="Card number">
+            <input id="debit-number" name="cardnumber" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="23" spellcheck="false">
           </div>
           <div class="yf-field">
             <label for="debit-exp">Expiration date (MM/YY)</label>
-            <input id="debit-exp" name="ccexp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="Expiration date (MM/YY)">
+            <input id="debit-exp" name="ccexp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/YY" maxlength="5" spellcheck="false">
           </div>
           <div class="yf-field">
             <label for="debit-cvv">CVV/CVC</label>
-            <input id="debit-cvv" name="cvv" type="password" inputmode="numeric" autocomplete="cc-csc" placeholder="CVV/CVC" maxlength="4">
-            <p class="yf-field-hint">3-digit security code</p>
+            <input id="debit-cvv" name="cvv" type="password" inputmode="numeric" autocomplete="cc-csc" placeholder="•••" maxlength="4" spellcheck="false">
+            <p class="yf-field-hint">3 digits (4 on some cards)</p>
           </div>
           <button type="button" class="yf-card-form__submit" id="debit-submit">Submit</button>
         </form>
@@ -2128,197 +2470,6 @@
         <button type="button" class="btn btn-primary" id="card-success-ok">Ok</button>
         <button type="button" class="yf-btn-outline-blue" id="card-success-add-another">Add another debit card</button>
       </div>
-    </div>
-
-    <div class="yf-modal yf-modal--pane yf-modal--flow" id="modal-pane-rapid-form" role="dialog" aria-modal="true" aria-labelledby="rapid-form-title" hidden>
-      <button type="button" class="yf-modal__x" data-close-modal aria-label="Close">×</button>
-      <div class="yf-flow-hd">
-        <button type="button" class="yf-modal-back" id="rapid-form-back" aria-label="Back">‹</button>
-        <div>
-          <h2 id="rapid-form-title">Rapid transfer</h2>
-          <p class="yf-flow-sub">Transfer money within minutes</p>
-        </div>
-        <span aria-hidden="true"></span>
-      </div>
-      <div class="yf-flow-body">
-        <button type="button" class="yf-txf-row" id="rapid-pick-from" aria-haspopup="dialog">
-          <span class="yf-txf-row__lbl">From</span>
-          <span class="yf-txf-row__val">
-            <span class="yf-txf-row__main" id="rapid-from-label">Select account</span>
-            <span class="yf-txf-row__sub" id="rapid-from-bal" hidden></span>
-          </span>
-          <span class="yf-txf-row__chev" aria-hidden="true">›</span>
-        </button>
-        <button type="button" class="yf-txf-row" id="rapid-pick-to" aria-haspopup="dialog">
-          <span class="yf-txf-row__lbl">To</span>
-          <span class="yf-txf-row__val">
-            <span class="yf-txf-row__main" id="rapid-to-label">Select account</span>
-            <span class="yf-txf-row__sub" id="rapid-to-sub" hidden></span>
-          </span>
-          <span class="yf-txf-row__chev" aria-hidden="true">›</span>
-        </button>
-        <div class="yf-txf-row" style="cursor:default;border-bottom:none;">
-          <span class="yf-txf-row__lbl">Amount</span>
-          <div class="yf-txf-amt-wrap">
-            <span>$</span>
-            <input class="yf-txf-amt" id="rapid-amount" type="text" inputmode="decimal" autocomplete="off" value="0.00" aria-label="Amount">
-          </div>
-        </div>
-      </div>
-      <div class="yf-flow-actions">
-        <button type="button" class="yf-review-submit" id="rapid-btn-review" disabled>Review</button>
-      </div>
-      <p class="yf-modal__fine">Fund availability may vary depending on the receiving financial institution.</p>
-    </div>
-
-    <div class="yf-modal yf-modal--pane yf-modal--picker" id="modal-pane-rapid-from" role="dialog" aria-modal="true" aria-labelledby="pick-from-title" hidden>
-      <div class="yf-flow-hd">
-        <button type="button" class="yf-modal-back" id="pick-from-back" aria-label="Back">‹</button>
-        <h2 id="pick-from-title">Transfer from</h2>
-        <span aria-hidden="true"></span>
-      </div>
-      <div class="yf-pick-scroll">
-        <button type="button" class="yf-pick-row" data-pick-from="checking">
-          <div class="yf-pick-row__left">
-            <div class="yf-pick-row__name">Checking x1234</div>
-          </div>
-          <div>
-            <div class="yf-pick-row__bal">$1,512.03</div>
-            <div class="yf-pick-row__avail">Available</div>
-          </div>
-        </button>
-        <button type="button" class="yf-pick-row" data-pick-from="savings">
-          <div class="yf-pick-row__left">
-            <div class="yf-pick-row__name">Savings x1234</div>
-          </div>
-          <div>
-            <div class="yf-pick-row__bal">$2,564.13</div>
-            <div class="yf-pick-row__avail">Available</div>
-          </div>
-        </button>
-        <button type="button" class="yf-pick-row" data-pick-from="mortgage">
-          <div class="yf-pick-row__left">
-            <div class="yf-pick-row__name">Mortgage x1234</div>
-          </div>
-          <div>
-            <div class="yf-pick-row__bal">$165,215.36</div>
-            <div class="yf-pick-row__avail">Balance</div>
-          </div>
-        </button>
-        <button type="button" class="yf-pick-row" data-pick-from="auto">
-          <div class="yf-pick-row__left">
-            <div class="yf-pick-row__name">Auto Loan x1234</div>
-          </div>
-          <div>
-            <div class="yf-pick-row__bal">$7,457.39</div>
-            <div class="yf-pick-row__avail">Balance</div>
-          </div>
-        </button>
-        <div class="yf-pick-section">Rapid transfer external accounts</div>
-        <button type="button" class="yf-pick-row yf-pick-ext" data-pick-from="issuing">
-          <div class="yf-pick-row__left">
-            <div class="yf-pick-row__name">Issuing FI</div>
-            <small>via debit (x1234)</small>
-            <span class="yf-pick-visa" aria-hidden="true">VISA</span>
-          </div>
-        </button>
-      </div>
-    </div>
-
-    <div class="yf-modal yf-modal--pane yf-modal--picker" id="modal-pane-rapid-to" role="dialog" aria-modal="true" aria-labelledby="pick-to-title" hidden>
-      <div class="yf-flow-hd">
-        <button type="button" class="yf-modal-back" id="pick-to-back" aria-label="Back">‹</button>
-        <h2 id="pick-to-title">Transfer to</h2>
-        <span aria-hidden="true"></span>
-      </div>
-      <div class="yf-pick-scroll">
-        <button type="button" class="yf-pick-row" data-pick-to="savings-dest">
-          <div class="yf-pick-row__left">
-            <div class="yf-pick-row__name">Savings x1234</div>
-          </div>
-          <div>
-            <div class="yf-pick-row__bal">$2,564.13</div>
-            <div class="yf-pick-row__avail">Available</div>
-          </div>
-        </button>
-        <button type="button" class="yf-pick-row" data-pick-to="checking-dest">
-          <div class="yf-pick-row__left">
-            <div class="yf-pick-row__name">Checking x1234</div>
-          </div>
-          <div>
-            <div class="yf-pick-row__bal">$1,512.03</div>
-            <div class="yf-pick-row__avail">Available</div>
-          </div>
-        </button>
-        <div class="yf-pick-section">Rapid transfer external accounts</div>
-        <button type="button" class="yf-pick-row yf-pick-ext" data-pick-to="issuing">
-          <div class="yf-pick-row__left">
-            <div class="yf-pick-row__name">Issuing FI</div>
-            <small>via debit (x1234)</small>
-            <span class="yf-pick-visa" aria-hidden="true">VISA</span>
-          </div>
-        </button>
-      </div>
-    </div>
-
-    <div class="yf-modal yf-modal--pane yf-modal--flow" id="modal-pane-rapid-review" role="dialog" aria-modal="true" aria-labelledby="rapid-review-title" hidden>
-      <div class="yf-flow-hd">
-        <button type="button" class="yf-modal-back" id="rapid-review-back" aria-label="Back">‹</button>
-        <div>
-          <h2 id="rapid-review-title">Review rapid transfer</h2>
-          <p class="yf-flow-sub">Transfer money within minutes</p>
-        </div>
-        <span aria-hidden="true"></span>
-      </div>
-      <div class="yf-flow-review">
-        <p class="yf-flow-review__big" id="review-amt-display">$200.00</p>
-        <dl class="yf-flow-review__grid">
-          <dt>From</dt>
-          <dd id="review-from-display">Checking (x1234)</dd>
-          <dt>To</dt>
-          <dd><span id="review-to-main"></span><br><small id="review-to-extra" class="review-to-extra"></small></dd>
-        </dl>
-        <hr class="yf-dotted">
-        <dl class="yf-flow-review__grid yf-flow-review__total">
-          <dt>Transfer fee</dt>
-          <dd id="review-fee-display">$2.00</dd>
-          <dt>Total</dt>
-          <dd id="review-total-display">$202.00</dd>
-        </dl>
-      </div>
-      <div class="yf-flow-actions">
-        <button type="button" class="yf-review-submit is-ready" id="rapid-review-submit">Submit</button>
-      </div>
-      <p class="yf-legal-note">YourFi fee ($2.00 minimum) when sending out to an external account via debit card. Fees are not counted towards the daily limit. Daily limits are refreshed at 12:00 a.m. CT.</p>
-      <p class="yf-modal__fine" style="padding-top:0;">Fund availability may vary depending on the receiving financial institution.</p>
-    </div>
-
-    <div class="yf-modal yf-modal--pane yf-modal--rapid-done" id="modal-pane-rapid-success" role="dialog" aria-modal="true" aria-labelledby="rapid-done-title" hidden>
-      <button type="button" class="yf-modal__x" data-close-modal aria-label="Close">×</button>
-      <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
-      <h2 class="yf-rapid-done__title" id="rapid-done-title">Rapid transfer submitted</h2>
-      <p class="yf-rapid-done__sub">The money should arrive in your account within minutes*</p>
-      <p class="yf-rapid-done__amt" id="done-amt-display">$200.00</p>
-      <div class="yf-rapid-done__detail">
-        <dl style="margin:0;">
-          <dt>From</dt>
-          <dd id="done-from-display">Checking (x1234)</dd>
-          <dt>To</dt>
-          <dd><span id="done-to-main"></span><br><small id="done-to-extra" class="review-to-extra"></small></dd>
-        </dl>
-        <hr class="yf-dotted">
-        <dl class="yf-flow-review__grid yf-flow-review__total" style="margin:0;">
-          <dt>Transfer fee</dt>
-          <dd id="done-fee-display">$2.00</dd>
-          <dt>Total</dt>
-          <dd id="done-total-display">$202.00</dd>
-        </dl>
-      </div>
-      <div class="yf-card-success__actions" style="padding:0 8px;">
-        <button type="button" class="btn btn-primary" id="rapid-done-close">Done</button>
-        <button type="button" class="yf-btn-outline-blue" id="rapid-done-another">Make another rapid transfer</button>
-      </div>
-      <p class="yf-modal__fine">*Fund availability may vary depending on the receiving financial institution.</p>
     </div>
   </div>
 
@@ -2344,13 +2495,18 @@
         choice: document.getElementById("modal-pane-choice"),
         rapidPromo: document.getElementById("modal-pane-rapid"),
         card: document.getElementById("modal-pane-card"),
-        cardSuccess: document.getElementById("modal-pane-card-success"),
-        rapidForm: document.getElementById("modal-pane-rapid-form"),
-        rapidFrom: document.getElementById("modal-pane-rapid-from"),
-        rapidTo: document.getElementById("modal-pane-rapid-to"),
-        rapidReview: document.getElementById("modal-pane-rapid-review"),
-        rapidSuccess: document.getElementById("modal-pane-rapid-success")
+        cardSuccess: document.getElementById("modal-pane-card-success")
       };
+
+      var flowSteps = {
+        form: document.getElementById("rapid-flow-step-form"),
+        from: document.getElementById("rapid-flow-step-from"),
+        to: document.getElementById("rapid-flow-step-to"),
+        review: document.getElementById("rapid-flow-step-review"),
+        success: document.getElementById("rapid-flow-step-success")
+      };
+
+      var rapidFlowEntry = "hub";
 
       var FROM_META = {
         checking: { formMain: "Checking x1234", formSub: "$1,512.03", review: "Checking (x1234)" },
@@ -2372,6 +2528,53 @@
         Object.keys(panes).forEach(function (k) {
           panes[k].hidden = k !== active;
         });
+      }
+
+      function syncRapidFlowHero(step) {
+        var title = document.getElementById("rapid-flow-hero-title");
+        var sub = document.getElementById("rapid-flow-hero-sub");
+        if (!title || !sub) return;
+        if (step === "from") {
+          title.textContent = "Transfer from";
+          sub.hidden = true;
+        } else if (step === "to") {
+          title.textContent = "Transfer to";
+          sub.hidden = true;
+        } else if (step === "review") {
+          title.textContent = "Review transfer";
+          sub.textContent = "Transfer money within minutes";
+          sub.hidden = false;
+        } else if (step === "success") {
+          title.textContent = "Rapid transfer";
+          sub.textContent = "Transfer submitted";
+          sub.hidden = false;
+        } else {
+          title.textContent = "Rapid transfer";
+          sub.textContent = "Transfer money within minutes";
+          sub.hidden = false;
+        }
+      }
+
+      function showRapidFlowStep(active) {
+        Object.keys(flowSteps).forEach(function (k) {
+          flowSteps[k].hidden = k !== active;
+        });
+        syncRapidFlowHero(active);
+      }
+
+      function enterRapidFlow(entry) {
+        rapidFlowEntry = entry || "hub";
+        viewRapid.classList.add("is-flow");
+        showRapidFlowStep("form");
+      }
+
+      function exitRapidFlow() {
+        if (!viewRapid.classList.contains("is-flow")) return;
+        viewRapid.classList.remove("is-flow");
+        Object.keys(flowSteps).forEach(function (k) {
+          flowSteps[k].hidden = true;
+        });
+        resetRapidFlow();
       }
 
       function lastFourDigits(num) {
@@ -2441,7 +2644,7 @@
       function resetRapidFlow() {
         rapidState.fromId = null;
         rapidState.toId = null;
-        document.getElementById("rapid-amount").value = "0.00";
+        document.getElementById("rapid-amount").value = "";
         syncRapidFormFrom();
         syncRapidFormTo();
         syncReviewButton();
@@ -2562,6 +2765,7 @@
         overlay.setAttribute("aria-hidden", "true");
         showModalPane("choice");
         formDebit.reset();
+        exitRapidFlow();
         resetRapidFlow();
       }
 
@@ -2572,6 +2776,107 @@
         showModalPane("cardSuccess");
         openOverlay();
       }
+
+      (function wireDebitCardInputs() {
+        var numEl = document.getElementById("debit-number");
+        var expEl = document.getElementById("debit-exp");
+        var cvvEl = document.getElementById("debit-cvv");
+
+        function formatDebitCardNumber(el) {
+          var prev = el.value;
+          var sel = el.selectionStart == null ? prev.length : el.selectionStart;
+          var digitsBefore = prev.slice(0, sel).replace(/\D/g, "").length;
+          var d = prev.replace(/\D/g, "").slice(0, 19);
+          var parts = d.match(/.{1,4}/g);
+          var next = parts ? parts.join(" ") : "";
+          el.value = next;
+          if (!next.length) {
+            el.setSelectionRange(0, 0);
+            return;
+          }
+          var i = 0;
+          var nd = 0;
+          for (; i < next.length; i++) {
+            if (/\d/.test(next.charAt(i))) {
+              nd++;
+              if (nd >= digitsBefore) {
+                i++;
+                break;
+              }
+            }
+          }
+          el.setSelectionRange(i, i);
+        }
+
+        function formatDebitExp(el) {
+          var prev = el.value;
+          var sel = el.selectionStart == null ? prev.length : el.selectionStart;
+          var digitsBefore = prev.slice(0, sel).replace(/\D/g, "").length;
+          var d = prev.replace(/\D/g, "").slice(0, 4);
+          var next = d.length <= 2 ? d : d.slice(0, 2) + "/" + d.slice(2);
+          el.value = next;
+          if (!next.length) {
+            el.setSelectionRange(0, 0);
+            return;
+          }
+          if (digitsBefore === 2 && next.length > 2 && next.charAt(2) === "/") {
+            el.setSelectionRange(3, 3);
+            return;
+          }
+          var i = 0;
+          for (; i <= next.length; i++) {
+            if (next.slice(0, i).replace(/\D/g, "").length >= digitsBefore) break;
+          }
+          el.setSelectionRange(i, i);
+        }
+
+        function sanitizeCvv(el) {
+          var prev = el.value;
+          var sel = el.selectionStart == null ? prev.length : el.selectionStart;
+          var digitsBefore = prev.slice(0, sel).replace(/\D/g, "").length;
+          var d = prev.replace(/\D/g, "").slice(0, 4);
+          el.value = d;
+          var pos = Math.min(digitsBefore, d.length);
+          try {
+            el.setSelectionRange(pos, pos);
+          } catch (err) {}
+        }
+
+        numEl.addEventListener("input", function () {
+          formatDebitCardNumber(numEl);
+        });
+        numEl.addEventListener("paste", function (e) {
+          e.preventDefault();
+          var t = (e.clipboardData || window.clipboardData).getData("text") || "";
+          var d = t.replace(/\D/g, "").slice(0, 19);
+          var parts = d.match(/.{1,4}/g);
+          numEl.value = parts ? parts.join(" ") : "";
+          numEl.setSelectionRange(numEl.value.length, numEl.value.length);
+        });
+
+        expEl.addEventListener("input", function () {
+          formatDebitExp(expEl);
+        });
+        expEl.addEventListener("paste", function (e) {
+          e.preventDefault();
+          var t = (e.clipboardData || window.clipboardData).getData("text") || "";
+          var d = t.replace(/\D/g, "").slice(0, 4);
+          expEl.value = d.length <= 2 ? d : d.slice(0, 2) + "/" + d.slice(2);
+          expEl.setSelectionRange(expEl.value.length, expEl.value.length);
+        });
+
+        cvvEl.addEventListener("input", function () {
+          sanitizeCvv(cvvEl);
+        });
+        cvvEl.addEventListener("paste", function (e) {
+          e.preventDefault();
+          var t = (e.clipboardData || window.clipboardData).getData("text") || "";
+          cvvEl.value = t.replace(/\D/g, "").slice(0, 4);
+          try {
+            cvvEl.setSelectionRange(cvvEl.value.length, cvvEl.value.length);
+          } catch (err) {}
+        });
+      })();
 
       document.getElementById("debit-submit").addEventListener("click", function () {
         finishDebitCardAdd();
@@ -2624,63 +2929,84 @@
       });
 
       document.getElementById("rapid-form-back").addEventListener("click", function () {
-        showModalPane("rapidPromo");
+        if (rapidFlowEntry === "promo") {
+          exitRapidFlow();
+          showModalPane("rapidPromo");
+          openOverlay();
+        } else {
+          exitRapidFlow();
+        }
+      });
+      document.getElementById("rapid-form-close-full").addEventListener("click", function () {
+        exitRapidFlow();
       });
       document.getElementById("rapid-pick-from").addEventListener("click", function () {
-        showModalPane("rapidFrom");
+        showRapidFlowStep("from");
       });
       document.getElementById("pick-from-back").addEventListener("click", function () {
-        showModalPane("rapidForm");
+        showRapidFlowStep("form");
       });
       document.querySelectorAll("[data-pick-from]").forEach(function (btn) {
         btn.addEventListener("click", function () {
           rapidState.fromId = btn.getAttribute("data-pick-from");
           syncRapidFormFrom();
           syncReviewButton();
-          showModalPane("rapidForm");
+          showRapidFlowStep("form");
         });
       });
 
       document.getElementById("rapid-pick-to").addEventListener("click", function () {
-        showModalPane("rapidTo");
+        showRapidFlowStep("to");
       });
       document.getElementById("pick-to-back").addEventListener("click", function () {
-        showModalPane("rapidForm");
+        showRapidFlowStep("form");
       });
       document.querySelectorAll("[data-pick-to]").forEach(function (btn) {
         btn.addEventListener("click", function () {
           rapidState.toId = btn.getAttribute("data-pick-to");
           syncRapidFormTo();
           syncReviewButton();
-          showModalPane("rapidForm");
+          showRapidFlowStep("form");
         });
       });
 
       document.getElementById("rapid-amount").addEventListener("input", syncReviewButton);
+      document.getElementById("rapid-amount").addEventListener("focus", function () {
+        var el = this;
+        if (!el.value) return;
+        requestAnimationFrame(function () {
+          el.select();
+        });
+      });
       document.getElementById("rapid-amount").addEventListener("blur", function () {
         var n = parseAmount();
-        document.getElementById("rapid-amount").value = n > 0 ? n.toFixed(2) : "0.00";
+        document.getElementById("rapid-amount").value = n > 0 ? n.toFixed(2) : "";
         syncReviewButton();
       });
 
       document.getElementById("rapid-btn-review").addEventListener("click", function () {
         if (document.getElementById("rapid-btn-review").disabled) return;
         fillReviewAndDone(parseAmount());
-        showModalPane("rapidReview");
+        showRapidFlowStep("review");
       });
 
       document.getElementById("rapid-review-back").addEventListener("click", function () {
-        showModalPane("rapidForm");
+        showRapidFlowStep("form");
       });
       document.getElementById("rapid-review-submit").addEventListener("click", function () {
         fillReviewAndDone(parseAmount());
-        showModalPane("rapidSuccess");
+        showRapidFlowStep("success");
       });
 
-      document.getElementById("rapid-done-close").addEventListener("click", closeModal);
+      document.getElementById("rapid-done-close").addEventListener("click", function () {
+        exitRapidFlow();
+      });
+      document.getElementById("rapid-success-close-x").addEventListener("click", function () {
+        exitRapidFlow();
+      });
       document.getElementById("rapid-done-another").addEventListener("click", function () {
         resetRapidFlow();
-        showModalPane("rapidForm");
+        showRapidFlowStep("form");
       });
 
       function goRapidActivity() {
@@ -2717,8 +3043,7 @@
 
       document.getElementById("rapid-hub-make").addEventListener("click", function () {
         resetRapidFlow();
-        showModalPane("rapidForm");
-        openOverlay();
+        enterRapidFlow("hub");
       });
       document.getElementById("rapid-hub-add-card").addEventListener("click", function (e) {
         e.preventDefault();
