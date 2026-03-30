@@ -2347,6 +2347,137 @@
       background: var(--yf-page);
     }
     .view-bill.is-visible { display: flex; }
+    .view-bill-hub {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+    .view-bill.is-flow .view-bill-hub { display: none; }
+    .view-bill-flow {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: hidden;
+      background: var(--yf-page);
+    }
+    .view-bill.is-flow .view-bill-flow { display: flex; }
+    .yf-bill-quick-actions {
+      display: flex;
+      gap: 6px;
+      padding: 12px 14px 14px;
+      justify-content: space-between;
+    }
+    .yf-bill-quick-actions__btn {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 6px;
+      border: none;
+      background: none;
+      font: inherit;
+      cursor: pointer;
+      border-radius: var(--yf-radius-sm);
+      color: inherit;
+    }
+    .yf-bill-quick-actions__btn:hover { background: #fafbfc; }
+    .yf-bill-quick-actions__btn:focus-visible {
+      outline: 2px solid var(--yf-blue);
+      outline-offset: 2px;
+    }
+    .yf-bill-quick-ico {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--yf-nav-active-bg);
+      color: var(--yf-blue);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .yf-bill-quick-actions__lbl {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.25;
+      color: var(--yf-text);
+    }
+    .yf-bill-payments-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 8px 20px 10px;
+      border-bottom: 1px solid var(--yf-border);
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--yf-muted);
+    }
+    .yf-bill-payments-head__spacer { width: 52px; flex-shrink: 0; }
+    .yf-bill-payments-head__payee { flex: 1; min-width: 0; }
+    .yf-bill-payments-head__status { width: 100px; flex-shrink: 0; }
+    .yf-bill-payments-head__amt { width: 76px; flex-shrink: 0; text-align: right; }
+    .yf-bill-pay-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-bottom: 1px solid var(--yf-border);
+      background: var(--yf-white);
+      font: inherit;
+      cursor: pointer;
+      text-align: left;
+      box-sizing: border-box;
+    }
+    .yf-bill-pay-row:hover { background: #fafbfc; }
+    .yf-bill-pay-row__payee {
+      flex: 1;
+      min-width: 0;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--yf-text);
+    }
+    .yf-bill-pay-row__status {
+      width: 100px;
+      flex-shrink: 0;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--yf-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .yf-bill-pay-row__amt {
+      width: 76px;
+      flex-shrink: 0;
+      font-size: 0.875rem;
+      font-weight: 800;
+      color: var(--yf-text);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+    .yf-bill-hub-scroll {
+      max-height: min(52vh, 480px);
+      overflow-y: auto;
+      border-bottom: 1px solid var(--yf-border);
+    }
+    .yf-bill-load-more-wrap {
+      padding: 14px 20px 16px;
+      text-align: center;
+      border-top: 1px solid var(--yf-border);
+    }
     .yf-bill-page {
       padding: 20px 28px 24px;
       display: flex;
@@ -2388,8 +2519,6 @@
       font-weight: 700;
     }
     .yf-bill-list-scroll {
-      max-height: min(58vh, 520px);
-      overflow-y: auto;
       border-top: 1px solid var(--yf-border);
       border-bottom: 1px solid var(--yf-border);
     }
@@ -2755,7 +2884,7 @@
             <span class="yf-action__ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
             Pay a bill
           </button>
-          <button type="button" class="yf-action">
+          <button type="button" class="yf-action" id="btn-pay-person-hero">
             <span class="yf-action__ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
             Pay a person
           </button>
@@ -3841,7 +3970,124 @@
       </div>
 
       <div class="view-bill" id="view-bill">
-        <div class="yf-view-content-scroll">
+        <div class="view-bill-hub" id="view-bill-hub">
+          <div class="yf-view-content-scroll">
+            <header class="yf-std-hero">
+              <h1>Bill pay</h1>
+            </header>
+            <div class="yf-std-body">
+              <div>
+                <div class="yf-card">
+                  <div class="yf-panel__hd">
+                    <h2>Payments</h2>
+                    <a href="#" id="bill-hub-new-payee" onclick="return false;">+ New payee</a>
+                  </div>
+                  <div class="yf-tabs" role="tablist">
+                    <button type="button" class="yf-tab is-active" id="bill-hub-tab-history" role="tab" aria-selected="true">History</button>
+                    <button type="button" class="yf-tab" id="bill-hub-tab-payees" role="tab" aria-selected="false">Payees</button>
+                  </div>
+                  <div class="yf-bill-search-row" style="margin:0;border-bottom:1px solid var(--yf-border);">
+                    <div class="yf-bill-search" style="flex:1;">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      <input type="search" id="bill-hub-search" placeholder="Search payments" autocomplete="off" aria-label="Search payments">
+                    </div>
+                  </div>
+                  <div class="yf-bill-payments-head" id="bill-hub-payments-head">
+                    <span class="yf-bill-payments-head__spacer"></span>
+                    <span class="yf-bill-payments-head__payee">Payee</span>
+                    <span class="yf-bill-payments-head__status">Status</span>
+                    <span class="yf-bill-payments-head__amt">Amount</span>
+                  </div>
+                  <div class="yf-bill-hub-scroll" id="bill-hub-panel-history">
+                    <button type="button" class="yf-bill-pay-row" data-bill-hub-search="98tesr ters">
+                      <div class="yf-std-date"><span class="yf-std-date__mo">Mar</span><b>28</b></div>
+                      <span class="yf-bill-pay-row__payee">98tesr Ters</span>
+                      <span class="yf-bill-pay-row__status"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Pending</span>
+                      <span class="yf-bill-pay-row__amt">$50.55 <span class="yf-chev">›</span></span>
+                    </button>
+                    <button type="button" class="yf-bill-pay-row" data-bill-hub-search="boo">
+                      <div class="yf-std-date"><span class="yf-std-date__mo">Mar</span><b>27</b></div>
+                      <span class="yf-bill-pay-row__payee">Boo</span>
+                      <span class="yf-bill-pay-row__status"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg> Scheduled</span>
+                      <span class="yf-bill-pay-row__amt">$120.00 <span class="yf-chev">›</span></span>
+                    </button>
+                    <button type="button" class="yf-bill-pay-row" data-bill-hub-search="dj1 xxabc">
+                      <div class="yf-std-date"><span class="yf-std-date__mo">Mar</span><b>25</b></div>
+                      <span class="yf-bill-pay-row__payee">Dj1 xxabc</span>
+                      <span class="yf-bill-pay-row__status"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Pending</span>
+                      <span class="yf-bill-pay-row__amt">$75.20 <span class="yf-chev">›</span></span>
+                    </button>
+                    <button type="button" class="yf-bill-pay-row" data-bill-hub-search="peco energy">
+                      <div class="yf-std-date"><span class="yf-std-date__mo">Mar</span><b>18</b></div>
+                      <span class="yf-bill-pay-row__payee">PECO Energy</span>
+                      <span class="yf-bill-pay-row__status"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg> Scheduled</span>
+                      <span class="yf-bill-pay-row__amt">$142.18 <span class="yf-chev">›</span></span>
+                    </button>
+                  </div>
+                  <div class="yf-bill-hub-scroll" id="bill-hub-panel-payees" hidden>
+                    <p class="yf-cal-note" style="margin:0;padding:20px;">Your saved payees appear here. Use <strong>Pay a bill</strong> to send a payment.</p>
+                  </div>
+                  <div class="yf-bill-load-more-wrap" id="bill-hub-load-wrap">
+                    <button type="button" class="yf-std-more-link" id="bill-hub-load-more">Load more</button>
+                  </div>
+                </div>
+              </div>
+              <div class="yf-hub-rail">
+                <div class="yf-card yf-std-make-card" style="margin-bottom:0;">
+                  <div class="yf-bill-quick-actions">
+                    <button type="button" class="yf-bill-quick-actions__btn" id="bill-hub-pay-bill">
+                      <span class="yf-bill-quick-ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M6 15h4M14 15h4"/></svg></span>
+                      <span class="yf-bill-quick-actions__lbl">Pay a bill</span>
+                    </button>
+                    <button type="button" class="yf-bill-quick-actions__btn" id="bill-hub-pay-person">
+                      <span class="yf-bill-quick-ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                      <span class="yf-bill-quick-actions__lbl">Pay a person</span>
+                    </button>
+                    <button type="button" class="yf-bill-quick-actions__btn" id="bill-hub-manage">
+                      <span class="yf-bill-quick-ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span>
+                      <span class="yf-bill-quick-actions__lbl">Manage payments</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="yf-card yf-cal">
+                  <div class="yf-cal__top">
+                    <h3>March 2026</h3>
+                    <div class="yf-cal__nav">
+                      <button type="button" aria-label="Previous month">‹</button>
+                      <button type="button" aria-label="Next month">›</button>
+                    </div>
+                  </div>
+                  <div class="yf-cal-grid">
+                    <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+                  </div>
+                  <div class="yf-cal-grid" style="margin-top:6px;">
+                    <div class="yf-cal-day">1</div><div class="yf-cal-day">2</div><div class="yf-cal-day">3</div><div class="yf-cal-day">4</div><div class="yf-cal-day has-dot">5</div><div class="yf-cal-day">6</div><div class="yf-cal-day">7</div>
+                    <div class="yf-cal-day">8</div><div class="yf-cal-day">9</div><div class="yf-cal-day">10</div><div class="yf-cal-day has-dot">11</div><div class="yf-cal-day has-dot">12</div><div class="yf-cal-day">13</div><div class="yf-cal-day">14</div>
+                    <div class="yf-cal-day">15</div><div class="yf-cal-day">16</div><div class="yf-cal-day has-dot">17</div><div class="yf-cal-day has-dot">18</div><div class="yf-cal-day has-dot">19</div><div class="yf-cal-day">20</div><div class="yf-cal-day">21</div>
+                    <div class="yf-cal-day">22</div><div class="yf-cal-day">23</div><div class="yf-cal-day has-dot">24</div><div class="yf-cal-day has-dot">25</div><div class="yf-cal-day has-dot">26</div><div class="yf-cal-day has-dot">27</div><div class="yf-cal-day">28</div>
+                    <div class="yf-cal-day">29</div><div class="yf-cal-day is-today">30</div><div class="yf-cal-day">31</div><div class="yf-cal-pad" aria-hidden="true"></div><div class="yf-cal-pad" aria-hidden="true"></div><div class="yf-cal-pad" aria-hidden="true"></div>
+                  </div>
+                  <p class="yf-cal-note">Dots mark dates with scheduled bill payments.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer class="yf-footer">
+            <span>©2024 YourFi</span>
+            <span>·</span>
+            <span>(555) 555-5555</span>
+            <span>·</span>
+            <a href="#" onclick="return false;">Privacy policy</a>
+            <span>·</span>
+            <span>Member FDIC</span>
+            <span>·</span>
+            <span>Equal Housing Lender</span>
+          </footer>
+          <button type="button" class="yf-fab" aria-label="Help">?</button>
+        </div>
+
+        <div class="view-bill-flow" id="view-bill-flow">
+          <div class="yf-view-content-scroll">
         <header class="yf-std-hero yf-view-flow-hero" aria-labelledby="bill-flow-hero-title">
           <h1 id="bill-flow-hero-title">Bill pay</h1>
           <p id="bill-flow-hero-sub" class="yf-view-flow-hero__sub">Choose a payee to get started</p>
@@ -3850,7 +4096,7 @@
           <div class="yf-bill-shell">
       <div class="yf-bill-card" id="bill-step-list" hidden>
         <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
-          <button type="button" class="yf-modal__x" id="bill-close-list" aria-label="Back to dashboard">×</button>
+          <button type="button" class="yf-modal__x" id="bill-close-list" aria-label="Back to Bill pay">×</button>
           <div class="yf-tabs" style="margin:14px 20px 0;">
             <button type="button" class="yf-tab is-active" id="bill-tab-single">Single</button>
             <button type="button" class="yf-tab" id="bill-tab-multi">Multiple</button>
@@ -3893,6 +4139,54 @@
             </button>
           </div>
           <button type="button" class="yf-bill-add" id="bill-add-payee">+ Add another bill</button>
+        </div>
+      </div>
+
+      <div class="yf-bill-card" id="person-step-list" hidden>
+        <div class="yf-modal yf-modal--pane yf-modal--flow" style="padding-top:0;">
+          <button type="button" class="yf-modal__x" id="person-close-list" aria-label="Back to Bill pay">×</button>
+          <div class="yf-tabs" style="margin:14px 20px 0;">
+            <button type="button" class="yf-tab is-active" id="person-tab-single">Single</button>
+            <button type="button" class="yf-tab" id="person-tab-multi">Multiple</button>
+          </div>
+          <div class="yf-bill-search-row">
+            <div class="yf-bill-search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="search" id="person-payee-filter" placeholder="Search payees" autocomplete="off" aria-label="Search payees">
+            </div>
+            <button type="button" class="yf-bill-filter-btn" aria-label="Filter"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></button>
+          </div>
+          <div class="yf-bill-list-scroll" id="person-payee-list">
+            <button type="button" class="yf-bill-payee" data-bill-payee="Ava M" data-bill-suffix="" data-bill-hint="Email · Last paid: Never">
+              <div class="yf-bill-payee__meta"><strong>Ava M</strong><span class="yf-bill-payee__hint">Email · Last paid: Never</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="98tesr Ters" data-bill-suffix="" data-bill-hint="Email · Pending: May 28, $50.55">
+              <div class="yf-bill-payee__meta"><strong>98tesr Ters</strong><span class="yf-bill-payee__hint">Email · Pending: May 28, $50.55</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="Boo" data-bill-suffix="" data-bill-hint="Email · Pending: Mar 27, $907.86">
+              <div class="yf-bill-payee__meta"><strong>Boo</strong><span class="yf-bill-payee__hint">Email · Pending: Mar 27, $907.86</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="Catherine Castillo" data-bill-suffix="" data-bill-hint="Email · Last paid: Never">
+              <div class="yf-bill-payee__meta"><strong>Catherine Castillo</strong><span class="yf-bill-payee__hint">Email · Last paid: Never</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="CHris McDude xDude" data-bill-suffix="" data-bill-hint="Check · Last paid: Never">
+              <div class="yf-bill-payee__meta"><strong>CHris McDude xDude</strong><span class="yf-bill-payee__hint">Check · Last paid: Never</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="Pepo Mojica" data-bill-suffix="" data-bill-hint="Email · Pending: Jan 28, $1.30">
+              <div class="yf-bill-payee__meta"><strong>Pepo Mojica</strong><span class="yf-bill-payee__hint">Email · Pending: Jan 28, $1.30</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+            <button type="button" class="yf-bill-payee" data-bill-payee="Princess Toadstool!" data-bill-suffix="" data-bill-hint="Direct deposit · Scheduled: Feb 12, $1.11">
+              <div class="yf-bill-payee__meta"><strong>Princess Toadstool!</strong><span class="yf-bill-payee__hint">Direct deposit · Scheduled: Feb 12, $1.11</span></div>
+              <span class="yf-chev">›</span>
+            </button>
+          </div>
+          <button type="button" class="yf-bill-add" id="person-add-payee">+ Add another person</button>
         </div>
       </div>
 
@@ -4106,23 +4400,24 @@
             <button type="button" class="yf-btn-outline-blue" id="bill-success-another">Pay another bill</button>
             <button type="button" class="btn btn-primary" id="bill-success-done">Done</button>
           </div>
+        </div>
+      </div>
           </div>
         </div>
           </div>
+          <footer class="yf-footer">
+            <span>©2024 YourFi</span>
+            <span>·</span>
+            <span>(555) 555-5555</span>
+            <span>·</span>
+            <a href="#" onclick="return false;">Privacy policy</a>
+            <span>·</span>
+            <span>Member FDIC</span>
+            <span>·</span>
+            <span>Equal Housing Lender</span>
+          </footer>
+          <button type="button" class="yf-fab" aria-label="Help">?</button>
         </div>
-        </div>
-        <footer class="yf-footer">
-          <span>©2024 YourFi</span>
-          <span>·</span>
-          <span>(555) 555-5555</span>
-          <span>·</span>
-          <a href="#" onclick="return false;">Privacy policy</a>
-          <span>·</span>
-          <span>Member FDIC</span>
-          <span>·</span>
-          <span>Equal Housing Lender</span>
-        </footer>
-        <button type="button" class="yf-fab" aria-label="Help">?</button>
       </div>
 
     </div>
@@ -4259,8 +4554,9 @@
 
       var viewBill = document.getElementById("view-bill");
       var navBill = document.getElementById("nav-bill");
+      var billStepListEl = document.getElementById("bill-step-list");
+      var personStepListEl = document.getElementById("person-step-list");
       var billSteps = {
-        list: document.getElementById("bill-step-list"),
         pay: document.getElementById("bill-step-pay"),
         from: document.getElementById("bill-step-from"),
         freq: document.getElementById("bill-step-freq"),
@@ -4269,6 +4565,7 @@
         notes: document.getElementById("bill-step-notes"),
         success: document.getElementById("bill-step-success")
       };
+      var paymentFlowKind = "bill";
 
       var BILL_FROM = {
         checking: { main: "Checking", sub: "$1,500.00", success: "From Checking" },
@@ -4334,7 +4631,7 @@
         if (h === "rapid") { goRapidActivity(); return; }
         if (h === "standard") { goStd(); return; }
         if (h === "zelle") { goZelle(); return; }
-        if (h === "bill") { openBillFlow(); return; }
+        if (h === "bill") { goBillHub(); return; }
 
         if (h.indexOf("rapid-") === 0) {
           var step = h.replace("rapid-", "");
@@ -4357,9 +4654,19 @@
           showZelleStep(zstep);
           return;
         }
+        if (h.indexOf("person-") === 0) {
+          var pstep = h.replace("person-", "");
+          paymentFlowKind = "person";
+          if (!viewBill || !viewBill.classList.contains("is-visible")) openBillViewBase();
+          if (viewBill) viewBill.classList.add("is-flow");
+          showBillStep(pstep);
+          return;
+        }
         if (h.indexOf("bill-") === 0) {
           var bstep = h.replace("bill-", "");
-          if (!viewBill || !viewBill.classList.contains("is-visible")) openBillFlow();
+          paymentFlowKind = "bill";
+          if (!viewBill || !viewBill.classList.contains("is-visible")) openBillViewBase();
+          if (viewBill) viewBill.classList.add("is-flow");
           showBillStep(bstep);
           return;
         }
@@ -4633,7 +4940,9 @@
 
       function closeBillFlow() {
         if (!viewBill || !viewBill.classList.contains("is-visible")) return;
+        paymentFlowKind = "bill";
         viewBill.classList.remove("is-visible");
+        viewBill.classList.remove("is-flow");
         document.body.classList.remove("show-bill");
         if (navBill) navBill.classList.remove("is-active");
         viewDash.classList.remove("is-hidden");
@@ -4641,7 +4950,7 @@
         setHash("dashboard");
       }
 
-      function openBillFlow() {
+      function openBillViewBase() {
         closeModal();
         exitStdFlow();
         exitZelleFlow();
@@ -4658,27 +4967,59 @@
         if (navZelle) navZelle.classList.remove("is-active");
         navDash.classList.remove("is-active");
         if (navBill) navBill.classList.add("is-active");
+      }
+
+      function goBillHub() {
+        paymentFlowKind = "bill";
+        openBillViewBase();
+        if (viewBill) viewBill.classList.remove("is-flow");
+        setHash("bill");
+      }
+
+      function enterBillPayFlow() {
+        openBillViewBase();
+        paymentFlowKind = "bill";
         resetBillFlow();
-        showBillStep("list"); // sets hash to bill-list
+        if (viewBill) viewBill.classList.add("is-flow");
+        showBillStep("list");
+      }
+
+      function enterPersonPayFlow() {
+        openBillViewBase();
+        paymentFlowKind = "person";
+        resetBillFlow();
+        if (viewBill) viewBill.classList.add("is-flow");
+        showBillStep("list");
+      }
+
+      function exitBillPayFlowToHub() {
+        if (!viewBill || !viewBill.classList.contains("is-flow")) return;
+        viewBill.classList.remove("is-flow");
+        setHash("bill");
       }
 
       function syncBillFlowHero(step) {
         var title = document.getElementById("bill-flow-hero-title");
         var sub = document.getElementById("bill-flow-hero-sub");
         if (!title || !sub) return;
-        title.textContent = "Bill pay";
+        var isPerson = paymentFlowKind === "person";
+        title.textContent = isPerson ? "Pay a person" : "Bill pay";
         if (step === "pay") {
           sub.textContent = billState.payeeName
             ? "Paying " + billState.payeeName
             : "Enter payment details";
         } else if (step === "list") {
-          sub.textContent = "Choose a payee to get started";
+          sub.textContent = isPerson ? "Choose someone to pay" : "Choose a payee to get started";
         } else if (step === "from") {
           sub.textContent = "Choose an account to pay from";
         } else if (step === "freq") {
-          sub.textContent = "How often should we pay this bill?";
+          sub.textContent = isPerson
+            ? "How often should we send this payment?"
+            : "How often should we pay this bill?";
         } else if (step === "delivery") {
-          sub.textContent = "How should we deliver your payment?";
+          sub.textContent = isPerson
+            ? "How should we deliver this payment?"
+            : "How should we deliver your payment?";
         } else if (step === "schedule") {
           sub.textContent = "Pick a send date";
         } else if (step === "notes") {
@@ -4686,16 +5027,26 @@
         } else if (step === "success") {
           sub.textContent = "Payment submitted";
         } else {
-          sub.textContent = "Choose a payee to get started";
+          sub.textContent = isPerson ? "Choose someone to pay" : "Choose a payee to get started";
         }
       }
 
       function showBillStep(name) {
-        Object.keys(billSteps).forEach(function (k) {
-          billSteps[k].hidden = k !== name;
-        });
+        if (name === "list") {
+          Object.keys(billSteps).forEach(function (k) {
+            billSteps[k].hidden = true;
+          });
+          if (billStepListEl) billStepListEl.hidden = paymentFlowKind !== "bill";
+          if (personStepListEl) personStepListEl.hidden = paymentFlowKind !== "person";
+        } else {
+          if (billStepListEl) billStepListEl.hidden = true;
+          if (personStepListEl) personStepListEl.hidden = true;
+          Object.keys(billSteps).forEach(function (k) {
+            billSteps[k].hidden = k !== name;
+          });
+        }
         syncBillFlowHero(name);
-        setHash("bill-" + name);
+        setHash((paymentFlowKind === "person" ? "person-" : "bill-") + name);
         if (name === "schedule") renderBillCalendar();
       }
 
@@ -4777,7 +5128,7 @@
       }
 
       function resetBillFlow() {
-        billState.payeeName = "Cedar Falls Utilities";
+        billState.payeeName = paymentFlowKind === "person" ? "Ava M" : "Cedar Falls Utilities";
         billState.fromId = "checking";
         billState.frequency = "Once";
         billState.deliveryMode = "standard";
@@ -4797,7 +5148,12 @@
         document.getElementById("bill-notes-label").textContent = "Add memo or comment";
         var filter = document.getElementById("bill-payee-filter");
         if (filter) filter.value = "";
-        document.querySelectorAll(".yf-bill-payee").forEach(function (row) {
+        var pfilter = document.getElementById("person-payee-filter");
+        if (pfilter) pfilter.value = "";
+        document.querySelectorAll("#bill-payee-list .yf-bill-payee").forEach(function (row) {
+          row.hidden = false;
+        });
+        document.querySelectorAll("#person-payee-list .yf-bill-payee").forEach(function (row) {
           row.hidden = false;
         });
         syncBillFromRow();
@@ -5291,7 +5647,11 @@
         viewDash.classList.add("is-hidden");
         viewStd.classList.remove("is-visible");
         viewZelle.classList.remove("is-visible");
-        if (viewBill) viewBill.classList.remove("is-visible");
+        if (viewBill) {
+          viewBill.classList.remove("is-visible");
+          viewBill.classList.remove("is-flow");
+        }
+        paymentFlowKind = "bill";
         viewRapid.classList.add("is-visible");
         navDash.classList.remove("is-active");
         navZelle.classList.remove("is-active");
@@ -5311,7 +5671,11 @@
         viewDash.classList.add("is-hidden");
         viewRapid.classList.remove("is-visible");
         viewZelle.classList.remove("is-visible");
-        if (viewBill) viewBill.classList.remove("is-visible");
+        if (viewBill) {
+          viewBill.classList.remove("is-visible");
+          viewBill.classList.remove("is-flow");
+        }
+        paymentFlowKind = "bill";
         viewStd.classList.add("is-visible");
         navDash.classList.remove("is-active");
         navZelle.classList.remove("is-active");
@@ -5330,7 +5694,11 @@
         viewStd.classList.remove("is-visible");
         viewRapid.classList.remove("is-visible");
         viewZelle.classList.remove("is-visible");
-        if (viewBill) viewBill.classList.remove("is-visible");
+        if (viewBill) {
+          viewBill.classList.remove("is-visible");
+          viewBill.classList.remove("is-flow");
+        }
+        paymentFlowKind = "bill";
         viewDash.classList.remove("is-hidden");
         navStd.classList.remove("is-active");
         navZelle.classList.remove("is-active");
@@ -5366,7 +5734,10 @@
         viewDash.classList.add("is-hidden");
         viewStd.classList.remove("is-visible");
         viewRapid.classList.remove("is-visible");
-        if (viewBill) viewBill.classList.remove("is-visible");
+        if (viewBill) {
+          viewBill.classList.remove("is-visible");
+          viewBill.classList.remove("is-flow");
+        }
         viewZelle.classList.add("is-visible");
         navDash.classList.remove("is-active");
         navStd.classList.remove("is-active");
@@ -5547,12 +5918,78 @@
       if (navBill) {
         navBill.addEventListener("click", function (e) {
           e.preventDefault();
-          openBillFlow();
+          goBillHub();
         });
       }
 
       document.getElementById("btn-pay-bill-hero").addEventListener("click", function () {
-        openBillFlow();
+        enterBillPayFlow();
+      });
+      document.getElementById("btn-pay-person-hero").addEventListener("click", function () {
+        enterPersonPayFlow();
+      });
+
+      document.getElementById("bill-hub-pay-bill").addEventListener("click", function () {
+        enterBillPayFlow();
+      });
+      document.getElementById("bill-hub-pay-person").addEventListener("click", function (e) {
+        e.preventDefault();
+        enterPersonPayFlow();
+      });
+      document.getElementById("bill-hub-manage").addEventListener("click", function (e) {
+        e.preventDefault();
+      });
+      document.getElementById("bill-hub-new-payee").addEventListener("click", function (e) {
+        e.preventDefault();
+      });
+      document.getElementById("bill-hub-load-more").addEventListener("click", function (e) {
+        e.preventDefault();
+      });
+
+      (function syncBillHubTabs() {
+        var th = document.getElementById("bill-hub-tab-history");
+        var tp = document.getElementById("bill-hub-tab-payees");
+        var ph = document.getElementById("bill-hub-panel-history");
+        var pp = document.getElementById("bill-hub-panel-payees");
+        var head = document.getElementById("bill-hub-payments-head");
+        var loadWrap = document.getElementById("bill-hub-load-wrap");
+        var search = document.getElementById("bill-hub-search");
+        if (!th || !tp || !ph || !pp) return;
+        th.addEventListener("click", function () {
+          th.classList.add("is-active");
+          tp.classList.remove("is-active");
+          th.setAttribute("aria-selected", "true");
+          tp.setAttribute("aria-selected", "false");
+          ph.hidden = false;
+          pp.hidden = true;
+          if (head) head.hidden = false;
+          if (loadWrap) loadWrap.hidden = false;
+          if (search) search.placeholder = "Search payments";
+        });
+        tp.addEventListener("click", function () {
+          tp.classList.add("is-active");
+          th.classList.remove("is-active");
+          tp.setAttribute("aria-selected", "true");
+          th.setAttribute("aria-selected", "false");
+          ph.hidden = true;
+          pp.hidden = false;
+          if (head) head.hidden = true;
+          if (loadWrap) loadWrap.hidden = true;
+          if (search) search.placeholder = "Search payees";
+        });
+      })();
+
+      document.getElementById("bill-hub-search").addEventListener("input", function () {
+        var q = this.value.trim().toLowerCase();
+        var onHistory = !document.getElementById("bill-hub-panel-history").hidden;
+        if (onHistory) {
+          document.querySelectorAll(".yf-bill-pay-row[data-bill-hub-search]").forEach(function (row) {
+            var t = (row.getAttribute("data-bill-hub-search") || "").toLowerCase();
+            row.hidden = q.length > 0 && t.indexOf(q) === -1;
+          });
+        } else {
+          /* Payees tab placeholder — no rows to filter */
+        }
       });
 
       (function () {
@@ -5687,7 +6124,8 @@
         b.addEventListener("click", function (e) { e.preventDefault(); });
       });
 
-      document.getElementById("bill-close-list").addEventListener("click", closeBillFlow);
+      document.getElementById("bill-close-list").addEventListener("click", exitBillPayFlowToHub);
+      document.getElementById("person-close-list").addEventListener("click", exitBillPayFlowToHub);
 
       document.querySelectorAll(".yf-bill-payee").forEach(function (row) {
         row.addEventListener("click", function () {
@@ -5829,7 +6267,7 @@
         showBillStep("success");
       });
 
-      document.getElementById("bill-success-done").addEventListener("click", closeBillFlow);
+      document.getElementById("bill-success-done").addEventListener("click", goBillHub);
 
       document.getElementById("bill-success-another").addEventListener("click", function () {
         resetBillFlow();
@@ -5846,9 +6284,26 @@
         document.getElementById("bill-tab-single").classList.remove("is-active");
       });
 
+      document.getElementById("person-tab-single").addEventListener("click", function () {
+        document.getElementById("person-tab-single").classList.add("is-active");
+        document.getElementById("person-tab-multi").classList.remove("is-active");
+      });
+      document.getElementById("person-tab-multi").addEventListener("click", function () {
+        document.getElementById("person-tab-multi").classList.add("is-active");
+        document.getElementById("person-tab-single").classList.remove("is-active");
+      });
+
       document.getElementById("bill-payee-filter").addEventListener("input", function () {
         var q = this.value.trim().toLowerCase();
-        document.querySelectorAll(".yf-bill-payee").forEach(function (row) {
+        document.querySelectorAll("#bill-payee-list .yf-bill-payee").forEach(function (row) {
+          var name = (row.getAttribute("data-bill-payee") || "").toLowerCase();
+          row.hidden = q.length > 0 && name.indexOf(q) === -1;
+        });
+      });
+
+      document.getElementById("person-payee-filter").addEventListener("input", function () {
+        var q = this.value.trim().toLowerCase();
+        document.querySelectorAll("#person-payee-list .yf-bill-payee").forEach(function (row) {
           var name = (row.getAttribute("data-bill-payee") || "").toLowerCase();
           row.hidden = q.length > 0 && name.indexOf(q) === -1;
         });
@@ -5857,11 +6312,15 @@
       document.getElementById("bill-add-payee").addEventListener("click", function (e) {
         e.preventDefault();
       });
+      document.getElementById("person-add-payee").addEventListener("click", function (e) {
+        e.preventDefault();
+      });
 
       document.addEventListener("keydown", function (e) {
         if (e.key === "Escape") {
           if (viewBill && viewBill.classList.contains("is-visible")) {
-            closeBillFlow();
+            if (viewBill.classList.contains("is-flow")) exitBillPayFlowToHub();
+            else closeBillFlow();
             return;
           }
           if (overlay.classList.contains("is-open")) closeModal();
