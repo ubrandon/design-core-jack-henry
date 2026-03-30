@@ -389,6 +389,7 @@ export default defineConfig(({ mode }) => {
   const viteEnv = loadEnv(mode, __dirname, "");
 
   return {
+    appType: "mpa",
     base: "./",
     server: { port: 3000 },
     plugins: [

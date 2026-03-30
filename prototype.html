@@ -153,6 +153,42 @@
         .catch(() => {});
     }
 
+    var toolPages = ["index.html", "project.html", "canvas.html", "prototype.html", "design-system.html", "captures.html"];
+
+    function isToolPage(url) {
+      try {
+        var pathname = new URL(url, location.href).pathname;
+        var filename = pathname.split("/").pop() || "";
+        return toolPages.indexOf(filename) !== -1;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function showProtoError() {
+      var container = document.getElementById("proto-container");
+      container.innerHTML =
+        '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:32px;text-align:center;font-family:var(--font-body,system-ui,sans-serif);background:var(--bg-0,#fff);">' +
+          '<div style="font-size:1.5rem;margin-bottom:8px;">&#9888;&#65039;</div>' +
+          '<p style="font-weight:700;font-size:1rem;margin:0 0 8px;color:var(--text,#0f172a);">Prototype failed to load</p>' +
+          '<p style="font-size:0.85rem;color:var(--muted,#64748b);max-width:320px;margin:0;line-height:1.5;">' +
+            'The prototype redirected to a Design Core page instead of rendering its own content. ' +
+            'Check that the prototype\'s <code>index.html</code> does not import <code>scripts/shared.js</code> or redirect to <code>index.html</code>.' +
+          '</p>' +
+        '</div>';
+    }
+
+    var protoFrame = document.getElementById("proto-frame");
+
+    protoFrame.addEventListener("load", function () {
+      try {
+        var frameUrl = protoFrame.contentWindow.location.href;
+        if (isToolPage(frameUrl)) {
+          showProtoError();
+        }
+      } catch (e) {}
+    });
+
     fetchJSON(basePath + "meta.json")
       .then(data => {
         document.getElementById("proto-name").textContent = data.name + " — " + data.description;
@@ -165,12 +201,16 @@
             : data.cacheKey != null && String(data.cacheKey).trim() !== ""
               ? String(data.cacheKey).trim()
               : "";
-        document.getElementById("proto-frame").src =
-          basePath + "index.html" + (bust !== "" ? "?v=" + encodeURIComponent(bust) : "");
+        var src = basePath + "index.html" + (bust !== "" ? "?v=" + encodeURIComponent(bust) : "");
+        if (isToolPage(src)) {
+          showProtoError();
+        } else {
+          protoFrame.src = src;
+        }
       })
       .catch(() => {
         document.getElementById("proto-name").textContent = protoId;
-        document.getElementById("proto-frame").src = basePath + "index.html";
+        protoFrame.src = basePath + "index.html";
       });
 
     fetchJSON("data/projects/" + projectId + "/prototypes/index.json")
