@@ -153,13 +153,14 @@
         .catch(() => {});
     }
 
-    var toolPages = ["index.html", "project.html", "canvas.html", "prototype.html", "design-system.html", "captures.html"];
+    var toolPageNames = ["index.html", "project.html", "canvas.html", "prototype.html", "design-system.html", "captures.html"];
 
     function isToolPage(url) {
       try {
         var pathname = new URL(url, location.href).pathname;
-        var filename = pathname.split("/").pop() || "";
-        return toolPages.indexOf(filename) !== -1;
+        var segments = pathname.replace(/^\/+/, "").split("/");
+        if (segments.length !== 1) return false;
+        return toolPageNames.indexOf(segments[0]) !== -1;
       } catch (e) {
         return false;
       }
