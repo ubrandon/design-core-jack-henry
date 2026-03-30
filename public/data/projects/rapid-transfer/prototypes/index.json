@@ -5,6 +5,12 @@
       "name": "Rapid Transfer Test",
       "description": "Dashboard, Transfer menu, move-money modal, Standard transfers — interactive desktop flows.",
       "device": "online"
+    },
+    {
+      "id": "bread-money",
+      "name": "Bread Money",
+      "description": "Bread Money flow inside Rapid Transfer — starter shell; extend with screens and interactions.",
+      "device": "online"
     }
   ]
 }
