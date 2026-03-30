@@ -3,98 +3,630 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bread Money — Rapid Transfer</title>
-  <link rel="stylesheet" href="../../../../../styles/shared.css">
-  <link rel="stylesheet" href="../../../../../styles/ds.css">
-  <link rel="stylesheet" href="../../../../../data/design-system/company.css">
+  <title>bread financial — Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     html, body {
       margin: 0;
       min-height: 100%;
-      font-family: var(--font-body, system-ui, sans-serif);
-      color: var(--text);
-      background: var(--bg-1);
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      color: #111827;
+      background: #f0f1f3;
       -webkit-font-smoothing: antialiased;
     }
-    .view { display: none; }
-    .view.active { display: flex; }
-    .bm-shell {
-      flex-direction: column;
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .page {
       min-height: 100vh;
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 24px;
-      gap: 20px;
+      padding-bottom: 48px;
     }
-    .bm-header {
+    /* —— Top bar —— */
+    .topbar {
+      position: relative;
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 64px;
+      background: #fff;
+      border-bottom: 1px solid #e8eaed;
     }
-    .bm-header h1 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 700;
+    .logo {
+      font-size: 1.05rem;
+      font-weight: 600;
       letter-spacing: -0.02em;
+      color: #111;
     }
-    .bm-header p {
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .nav-pill {
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #4b5563;
+    }
+    .nav-pill.is-active {
+      background: #eceef1;
+      color: #111;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .btn-support {
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 50%, #7c3aed 100%);
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px #e5e7eb;
+    }
+    /* —— Layout —— */
+    .layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 40px 0;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 1024px) {
+      .layout {
+        grid-template-columns: 1fr;
+        padding: 24px 20px 0;
+      }
+      .nav-center {
+        position: static;
+        transform: none;
+        margin: 12px auto;
+      }
+      .topbar {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 12px 20px;
+        gap: 8px;
+      }
+    }
+    .greeting {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin: 0 0 6px;
+      font-weight: 500;
+    }
+    .balance-row {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin-bottom: 28px;
+    }
+    .balance-amount {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #111;
+      line-height: 1.1;
+    }
+    .balance-label {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      font-weight: 500;
+    }
+    /* Quick actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 640px) {
+      .quick-actions { grid-template-columns: 1fr; }
+    }
+    .qa-card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #e8eaed;
+      padding: 22px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: box-shadow 0.15s;
+      font-family: inherit;
+      color: inherit;
+    }
+    .qa-card:hover {
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+    .qa-icon {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f4f6;
+      border-radius: 12px;
+      color: #374151;
+    }
+    .qa-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #111;
+    }
+    /* Card shell */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e8eaed;
+      padding: 20px 22px;
+      margin-bottom: 18px;
+    }
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+    .card-title {
       margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-      max-width: 42rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #111;
     }
-    .bm-card {
-      background: var(--bg-0);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      box-shadow: var(--shadow-soft, 0 1px 2px rgba(0, 0, 0, 0.06));
+    .link-muted {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: #6b7280;
+    }
+    /* Segmented */
+    .segmented {
+      display: flex;
+      background: #f3f4f6;
+      border-radius: 10px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .segmented button {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .segmented button.is-on {
+      background: #111827;
+      color: #fff;
+    }
+    /* Activity rows */
+    .tx-list { list-style: none; margin: 0; padding: 0; }
+    .tx-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f1f3;
+    }
+    .tx-row:last-of-type { border-bottom: none; }
+    .tx-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .tx-icon.target { background: #fee2e2; color: #dc2626; }
+    .tx-icon.spotify { background: #d1fae5; color: #059669; }
+    .tx-icon.deposit { background: #d1fae5; color: #10b981; }
+    .tx-icon.transfer { background: #dbeafe; color: #2563eb; }
+    .tx-icon.fee { background: #fee2e2; color: #ef4444; }
+    .tx-main { flex: 1; min-width: 0; }
+    .tx-name {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: #111;
+    }
+    .tx-meta {
+      font-size: 0.8125rem;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+    .tx-amt {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: #111;
+      flex-shrink: 0;
+    }
+    .tx-amt.positive { color: #16a34a; }
+    .btn-wide {
+      width: 100%;
+      margin-top: 8px;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #eceef1;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-wide:hover { background: #e2e5e9; }
+    /* Sidebar accounts */
+    .acct-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f1f3;
+    }
+    .acct-row:last-child { border-bottom: none; }
+    .acct-type {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #111;
+    }
+    .acct-detail {
+      font-size: 0.8125rem;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+    .acct-bal {
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: #111;
+      white-space: nowrap;
+    }
+    /* Coming up */
+    .up-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f1f3;
+    }
+    .up-row:last-of-type { border-bottom: none; }
+    .up-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .up-icon.bill { background: #fef9c3; color: #ca8a04; }
+    .up-icon.save { background: #dbeafe; color: #2563eb; }
+    .up-text { flex: 1; min-width: 0; }
+    .up-name { font-weight: 600; font-size: 0.875rem; }
+    .up-date { font-size: 0.8125rem; color: #9ca3af; margin-top: 2px; }
+    .up-amt { font-weight: 700; font-size: 0.875rem; }
+    .btn-dashed {
+      width: 100%;
+      margin-top: 12px;
+      padding: 11px;
+      border-radius: 10px;
+      border: 1px dashed #c4c8ce;
+      background: #fff;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #4b5563;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    /* Alert */
+    .alert-low {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .alert-icon-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #fef3c7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d97706;
+      flex-shrink: 0;
+    }
+    .alert-low h3 {
+      margin: 0 0 4px;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: #111;
+    }
+    .alert-low p {
+      margin: 0;
+      font-size: 0.8125rem;
+      color: #6b7280;
+      line-height: 1.45;
+    }
+    /* Month summary */
+    .month-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .month-box {
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .month-box.income {
+      background: #ecfdf5;
+    }
+    .month-box.income .month-val {
+      color: #16a34a;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .month-box.spent {
+      background: #f3f4f6;
+    }
+    .month-box.spent .month-val {
+      color: #111;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .month-sub {
+      font-size: 0.75rem;
+      color: #6b7280;
+      font-weight: 600;
+      margin-top: 6px;
+      text-transform: capitalize;
     }
   </style>
 </head>
 <body>
-  <div id="view-start" class="view active bm-shell">
-    <header class="bm-header">
-      <h1>Bread Money</h1>
-      <p>This is a starter screen for the Bread Money prototype. Add flows and use hash routes (for example <code>#review</code>) as you build.</p>
+  <div class="page">
+    <header class="topbar">
+      <span class="logo">bread financial</span>
+      <nav class="nav-center" aria-label="Primary">
+        <span class="nav-pill is-active">Overview</span>
+        <a href="#" class="nav-pill">Move money</a>
+        <a href="#" class="nav-pill">Messages</a>
+      </nav>
+      <div class="topbar-right">
+        <button type="button" class="btn-support">Support</button>
+        <div class="avatar" role="img" aria-label="Profile"></div>
+      </div>
     </header>
-    <div class="bm-card">
-      <p class="ds-section-title" style="margin-top: 0;">Next steps</p>
-      <p style="margin: 0 0 16px; color: var(--muted); font-size: 0.9rem;">Wire up navigation with <code>navigate('view-id')</code> and matching <code>id="view-view-id"</code> containers.</p>
-      <button type="button" class="btn btn-primary" onclick="navigate('example')">Go to example view</button>
+
+    <div class="layout">
+      <main>
+        <p class="greeting">Good afternoon, Quinn</p>
+        <div class="balance-row">
+          <span class="balance-amount">$9,124.67</span>
+          <span class="balance-label">total balance</span>
+        </div>
+
+        <div class="quick-actions">
+          <button type="button" class="qa-card">
+            <div class="qa-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M17 8H7M7 8l3-3M7 8l3 3M7 16h10M17 16l-3-3M17 16l-3 3"/>
+              </svg>
+            </div>
+            <div class="qa-label">Transfer</div>
+          </button>
+          <button type="button" class="qa-card">
+            <div class="qa-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+              </svg>
+            </div>
+            <div class="qa-label">Send</div>
+          </button>
+          <button type="button" class="qa-card">
+            <div class="qa-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="5" width="16" height="14" rx="2"/>
+                <text x="12" y="16.5" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" stroke="none" font-family="Inter, system-ui, sans-serif">$</text>
+              </svg>
+            </div>
+            <div class="qa-label">Pay bills</div>
+          </button>
+        </div>
+
+        <section class="card" aria-labelledby="recent-heading">
+          <div class="card-head">
+            <h2 id="recent-heading" class="card-title">Recent activity</h2>
+            <div class="segmented" role="tablist">
+              <button type="button" class="is-on" role="tab" aria-selected="true">All</button>
+              <button type="button" role="tab" aria-selected="false">Income</button>
+              <button type="button" role="tab" aria-selected="false">Expenses</button>
+            </div>
+          </div>
+          <ul class="tx-list">
+            <li class="tx-row">
+              <div class="tx-icon target" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/>
+                </svg>
+              </div>
+              <div class="tx-main">
+                <div class="tx-name">Target</div>
+                <div class="tx-meta">Today • Checking</div>
+              </div>
+              <span class="tx-amt">$47.23</span>
+            </li>
+            <li class="tx-row">
+              <div class="tx-icon spotify" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 3C7.03 3 3 7.03 3 12s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm4.41 12.89c-.55.1-1.12.15-1.69.15-2.5 0-4.71-1.28-6-3.22a.75.75 0 111.2-.9c1.05 1.5 2.86 2.37 4.8 2.37.48 0 .95-.05 1.4-.14a.75.75 0 11.29 1.48v.26zm.75-2.9c-.63.12-1.28.18-1.94.18-3.15 0-5.93-1.61-7.55-4.05a.75.75 0 111.22-.88c1.33 2.02 3.7 3.18 6.33 3.18.57 0 1.13-.06 1.67-.17a.75.75 0 01.27 1.48v.26zm.78-3.05c-.74.14-1.51.21-2.29.21-3.87 0-7.28-1.98-9.27-4.98a.75.75 0 111.22-.88c1.64 2.48 4.55 3.91 8.05 3.91.67 0 1.33-.07 1.97-.2a.75.75 0 11.32 1.47v.27z"/>
+                </svg>
+              </div>
+              <div class="tx-main">
+                <div class="tx-name">Spotify</div>
+                <div class="tx-meta">Today • Checking</div>
+              </div>
+              <span class="tx-amt">$10.99</span>
+            </li>
+            <li class="tx-row">
+              <div class="tx-icon deposit" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12l7 7 7-7"/>
+                </svg>
+              </div>
+              <div class="tx-main">
+                <div class="tx-name">Direct Deposit</div>
+                <div class="tx-meta">Yesterday • Checking</div>
+              </div>
+              <span class="tx-amt positive">+$2,840.00</span>
+            </li>
+            <li class="tx-row">
+              <div class="tx-icon transfer" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01"/>
+                </svg>
+              </div>
+              <div class="tx-main">
+                <div class="tx-name">Transfer to Savings</div>
+                <div class="tx-meta">Yesterday • Checking</div>
+              </div>
+              <span class="tx-amt">$500.00</span>
+            </li>
+            <li class="tx-row">
+              <div class="tx-icon fee" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+              </div>
+              <div class="tx-main">
+                <div class="tx-name">Service Charge</div>
+                <div class="tx-meta">Feb 1 • Savings</div>
+              </div>
+              <span class="tx-amt">$10.00</span>
+            </li>
+          </ul>
+          <button type="button" class="btn-wide">View all transactions</button>
+        </section>
+      </main>
+
+      <aside>
+        <section class="card">
+          <div class="card-head">
+            <h2 class="card-title">Accounts</h2>
+            <a href="#" class="link-muted">+ Link account</a>
+          </div>
+          <div class="acct-row">
+            <div>
+              <div class="acct-type">Checking</div>
+              <div class="acct-detail">Bread Financial ••9943</div>
+            </div>
+            <span class="acct-bal">$4,250.00</span>
+          </div>
+          <div class="acct-row">
+            <div>
+              <div class="acct-type">Savings</div>
+              <div class="acct-detail">Ally Bank ••8372</div>
+            </div>
+            <span class="acct-bal">$2,077.19</span>
+          </div>
+          <div class="acct-row">
+            <div>
+              <div class="acct-type">Performance Savings</div>
+              <div class="acct-detail">Capital One ••1331</div>
+            </div>
+            <span class="acct-bal">$2,797.48</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="card-title" style="margin-bottom: 4px;">Coming up</h2>
+          <div class="up-row">
+            <div class="up-icon bill" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8M8 12h5"/>
+              </svg>
+            </div>
+            <div class="up-text">
+              <div class="up-name">Mid American Energy Company</div>
+              <div class="up-date">Feb 8</div>
+            </div>
+            <span class="up-amt">$124.00</span>
+          </div>
+          <div class="up-row">
+            <div class="up-icon save" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+              </svg>
+            </div>
+            <div class="up-text">
+              <div class="up-name">To Savings</div>
+              <div class="up-date">Feb 15</div>
+            </div>
+            <span class="up-amt">$200.00</span>
+          </div>
+          <button type="button" class="btn-dashed">+ Schedule payment or transfer</button>
+        </section>
+
+        <div class="alert-low" style="margin-bottom: 18px;">
+          <div class="alert-icon-wrap" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Low balance alert</h3>
+            <p>Your Checking account is below $50. Consider transferring funds.</p>
+          </div>
+        </div>
+
+        <section class="card">
+          <h2 class="card-title" style="margin-bottom: 12px;">This month</h2>
+          <div class="month-grid">
+            <div class="month-box income">
+              <div class="month-val">+$2,840</div>
+              <div class="month-sub">Income</div>
+            </div>
+            <div class="month-box spent">
+              <div class="month-val">-$568</div>
+              <div class="month-sub">Spent</div>
+            </div>
+          </div>
+        </section>
+      </aside>
     </div>
   </div>
-
-  <div id="view-example" class="view bm-shell">
-    <header class="bm-header">
-      <h1>Example view</h1>
-      <p>Hash is <code>#example</code>. Use the back button or the control below.</p>
-    </header>
-    <div class="bm-card">
-      <button type="button" class="btn btn-dark" onclick="navigate('start')">Back to start</button>
-    </div>
-  </div>
-
-  <script>
-    (function () {
-      var defaultView = "start";
-
-      function navigate(viewId) {
-        location.hash = viewId;
-      }
-
-      function applyRoute() {
-        var hash = location.hash.slice(1) || defaultView;
-        document.querySelectorAll(".view").forEach(function (v) {
-          v.classList.toggle("active", v.id === "view-" + hash);
-        });
-      }
-
-      window.addEventListener("hashchange", applyRoute);
-      applyRoute();
-      window.navigate = navigate;
-    })();
-  </script>
 </body>
 </html>
