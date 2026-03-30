@@ -4314,6 +4314,60 @@
 
       var rapidFlowEntry = "hub";
 
+      /* ── Hash routing ─────────────────────────────────────────────
+         Every navigation action sets location.hash so usability-testing
+         tools (Maze, etc.) can track which screen a tester is on.
+         The hashchange listener re-applies routing on back/forward. */
+      var _suppressHash = 0;
+
+      function setHash(h) {
+        if (location.hash === "#" + h) return;
+        _suppressHash++;
+        location.hash = h;
+      }
+
+      function applyRoute() {
+        if (_suppressHash > 0) { _suppressHash--; return; }
+        var h = location.hash.slice(1) || "dashboard";
+
+        if (h === "dashboard") { goDash(); return; }
+        if (h === "rapid") { goRapidActivity(); return; }
+        if (h === "standard") { goStd(); return; }
+        if (h === "zelle") { goZelle(); return; }
+        if (h === "bill") { openBillFlow(); return; }
+
+        if (h.indexOf("rapid-") === 0) {
+          var step = h.replace("rapid-", "");
+          if (!viewRapid.classList.contains("is-visible")) goRapidActivity();
+          if (!viewRapid.classList.contains("is-flow")) enterRapidFlow("hub");
+          showRapidFlowStep(step);
+          return;
+        }
+        if (h.indexOf("std-") === 0) {
+          var sstep = h.replace("std-", "");
+          if (!viewStd.classList.contains("is-visible")) goStd();
+          if (!viewStd.classList.contains("is-flow")) enterStdFlow();
+          showStdFlowStep(sstep);
+          return;
+        }
+        if (h.indexOf("zelle-") === 0) {
+          var zstep = h.replace("zelle-", "");
+          if (!viewZelle || !viewZelle.classList.contains("is-visible")) goZelle();
+          if (!viewZelle.classList.contains("is-flow")) enterZelleFlow(zelleState.mode);
+          showZelleStep(zstep);
+          return;
+        }
+        if (h.indexOf("bill-") === 0) {
+          var bstep = h.replace("bill-", "");
+          if (!viewBill || !viewBill.classList.contains("is-visible")) openBillFlow();
+          showBillStep(bstep);
+          return;
+        }
+        if (h === "modal-choice") { openModal(); return; }
+      }
+
+      window.addEventListener("hashchange", applyRoute);
+
       var FROM_META = {
         checking: { formMain: "Checking x1234", formSub: "$1,512.03", review: "Checking (x1234)" },
         savings: { formMain: "Savings x1234", formSub: "$2,564.13", review: "Savings (x1234)" },
@@ -4380,12 +4434,13 @@
           flowSteps[k].hidden = k !== active;
         });
         syncRapidFlowHero(active);
+        setHash("rapid-" + active);
       }
 
       function enterRapidFlow(entry) {
         rapidFlowEntry = entry || "hub";
         viewRapid.classList.add("is-flow");
-        showRapidFlowStep("form");
+        showRapidFlowStep("form"); // sets hash to rapid-form
       }
 
       function exitRapidFlow() {
@@ -4395,6 +4450,7 @@
           flowSteps[k].hidden = true;
         });
         resetRapidFlow();
+        if (viewRapid.classList.contains("is-visible")) setHash("rapid");
       }
 
       function syncStdFlowHero(step) {
@@ -4425,12 +4481,13 @@
           stdFlowSteps[k].hidden = k !== active;
         });
         syncStdFlowHero(active);
+        setHash("std-" + active);
       }
 
       function enterStdFlow() {
         resetStandardFlow();
         viewStd.classList.add("is-flow");
-        showStdFlowStep("form");
+        showStdFlowStep("form"); // sets hash to std-form
       }
 
       function exitStdFlow() {
@@ -4440,6 +4497,7 @@
           stdFlowSteps[k].hidden = true;
         });
         resetStandardFlow();
+        if (viewStd.classList.contains("is-visible")) setHash("standard");
       }
 
       function lastFourDigits(num) {
@@ -4580,6 +4638,7 @@
         if (navBill) navBill.classList.remove("is-active");
         viewDash.classList.remove("is-hidden");
         navDash.classList.add("is-active");
+        setHash("dashboard");
       }
 
       function openBillFlow() {
@@ -4600,7 +4659,7 @@
         navDash.classList.remove("is-active");
         if (navBill) navBill.classList.add("is-active");
         resetBillFlow();
-        showBillStep("list");
+        showBillStep("list"); // sets hash to bill-list
       }
 
       function syncBillFlowHero(step) {
@@ -4636,6 +4695,7 @@
           billSteps[k].hidden = k !== name;
         });
         syncBillFlowHero(name);
+        setHash("bill-" + name);
         if (name === "schedule") renderBillCalendar();
       }
 
@@ -4795,6 +4855,7 @@
         dd.hidden = true;
         showModalPane("choice");
         openOverlay();
+        setHash("modal-choice");
       }
 
       function openAddCardForm() {
@@ -4898,6 +4959,10 @@
         formDebit.reset();
         exitRapidFlow();
         resetRapidFlow();
+        if (viewRapid.classList.contains("is-visible")) setHash("rapid");
+        else if (viewStd.classList.contains("is-visible")) setHash("standard");
+        else if (viewZelle && viewZelle.classList.contains("is-visible")) setHash("zelle");
+        else setHash("dashboard");
       }
 
       function finishDebitCardAdd() {
@@ -5232,6 +5297,7 @@
         navZelle.classList.remove("is-active");
         if (navBill) navBill.classList.remove("is-active");
         navStd.classList.add("is-active");
+        setHash("rapid");
       }
 
       function goStd() {
@@ -5251,6 +5317,7 @@
         navZelle.classList.remove("is-active");
         if (navBill) navBill.classList.remove("is-active");
         navStd.classList.add("is-active");
+        setHash("standard");
       }
       function goDash() {
         closeModal();
@@ -5269,6 +5336,7 @@
         navZelle.classList.remove("is-active");
         if (navBill) navBill.classList.remove("is-active");
         navDash.classList.add("is-active");
+        setHash("dashboard");
       }
 
       function resetZelleHubPanels() {
@@ -5306,6 +5374,7 @@
         if (navZelle) navZelle.classList.add("is-active");
         exitZelleFlow();
         resetZelleHubPanels();
+        setHash("zelle");
       }
 
       function syncZelleFlowHero(step) {
@@ -5332,6 +5401,7 @@
         });
         syncZelleFlowChrome();
         syncZelleFlowHero(name);
+        setHash("zelle-" + name);
       }
 
       function exitZelleFlow() {
@@ -5353,6 +5423,7 @@
         syncZelleAmountReviewBtn();
         var sub = document.getElementById("zelle-flow-hero-sub");
         if (sub) sub.hidden = true;
+        if (viewZelle && viewZelle.classList.contains("is-visible")) setHash("zelle");
       }
 
       function syncZelleFlowChrome() {
@@ -5396,7 +5467,7 @@
         zelleState.recipientDetail = "";
         zelleState.fromAdd = false;
         viewZelle.classList.add("is-flow");
-        showZelleStep("recipient");
+        showZelleStep("recipient"); // sets hash to zelle-recipient
         var zs = document.getElementById("zelle-recipient-search");
         if (zs) zs.value = "";
         filterZelleRecipients();
@@ -5797,6 +5868,10 @@
           else closeDd();
         }
       });
+
+      if (location.hash && location.hash !== "#" && location.hash !== "#dashboard") {
+        applyRoute();
+      }
 
     })();
   </script>
