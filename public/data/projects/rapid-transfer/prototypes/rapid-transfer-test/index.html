@@ -193,11 +193,20 @@
       overflow: hidden;
     }
 
+    /* Hero + main scroll together; parent view keeps footer pinned to viewport */
+    .yf-view-content-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
     .view-dash {
       flex: 1;
       min-height: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
     .view-dash.is-hidden { display: none; }
 
@@ -427,90 +436,6 @@
       color: var(--yf-text);
     }
     .yf-dd button:hover { background: var(--yf-nav-active-bg); }
-
-    /* Coach popover — shows each page load; dismiss hides until reload */
-    .yf-transfer-coach {
-      position: absolute;
-      left: calc(100% + 14px);
-      top: 50%;
-      transform: translateY(-50%);
-      width: min(292px, calc(100vw - 120px));
-      z-index: 40;
-      pointer-events: auto;
-    }
-    .yf-transfer-coach[hidden] {
-      display: none !important;
-    }
-    .yf-transfer-coach__inner {
-      position: relative;
-      background: var(--yf-white);
-      border-radius: var(--yf-radius-md);
-      border: 1px solid var(--yf-border);
-      padding: 16px 16px 14px;
-      text-align: left;
-      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.12);
-    }
-    .yf-transfer-coach__inner::before {
-      content: "";
-      position: absolute;
-      right: 100%;
-      top: 50%;
-      transform: translateY(-50%);
-      border: 9px solid transparent;
-      border-right-color: var(--yf-white);
-      margin-right: -1px;
-    }
-    .yf-transfer-coach__title {
-      margin: 0 0 8px;
-      font-size: 0.9375rem;
-      font-weight: 800;
-      color: var(--yf-text);
-      letter-spacing: -0.02em;
-      line-height: 1.3;
-    }
-    .yf-transfer-coach__body {
-      margin: 0 0 14px;
-      font-size: 0.8125rem;
-      line-height: 1.45;
-      color: var(--yf-muted);
-    }
-    .yf-transfer-coach__actions {
-      display: flex;
-      justify-content: flex-end;
-    }
-    .yf-transfer-coach__gotit {
-      padding: 8px 18px;
-      border-radius: var(--yf-radius-sm);
-      border: none;
-      background: var(--yf-blue);
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.8125rem;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .yf-transfer-coach__gotit:hover {
-      background: var(--yf-blue-active);
-    }
-    @media (max-width: 720px) {
-      .yf-transfer-coach {
-        left: 0;
-        right: 0;
-        top: calc(100% + 12px);
-        transform: none;
-        width: min(292px, calc(100vw - 40px));
-        margin: 0 auto;
-      }
-      .yf-transfer-coach__inner::before {
-        right: auto;
-        left: 50%;
-        top: 0;
-        transform: translate(-50%, -100%);
-        border: 9px solid transparent;
-        border-bottom-color: var(--yf-white);
-        margin-right: 0;
-      }
-    }
 
     /* Dashboard body */
     .yf-dash-grid {
@@ -790,7 +715,7 @@
       flex: 1;
       min-height: 0;
       overflow-x: hidden;
-      overflow-y: auto;
+      overflow-y: hidden;
     }
     .view-std.is-flow .view-std-hub { display: none; }
     .view-std-flow {
@@ -798,13 +723,13 @@
       flex-direction: column;
       flex: 1;
       min-height: 0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: hidden;
       background: var(--yf-page);
     }
     .view-std.is-flow .view-std-flow { display: flex; }
 
     .yf-std-hero {
-      flex-shrink: 0;
       background: linear-gradient(118deg, var(--yf-hero-start) 0%, #1a4f7a 100%);
       padding: 28px 32px 32px;
       color: #fff;
@@ -824,14 +749,36 @@
       line-height: 1.4;
     }
     .yf-std-body {
-      flex: 0 0 auto;
       display: grid;
       grid-template-columns: 1fr 288px;
       gap: 20px;
-      padding: 20px 28px 0;
+      padding: 20px 28px 24px;
     }
     @media (max-width: 960px) {
       .yf-std-body { grid-template-columns: 1fr; }
+    }
+    /* Right-column stacks (dashboard + transfer hubs): one rhythm, no doubled margins */
+    .yf-hub-rail {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .yf-hub-rail .yf-std-make-card {
+      margin-bottom: 0;
+    }
+    .yf-hub-rail .yf-promo {
+      margin-top: 0;
+    }
+    .yf-hub-rail .yf-card.yf-cal {
+      margin-top: 0;
+    }
+    .yf-hub-rail .yf-make-tx.yf-make-tx--prominent {
+      margin: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .yf-hub-rail .yf-widget-transfer {
+      margin-top: 0;
     }
     .yf-panel__hd {
       padding: 16px 20px;
@@ -1038,7 +985,7 @@
       flex: 1;
       min-height: 0;
       overflow-x: hidden;
-      overflow-y: auto;
+      overflow-y: hidden;
     }
     .view-rapid.is-flow .view-rapid-hub { display: none; }
     .view-rapid-flow {
@@ -1046,14 +993,12 @@
       flex-direction: column;
       flex: 1;
       min-height: 0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: hidden;
       background: var(--yf-page);
     }
     .view-rapid.is-flow .view-rapid-flow { display: flex; }
     .yf-rapid-flow-shell {
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
       padding: 24px 28px 32px;
       display: flex;
       flex-direction: column;
@@ -1068,16 +1013,12 @@
       border: 1px solid var(--yf-border);
       position: relative;
     }
-    .yf-rapid-flow-card .yf-flow-hd {
-      padding-top: 16px;
-    }
     .yf-rapid-flow-card .yf-modal__x {
       top: 10px;
       right: 10px;
     }
     .yf-rapid-flow-card .yf-modal--flow,
-    .yf-rapid-flow-card .yf-modal--picker,
-    .yf-rapid-flow-card .yf-modal--rapid-done {
+    .yf-rapid-flow-card .yf-modal--picker {
       max-width: none;
       width: 100%;
       box-shadow: none;
@@ -1086,8 +1027,21 @@
       padding-top: 0;
       margin: 0;
     }
+    .yf-rapid-flow-card .yf-modal--rapid-done {
+      max-width: none;
+      width: 100%;
+      box-shadow: none;
+      border-radius: 0;
+      background: transparent;
+      margin: 0;
+      padding: 32px 24px 24px;
+    }
+    .yf-rapid-flow-card .yf-modal--rapid-done .yf-success-ico {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
     .yf-rapid-flow-card .yf-modal--picker {
-      max-height: min(calc(100vh - 280px), 640px);
+      max-height: min(85vh, 640px);
     }
 
     .yf-rapid-flow-card .yf-flow-actions {
@@ -1106,14 +1060,6 @@
       padding-right: 12px !important;
     }
 
-    /* Rapid flow — submitted state */
-    .yf-rapid-flow-card .yf-modal--rapid-done {
-      padding: 20px 24px 20px;
-    }
-    .yf-rapid-flow-card .yf-modal--rapid-done .yf-success-ico {
-      margin-top: 36px;
-      margin-bottom: 20px;
-    }
     .yf-rapid-th {
       display: grid;
       grid-template-columns: 58px minmax(0, 1fr) minmax(100px, 140px) 88px 24px;
@@ -1226,7 +1172,7 @@
       flex: 1;
       min-height: 0;
       overflow-x: hidden;
-      overflow-y: auto;
+      overflow-y: hidden;
     }
     .view-zelle.is-flow .view-zelle-hub { display: none; }
     .view-zelle-flow {
@@ -1234,12 +1180,12 @@
       flex-direction: column;
       flex: 1;
       min-height: 0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: hidden;
       background: var(--yf-page);
     }
     .view-zelle.is-flow .view-zelle-flow { display: flex; }
     .yf-zelle-hero {
-      flex-shrink: 0;
       padding: 28px 32px 36px;
       position: relative;
       overflow: hidden;
@@ -1267,11 +1213,10 @@
       line-height: 1.2;
     }
     .yf-zelle-body {
-      flex: 0 0 auto;
       display: grid;
-      grid-template-columns: 1fr 260px;
+      grid-template-columns: 1fr minmax(260px, 288px);
       gap: 20px;
-      padding: 20px 28px 0;
+      padding: 20px 28px 24px;
     }
     @media (max-width: 960px) {
       .yf-zelle-body { grid-template-columns: 1fr; }
@@ -1387,41 +1332,57 @@
     }
     .yf-zelle-panel[hidden] { display: none !important; }
     .yf-zelle-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--yf-border);
-      border-radius: var(--yf-radius-md);
-      overflow: hidden;
-      border: 1px solid var(--yf-border);
+      display: flex;
+      gap: 10px;
+      padding: 8px 12px;
+      box-sizing: border-box;
     }
     .yf-zelle-actions button {
-      padding: 20px 12px;
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      padding: 8px 10px 10px;
       border: none;
-      background: var(--yf-white);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
       cursor: pointer;
       font: inherit;
-      font-weight: 700;
-      font-size: 0.8125rem;
       color: var(--yf-text);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      gap: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: background 0.15s ease;
     }
-    .yf-zelle-actions button:hover { background: #fafbfc; }
+    .yf-zelle-actions button:hover {
+      background: var(--yf-nav-active-bg);
+    }
+    .yf-zelle-actions button:focus-visible {
+      outline: 2px solid var(--yf-blue);
+      outline-offset: 2px;
+    }
+    .yf-zelle-actions__lbl {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
     .yf-zelle-actions__ico {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: var(--yf-nav-active-bg);
       display: grid;
       place-items: center;
       color: var(--yf-blue);
+      flex-shrink: 0;
     }
     .yf-zelle-actions__ico svg {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       stroke: currentColor;
       fill: none;
       stroke-width: 2;
@@ -1451,9 +1412,6 @@
     .yf-zelle-pref__row:last-child { border-bottom: none; }
     .yf-zelle-pref__row:hover { background: #fafbfc; }
     .yf-zelle-flow-shell {
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
       padding: 24px 28px 32px;
       display: flex;
       flex-direction: column;
@@ -1623,6 +1581,13 @@
     .yf-zelle-flow-card .yf-card-success__actions {
       padding-left: 12px !important;
       padding-right: 12px !important;
+    }
+    .yf-zelle-flow-card .yf-modal--rapid-done {
+      padding: 32px 24px 24px;
+    }
+    .yf-zelle-flow-card .yf-modal--rapid-done .yf-success-ico {
+      margin-top: 0;
+      margin-bottom: 20px;
     }
 
     /* Modal */
@@ -1927,20 +1892,21 @@
       text-align: center;
     }
     .yf-success-ico {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 18px;
-      border-radius: 50%;
-      background: linear-gradient(160deg, #4ade80 0%, #16a34a 55%, #15803d 100%);
-      color: #fff;
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 20px;
+      border-radius: 0;
+      background: transparent;
+      color: #166534;
       display: grid;
       place-items: center;
-      box-shadow: 0 8px 24px rgba(22, 163, 74, 0.32);
+      box-shadow: none;
     }
     .yf-success-ico svg {
-      width: 42px;
-      height: 42px;
+      width: 96px;
+      height: 96px;
       display: block;
+      overflow: visible;
     }
     .yf-card-success__msg {
       margin: 0 8px 24px;
@@ -1986,22 +1952,26 @@
     .yf-flow-hd {
       display: grid;
       grid-template-columns: 40px 1fr 40px;
-      align-items: start;
-      padding: 0 16px 12px;
+      align-items: center;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--yf-border);
+    }
+    .yf-flow-hd > div {
+      grid-column: 2;
+      min-width: 0;
     }
     .yf-flow-hd h2 {
       margin: 0;
       font-size: 1.0625rem;
       font-weight: 800;
       text-align: center;
+      line-height: 1.2;
     }
     .yf-flow-sub {
-      margin: 4px 0 0;
+      margin: 8px 0 0;
       font-size: 0.8125rem;
       color: var(--yf-muted);
       text-align: center;
-      grid-column: 2;
     }
     .yf-flow-body { padding: 0 20px 8px; }
     .yf-txf-row {
@@ -2166,8 +2136,11 @@
 
     .yf-modal--rapid-done {
       max-width: 480px;
-      padding: 28px 24px 20px;
+      padding: 32px 24px 20px;
       text-align: center;
+    }
+    .yf-modal--rapid-done .yf-success-ico {
+      margin-top: 0;
     }
     .yf-rapid-done__sep {
       border: none;
@@ -2370,12 +2343,11 @@
       flex: 1;
       min-height: 0;
       overflow-x: hidden;
-      overflow-y: auto;
+      overflow-y: hidden;
       background: var(--yf-page);
     }
     .view-bill.is-visible { display: flex; }
     .yf-bill-page {
-      flex: 0 0 auto;
       padding: 20px 28px 24px;
       display: flex;
       justify-content: center;
@@ -2404,7 +2376,6 @@
       margin: 0;
     }
     .yf-bill-card .yf-modal__x { top: 10px; right: 10px; }
-    .yf-bill-card .yf-flow-hd { padding-top: 16px; }
     .yf-bill-card .yf-flow-actions {
       padding: 20px 20px 12px;
     }
@@ -2609,10 +2580,10 @@
       font-size: 0.875rem;
     }
     .yf-bill-card .yf-modal--rapid-done {
-      padding: 20px 20px 24px;
+      padding: 32px 20px 24px;
     }
     .yf-bill-card .yf-modal--rapid-done .yf-success-ico {
-      margin: 8px auto 18px;
+      margin: 0 auto 18px;
     }
     .yf-bill-timeline {
       margin: 0;
@@ -2729,6 +2700,7 @@
 
     <div class="yf-main">
       <div class="view-dash" id="view-dash">
+        <div class="yf-view-content-scroll">
         <header class="yf-hero">
           <div class="yf-hero__top">
             <div class="yf-hero__greet">
@@ -2777,15 +2749,6 @@
             <div class="yf-dd" id="transfer-dd" role="menu" hidden>
               <button type="button" role="menuitem" id="dd-rapid">Rapid transfer</button>
               <button type="button" role="menuitem" id="dd-standard">Standard transfer</button>
-            </div>
-            <div class="yf-transfer-coach" id="transfer-coach" hidden role="dialog" aria-modal="false" aria-labelledby="transfer-coach-title">
-              <div class="yf-transfer-coach__inner">
-                <h3 class="yf-transfer-coach__title" id="transfer-coach-title">Use Rapid Transfers to move money faster!</h3>
-                <p class="yf-transfer-coach__body">Quickly transfer money to and from external accounts using eligible debit cards.</p>
-                <div class="yf-transfer-coach__actions">
-                  <button type="button" class="yf-transfer-coach__gotit" id="transfer-coach-dismiss">Got it</button>
-                </div>
-              </div>
             </div>
           </div>
           <button type="button" class="yf-action" id="btn-pay-bill-hero">
@@ -2889,7 +2852,7 @@
               </div>
             </div>
           </div>
-          <div>
+          <div class="yf-hub-rail">
             <div class="yf-card yf-support">
               <div class="yf-logo">
                 <span class="yf-logo__mark" aria-hidden="true">
@@ -2913,7 +2876,7 @@
                 </button>
               </div>
             </div>
-            <div class="yf-card yf-widget-transfer" style="margin-top:22px;">
+            <div class="yf-card yf-widget-transfer">
               <div class="yf-card__hd">
                 Transfers
                 <div class="yf-card__tools"><span style="cursor:pointer;">⋯</span></div>
@@ -2932,10 +2895,12 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
 
       <div class="view-std" id="view-std">
         <div class="view-std-hub" id="view-std-hub">
+        <div class="yf-view-content-scroll">
         <header class="yf-std-hero">
           <h1>Transfers</h1>
         </header>
@@ -2997,7 +2962,7 @@
               </div>
             </div>
           </div>
-          <div>
+          <div class="yf-hub-rail">
             <div class="yf-card yf-std-make-card">
               <button type="button" class="yf-std-make-card__row" id="std-make-tx">
                 <span class="yf-make-tx__circle" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>
@@ -3013,7 +2978,7 @@
               </strong>
               Rapid transfers allow you to use an eligible debit card to move money in minutes.
             </div>
-            <div class="yf-card yf-cal" style="margin-top:16px;">
+            <div class="yf-card yf-cal">
               <div class="yf-cal__top">
                 <h3>April 2026</h3>
                 <div class="yf-cal__nav">
@@ -3036,6 +3001,7 @@
             </div>
           </div>
         </div>
+        </div>
         <footer class="yf-footer">
           <span>©2024 YourFi</span>
           <span>·</span>
@@ -3051,6 +3017,7 @@
         </div>
 
         <div class="view-std-flow" id="view-std-flow">
+          <div class="yf-view-content-scroll">
           <header class="yf-std-hero">
             <h1 id="std-flow-hero-title">Standard transfer</h1>
             <p id="std-flow-hero-sub" class="yf-view-flow-hero__sub">Schedule transfers between your accounts</p>
@@ -3063,7 +3030,7 @@
                   <button type="button" class="yf-modal-back" id="std-form-back" aria-label="Back">‹</button>
                   <div>
                     <h2 id="std-form-title">Transfer</h2>
-                    <p class="yf-flow-sub" style="margin-top:4px;">Standard delivery (1–3 business days)</p>
+                    <p class="yf-flow-sub">Standard delivery (1–3 business days)</p>
                   </div>
                   <span aria-hidden="true"></span>
                 </div>
@@ -3182,9 +3149,9 @@
             </div>
 
             <div class="yf-rapid-flow-card" id="std-flow-step-success" hidden>
-              <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
+              <div class="yf-modal yf-modal--pane yf-modal--rapid-done">
                 <button type="button" class="yf-modal__x" id="std-success-close-x" aria-label="Close">×</button>
-                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
+                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M7.5 12l3.5 3.5 5.5-7.5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="butt" stroke-linejoin="miter"/></svg></div>
                 <h2 class="yf-rapid-done__title" id="std-done-title">Transfer submitted</h2>
                 <p class="yf-rapid-done__sub" id="std-done-sub">Funds typically arrive in 1–3 business days.</p>
                 <hr class="yf-rapid-done__sep" aria-hidden="true">
@@ -3219,6 +3186,7 @@
               </div>
             </div>
           </div>
+          </div>
           <footer class="yf-footer">
             <span>©2024 YourFi</span>
             <span>·</span>
@@ -3236,6 +3204,7 @@
 
       <div class="view-rapid" id="view-rapid">
         <div class="view-rapid-hub" id="view-rapid-hub">
+        <div class="yf-view-content-scroll">
         <header class="yf-std-hero">
           <h1>Rapid transfers</h1>
         </header>
@@ -3315,8 +3284,8 @@
               </div>
             </div>
           </div>
-          <div>
-            <button type="button" class="yf-make-tx yf-make-tx--prominent" id="rapid-hub-make" style="margin:0 0 20px;width:100%;">
+          <div class="yf-hub-rail">
+            <button type="button" class="yf-make-tx yf-make-tx--prominent" id="rapid-hub-make">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               Make a rapid transfer
             </button>
@@ -3330,6 +3299,7 @@
               Use standard transfers to schedule transfers between your accounts.
             </button>
           </div>
+        </div>
         </div>
         <footer class="yf-footer">
           <span>©2024 YourFi</span>
@@ -3346,6 +3316,7 @@
         </div>
 
         <div class="view-rapid-flow" id="view-rapid-flow">
+          <div class="yf-view-content-scroll">
           <header class="yf-std-hero">
             <h1 id="rapid-flow-hero-title">Rapid transfer</h1>
             <p id="rapid-flow-hero-sub" class="yf-view-flow-hero__sub">Transfer money within minutes</p>
@@ -3523,9 +3494,9 @@
             </div>
 
             <div class="yf-rapid-flow-card" id="rapid-flow-step-success" hidden>
-              <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
+              <div class="yf-modal yf-modal--pane yf-modal--rapid-done">
                 <button type="button" class="yf-modal__x" id="rapid-success-close-x" aria-label="Close">×</button>
-                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
+                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M7.5 12l3.5 3.5 5.5-7.5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="butt" stroke-linejoin="miter"/></svg></div>
                 <h2 class="yf-rapid-done__title" id="rapid-done-title">Rapid transfer submitted</h2>
                 <p class="yf-rapid-done__sub">The money should arrive in your account within minutes*</p>
                 <hr class="yf-rapid-done__sep" aria-hidden="true">
@@ -3553,6 +3524,7 @@
               </div>
             </div>
           </div>
+          </div>
           <footer class="yf-footer">
             <span>©2024 YourFi</span>
             <span>·</span>
@@ -3570,6 +3542,7 @@
 
       <div class="view-zelle" id="view-zelle">
         <div class="view-zelle-hub" id="view-zelle-hub">
+        <div class="yf-view-content-scroll">
           <header class="yf-zelle-hero">
             <h1>Send money with Zelle®</h1>
           </header>
@@ -3625,16 +3598,20 @@
                 </div>
               </div>
             </div>
-            <div>
-              <div class="yf-card" style="margin-bottom:16px;">
+            <div class="yf-hub-rail">
+              <div class="yf-card">
                 <div class="yf-zelle-actions">
                   <button type="button" id="zelle-hub-send">
-                    <span class="yf-zelle-actions__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
-                    Send
+                    <span class="yf-zelle-actions__ico" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v10M8 8l4-4 4 4M5 20h14"/></svg>
+                    </span>
+                    <span class="yf-zelle-actions__lbl">Send</span>
                   </button>
                   <button type="button" id="zelle-hub-request">
-                    <span class="yf-zelle-actions__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></span>
-                    Request
+                    <span class="yf-zelle-actions__ico" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20V10M8 16l4 4 4-4M5 4h14"/></svg>
+                    </span>
+                    <span class="yf-zelle-actions__lbl">Request</span>
                   </button>
                 </div>
               </div>
@@ -3645,6 +3622,7 @@
               </div>
             </div>
           </div>
+        </div>
           <footer class="yf-footer">
             <span>©2024 YourFi</span>
             <span>·</span>
@@ -3660,6 +3638,7 @@
         </div>
 
         <div class="view-zelle-flow" id="view-zelle-flow">
+          <div class="yf-view-content-scroll">
           <header class="yf-std-hero">
             <h1 id="zelle-flow-hero-title">Send with Zelle®</h1>
             <p id="zelle-flow-hero-sub" class="yf-view-flow-hero__sub" hidden></p>
@@ -3809,9 +3788,9 @@
             </div>
 
             <div class="yf-zelle-flow-card" id="zelle-step-success" hidden>
-              <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
+              <div class="yf-modal yf-modal--pane yf-modal--rapid-done">
                 <button type="button" class="yf-modal__x" id="zelle-success-x" aria-label="Close">×</button>
-                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
+                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M7.5 12l3.5 3.5 5.5-7.5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="butt" stroke-linejoin="miter"/></svg></div>
                 <h2 class="yf-rapid-done__title">Payment sent</h2>
                 <p class="yf-rapid-done__sub" id="zelle-success-sub">If your recipient isn’t enrolled with Zelle® yet, they’ll get instructions to claim the money.</p>
                 <hr class="yf-rapid-done__sep" aria-hidden="true">
@@ -3832,9 +3811,9 @@
             </div>
 
             <div class="yf-zelle-flow-card" id="zelle-step-req-success" hidden>
-              <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
+              <div class="yf-modal yf-modal--pane yf-modal--rapid-done">
                 <button type="button" class="yf-modal__x" id="zelle-req-success-x" aria-label="Close">×</button>
-                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
+                <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M7.5 12l3.5 3.5 5.5-7.5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="butt" stroke-linejoin="miter"/></svg></div>
                 <h2 class="yf-rapid-done__title">Request sent</h2>
                 <p class="yf-rapid-done__sub">We’ll notify your contact if they use Zelle® at another bank.</p>
                 <hr class="yf-rapid-done__sep" aria-hidden="true">
@@ -3844,6 +3823,7 @@
                 </div>
               </div>
             </div>
+          </div>
           </div>
           <footer class="yf-footer">
             <span>©2024 YourFi</span>
@@ -3861,6 +3841,7 @@
       </div>
 
       <div class="view-bill" id="view-bill">
+        <div class="yf-view-content-scroll">
         <header class="yf-std-hero yf-view-flow-hero" aria-labelledby="bill-flow-hero-title">
           <h1 id="bill-flow-hero-title">Bill pay</h1>
           <p id="bill-flow-hero-sub" class="yf-view-flow-hero__sub">Choose a payee to get started</p>
@@ -4094,8 +4075,8 @@
       </div>
 
       <div class="yf-bill-card" id="bill-step-success" hidden>
-        <div class="yf-modal yf-modal--pane yf-modal--rapid-done" style="padding-top:0;">
-          <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
+        <div class="yf-modal yf-modal--pane yf-modal--rapid-done">
+          <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M7.5 12l3.5 3.5 5.5-7.5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="butt" stroke-linejoin="miter"/></svg></div>
           <h2 class="yf-rapid-done__title">Payment submitted</h2>
           <p class="yf-rapid-done__sub">Your payment is being processed.</p>
           <hr class="yf-rapid-done__sep" aria-hidden="true">
@@ -4125,9 +4106,10 @@
             <button type="button" class="yf-btn-outline-blue" id="bill-success-another">Pay another bill</button>
             <button type="button" class="btn btn-primary" id="bill-success-done">Done</button>
           </div>
-        </div>
-      </div>
           </div>
+        </div>
+          </div>
+        </div>
         </div>
         <footer class="yf-footer">
           <span>©2024 YourFi</span>
@@ -4233,7 +4215,7 @@
 
     <div class="yf-modal yf-modal--pane yf-modal--card-success" id="modal-pane-card-success" role="dialog" aria-modal="true" aria-labelledby="card-success-title" hidden>
       <button type="button" class="yf-modal__x" data-close-modal aria-label="Close">×</button>
-      <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19l12-12-1.41-1.41L9 16.17z"/></svg></div>
+      <div class="yf-success-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M7.5 12l3.5 3.5 5.5-7.5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="butt" stroke-linejoin="miter"/></svg></div>
       <p class="yf-card-success__msg" id="card-success-title">Your debit card ending in <span id="card-success-last4">0000</span> was added.</p>
       <div class="yf-card-success__actions">
         <button type="button" class="yf-btn-outline-blue" id="card-success-add-another">Add another debit card</button>
@@ -4248,8 +4230,6 @@
       var wrap = document.getElementById("transfer-wrap");
       var dd = document.getElementById("transfer-dd");
       var btnTransfer = document.getElementById("btn-transfer");
-      var transferCoach = document.getElementById("transfer-coach");
-      var transferCoachDismiss = document.getElementById("transfer-coach-dismiss");
       var overlay = document.getElementById("overlay");
       var viewDash = document.getElementById("view-dash");
       var viewStd = document.getElementById("view-std");
@@ -4588,29 +4568,6 @@
         hideT = setTimeout(closeDd, 200);
       }
 
-      function maybeShowTransferCoach() {
-        if (!transferCoach || !viewDash || viewDash.classList.contains("is-hidden")) return;
-        transferCoach.hidden = false;
-        if (transferCoachDismiss) transferCoachDismiss.focus();
-      }
-
-      function dismissTransferCoach() {
-        if (!transferCoach || transferCoach.hidden) return;
-        transferCoach.hidden = true;
-      }
-
-      if (transferCoachDismiss && transferCoach) {
-        transferCoachDismiss.addEventListener("click", dismissTransferCoach);
-      }
-
-      document.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape") return;
-        if (overlay && overlay.classList.contains("is-open")) return;
-        if (transferCoach && !transferCoach.hidden) dismissTransferCoach();
-      });
-
-      maybeShowTransferCoach();
-
       wrap.addEventListener("mouseenter", openDd);
       wrap.addEventListener("mouseleave", schedCloseDd);
       btnTransfer.addEventListener("focus", openDd);
@@ -4840,16 +4797,6 @@
         openOverlay();
       }
 
-      function openRapidPromo() {
-        clearTimeout(hideT);
-        wrap.classList.remove("is-open");
-        dd.classList.remove("is-open");
-        btnTransfer.setAttribute("aria-expanded", "false");
-        dd.hidden = true;
-        showModalPane("rapidPromo");
-        openOverlay();
-      }
-
       function openAddCardForm() {
         showModalPane("card");
       }
@@ -5073,7 +5020,8 @@
       document.getElementById("dd-rapid").addEventListener("click", function (e) {
         e.stopPropagation();
         closeDd();
-        openRapidPromo();
+        resetRapidFlow();
+        goRapidActivity();
       });
       document.getElementById("dd-standard").addEventListener("click", function (e) {
         e.stopPropagation();
@@ -5164,7 +5112,8 @@
         goStd();
       });
       document.getElementById("m-rapid").addEventListener("click", function () {
-        showModalPane("rapidPromo");
+        resetRapidFlow();
+        goRapidActivity();
       });
 
       document.getElementById("btn-add-debit").addEventListener("click", openAddCardForm);
