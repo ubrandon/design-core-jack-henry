@@ -78,6 +78,26 @@
       display: flex;
       justify-content: center;
     }
+    body.is-embed-fullscreen .preview-page {
+      padding: 0;
+      min-height: 100vh;
+      display: block;
+      background: none;
+    }
+    body.is-embed-fullscreen .phone-frame-wrap {
+      display: block;
+    }
+    body.is-embed-fullscreen #proto-container {
+      width: 100vw !important;
+      height: 100vh !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    body.is-embed-fullscreen #proto-frame {
+      width: 100% !important;
+      height: 100% !important;
+    }
   </style>
 </head>
 <body>
@@ -165,6 +185,9 @@
             container.classList.add("phone-frame--online");
           } else if (device === "responsive") {
             container.classList.add("phone-frame--responsive");
+          }
+          if (isEmbed && (device === "desktop" || device === "online" || device === "responsive")) {
+            document.body.classList.add("is-embed-fullscreen");
           }
         }
       })

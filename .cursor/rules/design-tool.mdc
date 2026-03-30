@@ -243,11 +243,93 @@ A prototype is a **self-contained interactive mini web app**. It lives in a sing
 
 1. **Read context first.** Read `meta.json` in the prototype folder to understand the prototype's name and purpose.
 2. **JavaScript is expected.** Prototypes are interactive -- write real JS for state, transitions, validation, etc.
-3. **Use the design system.** Import styles using relative paths (5 levels up from the prototype folder). Use tokens and component classes as the foundation.
-4. **Add new styles inline.** If the designer asks for something not in the design system, use `<style>` blocks inside the prototype. Keep the shared design system files untouched.
-5. **Self-contained.** Everything the prototype needs goes in its folder. No external npm packages or CDN scripts unless the designer explicitly asks.
-6. **Look at the design system.** Read existing component HTML files in `public/data/design-system/components/` for visual patterns.
-7. **One file preferred.** Keep the prototype in a single `index.html` unless it grows large enough to justify splitting.
+3. **Use hash routing for navigation.** Every prototype with multiple views/steps **must** use `location.hash` so each view gets a unique URL. This is required for usability testing tools (e.g. Maze) that track which screen a tester is on. See "Hash routing pattern" below.
+4. **Use the design system.** Import styles using relative paths (5 levels up from the prototype folder). Use tokens and component classes as the foundation.
+5. **Add new styles inline.** If the designer asks for something not in the design system, use `<style>` blocks inside the prototype. Keep the shared design system files untouched.
+6. **Self-contained.** Everything the prototype needs goes in its folder. No external npm packages or CDN scripts unless the designer explicitly asks.
+7. **Look at the design system.** Read existing component HTML files in `public/data/design-system/components/` for visual patterns.
+8. **One file preferred.** Keep the prototype in a single `index.html` unless it grows large enough to justify splitting.
+
+### Hash routing pattern
+
+All prototypes with multiple views must use hash-based routing so that each view has a distinct URL (e.g. `index.html#dashboard`, `index.html#transfer-form`, `index.html#success`). This enables usability testing tools like Maze to track screen transitions and measure task completion.
+
+**How it works:**
+
+1. Give each view container an `id` prefixed with `view-` (e.g. `id="view-dashboard"`, `id="view-transfer"`, `id="view-success"`).
+2. Use a `navigate(viewId)` function instead of directly toggling classes or `hidden`. This function sets `location.hash`, which triggers the `hashchange` listener to show/hide views.
+3. Add a `hashchange` listener and an initial route check on `DOMContentLoaded`.
+
+**Standard boilerplate** -- include this in every multi-view prototype:
+
+```html
+<script>
+  (function () {
+    var defaultView = "dashboard";
+
+    function navigate(viewId) {
+      location.hash = viewId;
+    }
+
+    function applyRoute() {
+      var hash = location.hash.slice(1) || defaultView;
+      document.querySelectorAll(".view").forEach(function (v) {
+        v.classList.toggle("active", v.id === "view-" + hash);
+      });
+    }
+
+    window.addEventListener("hashchange", applyRoute);
+    applyRoute();
+
+    // Expose navigate globally for click handlers
+    window.navigate = navigate;
+  })();
+</script>
+```
+
+**CSS for views:**
+
+```css
+.view { display: none; }
+.view.active { display: flex; } /* or block, grid -- whatever fits the layout */
+```
+
+**Using it in click handlers:**
+
+```html
+<button onclick="navigate('transfer')">Make a transfer</button>
+```
+
+Or in JS:
+```js
+document.getElementById("btn-next").addEventListener("click", function () {
+  navigate("review");
+});
+```
+
+**Naming conventions for hash values:**
+
+- Use lowercase, hyphenated names: `#dashboard`, `#transfer-form`, `#select-account`, `#review`, `#success`
+- Keep them short and descriptive -- they appear in Maze analytics
+- For sub-steps within a flow (e.g. picking a "from" account inside a transfer), use a compound name: `#transfer-from`, `#transfer-to`, `#transfer-review`
+
+**Complex prototypes with multiple independent flows:**
+
+Some prototypes have a main view (e.g. sidebar nav switching between Dashboard, Transfers, Payments) plus sub-flows (e.g. a multi-step transfer form). Use a flat hash namespace with descriptive prefixes:
+
+- `#dashboard` -- main dashboard view
+- `#transfers` -- transfers hub
+- `#transfer-form` -- transfer form step
+- `#transfer-from` -- pick "from" account
+- `#transfer-to` -- pick "to" account
+- `#transfer-review` -- review step
+- `#transfer-success` -- confirmation
+- `#payments` -- payments hub
+- `#pay-bill` -- bill pay form
+
+The `applyRoute()` function can be extended to handle hierarchical state (showing the right sidebar nav item, entering/exiting sub-flows) based on the hash prefix.
+
+**Back button support:** Hash routing gives browser back/forward navigation for free. Users (and Maze testers) can use the back button to return to previous steps.
 
 ## Platform-Aware Components
 
