@@ -1220,6 +1220,69 @@
       .tf-topbar-left { min-width: auto; }
       .tf-cancel { min-width: auto; text-align: left; }
     }
+    /* —— Send money flow (shares transfer shell styles) —— */
+    body.send-flow-active {
+      background: #fafafa;
+    }
+    body.send-flow-active .page {
+      padding-bottom: 0;
+    }
+    .sf-recipient {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .sf-recipient:hover {
+      border-color: #d1d5db;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .sf-recipient.is-selected {
+      border-color: #111;
+      box-shadow: 0 0 0 1px #111;
+    }
+    .sf-recipient-av {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+    }
+    .sf-recipient-av.g { background: #16a34a; }
+    .sf-recipient-av.b { background: #2563eb; }
+    .sf-recipient-av.p { background: #7c3aed; }
+    .sf-recipient-av.y { background: #eab308; color: #111; }
+    .sf-recipient-body { flex: 1; min-width: 0; }
+    .sf-recipient-name { font-weight: 700; font-size: 0.95rem; color: #111; }
+    .sf-recipient-detail { font-size: 0.8125rem; color: #9ca3af; margin-top: 3px; }
+    .sf-link-add {
+      width: 100%;
+      margin-top: 8px;
+      padding: 14px;
+      border: 1px dashed #d1d5db;
+      border-radius: 12px;
+      background: #fff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #4b5563;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .sf-fee-paid { color: #111 !important; font-weight: 700 !important; }
   </style>
 </head>
 <body>
@@ -1251,6 +1314,21 @@
       <button type="button" class="tf-cancel" id="tf-cancel">Cancel</button>
     </header>
 
+    <header class="tf-topbar topbar--hidden" id="topbar-send" aria-label="Send money">
+      <div class="tf-topbar-left">
+        <button type="button" class="tf-back" id="send-back">&lt; Back</button>
+        <span class="tf-title">Send money</span>
+      </div>
+      <div class="tf-stepper" id="send-stepper" role="navigation" aria-label="Send money progress">
+        <span class="tf-step" data-send-step="0" id="send-step-0">Destination</span>
+        <span class="tf-step" data-send-step="1" id="send-step-1">Amount</span>
+        <span class="tf-step" data-send-step="2" id="send-step-2">Speed</span>
+        <span class="tf-step" data-send-step="3" id="send-step-3">Review</span>
+        <span class="tf-step" data-send-step="4" id="send-step-4">Result</span>
+      </div>
+      <button type="button" class="tf-cancel" id="send-cancel">Cancel</button>
+    </header>
+
     <div id="view-overview" class="view active">
     <div class="layout">
       <main>
@@ -1269,7 +1347,7 @@
             </div>
             <div class="qa-label">Transfer</div>
           </button>
-          <button type="button" class="qa-card">
+          <button type="button" class="qa-card" id="overview-btn-send">
             <div class="qa-icon" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
@@ -1467,7 +1545,7 @@
             <h3>Transfer</h3>
             <p class="mm-sub">Move money between your accounts</p>
           </button>
-          <button type="button" class="mm-big-card">
+          <button type="button" class="mm-big-card" id="mm-btn-send">
             <div class="qa-icon" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
@@ -1895,6 +1973,120 @@
         </div>
       </div>
     </div>
+
+    <div id="view-send-destination" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">Send to</h1>
+        <p class="tf-sub">Choose a recipient</p>
+        <p class="tf-section-label">ZELLE CONTACTS</p>
+        <button type="button" class="sf-recipient" data-send-pick="dad">
+          <div class="sf-recipient-av g" aria-hidden="true">D</div>
+          <div class="sf-recipient-body">
+            <div class="sf-recipient-name">Dad</div>
+            <div class="sf-recipient-detail">g***@gmail.com</div>
+          </div>
+        </button>
+        <button type="button" class="sf-recipient" data-send-pick="ava">
+          <div class="sf-recipient-av b" aria-hidden="true">A</div>
+          <div class="sf-recipient-body">
+            <div class="sf-recipient-name">Ava M.</div>
+            <div class="sf-recipient-detail">(555) ***-8471</div>
+          </div>
+        </button>
+        <button type="button" class="sf-recipient" data-send-pick="brett">
+          <div class="sf-recipient-av p" aria-hidden="true">B</div>
+          <div class="sf-recipient-body">
+            <div class="sf-recipient-name">Brett S.</div>
+            <div class="sf-recipient-detail">(555) ***-4521</div>
+          </div>
+        </button>
+        <p class="tf-section-label">OTHER ACCOUNTS</p>
+        <button type="button" class="sf-recipient" data-send-pick="midamerican">
+          <div class="sf-recipient-av y" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="sf-recipient-body">
+            <div class="sf-recipient-name">Mid American</div>
+            <div class="sf-recipient-detail">Account ****4521</div>
+          </div>
+        </button>
+        <button type="button" class="sf-link-add" id="send-link-another">+ Send to another account</button>
+      </div>
+    </div>
+
+    <div id="view-send-amount" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">How much?</h1>
+        <p class="tf-sub" id="send-amount-to-label">To Ava M.</p>
+        <input type="text" class="tf-amount-input-visible" id="send-amount-input" inputmode="decimal" autocomplete="off" placeholder="$0.00" aria-label="Amount">
+        <p class="tf-available">Available: <strong id="send-available-val">$4,250.00</strong> from Checking</p>
+        <label class="tf-label-sm" for="send-memo-input">Memo (optional)</label>
+        <input type="text" class="tf-input" id="send-memo-input" placeholder="What's this for?">
+        <button type="button" class="tf-btn-primary" id="send-amount-continue">Continue</button>
+      </div>
+    </div>
+
+    <div id="view-send-speed" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">How fast?</h1>
+        <p class="tf-sub">Select delivery speed</p>
+        <button type="button" class="tf-opt-card send-speed-opt is-selected" data-send-speed="zelle" data-send-speed-label="Zelle">
+          <div><div class="tf-opt-title">Zelle</div><div class="tf-opt-sub">Sent directly to their bank</div></div>
+          <div class="tf-opt-right"><span class="tf-free">Free</span><span class="tf-speed-check" aria-hidden="true"><span class="tf-check-circle"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span></span></div>
+        </button>
+        <button type="button" class="tf-opt-card send-speed-opt" data-send-speed="rtp" data-send-speed-label="Real-Time">
+          <div><div class="tf-opt-title">Real-Time</div><div class="tf-opt-sub">Instant transfer via RTP network</div></div>
+          <div class="tf-opt-right"><span class="sf-fee-paid">$0.50</span><span class="tf-speed-check" aria-hidden="true"><span class="tf-check-circle"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span></span></div>
+        </button>
+        <button type="button" class="tf-opt-card send-speed-opt" data-send-speed="standard" data-send-speed-label="Standard">
+          <div><div class="tf-opt-title">Standard</div><div class="tf-opt-sub">1-3 business days</div></div>
+          <div class="tf-opt-right"><span class="tf-free">Free</span><span class="tf-speed-check" aria-hidden="true"><span class="tf-check-circle"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span></span></div>
+        </button>
+        <div class="tf-when-head">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          When should this be sent?
+        </div>
+        <div class="tf-when-grid">
+          <button type="button" class="tf-when-card send-when-opt is-selected" data-send-when="now" data-send-when-label="Now"><div class="tf-opt-title">Now</div><div class="tf-opt-sub">Send immediately</div></button>
+          <button type="button" class="tf-when-card send-when-opt" data-send-when="tomorrow" data-send-when-label="Tomorrow"><div class="tf-opt-title">Tomorrow</div><div class="tf-opt-sub" id="send-when-tomorrow-sub">Wed, Apr 1</div></button>
+          <button type="button" class="tf-when-card send-when-opt" data-send-when="nextweek" data-send-when-label="Next week"><div class="tf-opt-title">Next week</div><div class="tf-opt-sub" id="send-when-nextweek-sub">Tue, Apr 7</div></button>
+          <button type="button" class="tf-when-card send-when-opt" data-send-when="eom" data-send-when-label="End of month"><div class="tf-opt-title">End of month</div><div class="tf-opt-sub" id="send-when-eom-sub">Tue, Mar 31</div></button>
+        </div>
+        <button type="button" class="tf-pick-date" id="send-pick-date"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Pick a specific date</button>
+        <button type="button" class="tf-btn-primary is-enabled" id="send-speed-continue">Continue</button>
+      </div>
+    </div>
+
+    <div id="view-send-confirm" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">Review &amp; confirm</h1>
+        <p class="tf-sub">Please verify the details below</p>
+        <div class="tf-review-card">
+          <div class="tf-review-amt" id="send-review-amt">$75.00</div>
+          <div class="tf-review-row"><span class="tf-review-k">To</span><span class="tf-review-v" id="send-review-to">Ava M.</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">From</span><span class="tf-review-v" id="send-review-from">Checking ••9943</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">When</span><span class="tf-review-v" id="send-review-when">Now</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">Speed</span><span class="tf-review-v" id="send-review-speed">Zelle</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">Fee</span><span class="tf-review-v tf-free-green" id="send-review-fee">FREE</span></div>
+        </div>
+        <button type="button" class="tf-btn-primary is-enabled" id="send-confirm-btn">Confirm &amp; Send</button>
+        <p class="tf-disclaimer">By confirming, you authorize this transfer.</p>
+      </div>
+    </div>
+
+    <div id="view-send-result" class="view">
+      <div class="tf-shell">
+        <div class="tf-result">
+          <div class="tf-result-icon" aria-hidden="true"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <h1>Sent</h1>
+          <p class="tf-result-sum" id="send-result-line">$75.00 to Ava M.</p>
+          <div class="tf-badge-done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Completed</div>
+          <div class="tf-conf-box">Confirmation #<strong id="send-conf-num">TXN-4969289547</strong></div>
+          <button type="button" class="tf-btn-primary is-enabled" id="send-result-done">Done</button>
+          <button type="button" class="tf-link-quiet" id="send-result-another">Send to someone else</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1913,6 +2105,13 @@
         "transfer-confirm": 1,
         "transfer-result": 1
       };
+      var sendRoutes = {
+        "send-destination": 1,
+        "send-amount": 1,
+        "send-speed": 1,
+        "send-confirm": 1,
+        "send-result": 1
+      };
       var ACCOUNTS = {
         checking: { name: "Checking", detail: "Bread Financial ••9943", balanceCents: 425000 },
         savings: { name: "Savings", detail: "Ally Bank ••8372", balanceCents: 207719 },
@@ -1927,6 +2126,24 @@
         memo: "",
         speed: "instant",
         speedLabel: "Instant",
+        when: "now",
+        whenLabel: "Now",
+        confirmationId: null,
+        exitHash: "#overview"
+      };
+      var RECIPIENTS = {
+        dad: { name: "Dad", detail: "g***@gmail.com" },
+        ava: { name: "Ava M.", detail: "(555) ***-8471" },
+        brett: { name: "Brett S.", detail: "(555) ***-4521" },
+        midamerican: { name: "Mid American", detail: "Account ****4521" }
+      };
+      var SEND_FROM_LABEL = "Checking ••9943";
+      var sendState = {
+        recipientId: null,
+        amountCents: 0,
+        memo: "",
+        speed: "zelle",
+        speedLabel: "Zelle",
         when: "now",
         whenLabel: "Now",
         confirmationId: null,
@@ -1966,6 +2183,63 @@
           el.classList.toggle("is-selected", el.getAttribute("data-when") === "now");
         });
         syncAmountContinue();
+      }
+
+      function resetSendFlow() {
+        sendState.recipientId = null;
+        sendState.amountCents = 0;
+        sendState.memo = "";
+        sendState.speed = "zelle";
+        sendState.speedLabel = "Zelle";
+        sendState.when = "now";
+        sendState.whenLabel = "Now";
+        sendState.confirmationId = null;
+        var si = document.getElementById("send-amount-input");
+        if (si) {
+          si.value = "";
+        }
+        var sm = document.getElementById("send-memo-input");
+        if (sm) {
+          sm.value = "";
+        }
+        document.querySelectorAll(".send-speed-opt").forEach(function (el) {
+          el.classList.toggle("is-selected", el.getAttribute("data-send-speed") === "zelle");
+        });
+        document.querySelectorAll(".send-when-opt").forEach(function (el) {
+          el.classList.toggle("is-selected", el.getAttribute("data-send-when") === "now");
+        });
+        syncSendAmountContinue();
+      }
+
+      function startSendFrom(exitHash) {
+        sendState.exitHash = exitHash || "#overview";
+        resetSendFlow();
+        navigate("send-destination");
+      }
+
+      function parseSendAmountInput() {
+        var inp = document.getElementById("send-amount-input");
+        if (!inp) {
+          return 0;
+        }
+        var t = inp.value.replace(/[^0-9.]/g, "");
+        if (!t) {
+          return 0;
+        }
+        var n = parseFloat(t);
+        if (isNaN(n) || n <= 0) {
+          return 0;
+        }
+        return Math.round(n * 100);
+      }
+
+      function syncSendAmountContinue() {
+        var btn = document.getElementById("send-amount-continue");
+        if (!btn) {
+          return;
+        }
+        var ok = parseSendAmountInput() > 0;
+        btn.classList.toggle("is-enabled", ok);
       }
 
       function startTransferFrom(exitHash) {
@@ -2107,6 +2381,95 @@
         document.getElementById("mm-btn-transfer").addEventListener("click", function () {
           startTransferFrom("#move-money");
         });
+        document.getElementById("overview-btn-send").addEventListener("click", function () {
+          startSendFrom("#overview");
+        });
+        document.getElementById("mm-btn-send").addEventListener("click", function () {
+          startSendFrom("#move-money");
+        });
+      }
+
+      function applySendBindings() {
+        document.querySelectorAll("[data-send-pick]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            sendState.recipientId = btn.getAttribute("data-send-pick");
+            sendState.amountCents = 0;
+            sendState.confirmationId = null;
+            var inp = document.getElementById("send-amount-input");
+            if (inp) {
+              inp.value = "";
+            }
+            navigate("send-amount");
+          });
+        });
+        var sAmt = document.getElementById("send-amount-input");
+        if (sAmt) {
+          sAmt.addEventListener("input", syncSendAmountContinue);
+        }
+        document.getElementById("send-amount-continue").addEventListener("click", function () {
+          var c = parseSendAmountInput();
+          if (c <= 0) {
+            return;
+          }
+          sendState.amountCents = c;
+          sendState.memo = (document.getElementById("send-memo-input") || {}).value || "";
+          navigate("send-speed");
+        });
+        document.querySelectorAll(".send-speed-opt").forEach(function (el) {
+          el.addEventListener("click", function () {
+            document.querySelectorAll(".send-speed-opt").forEach(function (x) {
+              x.classList.remove("is-selected");
+            });
+            el.classList.add("is-selected");
+            sendState.speed = el.getAttribute("data-send-speed");
+            sendState.speedLabel = el.getAttribute("data-send-speed-label");
+          });
+        });
+        document.querySelectorAll(".send-when-opt").forEach(function (el) {
+          el.addEventListener("click", function () {
+            document.querySelectorAll(".send-when-opt").forEach(function (x) {
+              x.classList.remove("is-selected");
+            });
+            el.classList.add("is-selected");
+            sendState.when = el.getAttribute("data-send-when");
+            sendState.whenLabel = el.getAttribute("data-send-when-label");
+          });
+        });
+        document.getElementById("send-speed-continue").addEventListener("click", function () {
+          navigate("send-confirm");
+        });
+        document.getElementById("send-confirm-btn").addEventListener("click", function () {
+          var n = String(Math.floor(Math.random() * 1e10));
+          while (n.length < 10) {
+            n = "0" + n;
+          }
+          sendState.confirmationId = "TXN-" + n;
+          navigate("send-result");
+        });
+        document.getElementById("send-result-done").addEventListener("click", function () {
+          navigate(sendState.exitHash.replace(/^#/, ""));
+        });
+        document.getElementById("send-result-another").addEventListener("click", function () {
+          resetSendFlow();
+          navigate("send-destination");
+        });
+        document.getElementById("send-back").addEventListener("click", function () {
+          var r = (location.hash.slice(1) || "").toLowerCase().replace(/_/g, "-");
+          var backMap = {
+            "send-destination": sendState.exitHash.replace(/^#/, ""),
+            "send-amount": "send-destination",
+            "send-speed": "send-amount",
+            "send-confirm": "send-speed",
+            "send-result": sendState.exitHash.replace(/^#/, "")
+          };
+          var next = backMap[r];
+          if (next) {
+            navigate(next);
+          }
+        });
+        document.getElementById("send-cancel").addEventListener("click", function () {
+          navigate(sendState.exitHash.replace(/^#/, ""));
+        });
       }
 
       function setStepEl(el, mode, text) {
@@ -2156,6 +2519,48 @@
           setStepEl(d1, "done", "Amount");
           setStepEl(d2, "done", "Review");
           setStepEl(d3, "active", "Result");
+        }
+      }
+
+      function updateSendStepper(route) {
+        var s0 = document.getElementById("send-step-0");
+        var s1 = document.getElementById("send-step-1");
+        var s2 = document.getElementById("send-step-2");
+        var s3 = document.getElementById("send-step-3");
+        var s4 = document.getElementById("send-step-4");
+        if (!s0) {
+          return;
+        }
+        if (route === "send-destination") {
+          setStepEl(s0, "active", "Destination");
+          setStepEl(s1, "todo", "Amount");
+          setStepEl(s2, "todo", "Speed");
+          setStepEl(s3, "todo", "Review");
+          setStepEl(s4, "todo", "Result");
+        } else if (route === "send-amount") {
+          setStepEl(s0, "done", "Destination");
+          setStepEl(s1, "active", "Amount");
+          setStepEl(s2, "todo", "Speed");
+          setStepEl(s3, "todo", "Review");
+          setStepEl(s4, "todo", "Result");
+        } else if (route === "send-speed") {
+          setStepEl(s0, "done", "Destination");
+          setStepEl(s1, "done", "Amount");
+          setStepEl(s2, "active", "Speed");
+          setStepEl(s3, "todo", "Review");
+          setStepEl(s4, "todo", "Result");
+        } else if (route === "send-confirm") {
+          setStepEl(s0, "done", "Destination");
+          setStepEl(s1, "done", "Amount");
+          setStepEl(s2, "done", "Speed");
+          setStepEl(s3, "active", "Review");
+          setStepEl(s4, "todo", "Result");
+        } else if (route === "send-result") {
+          setStepEl(s0, "done", "Destination");
+          setStepEl(s1, "done", "Amount");
+          setStepEl(s2, "done", "Speed");
+          setStepEl(s3, "done", "Review");
+          setStepEl(s4, "active", "Result");
         }
       }
 
@@ -2216,16 +2621,77 @@
         return raw;
       }
 
+      function refreshSendScreens(route) {
+        updateSendStepper(route);
+        if (route === "send-amount") {
+          var rec = RECIPIENTS[sendState.recipientId];
+          var el = document.getElementById("send-amount-to-label");
+          if (el && rec) {
+            el.textContent = "To " + rec.name;
+          }
+          syncSendAmountContinue();
+        }
+        if (route === "send-confirm") {
+          var r = RECIPIENTS[sendState.recipientId];
+          document.getElementById("send-review-amt").textContent = fmtMoney(sendState.amountCents);
+          document.getElementById("send-review-to").textContent = r ? r.name : "—";
+          document.getElementById("send-review-from").textContent = SEND_FROM_LABEL;
+          document.getElementById("send-review-when").textContent = sendState.whenLabel;
+          document.getElementById("send-review-speed").textContent = sendState.speedLabel;
+          var feeEl = document.getElementById("send-review-fee");
+          if (feeEl) {
+            if (sendState.speed === "rtp") {
+              feeEl.textContent = "$0.50";
+              feeEl.classList.remove("tf-free-green");
+              feeEl.classList.add("sf-fee-paid");
+            } else {
+              feeEl.textContent = "FREE";
+              feeEl.classList.add("tf-free-green");
+              feeEl.classList.remove("sf-fee-paid");
+            }
+          }
+        }
+        if (route === "send-result") {
+          var rp = RECIPIENTS[sendState.recipientId];
+          document.getElementById("send-result-line").textContent =
+            fmtMoney(sendState.amountCents) + " to " + (rp ? rp.name : "recipient");
+          document.getElementById("send-conf-num").textContent = sendState.confirmationId || "—";
+        }
+      }
+
+      function guardSendRoute(raw) {
+        if (raw !== "send-destination" && !sendState.recipientId) {
+          return "send-destination";
+        }
+        if (
+          (raw === "send-speed" || raw === "send-confirm" || raw === "send-result") &&
+          sendState.amountCents <= 0
+        ) {
+          return "send-amount";
+        }
+        if (raw === "send-result" && !sendState.confirmationId) {
+          return "send-confirm";
+        }
+        return raw;
+      }
+
       function applyRoute() {
         var raw = (location.hash.slice(1) || defaultRoute).toLowerCase().replace(/_/g, "-");
         var mainRoutes = { overview: 1, "move-money": 1, messages: 1 };
-        var isTransfer = !!transferRoutes[raw];
-
-        if (!mainRoutes[raw] && !isTransfer) {
+        if (!mainRoutes[raw] && !transferRoutes[raw] && !sendRoutes[raw]) {
           raw = defaultRoute;
         }
+        var isTransfer = !!transferRoutes[raw];
+        var isSend = !!sendRoutes[raw];
         if (isTransfer) {
           raw = guardTransferRoute(raw);
+          if (raw !== (location.hash.slice(1) || "").toLowerCase().replace(/_/g, "-")) {
+            navigate(raw);
+            return;
+          }
+        }
+        if (isSend) {
+          raw = guardSendRoute(raw);
           if (raw !== (location.hash.slice(1) || "").toLowerCase().replace(/_/g, "-")) {
             navigate(raw);
             return;
@@ -2234,11 +2700,19 @@
 
         var mainBar = document.getElementById("topbar-main");
         var tfBar = document.getElementById("topbar-transfer");
-        if (mainBar && tfBar) {
-          mainBar.classList.toggle("topbar--hidden", isTransfer);
+        var sendBar = document.getElementById("topbar-send");
+        var inSubflow = isTransfer || isSend;
+        if (mainBar) {
+          mainBar.classList.toggle("topbar--hidden", inSubflow);
+        }
+        if (tfBar) {
           tfBar.classList.toggle("topbar--hidden", !isTransfer);
         }
+        if (sendBar) {
+          sendBar.classList.toggle("topbar--hidden", !isSend);
+        }
         document.body.classList.toggle("tf-flow-active", isTransfer);
+        document.body.classList.toggle("send-flow-active", isSend);
 
         var viewId = "view-" + raw;
         document.querySelectorAll(".view").forEach(function (v) {
@@ -2248,6 +2722,9 @@
         if (isTransfer) {
           refreshTransferScreens(raw);
           document.title = "bread financial — Transfer";
+        } else if (isSend) {
+          refreshSendScreens(raw);
+          document.title = "bread financial — Send money";
         } else {
           document.querySelectorAll(".nav-pill[data-route]").forEach(function (pill) {
             pill.classList.toggle("is-active", pill.getAttribute("data-route") === raw);
@@ -2258,6 +2735,7 @@
 
       window.addEventListener("hashchange", applyRoute);
       applyTransferBindings();
+      applySendBindings();
       applyRoute();
     })();
   </script>
