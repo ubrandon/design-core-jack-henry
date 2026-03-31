@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>bread financial — Overview</title>
+  <title>bread financial</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -42,6 +42,7 @@
       font-weight: 600;
       letter-spacing: -0.02em;
       color: #111;
+      text-decoration: none;
     }
     .nav-center {
       display: flex;
@@ -57,6 +58,12 @@
       font-size: 0.9rem;
       font-weight: 500;
       color: #4b5563;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      background: transparent;
+      text-decoration: none;
+      display: inline-block;
     }
     .nav-pill.is-active {
       background: #eceef1;
@@ -70,13 +77,374 @@
     .btn-support {
       padding: 8px 16px;
       border-radius: 10px;
-      border: 1px solid #d1d5db;
-      background: #fff;
+      border: 1px solid transparent;
+      background: #eceef1;
       font-size: 0.875rem;
       font-weight: 500;
       color: #374151;
       cursor: pointer;
       font-family: inherit;
+    }
+    .view { display: none; }
+    .view.active { display: block; }
+    /* —— Move money —— */
+    .mm-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 40px 48px;
+    }
+    .mm-hero h1 {
+      margin: 0 0 8px;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #111;
+    }
+    .mm-hero p {
+      margin: 0 0 28px;
+      font-size: 0.95rem;
+      color: #6b7280;
+    }
+    .mm-primary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) {
+      .mm-primary-grid { grid-template-columns: 1fr; }
+    }
+    .mm-big-card {
+      background: #fff;
+      border: 1px solid #e8eaed;
+      border-radius: 16px;
+      padding: 24px 22px;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+      color: inherit;
+      transition: box-shadow 0.15s;
+    }
+    .mm-big-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .mm-big-card .qa-icon {
+      margin: 0 0 16px;
+    }
+    .mm-big-card h3 {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #111;
+    }
+    .mm-big-card .mm-sub {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+    .mm-quick-card {
+      background: #fff;
+      border: 1px solid #e8eaed;
+      border-radius: 16px;
+      padding: 20px 22px 24px;
+      margin-bottom: 24px;
+    }
+    .mm-quick-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .mm-quick-head h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .mm-link-arrow {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+    }
+    .mm-recipients {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .mm-recipient {
+      text-align: center;
+      min-width: 72px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      font-family: inherit;
+      color: inherit;
+    }
+    .mm-recipient-av {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      margin: 0 auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #fff;
+    }
+    .mm-recipient-av.g { background: #16a34a; }
+    .mm-recipient-av.b { background: #2563eb; }
+    .mm-recipient-av.p { background: #7c3aed; }
+    .mm-recipient-av.y { background: #eab308; color: #111; }
+    .mm-recipient-av.n { background: #e5e7eb; color: #4b5563; }
+    .mm-recipient-name {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #111;
+    }
+    .mm-recipient-amt {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+    .mm-lower {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .mm-lower { grid-template-columns: 1fr; }
+    }
+    .mm-sched-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .mm-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: #111;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .mm-sched-row {
+      display: flex;
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid #f0f1f3;
+      align-items: flex-start;
+    }
+    .mm-sched-row:last-of-type { border-bottom: none; }
+    .mm-sched-body { flex: 1; min-width: 0; }
+    .mm-sched-title { font-weight: 600; font-size: 0.9375rem; color: #111; }
+    .mm-sched-meta { font-size: 0.8125rem; color: #9ca3af; margin-top: 4px; }
+    .mm-sched-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .mm-sched-amt { font-weight: 700; font-size: 0.9375rem; display: block; }
+    .mm-tag {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .mm-tag.sched { background: #f3f4f6; color: #6b7280; }
+    .mm-tag.recur { background: #d1fae5; color: #047857; }
+    .mm-act-row {
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f1f3;
+      align-items: center;
+    }
+    .mm-act-row:last-of-type { border-bottom: none; }
+    .mm-act-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #f3f4f6;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .mm-act-icon.yellow { background: #fef9c3; color: #ca8a04; }
+    .mm-act-icon.green { background: #d1fae5; color: #059669; }
+    /* —— Messages —— */
+    .msg-wrap {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 32px 40px 48px;
+    }
+    .msg-page-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .msg-page-head h1 {
+      margin: 0 0 6px;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .msg-page-head .msg-sub {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+    .btn-outline {
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+    .msg-filter-tabs {
+      display: flex;
+      gap: 24px;
+      border-bottom: 1px solid #e8eaed;
+      margin-bottom: 0;
+    }
+    .msg-filter-tabs button {
+      border: none;
+      background: none;
+      padding: 12px 0 14px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #6b7280;
+      cursor: pointer;
+      font-family: inherit;
+      position: relative;
+      margin-bottom: -1px;
+    }
+    .msg-filter-tabs button.is-on {
+      color: #111;
+      font-weight: 600;
+    }
+    .msg-filter-tabs button.is-on::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: #111;
+      border-radius: 1px;
+    }
+    .msg-list-card {
+      background: #fff;
+      border: 1px solid #e8eaed;
+      border-radius: 16px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+    .msg-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px 20px;
+      border-bottom: 1px solid #f0f1f3;
+      cursor: pointer;
+    }
+    .msg-row:last-child { border-bottom: none; }
+    .msg-row:hover { background: #fafafa; }
+    .msg-row-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4b5563;
+      flex-shrink: 0;
+    }
+    .msg-row-body { flex: 1; min-width: 0; }
+    .msg-row-title-line {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .msg-unread-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      flex-shrink: 0;
+    }
+    .msg-row-title {
+      font-weight: 700;
+      font-size: 0.9375rem;
+      color: #111;
+    }
+    .msg-cat-pill {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: capitalize;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+    .msg-preview {
+      margin: 0;
+      font-size: 0.8125rem;
+      color: #6b7280;
+      line-height: 1.45;
+    }
+    .msg-time {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 8px;
+    }
+    .msg-chevron {
+      color: #c4c8ce;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .msg-prefs {
+      margin-top: 28px;
+      background: #fff;
+      border: 1px solid #e8eaed;
+      border-radius: 16px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .msg-prefs h3 {
+      margin: 0 0 4px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .msg-prefs p {
+      margin: 0;
+      font-size: 0.8125rem;
+      color: #6b7280;
     }
     .avatar {
       width: 40px;
@@ -192,6 +560,7 @@
       justify-content: space-between;
       margin-bottom: 16px;
       gap: 12px;
+      flex-wrap: wrap;
     }
     .card-title {
       margin: 0;
@@ -207,6 +576,7 @@
     /* Segmented */
     .segmented {
       display: flex;
+      flex-wrap: wrap;
       background: #f3f4f6;
       border-radius: 10px;
       padding: 3px;
@@ -414,16 +784,424 @@
       margin-top: 6px;
       text-transform: capitalize;
     }
+    .topbar--hidden {
+      display: none !important;
+    }
+    /* —— Transfer flow —— */
+    body.tf-flow-active {
+      background: #fafafa;
+    }
+    body.tf-flow-active .page {
+      padding-bottom: 0;
+    }
+    .tf-topbar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      min-height: 64px;
+      background: #fff;
+      border-bottom: 1px solid #e8eaed;
+    }
+    .tf-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 140px;
+    }
+    .tf-back {
+      border: none;
+      background: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+    .tf-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #111;
+    }
+    .tf-stepper {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 52%;
+    }
+    .tf-step {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      color: #9ca3af;
+      background: #f3f4f6;
+    }
+    .tf-step.is-active {
+      background: #111;
+      color: #fff;
+    }
+    .tf-step.is-done {
+      background: #d1fae5;
+      color: #047857;
+    }
+    .tf-step svg { flex-shrink: 0; }
+    .tf-cancel {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #374151;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      min-width: 140px;
+      text-align: right;
+    }
+    .tf-shell {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 40px 24px 56px;
+    }
+    .tf-shell.tf-shell--wide {
+      max-width: 520px;
+    }
+    .tf-h1 {
+      margin: 0 0 8px;
+      font-size: 1.65rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #111;
+    }
+    .tf-sub {
+      margin: 0 0 28px;
+      font-size: 0.95rem;
+      color: #6b7280;
+    }
+    .tf-section-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      margin: 24px 0 10px;
+    }
+    .tf-section-label:first-of-type { margin-top: 0; }
+    .tf-acct {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .tf-acct:hover {
+      border-color: #d1d5db;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .tf-acct.is-selected {
+      border-color: #111;
+      box-shadow: 0 0 0 1px #111;
+    }
+    .tf-acct.is-hidden { display: none; }
+    .tf-acct-name { font-weight: 700; font-size: 0.95rem; color: #111; }
+    .tf-acct-detail { font-size: 0.8125rem; color: #9ca3af; margin-top: 3px; }
+    .tf-acct-bal { font-weight: 700; font-size: 0.95rem; color: #111; flex-shrink: 0; }
+    .tf-link-add {
+      width: 100%;
+      margin-top: 8px;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #eceef1;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #4b5563;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .tf-amount-input-visible {
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      border: none;
+      width: 100%;
+      padding: 8px 0 16px;
+      margin: 0 0 4px;
+      font-family: inherit;
+      color: #111;
+      background: transparent;
+    }
+    .tf-amount-input-visible:focus {
+      outline: none;
+    }
+    .tf-amount-input-visible::placeholder {
+      color: #d1d5db;
+    }
+    .tf-available {
+      font-size: 0.875rem;
+      color: #374151;
+      margin-bottom: 28px;
+    }
+    .tf-available strong { font-weight: 700; color: #111; }
+    .tf-label-sm {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+    .tf-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      margin-bottom: 24px;
+    }
+    .tf-input::placeholder { color: #c4c8ce; }
+    .tf-btn-primary {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      background: #9ca3af;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .tf-btn-primary.is-enabled {
+      background: #111;
+    }
+    .tf-btn-primary.is-enabled:hover { opacity: 0.92; }
+    .tf-opt-card {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+    }
+    .tf-opt-card.is-selected {
+      border-color: #111;
+      box-shadow: 0 0 0 1px #111;
+    }
+    .tf-opt-title { font-weight: 700; font-size: 0.95rem; color: #111; }
+    .tf-opt-sub { font-size: 0.8125rem; color: #9ca3af; margin-top: 3px; }
+    .tf-opt-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .tf-free { font-size: 0.8125rem; font-weight: 700; color: #16a34a; }
+    .tf-check-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .tf-speed-check {
+      visibility: hidden;
+      width: 22px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .tf-opt-card.is-selected .tf-speed-check {
+      visibility: visible;
+    }
+    .tf-when-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin: 28px 0 14px;
+      color: #111;
+    }
+    .tf-when-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .tf-when-card {
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+    }
+    .tf-when-card.is-selected {
+      border-color: #111;
+      box-shadow: 0 0 0 1px #111;
+      background: #f9fafb;
+    }
+    .tf-pick-date {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #fff;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #4b5563;
+      cursor: pointer;
+      font-family: inherit;
+      margin-bottom: 24px;
+    }
+    .tf-review-card {
+      background: #fff;
+      border: 1px solid #e8eaed;
+      border-radius: 16px;
+      padding: 28px 24px 8px;
+      margin-bottom: 16px;
+    }
+    .tf-review-amt {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 20px;
+      font-variant-numeric: tabular-nums;
+    }
+    .tf-review-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+      border-top: 1px solid #f0f1f3;
+      font-size: 0.9rem;
+    }
+    .tf-review-row:first-of-type { border-top: none; }
+    .tf-review-k { color: #6b7280; }
+    .tf-review-v { font-weight: 600; color: #111; text-align: right; }
+    .tf-review-v.tf-free-green { color: #16a34a; font-weight: 700; }
+    .tf-disclaimer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #9ca3af;
+      margin-top: 16px;
+      line-height: 1.4;
+    }
+    .tf-result {
+      text-align: center;
+      padding: 24px 0 32px;
+    }
+    .tf-result-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      border-radius: 50%;
+      background: #e0f2fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0284c7;
+    }
+    .tf-result h1 {
+      margin: 0 0 10px;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+    .tf-result-sum {
+      font-size: 1.05rem;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+    .tf-badge-done {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+    .tf-conf-box {
+      background: #f3f4f6;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 28px;
+    }
+    .tf-conf-box strong {
+      color: #111;
+      font-weight: 700;
+    }
+    .tf-link-quiet {
+      display: block;
+      margin-top: 16px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #4b5563;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      width: 100%;
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .tf-stepper {
+        position: static;
+        transform: none;
+        order: 3;
+        width: 100%;
+        max-width: none;
+        margin-top: 8px;
+        padding-bottom: 8px;
+      }
+      .tf-topbar { flex-wrap: wrap; padding: 12px 16px; }
+      .tf-topbar-left { min-width: auto; }
+      .tf-cancel { min-width: auto; text-align: left; }
+    }
   </style>
 </head>
 <body>
   <div class="page">
-    <header class="topbar">
-      <span class="logo">bread financial</span>
+    <header class="topbar" id="topbar-main">
+      <a href="#overview" class="logo">bread financial</a>
       <nav class="nav-center" aria-label="Primary">
-        <span class="nav-pill is-active">Overview</span>
-        <a href="#" class="nav-pill">Move money</a>
-        <a href="#" class="nav-pill">Messages</a>
+        <a href="#overview" class="nav-pill" data-route="overview">Overview</a>
+        <a href="#move-money" class="nav-pill" data-route="move-money">Move money</a>
+        <a href="#messages" class="nav-pill" data-route="messages">Messages</a>
       </nav>
       <div class="topbar-right">
         <button type="button" class="btn-support">Support</button>
@@ -431,6 +1209,21 @@
       </div>
     </header>
 
+    <header class="tf-topbar topbar--hidden" id="topbar-transfer" aria-label="Transfer">
+      <div class="tf-topbar-left">
+        <button type="button" class="tf-back" id="tf-back">&lt; Back</button>
+        <span class="tf-title">Transfer</span>
+      </div>
+      <div class="tf-stepper" id="tf-stepper" role="navigation" aria-label="Transfer progress">
+        <span class="tf-step" data-tf-step="0" id="tf-step-0">Destination</span>
+        <span class="tf-step" data-tf-step="1" id="tf-step-1">Amount</span>
+        <span class="tf-step" data-tf-step="2" id="tf-step-2">Review</span>
+        <span class="tf-step" data-tf-step="3" id="tf-step-3">Result</span>
+      </div>
+      <button type="button" class="tf-cancel" id="tf-cancel">Cancel</button>
+    </header>
+
+    <div id="view-overview" class="view active">
     <div class="layout">
       <main>
         <p class="greeting">Good afternoon, Quinn</p>
@@ -440,7 +1233,7 @@
         </div>
 
         <div class="quick-actions">
-          <button type="button" class="qa-card">
+          <button type="button" class="qa-card" id="overview-btn-transfer">
             <div class="qa-icon" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                 <path d="M17 8H7M7 8l3-3M7 8l3 3M7 16h10M17 16l-3-3M17 16l-3 3"/>
@@ -627,6 +1420,818 @@
         </section>
       </aside>
     </div>
+    </div>
+
+    <div id="view-move-money" class="view">
+      <div class="mm-wrap">
+        <header class="mm-hero">
+          <h1>Move money</h1>
+          <p>Transfer, send, pay bills, or deposit funds</p>
+        </header>
+
+        <div class="mm-primary-grid">
+          <button type="button" class="mm-big-card" id="mm-btn-transfer">
+            <div class="qa-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M17 8H7M7 8l3-3M7 8l3 3M7 16h10M17 16l-3-3M17 16l-3 3"/>
+              </svg>
+            </div>
+            <h3>Transfer</h3>
+            <p class="mm-sub">Move money between your accounts</p>
+          </button>
+          <button type="button" class="mm-big-card">
+            <div class="qa-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+              </svg>
+            </div>
+            <h3>Send money</h3>
+            <p class="mm-sub">Send to friends and family</p>
+          </button>
+          <button type="button" class="mm-big-card">
+            <div class="qa-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="5" width="16" height="14" rx="2"/>
+                <text x="12" y="16.5" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" stroke="none" font-family="Inter, system-ui, sans-serif">$</text>
+              </svg>
+            </div>
+            <h3>Pay a bill</h3>
+            <p class="mm-sub">Pay bills and manage payees</p>
+          </button>
+        </div>
+
+        <section class="mm-quick-card">
+          <div class="mm-quick-head">
+            <h2>Quick send</h2>
+            <a href="#" class="mm-link-arrow">Manage recipients →</a>
+          </div>
+          <div class="mm-recipients">
+            <button type="button" class="mm-recipient">
+              <div class="mm-recipient-av g">D</div>
+              <div class="mm-recipient-name">Dad</div>
+              <div class="mm-recipient-amt">$75</div>
+            </button>
+            <button type="button" class="mm-recipient">
+              <div class="mm-recipient-av b">A</div>
+              <div class="mm-recipient-name">Ava M.</div>
+              <div class="mm-recipient-amt">$450</div>
+            </button>
+            <button type="button" class="mm-recipient">
+              <div class="mm-recipient-av p">B</div>
+              <div class="mm-recipient-name">Brett S.</div>
+              <div class="mm-recipient-amt">$15</div>
+            </button>
+            <button type="button" class="mm-recipient">
+              <div class="mm-recipient-av y" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+              <div class="mm-recipient-name">Mid American</div>
+              <div class="mm-recipient-amt">$124</div>
+            </button>
+            <button type="button" class="mm-recipient">
+              <div class="mm-recipient-av n" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              </div>
+              <div class="mm-recipient-name">New</div>
+              <div class="mm-recipient-amt">Add recipient</div>
+            </button>
+          </div>
+        </section>
+
+        <div class="mm-lower">
+          <section class="card" style="margin-bottom:0;">
+            <div class="card-head" style="margin-bottom:8px;">
+              <h2 class="card-title mm-sched-heading">Scheduled<span class="mm-badge" aria-label="3 items">3</span></h2>
+            </div>
+            <div class="mm-sched-row">
+              <div class="up-icon bill" style="margin-top:2px;" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8M8 12h5"/>
+                </svg>
+              </div>
+              <div class="mm-sched-body">
+                <div class="mm-sched-title">Mid American Energy Company</div>
+                <div class="mm-sched-meta">Feb 8, 2026 · Checking ••9069</div>
+              </div>
+              <div class="mm-sched-right">
+                <span class="mm-sched-amt">$124.00</span>
+                <span class="mm-tag sched">SCHEDULED</span>
+              </div>
+            </div>
+            <div class="mm-sched-row">
+              <div class="up-icon save" style="margin-top:2px;" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+                </svg>
+              </div>
+              <div class="mm-sched-body">
+                <div class="mm-sched-title">To Savings</div>
+                <div class="mm-sched-meta">Feb 15, 2026 · Checking ••9069</div>
+              </div>
+              <div class="mm-sched-right">
+                <span class="mm-sched-amt">$200.00</span>
+                <span class="mm-tag recur">RECURRING</span>
+              </div>
+            </div>
+            <div class="mm-sched-row">
+              <div class="up-icon bill" style="margin-top:2px;" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8M8 12h5"/>
+                </svg>
+              </div>
+              <div class="mm-sched-body">
+                <div class="mm-sched-title">Mediacom</div>
+                <div class="mm-sched-meta">Feb 20, 2026 · Checking ••9069</div>
+              </div>
+              <div class="mm-sched-right">
+                <span class="mm-sched-amt">$79.99</span>
+                <span class="mm-tag sched">SCHEDULED</span>
+              </div>
+            </div>
+            <button type="button" class="btn-wide">Manage scheduled payments</button>
+          </section>
+
+          <section class="card" style="margin-bottom:0;">
+            <div class="card-head">
+              <h2 class="card-title">Recent activity</h2>
+              <div class="segmented" role="tablist">
+                <button type="button" class="is-on" role="tab">All</button>
+                <button type="button" role="tab">Transfers</button>
+                <button type="button" role="tab">Payments</button>
+                <button type="button" role="tab">Deposits</button>
+              </div>
+            </div>
+            <div class="mm-act-row">
+              <div class="mm-act-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </div>
+              <div class="tx-main">
+                <div class="tx-name">Sent to Dad</div>
+                <div class="tx-meta">Jan 28</div>
+              </div>
+              <span class="tx-amt">$200.00</span>
+            </div>
+            <div class="mm-act-row">
+              <div class="mm-act-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </div>
+              <div class="tx-main">
+                <div class="tx-name">To Performance Savings</div>
+                <div class="tx-meta">Jan 28</div>
+              </div>
+              <span class="tx-amt">$500.00</span>
+            </div>
+            <div class="mm-act-row">
+              <div class="mm-act-icon yellow" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8M8 12h5"/>
+                </svg>
+              </div>
+              <div class="tx-main">
+                <div class="tx-name">Mid American Energy Company</div>
+                <div class="tx-meta">Jan 8</div>
+              </div>
+              <span class="tx-amt">$118.50</span>
+            </div>
+            <div class="mm-act-row">
+              <div class="mm-act-icon green" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 13l-7 7-7-7M12 5v14"/>
+                </svg>
+              </div>
+              <div class="tx-main">
+                <div class="tx-name">Mobile Deposit</div>
+                <div class="tx-meta">Jan 5</div>
+              </div>
+              <span class="tx-amt positive">+$250.00</span>
+            </div>
+            <button type="button" class="btn-wide">View all activity</button>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-messages" class="view">
+      <div class="msg-wrap">
+        <div class="msg-page-head">
+          <div>
+            <h1>Messages</h1>
+            <p class="msg-sub">2 unread messages</p>
+          </div>
+          <button type="button" class="btn-outline">Mark all as read</button>
+        </div>
+
+        <div class="msg-filter-tabs" role="tablist">
+          <button type="button" class="is-on" role="tab">All</button>
+          <button type="button" role="tab">Alerts</button>
+          <button type="button" role="tab">Institution</button>
+          <button type="button" role="tab">Conversations</button>
+          <button type="button" role="tab">Offers</button>
+        </div>
+
+        <div class="msg-list-card">
+          <div class="msg-row">
+            <div class="msg-row-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+            </div>
+            <div class="msg-row-body">
+              <div class="msg-row-title-line">
+                <span class="msg-unread-dot" aria-hidden="true"></span>
+                <span class="msg-row-title">Large transaction detected.</span>
+                <span class="msg-cat-pill">Alert</span>
+              </div>
+              <p class="msg-preview">A purchase of $2,450.00 was made at Apple Store. If this wasn’t you, please contact us immediately.</p>
+              <div class="msg-time">2 hours ago</div>
+            </div>
+            <span class="msg-chevron" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+          </div>
+          <div class="msg-row">
+            <div class="msg-row-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01"/></svg>
+            </div>
+            <div class="msg-row-body">
+              <div class="msg-row-title-line">
+                <span class="msg-unread-dot" aria-hidden="true"></span>
+                <span class="msg-row-title">Your statement is ready.</span>
+                <span class="msg-cat-pill">Institution</span>
+              </div>
+              <p class="msg-preview">Your January 2026 statement for Checking •••4523 is now available to view and download.</p>
+              <div class="msg-time">Yesterday</div>
+            </div>
+            <span class="msg-chevron" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+          </div>
+          <div class="msg-row">
+            <div class="msg-row-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 13v-2zM11.6 16.8a3 3 0 11-5.8-1.6"/></svg>
+            </div>
+            <div class="msg-row-body">
+              <div class="msg-row-title-line">
+                <span class="msg-row-title">Earn 5% cashback this weekend.</span>
+                <span class="msg-cat-pill">Offers</span>
+              </div>
+              <p class="msg-preview">Use your debit card at select retailers this weekend and earn 5% cashback on all purchases up to $500.</p>
+              <div class="msg-time">2 days ago</div>
+            </div>
+            <span class="msg-chevron" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+          </div>
+          <div class="msg-row">
+            <div class="msg-row-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <div class="msg-row-body">
+              <div class="msg-row-title-line">
+                <span class="msg-row-title">Support: Account inquiry.</span>
+                <span class="msg-cat-pill">Conversation</span>
+              </div>
+              <p class="msg-preview">Thank you for reaching out. Your request has been processed and your new checks will arrive in 5-7 business days.</p>
+              <div class="msg-time">3 days ago</div>
+            </div>
+            <span class="msg-chevron" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+          </div>
+          <div class="msg-row">
+            <div class="msg-row-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+            </div>
+            <div class="msg-row-body">
+              <div class="msg-row-title-line">
+                <span class="msg-row-title">Security update completed.</span>
+                <span class="msg-cat-pill">Institution</span>
+              </div>
+              <p class="msg-preview">We’ve enhanced our security protocols. Your account is protected with the latest security measures.</p>
+              <div class="msg-time">1 week ago</div>
+            </div>
+            <span class="msg-chevron" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+          </div>
+          <div class="msg-row">
+            <div class="msg-row-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 13v-2zM11.6 16.8a3 3 0 11-5.8-1.6"/></svg>
+            </div>
+            <div class="msg-row-body">
+              <div class="msg-row-title-line">
+                <span class="msg-row-title">New savings account rates.</span>
+                <span class="msg-cat-pill">Offers</span>
+              </div>
+              <p class="msg-preview">Our Performance Savings account now offers 4.25% APY. Open one today and watch your money grow.</p>
+              <div class="msg-time">1 week ago</div>
+            </div>
+            <span class="msg-chevron" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+          </div>
+          <div class="msg-row">
+            <div class="msg-row-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+            </div>
+            <div class="msg-row-body">
+              <div class="msg-row-title-line">
+                <span class="msg-row-title">Bill payment reminder.</span>
+                <span class="msg-cat-pill">Alert</span>
+              </div>
+              <p class="msg-preview">Your scheduled payment of $125.00 to Xfinity will be processed tomorrow.</p>
+              <div class="msg-time">1 week ago</div>
+            </div>
+            <span class="msg-chevron" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+          </div>
+        </div>
+
+        <div class="msg-prefs">
+          <div>
+            <h3>Notification preferences</h3>
+            <p>Manage how you receive alerts and messages.</p>
+          </div>
+          <button type="button" class="btn-outline">Manage</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-transfer-to" class="view">
+      <div class="tf-shell">
+        <h1 class="tf-h1">Transfer to</h1>
+        <p class="tf-sub">Select destination account</p>
+        <p class="tf-section-label">YOUR ACCOUNTS</p>
+        <button type="button" class="tf-acct" data-tf-pick="to" data-acc="checking">
+          <div><div class="tf-acct-name">Checking</div><div class="tf-acct-detail">Bread Financial ••9943</div></div>
+          <div class="tf-acct-bal">$4,250.00</div>
+        </button>
+        <button type="button" class="tf-acct" data-tf-pick="to" data-acc="savings">
+          <div><div class="tf-acct-name">Savings</div><div class="tf-acct-detail">Ally Bank ••8372</div></div>
+          <div class="tf-acct-bal">$2,077.19</div>
+        </button>
+        <button type="button" class="tf-acct" data-tf-pick="to" data-acc="performance">
+          <div><div class="tf-acct-name">Performance Savings</div><div class="tf-acct-detail">Capital One ••1331</div></div>
+          <div class="tf-acct-bal">$2,797.48</div>
+        </button>
+        <p class="tf-section-label">EXTERNAL ACCOUNTS</p>
+        <button type="button" class="tf-acct" data-tf-pick="to" data-acc="chase">
+          <div><div class="tf-acct-name">Chase Checking</div><div class="tf-acct-detail">Chase ••7823</div></div>
+          <div class="tf-acct-bal">$5,420.00</div>
+        </button>
+        <button type="button" class="tf-link-add" id="tf-link-external">+ Link new external account</button>
+      </div>
+    </div>
+
+    <div id="view-transfer-from" class="view">
+      <div class="tf-shell">
+        <h1 class="tf-h1">Transfer from</h1>
+        <p class="tf-sub">Select source account</p>
+        <p class="tf-section-label">YOUR ACCOUNTS</p>
+        <button type="button" class="tf-acct tf-from-opt" data-tf-pick="from" data-acc="checking">
+          <div><div class="tf-acct-name">Checking</div><div class="tf-acct-detail">Bread Financial ••9943</div></div>
+          <div class="tf-acct-bal">$4,250.00</div>
+        </button>
+        <button type="button" class="tf-acct tf-from-opt" data-tf-pick="from" data-acc="savings">
+          <div><div class="tf-acct-name">Savings</div><div class="tf-acct-detail">Ally Bank ••8372</div></div>
+          <div class="tf-acct-bal">$2,077.19</div>
+        </button>
+        <button type="button" class="tf-acct tf-from-opt" data-tf-pick="from" data-acc="performance">
+          <div><div class="tf-acct-name">Performance Savings</div><div class="tf-acct-detail">Capital One ••1331</div></div>
+          <div class="tf-acct-bal">$2,797.48</div>
+        </button>
+        <p class="tf-section-label">EXTERNAL ACCOUNTS</p>
+        <button type="button" class="tf-acct tf-from-opt" data-tf-pick="from" data-acc="chase">
+          <div><div class="tf-acct-name">Chase Checking</div><div class="tf-acct-detail">Chase ••7823</div></div>
+          <div class="tf-acct-bal">$5,420.00</div>
+        </button>
+        <button type="button" class="tf-link-add" id="tf-link-external-2">+ Link new external account</button>
+      </div>
+    </div>
+
+    <div id="view-transfer-amount" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">How much?</h1>
+        <p class="tf-sub" id="tf-amount-to-label">To checking</p>
+        <input type="text" class="tf-amount-input-visible" id="tf-amount-input" inputmode="decimal" autocomplete="off" placeholder="$0.00" aria-label="Amount">
+        <p class="tf-available" id="tf-available-line">Available: <strong id="tf-available-val">$0.00</strong> <span id="tf-available-from-label">from Savings</span></p>
+        <label class="tf-label-sm" for="tf-memo-input">Memo (optional)</label>
+        <input type="text" class="tf-input" id="tf-memo-input" placeholder="What's this for?">
+        <button type="button" class="tf-btn-primary" id="tf-amount-continue">Continue</button>
+      </div>
+    </div>
+
+    <div id="view-transfer-speed" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">How fast?</h1>
+        <p class="tf-sub">Select delivery speed</p>
+        <button type="button" class="tf-opt-card tf-speed-opt is-selected" data-speed="instant" data-speed-label="Instant">
+          <div><div class="tf-opt-title">Instant</div><div class="tf-opt-sub">Available immediately</div></div>
+          <div class="tf-opt-right"><span class="tf-free">Free</span><span class="tf-speed-check" aria-hidden="true"><span class="tf-check-circle"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span></span></div>
+        </button>
+        <button type="button" class="tf-opt-card tf-speed-opt" data-speed="same" data-speed-label="Same Day">
+          <div><div class="tf-opt-title">Same Day</div><div class="tf-opt-sub">By end of business today</div></div>
+          <div class="tf-opt-right"><span class="tf-free">Free</span><span class="tf-speed-check" aria-hidden="true"><span class="tf-check-circle"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span></span></div>
+        </button>
+        <button type="button" class="tf-opt-card tf-speed-opt" data-speed="standard" data-speed-label="Standard">
+          <div><div class="tf-opt-title">Standard</div><div class="tf-opt-sub">1-3 business days</div></div>
+          <div class="tf-opt-right"><span class="tf-free">Free</span><span class="tf-speed-check" aria-hidden="true"><span class="tf-check-circle"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span></span></div>
+        </button>
+        <div class="tf-when-head">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          When should this be sent?
+        </div>
+        <div class="tf-when-grid">
+          <button type="button" class="tf-when-card tf-when-opt is-selected" data-when="now" data-when-label="Now"><div class="tf-opt-title">Now</div><div class="tf-opt-sub">Send immediately</div></button>
+          <button type="button" class="tf-when-card tf-when-opt" data-when="tomorrow" data-when-label="Tomorrow"><div class="tf-opt-title">Tomorrow</div><div class="tf-opt-sub">Tue, Mar 31</div></button>
+          <button type="button" class="tf-when-card tf-when-opt" data-when="nextweek" data-when-label="Next week"><div class="tf-opt-title">Next week</div><div class="tf-opt-sub">Mon, Apr 6</div></button>
+          <button type="button" class="tf-when-card tf-when-opt" data-when="eom" data-when-label="End of month"><div class="tf-opt-title">End of month</div><div class="tf-opt-sub">Tue, Mar 31</div></button>
+        </div>
+        <button type="button" class="tf-pick-date" id="tf-pick-date"> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Pick a specific date</button>
+        <button type="button" class="tf-btn-primary is-enabled" id="tf-speed-continue">Continue</button>
+      </div>
+    </div>
+
+    <div id="view-transfer-confirm" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">Review &amp; confirm</h1>
+        <p class="tf-sub">Please verify the details below</p>
+        <div class="tf-review-card">
+          <div class="tf-review-amt" id="tf-review-amt">$75.00</div>
+          <div class="tf-review-row"><span class="tf-review-k">To</span><span class="tf-review-v" id="tf-review-to">Checking</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">From</span><span class="tf-review-v" id="tf-review-from">Savings ••8372</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">When</span><span class="tf-review-v" id="tf-review-when">Now</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">Speed</span><span class="tf-review-v" id="tf-review-speed">Instant</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">Fee</span><span class="tf-review-v tf-free-green">FREE</span></div>
+        </div>
+        <button type="button" class="tf-btn-primary is-enabled" id="tf-confirm-send">Confirm &amp; Send</button>
+        <p class="tf-disclaimer">By confirming, you authorize this transaction via <code style="font-size:0.65rem;">POST /api/v1/move</code></p>
+      </div>
+    </div>
+
+    <div id="view-transfer-result" class="view">
+      <div class="tf-shell">
+        <div class="tf-result">
+          <div class="tf-result-icon" aria-hidden="true"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <h1>Sent</h1>
+          <p class="tf-result-sum" id="tf-result-line">$75.00 to Checking</p>
+          <div class="tf-badge-done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Completed</div>
+          <div class="tf-conf-box">Confirmation #<strong id="tf-conf-num">TXN-4917995388</strong></div>
+          <button type="button" class="tf-btn-primary is-enabled" id="tf-result-done">Done</button>
+          <button type="button" class="tf-link-quiet" id="tf-result-another">Make another transfer</button>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    (function () {
+      var defaultRoute = "overview";
+      var titles = {
+        overview: "bread financial — Overview",
+        "move-money": "bread financial — Move money",
+        messages: "bread financial — Messages"
+      };
+      var transferRoutes = {
+        "transfer-to": 1,
+        "transfer-from": 1,
+        "transfer-amount": 1,
+        "transfer-speed": 1,
+        "transfer-confirm": 1,
+        "transfer-result": 1
+      };
+      var ACCOUNTS = {
+        checking: { name: "Checking", detail: "Bread Financial ••9943", balanceCents: 425000 },
+        savings: { name: "Savings", detail: "Ally Bank ••8372", balanceCents: 207719 },
+        performance: { name: "Performance Savings", detail: "Capital One ••1331", balanceCents: 279748 },
+        chase: { name: "Chase Checking", detail: "Chase ••7823", balanceCents: 542000 }
+      };
+      var CHECK_SVG = "<svg width=\"11\" height=\"11\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" style=\"flex-shrink:0\"><path d=\"M20 6L9 17l-5-5\"/></svg>";
+      var tfState = {
+        toId: null,
+        fromId: null,
+        amountCents: 0,
+        memo: "",
+        speed: "instant",
+        speedLabel: "Instant",
+        when: "now",
+        whenLabel: "Now",
+        confirmationId: null,
+        exitHash: "#overview"
+      };
+
+      function fmtMoney(cents) {
+        return "$" + (cents / 100).toFixed(2);
+      }
+
+      function navigate(hash) {
+        location.hash = hash.indexOf("#") === 0 ? hash.slice(1) : hash;
+      }
+
+      function resetTransferFlow() {
+        tfState.toId = null;
+        tfState.fromId = null;
+        tfState.amountCents = 0;
+        tfState.memo = "";
+        tfState.speed = "instant";
+        tfState.speedLabel = "Instant";
+        tfState.when = "now";
+        tfState.whenLabel = "Now";
+        tfState.confirmationId = null;
+        var inp = document.getElementById("tf-amount-input");
+        if (inp) {
+          inp.value = "";
+        }
+        var memo = document.getElementById("tf-memo-input");
+        if (memo) {
+          memo.value = "";
+        }
+        document.querySelectorAll(".tf-speed-opt").forEach(function (el) {
+          el.classList.toggle("is-selected", el.getAttribute("data-speed") === "instant");
+        });
+        document.querySelectorAll(".tf-when-opt").forEach(function (el) {
+          el.classList.toggle("is-selected", el.getAttribute("data-when") === "now");
+        });
+        syncAmountContinue();
+      }
+
+      function startTransferFrom(exitHash) {
+        tfState.exitHash = exitHash || "#overview";
+        resetTransferFlow();
+        navigate("transfer-to");
+      }
+
+      function parseAmountInput() {
+        var inp = document.getElementById("tf-amount-input");
+        if (!inp) {
+          return 0;
+        }
+        var t = inp.value.replace(/[^0-9.]/g, "");
+        if (!t) {
+          return 0;
+        }
+        var n = parseFloat(t);
+        if (isNaN(n) || n <= 0) {
+          return 0;
+        }
+        return Math.round(n * 100);
+      }
+
+      function syncAmountContinue() {
+        var btn = document.getElementById("tf-amount-continue");
+        if (!btn) {
+          return;
+        }
+        var ok = parseAmountInput() > 0;
+        btn.classList.toggle("is-enabled", ok);
+      }
+
+      function updateFromAccountVisibility() {
+        document.querySelectorAll(".tf-from-opt").forEach(function (btn) {
+          var id = btn.getAttribute("data-acc");
+          btn.classList.toggle("is-hidden", id === tfState.toId);
+        });
+      }
+
+      function applyTransferBindings() {
+        document.querySelectorAll("[data-tf-pick=\"to\"]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            tfState.toId = btn.getAttribute("data-acc");
+            tfState.fromId = null;
+            tfState.amountCents = 0;
+            tfState.confirmationId = null;
+            var inp = document.getElementById("tf-amount-input");
+            if (inp) {
+              inp.value = "";
+            }
+            navigate("transfer-from");
+          });
+        });
+        document.querySelectorAll("[data-tf-pick=\"from\"]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            tfState.fromId = btn.getAttribute("data-acc");
+            tfState.amountCents = 0;
+            tfState.confirmationId = null;
+            var inp2 = document.getElementById("tf-amount-input");
+            if (inp2) {
+              inp2.value = "";
+            }
+            navigate("transfer-amount");
+          });
+        });
+        var amtIn = document.getElementById("tf-amount-input");
+        if (amtIn) {
+          amtIn.addEventListener("input", syncAmountContinue);
+        }
+        document.getElementById("tf-amount-continue").addEventListener("click", function () {
+          var c = parseAmountInput();
+          if (c <= 0) {
+            return;
+          }
+          tfState.amountCents = c;
+          tfState.memo = (document.getElementById("tf-memo-input") || {}).value || "";
+          navigate("transfer-speed");
+        });
+        document.querySelectorAll(".tf-speed-opt").forEach(function (el) {
+          el.addEventListener("click", function () {
+            document.querySelectorAll(".tf-speed-opt").forEach(function (x) {
+              x.classList.remove("is-selected");
+            });
+            el.classList.add("is-selected");
+            tfState.speed = el.getAttribute("data-speed");
+            tfState.speedLabel = el.getAttribute("data-speed-label");
+          });
+        });
+        document.querySelectorAll(".tf-when-opt").forEach(function (el) {
+          el.addEventListener("click", function () {
+            document.querySelectorAll(".tf-when-opt").forEach(function (x) {
+              x.classList.remove("is-selected");
+            });
+            el.classList.add("is-selected");
+            tfState.when = el.getAttribute("data-when");
+            tfState.whenLabel = el.getAttribute("data-when-label");
+          });
+        });
+        document.getElementById("tf-speed-continue").addEventListener("click", function () {
+          navigate("transfer-confirm");
+        });
+        document.getElementById("tf-confirm-send").addEventListener("click", function () {
+          var n = String(Math.floor(Math.random() * 1e10));
+          while (n.length < 10) {
+            n = "0" + n;
+          }
+          tfState.confirmationId = "TXN-" + n;
+          navigate("transfer-result");
+        });
+        document.getElementById("tf-result-done").addEventListener("click", function () {
+          navigate(tfState.exitHash.replace(/^#/, ""));
+        });
+        document.getElementById("tf-result-another").addEventListener("click", function () {
+          resetTransferFlow();
+          navigate("transfer-to");
+        });
+        document.getElementById("tf-back").addEventListener("click", function () {
+          var r = (location.hash.slice(1) || "").toLowerCase();
+          var backMap = {
+            "transfer-to": tfState.exitHash.replace(/^#/, ""),
+            "transfer-from": "transfer-to",
+            "transfer-amount": "transfer-from",
+            "transfer-speed": "transfer-amount",
+            "transfer-confirm": "transfer-speed",
+            "transfer-result": tfState.exitHash.replace(/^#/, "")
+          };
+          var next = backMap[r];
+          if (next) {
+            navigate(next);
+          }
+        });
+        document.getElementById("tf-cancel").addEventListener("click", function () {
+          navigate(tfState.exitHash.replace(/^#/, ""));
+        });
+        document.getElementById("overview-btn-transfer").addEventListener("click", function () {
+          startTransferFrom("#overview");
+        });
+        document.getElementById("mm-btn-transfer").addEventListener("click", function () {
+          startTransferFrom("#move-money");
+        });
+      }
+
+      function setStepEl(el, mode, text) {
+        el.classList.remove("is-active", "is-done", "is-todo");
+        if (mode === "active") {
+          el.classList.add("is-active");
+          el.innerHTML = text;
+        } else if (mode === "done") {
+          el.classList.add("is-done");
+          el.innerHTML = CHECK_SVG + " <span style=\"margin-left:2px\">" + text + "</span>";
+        } else {
+          el.classList.add("is-todo");
+          el.innerHTML = text;
+        }
+      }
+
+      function updateTransferStepper(route) {
+        var d0 = document.getElementById("tf-step-0");
+        var d1 = document.getElementById("tf-step-1");
+        var d2 = document.getElementById("tf-step-2");
+        var d3 = document.getElementById("tf-step-3");
+        if (!d0) {
+          return;
+        }
+        if (route === "transfer-to") {
+          setStepEl(d0, "active", "Destination");
+          setStepEl(d1, "todo", "Amount");
+          setStepEl(d2, "todo", "Review");
+          setStepEl(d3, "todo", "Result");
+        } else if (route === "transfer-from") {
+          setStepEl(d0, "done", "Destination");
+          setStepEl(d1, "todo", "Amount");
+          setStepEl(d2, "todo", "Review");
+          setStepEl(d3, "todo", "Result");
+        } else if (route === "transfer-amount") {
+          setStepEl(d0, "done", "Destination");
+          setStepEl(d1, "active", "Amount");
+          setStepEl(d2, "todo", "Review");
+          setStepEl(d3, "todo", "Result");
+        } else if (route === "transfer-speed" || route === "transfer-confirm") {
+          setStepEl(d0, "done", "Destination");
+          setStepEl(d1, "done", "Amount");
+          setStepEl(d2, "active", "Review");
+          setStepEl(d3, "todo", "Result");
+        } else if (route === "transfer-result") {
+          setStepEl(d0, "done", "Destination");
+          setStepEl(d1, "done", "Amount");
+          setStepEl(d2, "done", "Review");
+          setStepEl(d3, "active", "Result");
+        }
+      }
+
+      function refreshTransferScreens(route) {
+        updateTransferStepper(route);
+        if (route === "transfer-from") {
+          updateFromAccountVisibility();
+        }
+        if (route === "transfer-amount") {
+          var toAcc = ACCOUNTS[tfState.toId];
+          var fromAcc = ACCOUNTS[tfState.fromId];
+          if (toAcc && fromAcc) {
+            document.getElementById("tf-amount-to-label").textContent =
+              "To " + toAcc.name.toLowerCase();
+            document.getElementById("tf-available-val").textContent = fmtMoney(fromAcc.balanceCents);
+            document.getElementById("tf-available-from-label").textContent = "from " + fromAcc.name;
+          }
+          syncAmountContinue();
+        }
+        if (route === "transfer-confirm") {
+          var toA = ACCOUNTS[tfState.toId];
+          var fromA = ACCOUNTS[tfState.fromId];
+          document.getElementById("tf-review-amt").textContent = fmtMoney(tfState.amountCents);
+          document.getElementById("tf-review-to").textContent = toA ? toA.name : "—";
+          document.getElementById("tf-review-from").textContent = fromA
+            ? fromA.name + " ••" + String(fromA.detail.split("••")[1] || "").trim()
+            : "—";
+          document.getElementById("tf-review-when").textContent = tfState.whenLabel;
+          document.getElementById("tf-review-speed").textContent = tfState.speedLabel;
+        }
+        if (route === "transfer-result") {
+          var t = ACCOUNTS[tfState.toId];
+          document.getElementById("tf-result-line").textContent =
+            fmtMoney(tfState.amountCents) + " to " + (t ? t.name : "account");
+          document.getElementById("tf-conf-num").textContent = tfState.confirmationId || "—";
+        }
+      }
+
+      function guardTransferRoute(raw) {
+        if (raw === "transfer-from" && !tfState.toId) {
+          return "transfer-to";
+        }
+        if (
+          (raw === "transfer-amount" || raw === "transfer-speed" || raw === "transfer-confirm") &&
+          (!tfState.toId || !tfState.fromId)
+        ) {
+          return "transfer-to";
+        }
+        if (raw === "transfer-speed" && tfState.amountCents <= 0) {
+          return "transfer-amount";
+        }
+        if (raw === "transfer-confirm" && tfState.amountCents <= 0) {
+          return "transfer-amount";
+        }
+        if (raw === "transfer-result" && !tfState.confirmationId) {
+          return "transfer-confirm";
+        }
+        return raw;
+      }
+
+      function applyRoute() {
+        var raw = (location.hash.slice(1) || defaultRoute).toLowerCase().replace(/_/g, "-");
+        var mainRoutes = { overview: 1, "move-money": 1, messages: 1 };
+        var isTransfer = !!transferRoutes[raw];
+
+        if (!mainRoutes[raw] && !isTransfer) {
+          raw = defaultRoute;
+        }
+        if (isTransfer) {
+          raw = guardTransferRoute(raw);
+          if (raw !== (location.hash.slice(1) || "").toLowerCase().replace(/_/g, "-")) {
+            navigate(raw);
+            return;
+          }
+        }
+
+        var mainBar = document.getElementById("topbar-main");
+        var tfBar = document.getElementById("topbar-transfer");
+        if (mainBar && tfBar) {
+          mainBar.classList.toggle("topbar--hidden", isTransfer);
+          tfBar.classList.toggle("topbar--hidden", !isTransfer);
+        }
+        document.body.classList.toggle("tf-flow-active", isTransfer);
+
+        var viewId = "view-" + raw;
+        document.querySelectorAll(".view").forEach(function (v) {
+          v.classList.toggle("active", v.id === viewId);
+        });
+
+        if (isTransfer) {
+          refreshTransferScreens(raw);
+          document.title = "bread financial — Transfer";
+        } else {
+          document.querySelectorAll(".nav-pill[data-route]").forEach(function (pill) {
+            pill.classList.toggle("is-active", pill.getAttribute("data-route") === raw);
+          });
+          document.title = titles[raw] || titles.overview;
+        }
+      }
+
+      window.addEventListener("hashchange", applyRoute);
+      applyTransferBindings();
+      applyRoute();
+    })();
+  </script>
 </body>
 </html>
