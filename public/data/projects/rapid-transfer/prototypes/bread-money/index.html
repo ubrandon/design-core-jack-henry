@@ -1639,22 +1639,22 @@
             <a href="#" class="mm-link-arrow">Manage recipients →</a>
           </div>
           <div class="mm-recipients">
-            <button type="button" class="mm-recipient">
+            <button type="button" class="mm-recipient" data-mm-quick-send="dad" aria-label="Quick send to Dad">
               <div class="mm-recipient-av g">D</div>
               <div class="mm-recipient-name">Dad</div>
               <div class="mm-recipient-amt">$75</div>
             </button>
-            <button type="button" class="mm-recipient">
+            <button type="button" class="mm-recipient" data-mm-quick-send="ava" aria-label="Quick send to Ava M.">
               <div class="mm-recipient-av b">A</div>
               <div class="mm-recipient-name">Ava M.</div>
               <div class="mm-recipient-amt">$450</div>
             </button>
-            <button type="button" class="mm-recipient">
+            <button type="button" class="mm-recipient" data-mm-quick-send="brett" aria-label="Quick send to Brett S.">
               <div class="mm-recipient-av p">B</div>
               <div class="mm-recipient-name">Brett S.</div>
               <div class="mm-recipient-amt">$15</div>
             </button>
-            <button type="button" class="mm-recipient">
+            <button type="button" class="mm-recipient" data-mm-quick-pay="midamerican" aria-label="Quick pay Mid American Energy Company">
               <div class="mm-recipient-av y" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
               </div>
@@ -2411,6 +2411,13 @@
         navigate("send-destination");
       }
 
+      function startSendWithRecipient(recipientId, exitHash) {
+        sendState.exitHash = exitHash || "#overview";
+        resetSendFlow();
+        sendState.recipientId = recipientId;
+        navigate("send-amount");
+      }
+
       function resetPayFlow() {
         payState.billerId = null;
         payState.amountCents = 0;
@@ -2441,6 +2448,13 @@
         payState.exitHash = exitHash || "#overview";
         resetPayFlow();
         navigate("pay-destination");
+      }
+
+      function startPayWithBiller(billerId, exitHash) {
+        payState.exitHash = exitHash || "#overview";
+        resetPayFlow();
+        payState.billerId = billerId;
+        navigate("pay-amount");
       }
 
       function parsePayAmountInput() {
@@ -2727,6 +2741,14 @@
         document.getElementById("send-cancel").addEventListener("click", function () {
           navigate(sendState.exitHash.replace(/^#/, ""));
         });
+        document.querySelectorAll("[data-mm-quick-send]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var id = btn.getAttribute("data-mm-quick-send");
+            if (id && RECIPIENTS[id]) {
+              startSendWithRecipient(id, "#move-money");
+            }
+          });
+        });
       }
 
       function applyPayBindings() {
@@ -2809,6 +2831,14 @@
         });
         document.getElementById("pay-cancel").addEventListener("click", function () {
           navigate(payState.exitHash.replace(/^#/, ""));
+        });
+        document.querySelectorAll("[data-mm-quick-pay]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var id = btn.getAttribute("data-mm-quick-pay");
+            if (id && BILLERS[id]) {
+              startPayWithBiller(id, "#move-money");
+            }
+          });
         });
       }
 
