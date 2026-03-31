@@ -1,328 +1,686 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project — Design Core</title>
-  <link rel="stylesheet" href="styles/shared.css">
-  <link rel="stylesheet" href="styles/app.css">
-</head>
-<body>
-  <div class="page-shell">
-    <div class="page-content">
-      <div id="project-error" class="project-error" hidden>
-        <p class="project-error__title">Project not found</p>
-        <p class="project-error__desc">This link may be wrong or the project was removed. Open the project list and try again.</p>
-        <a class="btn-tool btn-tool--primary" href="index.html">All projects</a>
-      </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project — Design Core</title>
+    <link rel="stylesheet" href="styles/shared.css" />
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="page-content">
+        <div id="project-error" class="project-error" hidden>
+          <p class="project-error__title">Project not found</p>
+          <p class="project-error__desc">
+            This link may be wrong or the project was removed. Open the project
+            list and try again.
+          </p>
+          <a class="btn-tool btn-tool--primary" href="index.html"
+            >All projects</a
+          >
+        </div>
 
-      <div id="project-main">
-        <header class="project-hero">
-          <h1 id="project-name" class="project-hero__title">Loading…</h1>
-          <p id="project-desc" class="project-hero__desc" hidden></p>
-          <div id="project-meta" class="project-hero__meta" hidden></div>
-        </header>
-
-        <section class="project-section project-section--ideation" id="section-ideation" hidden>
-          <div class="section-header section-header--lg">
-            <div>
-              <h2>Ideation space</h2>
-              <p id="ideation-subtitle" class="section-header__subtitle">Canvas screens for static layouts</p>
-            </div>
-          </div>
-          <div class="canvas-block">
-            <div id="canvas-preview-host"></div>
-            <a id="canvas-link" href="#" class="canvas-cta">
-              <span class="canvas-cta__icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2"/>
-                  <path d="M3 9h18M9 21V9"/>
-                </svg>
-              </span>
-              <div class="canvas-cta__text">
-                <span class="canvas-cta__label">Open canvas</span>
-                <span class="canvas-cta__desc">Arrange screens, pan and zoom, and iterate before you build interactive prototypes.</span>
+        <div id="project-main">
+          <header class="project-hero">
+            <div class="project-hero__head">
+              <div class="project-hero__titles">
+                <h1 id="project-name" class="project-hero__title">Loading…</h1>
+                <p id="project-desc" class="project-hero__desc" hidden></p>
+                <div id="project-meta" class="project-hero__meta" hidden></div>
               </div>
-              <span class="canvas-cta__arrow" aria-hidden="true">&rarr;</span>
-            </a>
-          </div>
-        </section>
-
-        <section class="project-section project-section--prototypes" id="section-prototypes" hidden>
-          <div class="section-header section-header--lg">
-            <div>
-              <h2>Prototypes</h2>
-              <p id="prototypes-subtitle" class="section-header__subtitle">Interactive flows you can share</p>
+              <div id="project-local-tools" class="project-local-tools" hidden>
+                <button
+                  type="button"
+                  class="btn-tool"
+                  id="btn-open-project-edit"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                    />
+                    <path
+                      d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                    />
+                  </svg>
+                  Edit details
+                </button>
+                <button
+                  type="button"
+                  class="btn-tool btn-tool--danger"
+                  id="btn-delete-project"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                    />
+                  </svg>
+                  Delete project…
+                </button>
+              </div>
             </div>
-          </div>
-          <p class="project-section__intro">Click a card to preview in the tool, or open in a new tab. Copy link works great for GitHub Pages.</p>
-          <div id="prototypes" class="card-grid card-grid--prototypes">
-            <div class="empty-state">Loading prototypes…</div>
-          </div>
-        </section>
+          </header>
+
+          <section
+            class="project-section project-section--ideation"
+            id="section-ideation"
+            hidden
+          >
+            <div class="section-header section-header--lg">
+              <div>
+                <h2>Ideation space</h2>
+                <p id="ideation-subtitle" class="section-header__subtitle">
+                  Canvas screens for static layouts
+                </p>
+              </div>
+            </div>
+            <div class="canvas-block">
+              <div id="canvas-preview-host"></div>
+              <a id="canvas-link" href="#" class="canvas-cta">
+                <span class="canvas-cta__icon" aria-hidden="true">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M3 9h18M9 21V9" />
+                  </svg>
+                </span>
+                <div class="canvas-cta__text">
+                  <span class="canvas-cta__label">Open canvas</span>
+                  <span class="canvas-cta__desc"
+                    >Arrange screens, pan and zoom, and iterate before you build
+                    interactive prototypes.</span
+                  >
+                </div>
+                <span class="canvas-cta__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </section>
+
+          <section
+            class="project-section project-section--prototypes"
+            id="section-prototypes"
+            hidden
+          >
+            <div class="section-header section-header--lg">
+              <div>
+                <h2>Prototypes</h2>
+                <p id="prototypes-subtitle" class="section-header__subtitle">
+                  Interactive flows you can share
+                </p>
+              </div>
+              <button
+                type="button"
+                class="btn-tool btn-tool--primary"
+                id="btn-new-prototype"
+                hidden
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                New prototype
+              </button>
+            </div>
+            <p class="project-section__intro">
+              Click a card to preview in the tool, or open in a new tab. Copy
+              link works great for GitHub Pages.
+            </p>
+            <div id="prototypes" class="card-grid card-grid--prototypes">
+              <div class="empty-state">Loading prototypes…</div>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script src="scripts/shared.js"></script>
-  <script src="scripts/nav.js"></script>
-  <script>
-    const projectId = getParam("id");
-    if (!projectId) window.location.href = "index.html";
+    <div id="edit-project-overlay" class="tool-modal-overlay" hidden>
+      <div
+        class="tool-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-project-modal-title"
+      >
+        <div class="tool-modal__header">
+          <h2 id="edit-project-modal-title" class="tool-modal__title">
+            Edit project details
+          </h2>
+          <button
+            type="button"
+            class="tool-modal__close"
+            id="edit-project-close"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <form id="form-project-edit" class="tool-form" style="margin-top: 0">
+          <div class="tool-form__row">
+            <label class="tool-form__label" for="edit-project-name"
+              >Title</label
+            >
+            <input
+              type="text"
+              id="edit-project-name"
+              class="tool-form__input"
+              required
+              autocomplete="off"
+            />
+          </div>
+          <div class="tool-form__row">
+            <label class="tool-form__label" for="edit-project-desc"
+              >Description</label
+            >
+            <textarea
+              id="edit-project-desc"
+              class="tool-form__textarea"
+              rows="3"
+              autocomplete="off"
+            ></textarea>
+          </div>
+          <div class="tool-form__row">
+            <label class="tool-form__label" for="edit-project-by"
+              >Created by</label
+            >
+            <input
+              type="text"
+              id="edit-project-by"
+              class="tool-form__input"
+              placeholder="Shown on the project card"
+              autocomplete="name"
+            />
+          </div>
+          <div class="tool-form__actions">
+            <button type="button" class="btn-tool" id="edit-project-cancel">
+              Cancel
+            </button>
+            <button type="submit" class="btn-tool btn-tool--primary">
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
-    const MAX_CANVAS_PREVIEWS = 8;
+    <div id="new-proto-overlay" class="tool-modal-overlay" hidden>
+      <div
+        class="tool-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="new-proto-modal-title"
+      >
+        <div class="tool-modal__header">
+          <h2 id="new-proto-modal-title" class="tool-modal__title">
+            New prototype
+          </h2>
+          <button
+            type="button"
+            class="tool-modal__close"
+            id="new-proto-close"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <form id="form-new-prototype" class="tool-form" style="margin-top: 0">
+          <div class="tool-form__grid">
+            <div class="tool-form__row">
+              <label class="tool-form__label" for="new-proto-name">Name</label>
+              <input
+                type="text"
+                id="new-proto-name"
+                class="tool-form__input"
+                required
+                autocomplete="off"
+                placeholder="e.g. Bill pay flow"
+              />
+            </div>
+            <div class="tool-form__row">
+              <label class="tool-form__label" for="new-proto-device"
+                >Device</label
+              >
+              <select id="new-proto-device" class="tool-form__select">
+                <option value="mobile">Mobile</option>
+                <option value="online">Online (desktop)</option>
+                <option value="desktop">Desktop</option>
+                <option value="responsive">Responsive</option>
+              </select>
+            </div>
+          </div>
+          <div class="tool-form__row">
+            <label class="tool-form__label" for="new-proto-desc"
+              >Description</label
+            >
+            <input
+              type="text"
+              id="new-proto-desc"
+              class="tool-form__input"
+              autocomplete="off"
+            />
+          </div>
+          <div class="tool-form__actions">
+            <button type="button" class="btn-tool" id="new-proto-cancel">
+              Cancel
+            </button>
+            <button type="submit" class="btn-tool btn-tool--primary">
+              Create prototype
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
-    renderNav({
-      breadcrumbs: [
-        { label: "Projects", href: "index.html" },
-        { label: "Loading…", id: "nav-title" },
-      ],
-    });
+    <div id="delete-project-overlay" class="tool-modal-overlay" hidden>
+      <div
+        class="tool-modal"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="delete-project-modal-title"
+        aria-describedby="delete-project-modal-desc"
+      >
+        <div class="tool-modal__header">
+          <h2 id="delete-project-modal-title" class="tool-modal__title">
+            Delete project?
+          </h2>
+          <button
+            type="button"
+            class="tool-modal__close"
+            id="delete-project-close"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <p id="delete-project-modal-desc" class="tool-modal__lede"></p>
+        <div class="tool-form__actions" style="margin-top: 0">
+          <button type="button" class="btn-tool" id="delete-project-cancel">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn-tool btn-tool--danger"
+            id="delete-project-confirm"
+          >
+            Delete project
+          </button>
+        </div>
+      </div>
+    </div>
 
-    const el = {
-      error: document.getElementById("project-error"),
-      main: document.getElementById("project-main"),
-      name: document.getElementById("project-name"),
-      desc: document.getElementById("project-desc"),
-      meta: document.getElementById("project-meta"),
-      ideation: document.getElementById("section-ideation"),
-      ideationSub: document.getElementById("ideation-subtitle"),
-      canvasHost: document.getElementById("canvas-preview-host"),
-      canvasLink: document.getElementById("canvas-link"),
-      prototypesSection: document.getElementById("section-prototypes"),
-      prototypesSub: document.getElementById("prototypes-subtitle"),
-      prototypes: document.getElementById("prototypes"),
-    };
+    <script src="scripts/shared.js"></script>
+    <script src="scripts/nav.js"></script>
+    <script>
+      const projectId = getParam("id");
+      if (!projectId) window.location.href = "index.html";
 
-    el.canvasLink.href = "canvas.html?project=" + encodeURIComponent(projectId);
+      const MAX_CANVAS_PREVIEWS = 8;
 
-    function scrollToHashIfPresent() {
-      const id = (window.location.hash || "").replace(/^#/, "");
-      if (!id) return;
-      const target = document.getElementById(id);
-      if (!target) return;
-      requestAnimationFrame(() => {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      renderNav({
+        breadcrumbs: [
+          { label: "Projects", href: "index.html" },
+          { label: "Loading…", id: "nav-title" },
+        ],
       });
-    }
 
-    function initCanvasPreviewLazyLoad(host) {
-      const pending = host.querySelectorAll("iframe[data-src]");
-      if (!pending.length) return;
-      if (!("IntersectionObserver" in window)) {
-        pending.forEach((iframe) => {
-          const src = iframe.getAttribute("data-src");
-          if (src) iframe.src = src;
-          iframe.removeAttribute("data-src");
-          iframe.closest(".canvas-preview-card__frame")?.classList.remove("canvas-preview-card__frame--lazy");
-        });
-        return;
+      const el = {
+        error: document.getElementById("project-error"),
+        main: document.getElementById("project-main"),
+        name: document.getElementById("project-name"),
+        desc: document.getElementById("project-desc"),
+        meta: document.getElementById("project-meta"),
+        ideation: document.getElementById("section-ideation"),
+        ideationSub: document.getElementById("ideation-subtitle"),
+        canvasHost: document.getElementById("canvas-preview-host"),
+        canvasLink: document.getElementById("canvas-link"),
+        prototypesSection: document.getElementById("section-prototypes"),
+        prototypesSub: document.getElementById("prototypes-subtitle"),
+        prototypes: document.getElementById("prototypes"),
+      };
+
+      el.canvasLink.href =
+        "canvas.html?project=" + encodeURIComponent(projectId);
+
+      let localEdit = false;
+      let projectPayload = {};
+
+      const uiLocalTools = document.getElementById("project-local-tools");
+      const btnNewProto = document.getElementById("btn-new-prototype");
+      const editProjectOverlay = document.getElementById(
+        "edit-project-overlay",
+      );
+      const newProtoOverlay = document.getElementById("new-proto-overlay");
+      const deleteProjectOverlay = document.getElementById(
+        "delete-project-overlay",
+      );
+      const deleteProjectModalDesc = document.getElementById(
+        "delete-project-modal-desc",
+      );
+
+      function applyLocalChrome() {
+        uiLocalTools.hidden = !localEdit;
+        btnNewProto.hidden = !localEdit;
       }
-      const obs = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            const iframe = entry.target;
+
+      function fillEditForm(data) {
+        projectPayload = { ...data };
+        document.getElementById("edit-project-name").value = data.name || "";
+        document.getElementById("edit-project-desc").value =
+          data.description || "";
+        document.getElementById("edit-project-by").value = data.createdBy || "";
+      }
+
+      function scrollToHashIfPresent() {
+        const id = (window.location.hash || "").replace(/^#/, "");
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (!target) return;
+        requestAnimationFrame(() => {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
+
+      function initCanvasPreviewLazyLoad(host) {
+        const pending = host.querySelectorAll("iframe[data-src]");
+        if (!pending.length) return;
+        if (!("IntersectionObserver" in window)) {
+          pending.forEach((iframe) => {
             const src = iframe.getAttribute("data-src");
             if (src) iframe.src = src;
             iframe.removeAttribute("data-src");
-            iframe.closest(".canvas-preview-card__frame")?.classList.remove("canvas-preview-card__frame--lazy");
-            obs.unobserve(iframe);
-          }
-        },
-        { root: null, rootMargin: "120px 0px", threshold: 0.01 },
-      );
-      pending.forEach((iframe) => obs.observe(iframe));
-    }
+            iframe
+              .closest(".canvas-preview-card__frame")
+              ?.classList.remove("canvas-preview-card__frame--lazy");
+          });
+          return;
+        }
+        const obs = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              const iframe = entry.target;
+              const src = iframe.getAttribute("data-src");
+              if (src) iframe.src = src;
+              iframe.removeAttribute("data-src");
+              iframe
+                .closest(".canvas-preview-card__frame")
+                ?.classList.remove("canvas-preview-card__frame--lazy");
+              obs.unobserve(iframe);
+            }
+          },
+          { root: null, rootMargin: "120px 0px", threshold: 0.01 },
+        );
+        pending.forEach((iframe) => obs.observe(iframe));
+      }
 
-    document.getElementById("prototypes").addEventListener("click", (e) => {
-      const btn = e.target.closest("button[data-copy-proto-url]");
-      if (!btn) return;
-      e.preventDefault();
-      copyLink(btn.getAttribute("data-copy-proto-url"), btn);
-    });
+      el.prototypes.addEventListener("click", (e) => {
+        const delBtn = e.target.closest("button[data-delete-prototype]");
+        if (delBtn) {
+          e.preventDefault();
+          const pid = delBtn.getAttribute("data-delete-prototype");
+          if (
+            !pid ||
+            !confirm("Delete this prototype and all files in its folder?")
+          )
+            return;
+          postProjectAdmin({ action: "delete-prototype", projectId, id: pid })
+            .then(() => {
+              showToast("Prototype deleted");
+              loadProjectHub().catch(() => {});
+            })
+            .catch((err) => showToast(err.message || "Could not delete"));
+          return;
+        }
+        const btn = e.target.closest("button[data-copy-proto-url]");
+        if (!btn) return;
+        e.preventDefault();
+        copyLink(btn.getAttribute("data-copy-proto-url"), btn);
+      });
 
-    function getPrototypeDevice(deviceRaw) {
-      const device = (deviceRaw || "responsive").toLowerCase();
-      if (device === "mobile" || device === "desktop" || device === "online" || device === "responsive") return device;
-      return "responsive";
-    }
+      function getPrototypeDevice(deviceRaw) {
+        const device = (deviceRaw || "responsive").toLowerCase();
+        if (
+          device === "mobile" ||
+          device === "desktop" ||
+          device === "online" ||
+          device === "responsive"
+        )
+          return device;
+        return "responsive";
+      }
 
-    function getPrototypeDeviceMeta(deviceRaw) {
-      const device = getPrototypeDevice(deviceRaw);
-      if (device === "mobile") {
-        return {
-          label: "Mobile",
-          icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      function getPrototypeDeviceMeta(deviceRaw) {
+        const device = getPrototypeDevice(deviceRaw);
+        if (device === "mobile") {
+          return {
+            label: "Mobile",
+            icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="5" y="2" width="14" height="20" rx="2"/>
             <line x1="12" y1="18" x2="12.01" y2="18"/>
           </svg>`,
-        };
-      }
-      if (device === "desktop") {
-        return {
-          label: "Desktop",
-          icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          };
+        }
+        if (device === "desktop") {
+          return {
+            label: "Desktop",
+            icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="12" rx="2"/>
             <path d="M8 20h8M12 16v4"/>
           </svg>`,
-        };
-      }
-      if (device === "online") {
-        return {
-          label: "Online",
-          icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          };
+        }
+        if (device === "online") {
+          return {
+            label: "Online",
+            icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
             <path d="M2 12h20"/>
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
           </svg>`,
-        };
-      }
-      return {
-        label: "Responsive",
-        icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          };
+        }
+        return {
+          label: "Responsive",
+          icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="12" height="10" rx="2"/>
           <rect x="17" y="6" width="4" height="12" rx="1"/>
         </svg>`,
-      };
-    }
-
-    function buildProjectMetaLine(data) {
-      const parts = [];
-      if (data.createdBy) parts.push(data.createdBy);
-      if (data.createdAt) {
-        const rel = formatRelativeDate(data.createdAt);
-        const abs = formatDate(data.createdAt);
-        parts.push(rel && rel !== abs ? `Created ${rel}` : `Created ${abs}`);
+        };
       }
-      if (data.updatedAt && data.updatedAt !== data.createdAt) {
-        const relU = formatRelativeDate(data.updatedAt);
-        parts.push(relU ? `Updated ${relU}` : `Updated ${formatDate(data.updatedAt)}`);
+
+      function buildProjectMetaLine(data) {
+        const parts = [];
+        if (data.createdBy) parts.push(data.createdBy);
+        if (data.createdAt) {
+          const rel = formatRelativeDate(data.createdAt);
+          const abs = formatDate(data.createdAt);
+          parts.push(rel && rel !== abs ? `Created ${rel}` : `Created ${abs}`);
+        }
+        if (data.updatedAt && data.updatedAt !== data.createdAt) {
+          const relU = formatRelativeDate(data.updatedAt);
+          parts.push(
+            relU ? `Updated ${relU}` : `Updated ${formatDate(data.updatedAt)}`,
+          );
+        }
+        return parts.join(" · ");
       }
-      return parts.join(" · ");
-    }
 
-    function screenLabel(file) {
-      return String(file || "")
-        .replace(/\.html$/i, "")
-        .replace(/[-_]+/g, " ")
-        .trim() || "Screen";
-    }
+      function screenLabel(file) {
+        return (
+          String(file || "")
+            .replace(/\.html$/i, "")
+            .replace(/[-_]+/g, " ")
+            .trim() || "Screen"
+        );
+      }
 
-    function renderCanvasStrip(screens, canvasFailed) {
-      const canvasHref = el.canvasLink.href;
-      if (canvasFailed) {
-        el.canvasHost.innerHTML = `
+      function renderCanvasStrip(screens, canvasFailed) {
+        const canvasHref = el.canvasLink.href;
+        if (canvasFailed) {
+          el.canvasHost.innerHTML = `
           <div class="canvas-preview-empty canvas-preview-empty--warn">
             <p class="canvas-preview-empty__title">Couldn’t load the screen list</p>
             <p class="canvas-preview-empty__hint">You can still open the canvas — if the problem continues, check that <code>canvas.json</code> exists for this project.</p>
             <p style="margin-top:14px;"><a class="btn-tool btn-tool--primary" href="${escapeHtml(canvasHref)}">Open canvas</a></p>
           </div>`;
-        el.ideationSub.textContent = "Screen list unavailable";
-        return;
-      }
-      if (!screens.length) {
-        el.canvasHost.innerHTML = `
+          el.ideationSub.textContent = "Screen list unavailable";
+          return;
+        }
+        if (!screens.length) {
+          el.canvasHost.innerHTML = `
           <div class="canvas-preview-empty">
             <p class="canvas-preview-empty__title">No screens on the canvas yet</p>
             <p class="canvas-preview-empty__hint">Add screen designs from the canvas, or ask the AI to create screens for this project.</p>
           </div>`;
-        el.ideationSub.textContent = "No canvas screens yet";
-        return;
-      }
+          el.ideationSub.textContent = "No canvas screens yet";
+          return;
+        }
 
-      const n = screens.length;
-      const shown = screens.slice(0, MAX_CANVAS_PREVIEWS);
-      const more = n - shown.length;
-      el.ideationSub.textContent =
-        n === 1 ? "1 screen on the canvas" : `${n} screens on the canvas`;
+        const n = screens.length;
+        const shown = screens.slice(0, MAX_CANVAS_PREVIEWS);
+        const more = n - shown.length;
+        el.ideationSub.textContent =
+          n === 1 ? "1 screen on the canvas" : `${n} screens on the canvas`;
 
-      const bust = "?t=" + Date.now();
-      const cards = shown.map((s) => {
-        const src = `data/projects/${encodeURIComponent(projectId)}/screens/${encodeURIComponent(s.file)}${bust}`;
-        const label = escapeHtml(screenLabel(s.file));
-        return `<a class="canvas-preview-card" href="${escapeHtml(canvasHref)}" title="Open canvas — ${label}">
+        const bust = "?t=" + Date.now();
+        const cards = shown
+          .map((s) => {
+            const src = `data/projects/${encodeURIComponent(projectId)}/screens/${encodeURIComponent(s.file)}${bust}`;
+            const label = escapeHtml(screenLabel(s.file));
+            return `<a class="canvas-preview-card" href="${escapeHtml(canvasHref)}" title="Open canvas — ${label}">
           <div class="canvas-preview-card__frame canvas-preview-card__frame--lazy">
             <iframe data-src="${escapeHtml(src)}" title="${label}" tabindex="-1"></iframe>
           </div>
           <span class="canvas-preview-card__label">${label}</span>
         </a>`;
-      }).join("");
+          })
+          .join("");
 
-      const moreLink =
-        more > 0
-          ? `<a class="canvas-preview-more" href="${escapeHtml(canvasHref)}">+${more} more on canvas →</a>`
-          : "";
+        const moreLink =
+          more > 0
+            ? `<a class="canvas-preview-more" href="${escapeHtml(canvasHref)}">+${more} more on canvas →</a>`
+            : "";
 
-      el.canvasHost.innerHTML = `<div class="canvas-preview-strip" role="list">${cards}${moreLink}</div>`;
-      initCanvasPreviewLazyLoad(el.canvasHost);
-    }
+        el.canvasHost.innerHTML = `<div class="canvas-preview-strip" role="list">${cards}${moreLink}</div>`;
+        initCanvasPreviewLazyLoad(el.canvasHost);
+      }
 
-    function fetchProtoMeta(protoId) {
-      return fetchJSON(
-        "data/projects/" + projectId + "/prototypes/" + encodeURIComponent(protoId) + "/meta.json",
-      ).catch(() => ({}));
-    }
+      function fetchProtoMeta(protoId) {
+        return fetchJSON(
+          "data/projects/" +
+            projectId +
+            "/prototypes/" +
+            encodeURIComponent(protoId) +
+            "/meta.json",
+        ).catch(() => ({}));
+      }
 
-    function renderPrototypesGrid(protoList, loadFailed) {
-      const grid = el.prototypes;
-      if (loadFailed) {
-        grid.innerHTML = `
+      function renderPrototypesGrid(protoList, loadFailed) {
+        const grid = el.prototypes;
+        if (loadFailed) {
+          grid.innerHTML = `
           <div class="empty-state empty-state--in-grid empty-state--error">
             <p class="empty-state__title">Couldn’t load prototypes</p>
             <p class="empty-state__hint">Check that <code>prototypes/index.json</code> exists. Refresh the page after fixing the file.</p>
           </div>`;
-        el.prototypesSub.textContent = "Prototype list failed to load";
-        return;
-      }
-      if (!protoList.length) {
-        grid.innerHTML = `
+          el.prototypesSub.textContent = "Prototype list failed to load";
+          return;
+        }
+        if (!protoList.length) {
+          const hint = localEdit
+            ? "Use <strong>New prototype</strong> above, or ask the AI to build a flow."
+            : "Ask the AI to build an interactive prototype — describe the flow or feature you want to try.";
+          grid.innerHTML = `
           <div class="empty-state empty-state--in-grid">
             <p class="empty-state__title">No prototypes yet</p>
-            <p class="empty-state__hint">Ask the AI to build an interactive prototype — describe the flow or feature you want to try.</p>
+            <p class="empty-state__hint">${hint}</p>
           </div>`;
-        el.prototypesSub.textContent = "No prototypes yet";
-        return;
-      }
+          el.prototypesSub.textContent = "No prototypes yet";
+          return;
+        }
 
-      el.prototypesSub.textContent =
-        protoList.length === 1 ? "1 prototype" : `${protoList.length} prototypes`;
+        el.prototypesSub.textContent =
+          protoList.length === 1
+            ? "1 prototype"
+            : `${protoList.length} prototypes`;
 
-      Promise.all(
-        protoList.map((p) =>
-          fetchProtoMeta(p.id).then((meta) => ({ p, meta })),
-        ),
-      ).then((rows) => {
-        grid.innerHTML = rows
-          .map(({ p, meta }) => {
-            const url = prototypeUrl(projectId, p.id);
-            const previewHref = "prototype.html?project=" + encodeURIComponent(projectId) + "&proto=" + encodeURIComponent(p.id);
-            const deviceMeta = getPrototypeDeviceMeta(p.device);
-            const name = escapeHtml(p.name);
-            const desc = escapeHtml(p.description || "Interactive prototype");
-            let thumbInner;
-            if (meta.thumbnail && typeof meta.thumbnail === "string") {
-              const thumbPath = meta.thumbnail
-                .split("/")
-                .filter(Boolean)
-                .map((seg) => encodeURIComponent(seg))
-                .join("/");
-              const thumbSrc =
-                "data/projects/" +
+        Promise.all(
+          protoList.map((p) =>
+            fetchProtoMeta(p.id).then((meta) => ({ p, meta })),
+          ),
+        ).then((rows) => {
+          grid.innerHTML = rows
+            .map(({ p, meta }) => {
+              const url = prototypeUrl(projectId, p.id);
+              const previewHref =
+                "prototype.html?project=" +
                 encodeURIComponent(projectId) +
-                "/prototypes/" +
-                encodeURIComponent(p.id) +
-                "/" +
-                thumbPath;
-              thumbInner = `<img src="${escapeHtml(thumbSrc)}" alt="" loading="lazy" />`;
-            } else {
-              const initial = escapeHtml((p.name || "?").trim().slice(0, 1).toUpperCase());
-              thumbInner = `<span class="tile-card__thumb-placeholder">${initial}</span>`;
-            }
-            const urlAttr = escapeHtml(url);
-            const previewEsc = escapeHtml(previewHref);
-            const ariaOpen = escapeHtml(`Open ${p.name || "prototype"} in preview`);
-            return `
+                "&proto=" +
+                encodeURIComponent(p.id);
+              const deviceMeta = getPrototypeDeviceMeta(p.device);
+              const name = escapeHtml(p.name);
+              const desc = escapeHtml(p.description || "Interactive prototype");
+              let thumbInner;
+              if (meta.thumbnail && typeof meta.thumbnail === "string") {
+                const thumbPath = meta.thumbnail
+                  .split("/")
+                  .filter(Boolean)
+                  .map((seg) => encodeURIComponent(seg))
+                  .join("/");
+                const thumbSrc =
+                  "data/projects/" +
+                  encodeURIComponent(projectId) +
+                  "/prototypes/" +
+                  encodeURIComponent(p.id) +
+                  "/" +
+                  thumbPath;
+                thumbInner = `<img src="${escapeHtml(thumbSrc)}" alt="" loading="lazy" />`;
+              } else {
+                const initial = escapeHtml(
+                  (p.name || "?").trim().slice(0, 1).toUpperCase(),
+                );
+                thumbInner = `<span class="tile-card__thumb-placeholder">${initial}</span>`;
+              }
+              const urlAttr = escapeHtml(url);
+              const previewEsc = escapeHtml(previewHref);
+              const ariaOpen = escapeHtml(
+                `Open ${p.name || "prototype"} in preview`,
+              );
+              const delBtn = localEdit
+                ? `<button type="button" class="btn-tool btn-tool--danger" data-delete-prototype="${escapeHtml(p.id)}">Delete</button>`
+                : "";
+              return `
             <article class="tile-card tile-card--prototype">
               <a class="tile-card__link-body" href="${previewEsc}" aria-label="${ariaOpen}">
                 <div class="tile-card__thumb">${thumbInner}</div>
@@ -336,72 +694,234 @@
               <div class="tile-actions">
                 <button type="button" class="btn-tool" data-copy-proto-url="${urlAttr}">Copy link</button>
                 <a class="btn-tool" href="${previewEsc}" target="_blank" rel="noopener noreferrer">New tab</a>
+                ${delBtn}
               </div>
             </article>`;
-          })
-          .join("");
-      });
-    }
-
-    Promise.all([loadSiteConfig(), fetchJSON("data/projects/" + projectId + "/project.json")])
-      .then(([, data]) => {
-        el.error.hidden = true;
-        el.main.hidden = false;
-
-        el.name.textContent = data.name;
-        document.getElementById("nav-title").textContent = data.name;
-        document.title = data.name + " — Design Core";
-
-        if (data.description && String(data.description).trim()) {
-          el.desc.textContent = data.description;
-          el.desc.hidden = false;
-        } else {
-          el.desc.textContent = "";
-          el.desc.hidden = true;
-        }
-
-        const metaLine = buildProjectMetaLine(data);
-        if (metaLine) {
-          el.meta.textContent = metaLine;
-          el.meta.hidden = false;
-        } else {
-          el.meta.hidden = true;
-        }
-
-        el.ideation.hidden = false;
-        el.prototypesSection.hidden = false;
-
-        return Promise.all([
-          fetchJSON("data/projects/" + projectId + "/canvas.json").then(
-            (c) => ({ ok: true, screens: c.screens || [] }),
-            () => ({ ok: false, screens: [] }),
-          ),
-          fetchJSON("data/projects/" + projectId + "/prototypes/index.json").then(
-            (d) => ({ ok: true, list: d.prototypes || [] }),
-            () => ({ ok: false, list: [] }),
-          ),
-        ]).then(([canvasResult, protoResult]) => {
-          const screens = canvasResult.screens;
-          const protoList = protoResult.list;
-          renderCanvasStrip(screens, !canvasResult.ok);
-          renderPrototypesGrid(protoList, !protoResult.ok);
-          scrollToHashIfPresent();
+            })
+            .join("");
         });
-      })
-      .catch(() => {
-        el.error.hidden = false;
-        el.main.hidden = true;
-        document.getElementById("nav-title").textContent = "Project";
-        document.title = "Project — Design Core";
+      }
+
+      function openEditProjectModal() {
+        fillEditForm(projectPayload);
+        editProjectOverlay.hidden = false;
+        document.getElementById("edit-project-name").focus();
+      }
+      function closeEditProjectModal() {
+        editProjectOverlay.hidden = true;
+      }
+
+      function openNewProtoModal() {
+        document.getElementById("form-new-prototype").reset();
+        newProtoOverlay.hidden = false;
+        document.getElementById("new-proto-name").focus();
+      }
+      function closeNewProtoModal() {
+        newProtoOverlay.hidden = true;
+      }
+
+      document
+        .getElementById("btn-open-project-edit")
+        .addEventListener("click", openEditProjectModal);
+      document
+        .getElementById("edit-project-close")
+        .addEventListener("click", closeEditProjectModal);
+      document
+        .getElementById("edit-project-cancel")
+        .addEventListener("click", closeEditProjectModal);
+      editProjectOverlay.addEventListener("click", (e) => {
+        if (e.target === editProjectOverlay) closeEditProjectModal();
       });
 
-    document.addEventListener("mousemove", (e) => {
-      for (const node of document.querySelectorAll(".canvas-cta, .tile-card--prototype")) {
-        const rect = node.getBoundingClientRect();
-        node.style.setProperty("--mouse-x", e.clientX - rect.left + "px");
-        node.style.setProperty("--mouse-y", e.clientY - rect.top + "px");
+      document
+        .getElementById("btn-new-prototype")
+        .addEventListener("click", openNewProtoModal);
+      document
+        .getElementById("new-proto-close")
+        .addEventListener("click", closeNewProtoModal);
+      document
+        .getElementById("new-proto-cancel")
+        .addEventListener("click", closeNewProtoModal);
+      newProtoOverlay.addEventListener("click", (e) => {
+        if (e.target === newProtoOverlay) closeNewProtoModal();
+      });
+
+      document
+        .getElementById("form-project-edit")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name = document
+            .getElementById("edit-project-name")
+            .value.trim();
+          const description = document
+            .getElementById("edit-project-desc")
+            .value.trim();
+          const createdBy = document
+            .getElementById("edit-project-by")
+            .value.trim();
+          if (!name) return;
+          const updatedAt = new Date().toISOString();
+          const next = { ...projectPayload, name, description, updatedAt };
+          if (createdBy) next.createdBy = createdBy;
+          else delete next.createdBy;
+          const indexPatch = {
+            name,
+            description,
+            ...(createdBy ? { createdBy } : { createdBy: null }),
+          };
+          putDataJson("data/projects/" + projectId + "/project.json", next)
+            .then(() => syncProjectIndexEntry(projectId, indexPatch))
+            .then(() => {
+              showToast("Saved");
+              closeEditProjectModal();
+              return loadProjectHub();
+            })
+            .catch((err) => showToast(err.message || "Could not save"));
+        });
+
+      document
+        .getElementById("form-new-prototype")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name = document.getElementById("new-proto-name").value.trim();
+          const description = document
+            .getElementById("new-proto-desc")
+            .value.trim();
+          const device = document.getElementById("new-proto-device").value;
+          if (!name) return;
+          const baseId = slugifyDataId(name, "prototype");
+          postProjectAdminAutoId(baseId, (id) => ({
+            action: "create-prototype",
+            projectId,
+            id,
+            name,
+            description,
+            device,
+          }))
+            .then(() => {
+              showToast("Prototype created");
+              closeNewProtoModal();
+              return loadProjectHub();
+            })
+            .catch((err) => showToast(err.message || "Could not create"));
+        });
+
+      function openDeleteProjectModal() {
+        const name = projectPayload.name || projectId;
+        deleteProjectModalDesc.textContent =
+          "This will delete “" +
+          name +
+          "” and all of its screens and prototypes.";
+        deleteProjectOverlay.hidden = false;
+        document.getElementById("delete-project-cancel").focus();
       }
-    });
-  </script>
-</body>
+      function closeDeleteProjectModal() {
+        deleteProjectOverlay.hidden = true;
+      }
+
+      document
+        .getElementById("btn-delete-project")
+        .addEventListener("click", openDeleteProjectModal);
+      document
+        .getElementById("delete-project-close")
+        .addEventListener("click", closeDeleteProjectModal);
+      document
+        .getElementById("delete-project-cancel")
+        .addEventListener("click", closeDeleteProjectModal);
+      deleteProjectOverlay.addEventListener("click", (e) => {
+        if (e.target === deleteProjectOverlay) closeDeleteProjectModal();
+      });
+
+      document
+        .getElementById("delete-project-confirm")
+        .addEventListener("click", () => {
+          postProjectAdmin({ action: "delete-project", id: projectId })
+            .then(() => {
+              closeDeleteProjectModal();
+              window.location.href = "index.html";
+            })
+            .catch((err) => {
+              closeDeleteProjectModal();
+              showToast(err.message || "Could not delete");
+            });
+        });
+
+      function loadProjectHub() {
+        return Promise.all([
+          isLocalToolServer(),
+          loadSiteConfig(),
+          fetchJSON("data/projects/" + projectId + "/project.json"),
+        ])
+          .then(([isLocal, , data]) => {
+            localEdit = isLocal;
+            applyLocalChrome();
+
+            el.error.hidden = true;
+            el.main.hidden = false;
+
+            fillEditForm(data);
+
+            el.name.textContent = data.name;
+            document.getElementById("nav-title").textContent = data.name;
+            document.title = data.name + " — Design Core";
+
+            if (data.description && String(data.description).trim()) {
+              el.desc.textContent = data.description;
+              el.desc.hidden = false;
+            } else {
+              el.desc.textContent = "";
+              el.desc.hidden = true;
+            }
+
+            const metaLine = buildProjectMetaLine(data);
+            if (metaLine) {
+              el.meta.textContent = metaLine;
+              el.meta.hidden = false;
+            } else {
+              el.meta.hidden = true;
+            }
+
+            el.ideation.hidden = false;
+            el.prototypesSection.hidden = false;
+
+            return Promise.all([
+              fetchJSON("data/projects/" + projectId + "/canvas.json").then(
+                (c) => ({ ok: true, screens: c.screens || [] }),
+                () => ({ ok: false, screens: [] }),
+              ),
+              fetchJSON(
+                "data/projects/" + projectId + "/prototypes/index.json",
+              ).then(
+                (d) => ({ ok: true, list: d.prototypes || [] }),
+                () => ({ ok: false, list: [] }),
+              ),
+            ]).then(([canvasResult, protoResult]) => {
+              const screens = canvasResult.screens;
+              const protoList = protoResult.list;
+              renderCanvasStrip(screens, !canvasResult.ok);
+              renderPrototypesGrid(protoList, !protoResult.ok);
+              scrollToHashIfPresent();
+            });
+          })
+          .catch(() => {
+            el.error.hidden = false;
+            el.main.hidden = true;
+            document.getElementById("nav-title").textContent = "Project";
+            document.title = "Project — Design Core";
+          });
+      }
+
+      loadProjectHub();
+
+      document.addEventListener("mousemove", (e) => {
+        for (const node of document.querySelectorAll(
+          ".canvas-cta, .tile-card--prototype",
+        )) {
+          const rect = node.getBoundingClientRect();
+          node.style.setProperty("--mouse-x", e.clientX - rect.left + "px");
+          node.style.setProperty("--mouse-y", e.clientY - rect.top + "px");
+        }
+      });
+    </script>
+  </body>
 </html>

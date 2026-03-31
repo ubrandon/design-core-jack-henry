@@ -10,8 +10,13 @@
 <body>
   <div class="page-shell">
     <div class="home-hero">
-      <h1 class="home-hero__title">Projects</h1>
-      <p class="home-hero__subtitle">Your design projects — screens, prototypes, and explorations.</p>
+      <div class="home-hero__head">
+        <div class="home-hero__intro">
+          <h1 class="home-hero__title">Projects</h1>
+          <p class="home-hero__subtitle">Your design projects — screens, prototypes, and explorations.</p>
+        </div>
+        <button type="button" class="btn-tool btn-tool--primary home-hero__cta" id="btn-new-project" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> New project</button>
+      </div>
     </div>
 
     <div class="home-toolbar" id="home-toolbar" hidden>
@@ -33,6 +38,10 @@
       <p class="home-count-hint" id="project-count-hint" hidden></p>
     </div>
 
+    <p id="home-local-hint" class="project-local-hint" style="max-width:1100px;margin:0 auto;padding:0 28px 12px;" hidden>
+      To create or edit projects from the UI, run <code>npm run dev</code> locally. Static hosting does not include write APIs.
+    </p>
+
     <div id="projects" class="home-grid" aria-busy="true">
       <div class="project-card-skeleton" aria-hidden="true"></div>
       <div class="project-card-skeleton" aria-hidden="true"></div>
@@ -40,6 +49,35 @@
       <div class="project-card-skeleton" aria-hidden="true"></div>
       <div class="project-card-skeleton" aria-hidden="true"></div>
       <div class="project-card-skeleton" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div id="new-project-overlay" class="tool-modal-overlay" hidden>
+    <div class="tool-modal" role="dialog" aria-modal="true" aria-labelledby="new-project-title">
+      <div class="tool-modal__header">
+        <h2 id="new-project-title" class="tool-modal__title">New project</h2>
+        <button type="button" class="tool-modal__close" id="new-project-close" aria-label="Close">&times;</button>
+      </div>
+      <form id="form-new-project" class="tool-form" style="margin-top:0;">
+        <div class="tool-form__row">
+          <label class="tool-form__label" for="new-project-name">Name</label>
+          <input type="text" id="new-project-name" class="tool-form__input" required autocomplete="off" placeholder="e.g. Mobile redesign">
+        </div>
+        <div class="tool-form__row">
+          <label class="tool-form__label" for="new-project-desc">Description</label>
+          <textarea id="new-project-desc" class="tool-form__textarea" rows="2" autocomplete="off"></textarea>
+        </div>
+        <div class="tool-form__row" id="new-project-by-row">
+          <label class="tool-form__label" id="new-project-by-label" for="new-project-by-select">Created by</label>
+          <select id="new-project-by-select" class="tool-form__select tool-form__select--full" hidden aria-label="Created by"></select>
+          <input type="text" id="new-project-by-custom" class="tool-form__input" placeholder="Enter name" autocomplete="name" hidden>
+          <p id="new-project-by-hint" class="tool-form__hint" hidden>From your <code>.designer</code> profile. Choose <strong>Other…</strong> to type a different name.</p>
+        </div>
+        <div class="tool-form__actions">
+          <button type="button" class="btn-tool" id="new-project-cancel">Cancel</button>
+          <button type="submit" class="btn-tool btn-tool--primary">Create</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -55,6 +93,94 @@
     const countHint = document.getElementById("project-count-hint");
 
     let allRows = [];
+    let homeLocalEdit = false;
+
+    const homeLocalHint = document.getElementById("home-local-hint");
+    const newProjectOverlay = document.getElementById("new-project-overlay");
+    const btnNewProject = document.getElementById("btn-new-project");
+
+    function applyHomeLocalChrome() {
+      homeLocalHint.hidden = homeLocalEdit;
+      btnNewProject.hidden = !homeLocalEdit;
+    }
+
+    function closeNewProjectModal() {
+      newProjectOverlay.hidden = true;
+    }
+
+    const newProjectBySelect = document.getElementById("new-project-by-select");
+    const newProjectByCustom = document.getElementById("new-project-by-custom");
+    const newProjectByHint = document.getElementById("new-project-by-hint");
+
+    const newProjectByLabel = document.getElementById("new-project-by-label");
+
+    function syncNewProjectCreatedByUi() {
+      if (newProjectBySelect.hidden) {
+        newProjectByCustom.hidden = false;
+        newProjectByHint.hidden = true;
+        newProjectByLabel.setAttribute("for", "new-project-by-custom");
+        return;
+      }
+      newProjectByLabel.setAttribute("for", "new-project-by-select");
+      const isOther = newProjectBySelect.value === "__custom__";
+      newProjectByCustom.hidden = !isOther;
+      newProjectByHint.hidden = false;
+      if (isOther) newProjectByCustom.focus();
+    }
+
+    function populateNewProjectCreatedBy(prof) {
+      const names = designerAttributionNames(prof);
+      newProjectBySelect.innerHTML = "";
+      newProjectBySelect.appendChild(new Option("(Optional — uses your name from profile)", ""));
+      names.forEach((n) => newProjectBySelect.appendChild(new Option(n, n)));
+      newProjectBySelect.appendChild(new Option("Other…", "__custom__"));
+
+      if (names.length) {
+        newProjectBySelect.hidden = false;
+        newProjectByCustom.value = "";
+        newProjectByCustom.placeholder = "Enter name";
+        const preferred = String((prof && prof.name) || "").trim();
+        let matched = "";
+        if (preferred) {
+          const hit = names.find((n) => n.toLowerCase() === preferred.toLowerCase());
+          if (hit) matched = hit;
+        }
+        newProjectBySelect.value = matched;
+        newProjectByHint.hidden = false;
+      } else {
+        newProjectBySelect.hidden = true;
+        newProjectByCustom.value = "";
+        newProjectByCustom.placeholder = "Optional — defaults from your profile if set";
+        newProjectByHint.hidden = true;
+      }
+      syncNewProjectCreatedByUi();
+    }
+
+    newProjectBySelect.addEventListener("change", syncNewProjectCreatedByUi);
+
+    function openNewProjectModal() {
+      document.getElementById("form-new-project").reset();
+      fetchDesignerProfile()
+        .then((prof) => populateNewProjectCreatedBy(prof))
+        .catch(() => populateNewProjectCreatedBy(null));
+      newProjectOverlay.hidden = false;
+      document.getElementById("new-project-name").focus();
+    }
+
+    function getNewProjectCreatedByValue() {
+      if (!newProjectBySelect.hidden) {
+        const v = newProjectBySelect.value;
+        if (v === "__custom__") return newProjectByCustom.value.trim();
+        return v.trim();
+      }
+      return newProjectByCustom.value.trim();
+    }
+
+    isLocalToolServer().then((on) => {
+      homeLocalEdit = on;
+      applyHomeLocalChrome();
+      renderGrid(allRows, allRows.length);
+    });
 
     function debounce(fn, ms) {
       let t;
@@ -133,6 +259,8 @@
         } else {
           countHint.hidden = true;
         }
+      } else {
+        toolbar.hidden = true;
       }
 
       if (!sorted.length) {
@@ -145,10 +273,13 @@
           const btn = grid.querySelector(".home-clear-search");
           if (btn) btn.addEventListener("click", () => { filterInput.value = ""; renderGrid(allRows, allRows.length); filterInput.focus(); });
         } else {
+          const emptyHint = homeLocalEdit
+            ? "Use <strong>New project</strong> at the top of the page, or ask the AI to create one."
+            : "Ask the AI to create your first project — just describe what you want to design.";
           grid.innerHTML = `
             <div class="empty-state empty-state--in-grid">
               <p class="empty-state__title">No projects yet</p>
-              <p class="empty-state__hint">Ask the AI to create your first project — just describe what you want to design.</p>
+              <p class="empty-state__hint">${emptyHint}</p>
             </div>`;
         }
         grid.setAttribute("aria-busy", "false");
@@ -253,6 +384,39 @@
     filterInput.addEventListener("input", onFilterSort);
     sortSelect.addEventListener("change", () => {
       if (allRows.length) renderGrid(allRows, allRows.length);
+    });
+
+    btnNewProject.addEventListener("click", openNewProjectModal);
+    document.getElementById("new-project-close").addEventListener("click", closeNewProjectModal);
+    document.getElementById("new-project-cancel").addEventListener("click", closeNewProjectModal);
+    newProjectOverlay.addEventListener("click", (e) => {
+      if (e.target === newProjectOverlay) closeNewProjectModal();
+    });
+
+    document.getElementById("form-new-project").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("new-project-name").value.trim();
+      const description = document.getElementById("new-project-desc").value.trim();
+      const byInput = getNewProjectCreatedByValue();
+      if (!name) return;
+      const baseId = slugifyDataId(name, "project");
+      function go(createdBy) {
+        postProjectAdminAutoId(baseId, (id) => ({
+          action: "create-project",
+          id,
+          name,
+          description,
+          ...(createdBy ? { createdBy } : {}),
+        }))
+          .then((r) => {
+            closeNewProjectModal();
+            showToast("Project created");
+            window.location.href = "project.html?id=" + encodeURIComponent(r.id);
+          })
+          .catch((err) => showToast(err.message || "Could not create"));
+      }
+      if (byInput) go(byInput);
+      else fetchDesignerProfile().then((prof) => go((prof.name || "").trim())).catch(() => go(""));
     });
 
     wireMouseGlow();

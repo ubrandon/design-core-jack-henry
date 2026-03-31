@@ -190,3 +190,135 @@ function prototypeUrl(projectId, protoId) {
     return `${base.replace(/\/?$/, "/")}${q}`;
   }
 }
+
+/** Cached: true when Vite dev server exposes /api/tool-env (local editing enabled). */
+let _localToolServerCache = null;
+
+function isLocalToolServer() {
+  if (_localToolServerCache !== null) return Promise.resolve(_localToolServerCache);
+  return fetch("/api/tool-env")
+    .then((r) => {
+      if (!r.ok) {
+        _localToolServerCache = false;
+        return false;
+      }
+      return r.json().then((j) => {
+        _localToolServerCache = !!j.local;
+        return _localToolServerCache;
+      });
+    })
+    .catch(() => {
+      _localToolServerCache = false;
+      return false;
+    });
+}
+
+function putDataJson(relPath, obj) {
+  const url = relPath.startsWith("/") ? relPath : `/${relPath.replace(/^\/+/, "")}`;
+  return fetch(url, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(obj, null, 2),
+  }).then((r) => {
+    if (!r.ok) throw new Error("Could not save");
+  });
+}
+
+function postProjectAdmin(payload) {
+  return fetch("/api/project-admin", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }).then(async (r) => {
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || "Request failed");
+    return j;
+  });
+}
+
+/** Lowercase slug for project/prototype folder names (a-z, 0-9, hyphens). */
+function slugifyDataId(str, fallback) {
+  const fb = fallback == null ? "item" : fallback;
+  const s = String(str || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+  return s || fb;
+}
+
+/**
+ * Calls postProjectAdmin(payloadFn(id)). If the server reports an id collision, retries with -2, -3, …
+ */
+function postProjectAdminAutoId(baseId, payloadFn) {
+  let n = 0;
+  function attempt() {
+    const id = n === 0 ? baseId : baseId + "-" + (n + 1);
+    return postProjectAdmin(payloadFn(id)).catch((err) => {
+      const msg = String(err && err.message ? err.message : "");
+      if (/already exists/i.test(msg) && n < 24) {
+        n++;
+        return attempt();
+      }
+      throw err;
+    });
+  }
+  return attempt();
+}
+
+/** Unique display names from `.designer` (you + `team`) for attribution pickers. */
+function designerAttributionNames(profile) {
+  const prof = profile || {};
+  const out = [];
+  const seen = new Set();
+  function add(n) {
+    const t = String(n || "").trim();
+    if (!t) return;
+    const key = t.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push(t);
+  }
+  add(prof.name);
+  if (Array.isArray(prof.team)) {
+    prof.team.forEach((m) => add(m && m.name));
+  }
+  return out;
+}
+
+function fetchDesignerProfile() {
+  return fetch("/api/designer")
+    .then((r) => {
+      if (!r.ok) throw new Error("unavailable");
+      return r.json();
+    })
+    .catch(() => ({ name: "", company: "", team: [] }));
+}
+
+function saveDesignerProfile(data) {
+  return fetch("/api/designer", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  }).then(async (r) => {
+    if (!r.ok) {
+      const j = await r.json().catch(() => ({}));
+      throw new Error(j.error || "Could not save profile");
+    }
+  });
+}
+
+function syncProjectIndexEntry(projectId, patch) {
+  return fetchJSON("data/projects/index.json").then((idx) => {
+    const projects = Array.isArray(idx.projects) ? idx.projects.slice() : [];
+    const i = projects.findIndex((p) => p.id === projectId);
+    if (i < 0) return Promise.resolve();
+    const next = { ...projects[i], ...patch };
+    Object.keys(patch).forEach((k) => {
+      if (patch[k] === null) delete next[k];
+    });
+    projects[i] = next;
+    return putDataJson("data/projects/index.json", { projects });
+  });
+}

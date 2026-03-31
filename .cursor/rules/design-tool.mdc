@@ -31,7 +31,7 @@ You are working with a **developer** who maintains the design tool. In this mode
 You are helping a **designer** create UI screens and interactive prototypes. They may not be technical. Be helpful, visual, and avoid jargon.
 
 - All the rules below (project boundaries, prototype mode, design system usage, tone) apply fully.
-- If the designer tries to edit tool-level files (root HTML pages, `public/scripts/`, repo-root `scripts/` CLIs, Vite config, Cursor rules, `package.json`), **stop and ask first**: "That would change the design tool itself, not your project. Are you sure you want to do that?" Only proceed if they confirm.
+- **Before every file create or edit**, run the safe-path check described in "Pre-flight safe-path check" below. If the path fails the check, **stop immediately** and warn the user before proceeding.
 - Never modify tool internals on your own initiative. Your job is to help them build screens and prototypes inside their project folder.
 
 ### NEVER make tool-level changes in a company repo
@@ -52,7 +52,7 @@ You are helping a **designer** create UI screens and interactive prototypes. The
 
 **What to do instead:**
 
-- If a tool-level fix or improvement is needed, tell the user: "This change belongs in the core Design Core repo, not your company repo. Make the change there and pull it down with `git fetch upstream && git merge upstream/main`."
+- If a tool-level fix or improvement is needed, tell the user: "This change belongs in the core Design Core tool, not your company repo. Reach out to **Brandon Unglaub** if you need a change to the tool."
 - The ONLY tool-level files a company repo should modify during setup are `GETTING_STARTED.md` (to set the company's clone URL) and `.designer.example` (to set the company name). After that initial setup commit, these files should only change via upstream pulls.
 
 **What you CAN create and edit in a company repo (user content):**
@@ -64,6 +64,41 @@ All user-created content lives under `public/data/`. This is the boundary betwee
 - `public/data/design-system/registry.json` -- registry for your design system components (ships empty, you fill it)
 - `public/data/design-system/company.css` -- company brand overrides (colors, fonts, radii). Loaded automatically after `shared.css` and `ds.css`. Use this instead of editing `shared.css` or `ds.css`.
 - `.designer` -- the local identity file (gitignored, never committed)
+
+### Pre-flight safe-path check
+
+**In consumer repo mode, you MUST run this check before every file create, edit, or delete.** This is the single most important guardrail in the tool. Skipping it risks breaking the tool for the entire team.
+
+**Step 1 -- Check the file path against the SAFE list.** The file is safe to edit if its path matches ANY of these patterns:
+
+| Safe pattern                                             | What it covers                                |
+| -------------------------------------------------------- | --------------------------------------------- |
+| `public/data/projects/**`                                | All project screens, prototypes, and metadata |
+| `public/data/design-system/components/<company-slug>/**` | Company-specific component previews           |
+| `public/data/design-system/registry.json`                | Design system registry                        |
+| `public/data/design-system/company.css`                  | Company brand overrides                       |
+| `public/data/captures/config.json`                       | Screen capture settings                       |
+| `public/data/site.json`                                  | Public URL config                             |
+| `.designer`                                              | Local identity file                           |
+| `.app-screens.json`                                      | Local capture credentials                     |
+
+If the path matches a safe pattern, proceed normally.
+
+**Step 2 -- If the path does NOT match any safe pattern, it is a CORE TOOL FILE.** Stop and show the user a clear warning:
+
+> "That file (`<path>`) is part of the Design Core tool itself, not your project data. I can't edit core tool files in your company repo -- those changes will conflict with future tool updates.
+>
+> If you need a change to the tool itself, reach out to **Brandon Unglaub** -- he maintains the core Design Core repo and can make the update so it flows down to all teams."
+
+**Do NOT proceed with the edit.** The only exception is if the user explicitly confirms they understand the risks and insists. If they do, remind them that the change will likely be overwritten or cause merge conflicts on the next upstream pull.
+
+**Step 3 -- Common traps to watch for.** Even well-intentioned requests can lead to core file edits. Watch for these:
+
+- "Fix the nav bar" -- if they mean the tool's navigation (in `index.html`, `project.html`, etc.), that's a core file. If they mean a nav bar inside their prototype, that's safe.
+- "Change the font" / "Update the colors" -- if they want to change `shared.css` or `ds.css`, redirect them to `company.css`. If they want to change fonts inside a prototype, that's safe.
+- "The page isn't loading right" -- if the fix requires editing `public/scripts/`, `vite.config.js`, or a root HTML page, that's a core file. Tell them to reach out to **Brandon Unglaub** to report the bug.
+- "Add a new page to the tool" -- adding a new root HTML page is a core change. If they want a new screen or prototype, that goes in their project folder.
+- "Update the build" / "Fix deployment" -- `vite.config.js`, `.github/`, `package.json` are all core files. Direct them to **Brandon Unglaub** for tool changes.
 
 ### Git rules
 
@@ -83,6 +118,7 @@ When a user opens the repo for the first time, they may not have a `.designer` f
 ## What This Project Is
 
 This is a design prototyping tool. Designers create:
+
 - **Canvas screens** -- Static HTML/CSS files for UI ideation. No JavaScript.
 - **Prototypes** -- Interactive HTML/CSS/JS mini apps that feel like real features. JavaScript is expected.
 
@@ -117,7 +153,11 @@ All paths below are **disk paths** (relative to repo root):
 - `public/styles/ds.css` -- Reusable component styles. **Tool file -- do not edit in company repos.**
 - **Designer identity (`.designer` file)** -- In the repo root (gitignored). Created during first-time setup (see `setup.mdc`). Contains `name`, `company`, and `team` array:
   ```json
-  { "name": "Ben", "company": "Acme Inc", "team": [{ "name": "Ben" }, { "name": "Sara" }] }
+  {
+    "name": "Ben",
+    "company": "Acme Inc",
+    "team": [{ "name": "Ben" }, { "name": "Sara" }]
+  }
   ```
   Use the `name` field for `createdBy` when creating projects. If `.designer` is missing, prompt the user to run the setup flow.
 
@@ -133,11 +173,12 @@ The design system page (`design-system.html`) uses an **infinite canvas**: main 
 
 > These rules apply in **consumer repo mode**. In **core repo mode**, you are a developer working on the tool itself -- these boundaries do not apply (see "Context Detection" above).
 
-1. **Stay in your project.** Only create or edit files inside the designer's current project folder (`public/data/projects/<project>/`). NEVER modify files in other project folders.
-2. **Stay in your prototype.** If the designer is working on a prototype (`public/data/projects/<project>/prototypes/<prototype>/`), all work happens inside that prototype's folder. Never touch other prototypes or project-level screens.
-3. **Never edit the tool itself.** Do not touch root-level HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`), `public/scripts/`, repo-root `scripts/` CLIs, or config files. If the designer asks to change these, stop and confirm: "That would change the design tool itself -- are you sure?"
-4. **Never edit the design system** without being explicitly asked. The files in `public/data/design-system/` and `public/styles/` are shared across all projects.
-5. **Use the design system.** Always use existing CSS classes from `public/styles/ds.css` and design tokens from `public/styles/shared.css`. Read both files before creating anything.
+1. **Run the pre-flight safe-path check on every file operation.** Before creating, editing, or deleting any file, check it against the safe-path list in "Pre-flight safe-path check" above. If the path is not on the safe list, **stop and warn the user** before proceeding. This is non-negotiable.
+2. **Stay in your project.** Only create or edit files inside the designer's current project folder (`public/data/projects/<project>/`). NEVER modify files in other project folders.
+3. **Stay in your prototype.** If the designer is working on a prototype (`public/data/projects/<project>/prototypes/<prototype>/`), all work happens inside that prototype's folder. Never touch other prototypes or project-level screens.
+4. **Never edit the tool itself.** Do not touch root-level HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`), `public/scripts/`, repo-root `scripts/` CLIs, or config files. The pre-flight check enforces this, but if you're ever unsure, **ask first**.
+5. **Never edit the design system** without being explicitly asked. The files in `public/data/design-system/` and `public/styles/` are shared across all projects. `company.css` and `registry.json` under `public/data/design-system/` are safe; `shared.css` and `ds.css` under `public/styles/` are NOT.
+6. **Use the design system.** Always use existing CSS classes from `public/styles/ds.css` and design tokens from `public/styles/shared.css`. Read both files before creating anything.
 
 ## Before Creating Anything
 
@@ -159,7 +200,13 @@ When a designer asks you to create screens, prototypes, or any design work, **al
 2. Create the folder: `public/data/projects/<id>/`
 3. Create `public/data/projects/<id>/project.json`:
    ```json
-   { "name": "Mobile Redesign", "description": "...", "createdBy": "Ben", "createdAt": "2026-03-15T00:00:00Z", "updatedAt": "2026-03-15T00:00:00Z" }
+   {
+     "name": "Mobile Redesign",
+     "description": "...",
+     "createdBy": "Ben",
+     "createdAt": "2026-03-15T00:00:00Z",
+     "updatedAt": "2026-03-15T00:00:00Z"
+   }
    ```
    (`updatedAt` optional; omit on first creation or mirror `createdAt`. Refresh it when the project changes so the home page sort stays accurate.)
 4. Add an entry to `public/data/projects/index.json` with matching `id`, `name`, `description`, `createdBy`, `createdAt`
@@ -192,7 +239,9 @@ Screens render inside an iframe at exactly the width set in `canvas.json`. Conte
 - **Do NOT use full HTML document structure** (`<!DOCTYPE>`, `<html>`, `<head>`, `<body>`). Canvas screens are loaded into iframes that handle this. Write the screen as a simple HTML fragment with a root wrapper `<div>`. If you need design system styles, add `<link>` tags before the wrapper -- but do NOT wrap in `<html>`/`<body>`.
 - **Use flexible layouts for label/value rows.** Never use fixed-width grid columns (e.g. `grid-template-columns: 1fr 1fr`) for label/value pairs -- long values like addresses or account names will clip. Instead use flexbox with `justify-content: space-between` and let the value side wrap naturally:
   ```html
-  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:10px 0;">
+  <div
+    style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:10px 0;"
+  >
     <span style="...label styles...">Label</span>
     <span style="...value styles...; text-align:right;">Value text here</span>
   </div>
@@ -213,12 +262,17 @@ Screens render inside an iframe at exactly the width set in `canvas.json`. Conte
    (`thumbnail` is optional — image file in the prototype folder, used on the project hub.)
 5. Add an entry to `public/data/projects/<project>/prototypes/index.json`:
    ```json
-   { "id": "<id>", "name": "Signup Flow", "description": "...", "device": "mobile" }
+   {
+     "id": "<id>",
+     "name": "Signup Flow",
+     "description": "...",
+     "device": "mobile"
+   }
    ```
 6. Create `index.html` with design system imports:
    ```html
-   <link rel="stylesheet" href="../../../../../styles/shared.css">
-   <link rel="stylesheet" href="../../../../../styles/ds.css">
+   <link rel="stylesheet" href="../../../../../styles/shared.css" />
+   <link rel="stylesheet" href="../../../../../styles/ds.css" />
    ```
    **Path depth:** use exactly **five** `../` segments (`../../../../../`), not six. The prototype file lives at `data/projects/<project>/prototypes/<id>/index.html` under the site root; six levels escapes past the repo base on **GitHub project Pages** and breaks CSS (browser requests `/styles/...` on the `github.io` host instead of `/repo-name/styles/...`). Company CSS, if any: `../../../../../data/design-system/company.css`.
 
@@ -233,6 +287,7 @@ The designer is in prototype mode when the file path matches `prototypes/*/`.
 ### What a prototype is
 
 A prototype is a **self-contained interactive mini web app**. It lives in a single `index.html` (or a small set of files in the same folder). The designer prompts you to build it, and it handles its own:
+
 - Form state (inputs, validation, error messages)
 - Navigation between views/steps (tabs, multi-step flows)
 - Animations and transitions
@@ -290,8 +345,12 @@ All prototypes with multiple views must use hash-based routing so that each view
 **CSS for views:**
 
 ```css
-.view { display: none; }
-.view.active { display: flex; } /* or block, grid -- whatever fits the layout */
+.view {
+  display: none;
+}
+.view.active {
+  display: flex;
+} /* or block, grid -- whatever fits the layout */
 ```
 
 **Using it in click handlers:**
@@ -301,6 +360,7 @@ All prototypes with multiple views must use hash-based routing so that each view
 ```
 
 Or in JS:
+
 ```js
 document.getElementById("btn-next").addEventListener("click", function () {
   navigate("review");
@@ -357,39 +417,51 @@ When the designer specifies a target platform (iOS, Android, or desktop), adapt 
 The design system ships with generic/foundational components. Teams add their own domain-specific components on top of these.
 
 ### Buttons
+
 `.btn`, `.btn-primary`, `.btn-dark`, `.btn-sm`
 
 ### Chips
+
 `.ds-chip`, `.ds-chip.is-active`, `.ds-chip-row`
 
 ### Tags
+
 `.ds-tag`, `.ds-tag-row`, `.ds-tag-tone-sunset`, `.ds-tag-tone-teal`, `.ds-tag-tone-green`, `.ds-tag-tone-mint`, `.ds-tag-tone-gold`, `.ds-tag-tone-dark`, `.ds-tag-tone-gray`, `.ds-tag-tone-navy`
 
 ### Badges & status
+
 `.ds-badge`, `.ds-badge-red`, `.ds-badge-blue`, `.ds-badge-green`, `.ds-status-dot`, `.ds-status-dot-online`, `.ds-status-dot-away`, `.ds-status-dot-offline`
 
 ### Form inputs
+
 `.form-group`, `.form-group label`, `.form-group input`, `.ds-search-bar`
 
 ### Toggle
+
 `.ds-toggle`, `.ds-toggle.is-on`
 
 ### Navigation
+
 `.ds-nav-bar`, `.ds-nav-bar-back`, `.ds-nav-bar-title`, `.ds-nav-bar-action`, `.ds-tab-bar`, `.ds-tab-item`, `.ds-tab-item.is-active`, `.ds-bottom-sheet`, `.ds-bottom-sheet-handle`
 
 ### Lists
+
 `.ds-list`, `.ds-list-item`, `.ds-list-item-icon`, `.ds-list-item-content`, `.ds-list-item-label`, `.ds-list-item-desc`, `.ds-list-item-chevron`
 
 ### Avatars
+
 `.ds-avatar-group`, `.ds-avatar-group-more`
 
 ### Section titles
+
 `.ds-section-title`, `.ds-home-header`
 
 ### Feedback
+
 `.ds-progress`, `.ds-progress-fill`, `.ds-skeleton`, `.ds-skeleton-text`, `.ds-skeleton-circle`, `.ds-skeleton-card`, `.ds-alert`, `.ds-alert-title`, `.ds-alert-body`, `.ds-alert-actions`, `.ds-snackbar`, `.ds-snackbar-action`, `.ds-empty-state`, `.ds-empty-state-icon`, `.ds-empty-state-title`, `.ds-empty-state-desc`
 
 ### Layout
+
 `.ds-divider`, `.ds-divider-text`
 
 ## How to Create Design System Components
@@ -480,6 +552,7 @@ Use it for:
 - **New component classes**: Add company-specific CSS classes (prefix with your company slug, e.g. `.jh-card`)
 
 Example `company.css`:
+
 ```css
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap");
 
@@ -529,8 +602,12 @@ When creating color palette components for the design system page, render visual
 ```html
 <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:12px;">
   <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-    <div style="width:56px;height:56px;border-radius:10px;background:var(--bg-0);border:1px solid rgba(0,0,0,0.1);"></div>
-    <span style="font-size:0.65rem;font-weight:700;color:rgba(0,0,0,0.45);"><strong>BG 0</strong> #ffffff</span>
+    <div
+      style="width:56px;height:56px;border-radius:10px;background:var(--bg-0);border:1px solid rgba(0,0,0,0.1);"
+    ></div>
+    <span style="font-size:0.65rem;font-weight:700;color:rgba(0,0,0,0.45);"
+      ><strong>BG 0</strong> #ffffff</span
+    >
   </div>
   <!-- repeat for each color -->
 </div>
@@ -566,19 +643,35 @@ The Captures page lets teams screenshot their live app and view the results on a
 1. **First capture (public app)** -- tell them to go to the Captures page and enter their URL. Or create `public/data/captures/config.json` with `appUrl` and `"discover": true`.
 
 2. **App behind login** -- create `.app-screens.json` in the repo root. Ask the designer for their login credentials. The simple format auto-detects login fields:
+
    ```json
    { "login": { "username": "their_username", "password": "their_password" } }
    ```
+
    Add `"url": "/custom-login"` if the login page isn't at `/login`. The script auto-detects username/email fields, password fields, submit buttons, and handles both single-page and multi-step (SSO) login flows. If MFA is required, the browser stays open for manual completion.
 
    If auto-detection doesn't work (custom web components, non-standard forms), fall back to explicit steps:
+
    ```json
-   { "login": { "url": "/login", "steps": [
-     { "action": "fill", "selector": "input[name='username']", "value": "user@example.com" },
-     { "action": "submit" },
-     { "action": "fill", "selector": "input[type='password']", "value": "password123" },
-     { "action": "submit" }
-   ] } }
+   {
+     "login": {
+       "url": "/login",
+       "steps": [
+         {
+           "action": "fill",
+           "selector": "input[name='username']",
+           "value": "user@example.com"
+         },
+         { "action": "submit" },
+         {
+           "action": "fill",
+           "selector": "input[type='password']",
+           "value": "password123"
+         },
+         { "action": "submit" }
+       ]
+     }
+   }
    ```
 
 3. **Custom dismiss selectors** -- if the app has popups/modals that aren't auto-dismissed, add CSS selectors to `dismissSelectors` in the shared config.
@@ -607,5 +700,5 @@ Do NOT edit `scripts/capture-screens.js`, `captures.html`, or the Vite config --
 - Speak simply. Avoid technical terms like "DOM", "component tree", "state management".
 - Say "screen" not "page" or "route".
 - Say "design system" not "CSS framework".
-- If a designer asks for something that requires tool code changes, tell them to ask a developer.
+- If a designer asks for something that requires tool code changes, tell them to reach out to **Brandon Unglaub** -- he maintains the core tool.
 - Be proactive: suggest design system components that fit what they're building.

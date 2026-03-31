@@ -1,11 +1,39 @@
 import { defineConfig, loadEnv } from "vite";
-import { resolve, dirname } from "path";
+import { resolve, dirname, sep } from "path";
 import { fileURLToPath } from "url";
 import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync, rmSync } from "fs";
 import { spawn, execSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const LOCAL_CREDS_PATH = resolve(__dirname, ".app-screens.json");
+const DESIGNER_PATH = resolve(__dirname, ".designer");
+const PUBLIC_DATA_ROOT = resolve(__dirname, "public/data");
+
+function safePublicDataFilePath(urlPath) {
+  const pathOnly = (urlPath || "").split("?")[0];
+  if (pathOnly.includes("..") || pathOnly.includes("\0")) return null;
+  const rel = pathOnly.replace(/^\/+/, "");
+  if (!rel.startsWith("data/")) return null;
+  const abs = resolve(__dirname, "public", rel);
+  if (abs !== PUBLIC_DATA_ROOT && !abs.startsWith(PUBLIC_DATA_ROOT + sep)) return null;
+  return abs;
+}
+
+function readJsonBody(req) {
+  return new Promise((resolvePromise, reject) => {
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        resolvePromise(JSON.parse(body || "{}"));
+      } catch (e) {
+        reject(e);
+      }
+    });
+  });
+}
+
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function parseGithubRemoteForPages(raw) {
   if (!raw) return null;
@@ -94,26 +122,32 @@ function dataFilesPlugin() {
         if (!url.startsWith("/data/")) return next();
 
         if (req.method === "PUT" && url.endsWith(".json")) {
-          const filePath = resolve(__dirname, "public" + url);
+          const filePath = safePublicDataFilePath(url);
+          if (!filePath) {
+            res.writeHead(403, { "Content-Type": "application/json" });
+            res.end('{"error":"Forbidden"}');
+            return;
+          }
           let body = "";
-          req.on("data", chunk => { body += chunk; });
+          req.on("data", (chunk) => { body += chunk; });
           req.on("end", () => {
             try {
               JSON.parse(body);
+              mkdirSync(dirname(filePath), { recursive: true });
               writeFileSync(filePath, body, "utf-8");
               res.writeHead(200, { "Content-Type": "application/json" });
               res.end('{"ok":true}');
             } catch (e) {
               res.writeHead(400, { "Content-Type": "application/json" });
-              res.end('{"error":"Invalid JSON"}');
+              res.end(JSON.stringify({ error: e.message || "Invalid JSON" }));
             }
           });
           return;
         }
 
         if (req.method === "DELETE") {
-          const filePath = resolve(__dirname, "public" + url);
-          if (!filePath.startsWith(resolve(__dirname, "public/data/"))) {
+          const filePath = safePublicDataFilePath(url);
+          if (!filePath) {
             res.writeHead(403, { "Content-Type": "application/json" });
             res.end('{"error":"Forbidden"}');
             return;
@@ -124,7 +158,279 @@ function dataFilesPlugin() {
             res.end('{"ok":true}');
           } catch (e) {
             res.writeHead(500, { "Content-Type": "application/json" });
-            res.end('{"error":"' + e.message + '"}');
+            res.end(JSON.stringify({ error: e.message }));
+          }
+          return;
+        }
+
+        next();
+      });
+    },
+  };
+}
+
+function localDevDataApiPlugin() {
+  function readProjectsIndex() {
+    const p = resolve(PUBLIC_DATA_ROOT, "projects/index.json");
+    if (!existsSync(p)) return { projects: [] };
+    try {
+      return JSON.parse(readFileSync(p, "utf8"));
+    } catch {
+      return { projects: [] };
+    }
+  }
+
+  function writeProjectsIndex(data) {
+    const p = resolve(PUBLIC_DATA_ROOT, "projects/index.json");
+    mkdirSync(dirname(p), { recursive: true });
+    writeFileSync(p, JSON.stringify(data, null, 2) + "\n", "utf8");
+  }
+
+  const protoStubHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prototype</title>
+  <link rel="stylesheet" href="../../../../../styles/shared.css">
+  <link rel="stylesheet" href="../../../../../styles/ds.css">
+</head>
+<body style="margin:0;padding:24px;background:var(--bg-1);font-family:var(--font-body);color:var(--text);">
+  <p style="color:var(--muted);">New prototype — describe the flow you want and ask the AI to build it out here.</p>
+</body>
+</html>
+`;
+
+  return {
+    name: "local-dev-data-api",
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const pathOnly = (req.url || "").split("?")[0];
+
+        if (pathOnly === "/api/tool-env" && req.method === "GET") {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ local: true }));
+          return;
+        }
+
+        if (pathOnly === "/api/designer" && req.method === "GET") {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          try {
+            if (existsSync(DESIGNER_PATH)) {
+              res.end(readFileSync(DESIGNER_PATH, "utf8"));
+            } else {
+              res.end(JSON.stringify({ name: "", company: "", team: [] }));
+            }
+          } catch {
+            res.end(JSON.stringify({ name: "", company: "", team: [] }));
+          }
+          return;
+        }
+
+        if (pathOnly === "/api/designer" && req.method === "POST") {
+          try {
+            const data = await readJsonBody(req);
+            const name = typeof data.name === "string" ? data.name.trim() : "";
+            const company = typeof data.company === "string" ? data.company.trim() : "";
+            let team = [];
+            if (Array.isArray(data.team)) {
+              team = data.team
+                .filter((t) => t && typeof t.name === "string" && t.name.trim())
+                .map((t) => ({ name: t.name.trim() }));
+            }
+            if (!team.length && name) team = [{ name }];
+            const out = { name, company, team };
+            writeFileSync(DESIGNER_PATH, JSON.stringify(out, null, 2) + "\n", "utf8");
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end('{"ok":true}');
+          } catch (e) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: e.message || "Bad JSON" }));
+          }
+          return;
+        }
+
+        if (pathOnly === "/api/project-admin" && req.method === "POST") {
+          res.setHeader("Content-Type", "application/json");
+          let body;
+          try {
+            body = await readJsonBody(req);
+          } catch {
+            res.writeHead(400);
+            res.end(JSON.stringify({ error: "Invalid JSON" }));
+            return;
+          }
+
+          const action = body.action;
+          try {
+            if (action === "create-project") {
+              const id = typeof body.id === "string" ? body.id.trim() : "";
+              const name = typeof body.name === "string" ? body.name.trim() : "";
+              if (!SLUG_RE.test(id)) {
+                res.writeHead(400);
+                res.end(JSON.stringify({ error: "Project id must be lowercase letters, numbers, and hyphens (e.g. my-feature)." }));
+                return;
+              }
+              if (!name) {
+                res.writeHead(400);
+                res.end(JSON.stringify({ error: "Project name is required." }));
+                return;
+              }
+              const base = resolve(PUBLIC_DATA_ROOT, "projects", id);
+              if (existsSync(base)) {
+                res.writeHead(409);
+                res.end(JSON.stringify({ error: "A project with that id already exists." }));
+                return;
+              }
+              const createdBy = typeof body.createdBy === "string" ? body.createdBy.trim() : "";
+              const description = typeof body.description === "string" ? body.description.trim() : "";
+              const createdAt = new Date().toISOString();
+              mkdirSync(resolve(base, "screens"), { recursive: true });
+              mkdirSync(resolve(base, "prototypes"), { recursive: true });
+              const projectJson = {
+                name,
+                description,
+                ...(createdBy ? { createdBy } : {}),
+                createdAt,
+                updatedAt: createdAt,
+              };
+              writeFileSync(resolve(base, "project.json"), JSON.stringify(projectJson, null, 2) + "\n", "utf8");
+              writeFileSync(resolve(base, "canvas.json"), JSON.stringify({ screens: [] }, null, 2) + "\n", "utf8");
+              writeFileSync(
+                resolve(base, "prototypes/index.json"),
+                JSON.stringify({ prototypes: [] }, null, 2) + "\n",
+                "utf8",
+              );
+              const idx = readProjectsIndex();
+              const projects = Array.isArray(idx.projects) ? idx.projects : [];
+              projects.push({
+                id,
+                name,
+                description,
+                ...(createdBy ? { createdBy } : {}),
+                createdAt,
+              });
+              writeProjectsIndex({ projects });
+              res.writeHead(200);
+              res.end(JSON.stringify({ ok: true, id }));
+              return;
+            }
+
+            if (action === "delete-project") {
+              const id = typeof body.id === "string" ? body.id.trim() : "";
+              if (!SLUG_RE.test(id)) {
+                res.writeHead(400);
+                res.end(JSON.stringify({ error: "Invalid project id." }));
+                return;
+              }
+              const base = resolve(PUBLIC_DATA_ROOT, "projects", id);
+              if (!base.startsWith(resolve(PUBLIC_DATA_ROOT, "projects") + sep)) {
+                res.writeHead(403);
+                res.end(JSON.stringify({ error: "Forbidden" }));
+                return;
+              }
+              if (existsSync(base)) rmSync(base, { recursive: true, force: true });
+              const idx = readProjectsIndex();
+              const projects = (Array.isArray(idx.projects) ? idx.projects : []).filter((p) => p.id !== id);
+              writeProjectsIndex({ projects });
+              res.writeHead(200);
+              res.end('{"ok":true}');
+              return;
+            }
+
+            if (action === "create-prototype") {
+              const projectId = typeof body.projectId === "string" ? body.projectId.trim() : "";
+              const id = typeof body.id === "string" ? body.id.trim() : "";
+              const name = typeof body.name === "string" ? body.name.trim() : "";
+              if (!SLUG_RE.test(projectId) || !SLUG_RE.test(id)) {
+                res.writeHead(400);
+                res.end(JSON.stringify({ error: "Project and prototype ids must be lowercase slug format." }));
+                return;
+              }
+              if (!name) {
+                res.writeHead(400);
+                res.end(JSON.stringify({ error: "Prototype name is required." }));
+                return;
+              }
+              const protoRoot = resolve(PUBLIC_DATA_ROOT, "projects", projectId, "prototypes", id);
+              if (!protoRoot.startsWith(resolve(PUBLIC_DATA_ROOT, "projects") + sep)) {
+                res.writeHead(403);
+                res.end(JSON.stringify({ error: "Forbidden" }));
+                return;
+              }
+              if (existsSync(protoRoot)) {
+                res.writeHead(409);
+                res.end(JSON.stringify({ error: "A prototype with that id already exists in this project." }));
+                return;
+              }
+              const projectDir = resolve(PUBLIC_DATA_ROOT, "projects", projectId);
+              if (!existsSync(projectDir)) {
+                res.writeHead(404);
+                res.end(JSON.stringify({ error: "Project not found." }));
+                return;
+              }
+              let device = typeof body.device === "string" ? body.device.toLowerCase() : "mobile";
+              if (!["mobile", "desktop", "online", "responsive"].includes(device)) device = "mobile";
+              const description = typeof body.description === "string" ? body.description.trim() : "";
+              mkdirSync(protoRoot, { recursive: true });
+              writeFileSync(
+                resolve(protoRoot, "meta.json"),
+                JSON.stringify({ name, description }, null, 2) + "\n",
+                "utf8",
+              );
+              writeFileSync(resolve(protoRoot, "index.html"), protoStubHtml, "utf8");
+              const indexPath = resolve(projectDir, "prototypes/index.json");
+              let list = { prototypes: [] };
+              if (existsSync(indexPath)) {
+                try {
+                  list = JSON.parse(readFileSync(indexPath, "utf8"));
+                } catch {
+                  list = { prototypes: [] };
+                }
+              }
+              const protos = Array.isArray(list.prototypes) ? list.prototypes : [];
+              protos.push({ id, name, description, device });
+              writeFileSync(indexPath, JSON.stringify({ prototypes: protos }, null, 2) + "\n", "utf8");
+              res.writeHead(200);
+              res.end(JSON.stringify({ ok: true, id }));
+              return;
+            }
+
+            if (action === "delete-prototype") {
+              const projectId = typeof body.projectId === "string" ? body.projectId.trim() : "";
+              const id = typeof body.id === "string" ? body.id.trim() : "";
+              if (!SLUG_RE.test(projectId) || !SLUG_RE.test(id)) {
+                res.writeHead(400);
+                res.end(JSON.stringify({ error: "Invalid ids." }));
+                return;
+              }
+              const protoRoot = resolve(PUBLIC_DATA_ROOT, "projects", projectId, "prototypes", id);
+              if (!protoRoot.startsWith(resolve(PUBLIC_DATA_ROOT, "projects") + sep)) {
+                res.writeHead(403);
+                res.end(JSON.stringify({ error: "Forbidden" }));
+                return;
+              }
+              if (existsSync(protoRoot)) rmSync(protoRoot, { recursive: true, force: true });
+              const indexPath = resolve(PUBLIC_DATA_ROOT, "projects", projectId, "prototypes/index.json");
+              if (existsSync(indexPath)) {
+                try {
+                  const list = JSON.parse(readFileSync(indexPath, "utf8"));
+                  const protos = (Array.isArray(list.prototypes) ? list.prototypes : []).filter((p) => p.id !== id);
+                  writeFileSync(indexPath, JSON.stringify({ prototypes: protos }, null, 2) + "\n", "utf8");
+                } catch {
+                  writeFileSync(indexPath, JSON.stringify({ prototypes: [] }, null, 2) + "\n", "utf8");
+                }
+              }
+              res.writeHead(200);
+              res.end('{"ok":true}');
+              return;
+            }
+
+            res.writeHead(400);
+            res.end(JSON.stringify({ error: "Unknown action." }));
+          } catch (e) {
+            res.writeHead(500);
+            res.end(JSON.stringify({ error: e.message || "Server error" }));
           }
           return;
         }
@@ -401,6 +707,7 @@ export default defineConfig(({ mode }) => {
         },
       },
       dataFilesPlugin(),
+      localDevDataApiPlugin(),
       captureApiPlugin(),
     ],
     build: {
