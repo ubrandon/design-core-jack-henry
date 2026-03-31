@@ -1283,6 +1283,58 @@
       font-family: inherit;
     }
     .sf-fee-paid { color: #111 !important; font-weight: 700 !important; }
+    body.pay-flow-active {
+      background: #fafafa;
+    }
+    body.pay-flow-active .page {
+      padding-bottom: 0;
+    }
+    .pb-biller {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .pb-biller:hover {
+      border-color: #d1d5db;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .pb-biller-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: #fef3c7;
+      color: #92400e;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pb-biller-body { flex: 1; min-width: 0; }
+    .pb-biller-name { font-weight: 700; font-size: 0.95rem; color: #111; }
+    .pb-biller-detail { font-size: 0.8125rem; color: #9ca3af; margin-top: 3px; }
+    .pb-link-add {
+      width: 100%;
+      margin-top: 8px;
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #f9fafb;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #4b5563;
+      cursor: pointer;
+      font-family: inherit;
+    }
   </style>
 </head>
 <body>
@@ -1329,6 +1381,21 @@
       <button type="button" class="tf-cancel" id="send-cancel">Cancel</button>
     </header>
 
+    <header class="tf-topbar topbar--hidden" id="topbar-pay" aria-label="Pay bill">
+      <div class="tf-topbar-left">
+        <button type="button" class="tf-back" id="pay-back">&lt; Back</button>
+        <span class="tf-title">Pay bill</span>
+      </div>
+      <div class="tf-stepper" id="pay-stepper" role="navigation" aria-label="Pay bill progress">
+        <span class="tf-step" data-pay-step="0" id="pay-step-0">Destination</span>
+        <span class="tf-step" data-pay-step="1" id="pay-step-1">Amount</span>
+        <span class="tf-step" data-pay-step="2" id="pay-step-2">Speed</span>
+        <span class="tf-step" data-pay-step="3" id="pay-step-3">Review</span>
+        <span class="tf-step" data-pay-step="4" id="pay-step-4">Result</span>
+      </div>
+      <button type="button" class="tf-cancel" id="pay-cancel">Cancel</button>
+    </header>
+
     <div id="view-overview" class="view active">
     <div class="layout">
       <main>
@@ -1355,7 +1422,7 @@
             </div>
             <div class="qa-label">Send</div>
           </button>
-          <button type="button" class="qa-card">
+          <button type="button" class="qa-card" id="overview-btn-pay">
             <div class="qa-icon" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="4" y="5" width="16" height="14" rx="2"/>
@@ -1554,7 +1621,7 @@
             <h3>Send money</h3>
             <p class="mm-sub">Send to friends and family</p>
           </button>
-          <button type="button" class="mm-big-card">
+          <button type="button" class="mm-big-card" id="mm-btn-pay">
             <div class="qa-icon" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="4" y="5" width="16" height="14" rx="2"/>
@@ -2087,6 +2154,104 @@
         </div>
       </div>
     </div>
+
+    <div id="view-pay-destination" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">Pay</h1>
+        <p class="tf-sub">Select a biller</p>
+        <p class="tf-section-label">SAVED BILLERS</p>
+        <button type="button" class="pb-biller" data-pay-pick="midamerican">
+          <div class="pb-biller-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          </div>
+          <div class="pb-biller-body">
+            <div class="pb-biller-name">Mid American Energy Company</div>
+            <div class="pb-biller-detail">Account ****4521</div>
+          </div>
+        </button>
+        <button type="button" class="pb-biller" data-pay-pick="mediacom">
+          <div class="pb-biller-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          </div>
+          <div class="pb-biller-body">
+            <div class="pb-biller-name">Mediacom Internet</div>
+            <div class="pb-biller-detail">Account ****8834</div>
+          </div>
+        </button>
+        <button type="button" class="pb-link-add">+ Add new biller</button>
+      </div>
+    </div>
+
+    <div id="view-pay-amount" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">How much?</h1>
+        <p class="tf-sub" id="pay-amount-to-label">To Mid American Energy Company</p>
+        <input type="text" class="tf-amount-input-visible" id="pay-amount-input" inputmode="decimal" autocomplete="off" placeholder="$0.00" aria-label="Amount">
+        <p class="tf-available">Available: <strong id="pay-available-val">$4,250.00</strong> from <strong>Checking</strong></p>
+        <label class="tf-label-sm" for="pay-memo-input">Memo (optional)</label>
+        <input type="text" class="tf-input" id="pay-memo-input" placeholder="What's this for?">
+        <button type="button" class="tf-btn-primary" id="pay-amount-continue">Continue</button>
+      </div>
+    </div>
+
+    <div id="view-pay-speed" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">How fast?</h1>
+        <p class="tf-sub">Select delivery speed</p>
+        <button type="button" class="tf-opt-card pay-speed-opt is-selected" data-pay-delivery="electronic" data-pay-delivery-label="Electronic">
+          <div><div class="tf-opt-title">Electronic</div><div class="tf-opt-sub">Fastest available method</div></div>
+          <div class="tf-opt-right"><span class="tf-free">Free</span><span class="tf-speed-check" aria-hidden="true"><span class="tf-check-circle"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span></span></div>
+        </button>
+        <button type="button" class="tf-opt-card pay-speed-opt" data-pay-delivery="check" data-pay-delivery-label="Check">
+          <div><div class="tf-opt-title">Check</div><div class="tf-opt-sub">We mail a check for you</div></div>
+          <div class="tf-opt-right"><span class="tf-free">Free</span><span class="tf-speed-check" aria-hidden="true"><span class="tf-check-circle"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span></span></div>
+        </button>
+        <div class="tf-when-head">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          When should this be sent?
+        </div>
+        <div class="tf-when-grid">
+          <button type="button" class="tf-when-card pay-when-opt is-selected" data-pay-when="now" data-pay-when-label="Now"><div class="tf-opt-title">Now</div><div class="tf-opt-sub">Send immediately</div></button>
+          <button type="button" class="tf-when-card pay-when-opt" data-pay-when="tomorrow" data-pay-when-label="Tomorrow"><div class="tf-opt-title">Tomorrow</div><div class="tf-opt-sub">Wed, Apr 1</div></button>
+          <button type="button" class="tf-when-card pay-when-opt" data-pay-when="nextweek" data-pay-when-label="Next week"><div class="tf-opt-title">Next week</div><div class="tf-opt-sub">Tue, Apr 7</div></button>
+          <button type="button" class="tf-when-card pay-when-opt" data-pay-when="eom" data-pay-when-label="End of month"><div class="tf-opt-title">End of month</div><div class="tf-opt-sub">Tue, Mar 31</div></button>
+        </div>
+        <button type="button" class="tf-pick-date" id="pay-pick-date"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Pick a specific date</button>
+        <button type="button" class="tf-btn-primary is-enabled" id="pay-speed-continue">Continue</button>
+      </div>
+    </div>
+
+    <div id="view-pay-confirm" class="view">
+      <div class="tf-shell tf-shell--wide">
+        <h1 class="tf-h1">Review &amp; confirm</h1>
+        <p class="tf-sub">Please verify the details below</p>
+        <div class="tf-review-card">
+          <div class="tf-review-amt" id="pay-review-amt">$8.00</div>
+          <div class="tf-review-row"><span class="tf-review-k">To</span><span class="tf-review-v" id="pay-review-to">Mid American Energy Company</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">Account</span><span class="tf-review-v" id="pay-review-account">****4521</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">From</span><span class="tf-review-v" id="pay-review-from">Checking ••9943</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">When</span><span class="tf-review-v" id="pay-review-when">Now</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">Delivery</span><span class="tf-review-v" id="pay-review-delivery">Electronic</span></div>
+          <div class="tf-review-row"><span class="tf-review-k">Fee</span><span class="tf-review-v tf-free-green" id="pay-review-fee">FREE</span></div>
+        </div>
+        <button type="button" class="tf-btn-primary is-enabled" id="pay-confirm-btn">Confirm &amp; Pay</button>
+        <p class="tf-disclaimer">By confirming, you authorize this payment.</p>
+      </div>
+    </div>
+
+    <div id="view-pay-result" class="view">
+      <div class="tf-shell">
+        <div class="tf-result">
+          <div class="tf-result-icon" aria-hidden="true"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <h1>Payment Sent</h1>
+          <p class="tf-result-sum" id="pay-result-line">$8.00 to Mid American Energy Company</p>
+          <div class="tf-badge-done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Completed</div>
+          <div class="tf-conf-box">Confirmation #<strong id="pay-conf-num">PAY-4969856976</strong></div>
+          <button type="button" class="tf-btn-primary is-enabled" id="pay-result-done">Done</button>
+          <button type="button" class="tf-link-quiet" id="pay-result-another">Pay another bill</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -2111,6 +2276,13 @@
         "send-speed": 1,
         "send-confirm": 1,
         "send-result": 1
+      };
+      var payRoutes = {
+        "pay-destination": 1,
+        "pay-amount": 1,
+        "pay-speed": 1,
+        "pay-confirm": 1,
+        "pay-result": 1
       };
       var ACCOUNTS = {
         checking: { name: "Checking", detail: "Bread Financial ••9943", balanceCents: 425000 },
@@ -2138,12 +2310,34 @@
         midamerican: { name: "Mid American", detail: "Account ****4521" }
       };
       var SEND_FROM_LABEL = "Checking ••9943";
+      var BILLERS = {
+        midamerican: {
+          name: "Mid American Energy Company",
+          accountDisplay: "****4521"
+        },
+        mediacom: {
+          name: "Mediacom Internet",
+          accountDisplay: "****8834"
+        }
+      };
+      var PAY_FROM_LABEL = "Checking ••9943";
       var sendState = {
         recipientId: null,
         amountCents: 0,
         memo: "",
         speed: "zelle",
         speedLabel: "Zelle",
+        when: "now",
+        whenLabel: "Now",
+        confirmationId: null,
+        exitHash: "#overview"
+      };
+      var payState = {
+        billerId: null,
+        amountCents: 0,
+        memo: "",
+        delivery: "electronic",
+        deliveryLabel: "Electronic",
         when: "now",
         whenLabel: "Now",
         confirmationId: null,
@@ -2215,6 +2409,63 @@
         sendState.exitHash = exitHash || "#overview";
         resetSendFlow();
         navigate("send-destination");
+      }
+
+      function resetPayFlow() {
+        payState.billerId = null;
+        payState.amountCents = 0;
+        payState.memo = "";
+        payState.delivery = "electronic";
+        payState.deliveryLabel = "Electronic";
+        payState.when = "now";
+        payState.whenLabel = "Now";
+        payState.confirmationId = null;
+        var pi = document.getElementById("pay-amount-input");
+        if (pi) {
+          pi.value = "";
+        }
+        var pm = document.getElementById("pay-memo-input");
+        if (pm) {
+          pm.value = "";
+        }
+        document.querySelectorAll(".pay-speed-opt").forEach(function (el) {
+          el.classList.toggle("is-selected", el.getAttribute("data-pay-delivery") === "electronic");
+        });
+        document.querySelectorAll(".pay-when-opt").forEach(function (el) {
+          el.classList.toggle("is-selected", el.getAttribute("data-pay-when") === "now");
+        });
+        syncPayAmountContinue();
+      }
+
+      function startPayFrom(exitHash) {
+        payState.exitHash = exitHash || "#overview";
+        resetPayFlow();
+        navigate("pay-destination");
+      }
+
+      function parsePayAmountInput() {
+        var inp = document.getElementById("pay-amount-input");
+        if (!inp) {
+          return 0;
+        }
+        var t = inp.value.replace(/[^0-9.]/g, "");
+        if (!t) {
+          return 0;
+        }
+        var n = parseFloat(t);
+        if (isNaN(n) || n <= 0) {
+          return 0;
+        }
+        return Math.round(n * 100);
+      }
+
+      function syncPayAmountContinue() {
+        var btn = document.getElementById("pay-amount-continue");
+        if (!btn) {
+          return;
+        }
+        var ok = parsePayAmountInput() > 0;
+        btn.classList.toggle("is-enabled", ok);
       }
 
       function parseSendAmountInput() {
@@ -2387,6 +2638,12 @@
         document.getElementById("mm-btn-send").addEventListener("click", function () {
           startSendFrom("#move-money");
         });
+        document.getElementById("overview-btn-pay").addEventListener("click", function () {
+          startPayFrom("#overview");
+        });
+        document.getElementById("mm-btn-pay").addEventListener("click", function () {
+          startPayFrom("#move-money");
+        });
       }
 
       function applySendBindings() {
@@ -2469,6 +2726,89 @@
         });
         document.getElementById("send-cancel").addEventListener("click", function () {
           navigate(sendState.exitHash.replace(/^#/, ""));
+        });
+      }
+
+      function applyPayBindings() {
+        document.querySelectorAll("[data-pay-pick]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            payState.billerId = btn.getAttribute("data-pay-pick");
+            payState.amountCents = 0;
+            payState.confirmationId = null;
+            var inp = document.getElementById("pay-amount-input");
+            if (inp) {
+              inp.value = "";
+            }
+            navigate("pay-amount");
+          });
+        });
+        var pAmt = document.getElementById("pay-amount-input");
+        if (pAmt) {
+          pAmt.addEventListener("input", syncPayAmountContinue);
+        }
+        document.getElementById("pay-amount-continue").addEventListener("click", function () {
+          var c = parsePayAmountInput();
+          if (c <= 0) {
+            return;
+          }
+          payState.amountCents = c;
+          payState.memo = (document.getElementById("pay-memo-input") || {}).value || "";
+          navigate("pay-speed");
+        });
+        document.querySelectorAll(".pay-speed-opt").forEach(function (el) {
+          el.addEventListener("click", function () {
+            document.querySelectorAll(".pay-speed-opt").forEach(function (x) {
+              x.classList.remove("is-selected");
+            });
+            el.classList.add("is-selected");
+            payState.delivery = el.getAttribute("data-pay-delivery");
+            payState.deliveryLabel = el.getAttribute("data-pay-delivery-label");
+          });
+        });
+        document.querySelectorAll(".pay-when-opt").forEach(function (el) {
+          el.addEventListener("click", function () {
+            document.querySelectorAll(".pay-when-opt").forEach(function (x) {
+              x.classList.remove("is-selected");
+            });
+            el.classList.add("is-selected");
+            payState.when = el.getAttribute("data-pay-when");
+            payState.whenLabel = el.getAttribute("data-pay-when-label");
+          });
+        });
+        document.getElementById("pay-speed-continue").addEventListener("click", function () {
+          navigate("pay-confirm");
+        });
+        document.getElementById("pay-confirm-btn").addEventListener("click", function () {
+          var n = String(Math.floor(Math.random() * 1e10));
+          while (n.length < 10) {
+            n = "0" + n;
+          }
+          payState.confirmationId = "PAY-" + n;
+          navigate("pay-result");
+        });
+        document.getElementById("pay-result-done").addEventListener("click", function () {
+          navigate(payState.exitHash.replace(/^#/, ""));
+        });
+        document.getElementById("pay-result-another").addEventListener("click", function () {
+          resetPayFlow();
+          navigate("pay-destination");
+        });
+        document.getElementById("pay-back").addEventListener("click", function () {
+          var r = (location.hash.slice(1) || "").toLowerCase().replace(/_/g, "-");
+          var backMap = {
+            "pay-destination": payState.exitHash.replace(/^#/, ""),
+            "pay-amount": "pay-destination",
+            "pay-speed": "pay-amount",
+            "pay-confirm": "pay-speed",
+            "pay-result": payState.exitHash.replace(/^#/, "")
+          };
+          var next = backMap[r];
+          if (next) {
+            navigate(next);
+          }
+        });
+        document.getElementById("pay-cancel").addEventListener("click", function () {
+          navigate(payState.exitHash.replace(/^#/, ""));
         });
       }
 
@@ -2561,6 +2901,48 @@
           setStepEl(s2, "done", "Speed");
           setStepEl(s3, "done", "Review");
           setStepEl(s4, "active", "Result");
+        }
+      }
+
+      function updatePayStepper(route) {
+        var p0 = document.getElementById("pay-step-0");
+        var p1 = document.getElementById("pay-step-1");
+        var p2 = document.getElementById("pay-step-2");
+        var p3 = document.getElementById("pay-step-3");
+        var p4 = document.getElementById("pay-step-4");
+        if (!p0) {
+          return;
+        }
+        if (route === "pay-destination") {
+          setStepEl(p0, "active", "Destination");
+          setStepEl(p1, "todo", "Amount");
+          setStepEl(p2, "todo", "Speed");
+          setStepEl(p3, "todo", "Review");
+          setStepEl(p4, "todo", "Result");
+        } else if (route === "pay-amount") {
+          setStepEl(p0, "done", "Destination");
+          setStepEl(p1, "active", "Amount");
+          setStepEl(p2, "todo", "Speed");
+          setStepEl(p3, "todo", "Review");
+          setStepEl(p4, "todo", "Result");
+        } else if (route === "pay-speed") {
+          setStepEl(p0, "done", "Destination");
+          setStepEl(p1, "done", "Amount");
+          setStepEl(p2, "active", "Speed");
+          setStepEl(p3, "todo", "Review");
+          setStepEl(p4, "todo", "Result");
+        } else if (route === "pay-confirm") {
+          setStepEl(p0, "done", "Destination");
+          setStepEl(p1, "done", "Amount");
+          setStepEl(p2, "done", "Speed");
+          setStepEl(p3, "active", "Review");
+          setStepEl(p4, "todo", "Result");
+        } else if (route === "pay-result") {
+          setStepEl(p0, "done", "Destination");
+          setStepEl(p1, "done", "Amount");
+          setStepEl(p2, "done", "Speed");
+          setStepEl(p3, "done", "Review");
+          setStepEl(p4, "active", "Result");
         }
       }
 
@@ -2675,14 +3057,58 @@
         return raw;
       }
 
+      function refreshPayScreens(route) {
+        updatePayStepper(route);
+        if (route === "pay-amount") {
+          var b = BILLERS[payState.billerId];
+          var el = document.getElementById("pay-amount-to-label");
+          if (el && b) {
+            el.textContent = "To " + b.name;
+          }
+          syncPayAmountContinue();
+        }
+        if (route === "pay-confirm") {
+          var bill = BILLERS[payState.billerId];
+          document.getElementById("pay-review-amt").textContent = fmtMoney(payState.amountCents);
+          document.getElementById("pay-review-to").textContent = bill ? bill.name : "—";
+          document.getElementById("pay-review-account").textContent = bill ? bill.accountDisplay : "—";
+          document.getElementById("pay-review-from").textContent = PAY_FROM_LABEL;
+          document.getElementById("pay-review-when").textContent = payState.whenLabel;
+          document.getElementById("pay-review-delivery").textContent = payState.deliveryLabel;
+        }
+        if (route === "pay-result") {
+          var br = BILLERS[payState.billerId];
+          document.getElementById("pay-result-line").textContent =
+            fmtMoney(payState.amountCents) + " to " + (br ? br.name : "biller");
+          document.getElementById("pay-conf-num").textContent = payState.confirmationId || "—";
+        }
+      }
+
+      function guardPayRoute(raw) {
+        if (raw !== "pay-destination" && !payState.billerId) {
+          return "pay-destination";
+        }
+        if (
+          (raw === "pay-speed" || raw === "pay-confirm" || raw === "pay-result") &&
+          payState.amountCents <= 0
+        ) {
+          return "pay-amount";
+        }
+        if (raw === "pay-result" && !payState.confirmationId) {
+          return "pay-confirm";
+        }
+        return raw;
+      }
+
       function applyRoute() {
         var raw = (location.hash.slice(1) || defaultRoute).toLowerCase().replace(/_/g, "-");
         var mainRoutes = { overview: 1, "move-money": 1, messages: 1 };
-        if (!mainRoutes[raw] && !transferRoutes[raw] && !sendRoutes[raw]) {
+        if (!mainRoutes[raw] && !transferRoutes[raw] && !sendRoutes[raw] && !payRoutes[raw]) {
           raw = defaultRoute;
         }
         var isTransfer = !!transferRoutes[raw];
         var isSend = !!sendRoutes[raw];
+        var isPay = !!payRoutes[raw];
         if (isTransfer) {
           raw = guardTransferRoute(raw);
           if (raw !== (location.hash.slice(1) || "").toLowerCase().replace(/_/g, "-")) {
@@ -2697,11 +3123,19 @@
             return;
           }
         }
+        if (isPay) {
+          raw = guardPayRoute(raw);
+          if (raw !== (location.hash.slice(1) || "").toLowerCase().replace(/_/g, "-")) {
+            navigate(raw);
+            return;
+          }
+        }
 
         var mainBar = document.getElementById("topbar-main");
         var tfBar = document.getElementById("topbar-transfer");
         var sendBar = document.getElementById("topbar-send");
-        var inSubflow = isTransfer || isSend;
+        var payBar = document.getElementById("topbar-pay");
+        var inSubflow = isTransfer || isSend || isPay;
         if (mainBar) {
           mainBar.classList.toggle("topbar--hidden", inSubflow);
         }
@@ -2711,8 +3145,12 @@
         if (sendBar) {
           sendBar.classList.toggle("topbar--hidden", !isSend);
         }
+        if (payBar) {
+          payBar.classList.toggle("topbar--hidden", !isPay);
+        }
         document.body.classList.toggle("tf-flow-active", isTransfer);
         document.body.classList.toggle("send-flow-active", isSend);
+        document.body.classList.toggle("pay-flow-active", isPay);
 
         var viewId = "view-" + raw;
         document.querySelectorAll(".view").forEach(function (v) {
@@ -2725,6 +3163,9 @@
         } else if (isSend) {
           refreshSendScreens(raw);
           document.title = "bread financial — Send money";
+        } else if (isPay) {
+          refreshPayScreens(raw);
+          document.title = "bread financial — Pay bill";
         } else {
           document.querySelectorAll(".nav-pill[data-route]").forEach(function (pill) {
             pill.classList.toggle("is-active", pill.getAttribute("data-route") === raw);
@@ -2736,6 +3177,7 @@
       window.addEventListener("hashchange", applyRoute);
       applyTransferBindings();
       applySendBindings();
+      applyPayBindings();
       applyRoute();
     })();
   </script>
