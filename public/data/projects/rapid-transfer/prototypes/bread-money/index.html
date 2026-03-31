@@ -3130,6 +3130,26 @@
         return raw;
       }
 
+      function focusAmountInputForRoute(route) {
+        var map = {
+          "transfer-amount": "tf-amount-input",
+          "send-amount": "send-amount-input",
+          "pay-amount": "pay-amount-input"
+        };
+        var id = map[route];
+        if (!id) {
+          return;
+        }
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            var el = document.getElementById(id);
+            if (el && typeof el.focus === "function") {
+              el.focus();
+            }
+          });
+        });
+      }
+
       function applyRoute() {
         var raw = (location.hash.slice(1) || defaultRoute).toLowerCase().replace(/_/g, "-");
         var mainRoutes = { overview: 1, "move-money": 1, messages: 1 };
@@ -3202,6 +3222,8 @@
           });
           document.title = titles[raw] || titles.overview;
         }
+
+        focusAmountInputForRoute(raw);
       }
 
       window.addEventListener("hashchange", applyRoute);
