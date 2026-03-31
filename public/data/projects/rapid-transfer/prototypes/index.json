@@ -2,14 +2,14 @@
   "prototypes": [
     {
       "id": "rapid-transfer-test",
-      "name": "Rapid Transfer Test",
+      "name": "Banno Replica",
       "description": "Dashboard, Transfer menu, move-money modal, Standard transfers — interactive desktop flows.",
       "device": "online"
     },
     {
       "id": "bread-money",
-      "name": "Bread Money",
-      "description": "Bread Money flow inside Rapid Transfer — starter shell; extend with screens and interactions.",
+      "name": "Hub Concept",
+      "description": "Hub concept for Money Movement Testing — Overview, Move money, Messages, and multi-step flows (hash navigation).",
       "device": "online"
     }
   ]
