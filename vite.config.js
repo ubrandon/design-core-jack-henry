@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
-import { resolve, dirname, sep } from "path";
+import { resolve, dirname, sep, relative } from "path";
 import { fileURLToPath } from "url";
-import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync, rmSync } from "fs";
+import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync, rmSync, watch as fsWatch } from "fs";
 import { spawn, execSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -691,6 +691,49 @@ function captureApiPlugin() {
   };
 }
 
+/**
+ * Watches public/data/ for file changes and pushes events to connected
+ * browsers via Vite's HMR WebSocket. Replaces the old suppress-public-reload
+ * plugin: public/data changes no longer trigger a full page reload — instead
+ * each page's live-reload.js handler decides what to refresh.
+ */
+function liveDataPlugin() {
+  let debounceTimer = null;
+  let pending = new Set();
+
+  return {
+    name: "live-data-watcher",
+    handleHotUpdate({ file }) {
+      if (file.includes("/public/")) return [];
+    },
+    configureServer(server) {
+      const dataDir = resolve(__dirname, "public/data");
+      if (!existsSync(dataDir)) return;
+
+      const watcher = fsWatch(dataDir, { recursive: true });
+      watcher.on("change", (_event, filename) => {
+        if (!filename) return;
+        const relPath = "data/" + String(filename).split(sep).join("/");
+        pending.add(relPath);
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          const paths = Array.from(pending);
+          pending.clear();
+          server.ws.send({
+            type: "custom",
+            event: "design-core:data-changed",
+            data: { paths },
+          });
+        }, 300);
+      });
+
+      server.httpServer?.on("close", () => {
+        watcher.close();
+      });
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const viteEnv = loadEnv(mode, __dirname, "");
 
@@ -700,12 +743,7 @@ export default defineConfig(({ mode }) => {
     server: { port: 3000 },
     plugins: [
       siteJsonDevPlugin(viteEnv),
-      {
-        name: "suppress-public-reload",
-        handleHotUpdate({ file }) {
-          if (file.includes("/public/")) return [];
-        },
-      },
+      liveDataPlugin(),
       dataFilesPlugin(),
       localDevDataApiPlugin(),
       captureApiPlugin(),

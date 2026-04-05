@@ -16,7 +16,8 @@
   background-position: 0 0, 12px 12px;
 }
 
-.canvas-space-viewport:active {
+/* .is-panning is toggled by canvas-pan-zoom.js (reliable vs :active + pointer capture) */
+.canvas-space-viewport.is-panning {
   cursor: grabbing;
 }
 

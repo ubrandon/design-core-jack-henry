@@ -61,3 +61,22 @@ body {
 .accent-text {
   color: var(--neon-blue);
 }
+
+/*
+ * Horizontal scroll strips (canvas screens, prototypes, design-system previews):
+ * Do not show horizontal scrollbars — they read as broken layout in device frames.
+ * Add class `ds-scroll-x` to any element with `overflow-x: auto` / horizontal swipe
+ * (chip rows, carousels, story rails). Scrolling still works via touch, trackpad, and
+ * Shift+wheel. Keep normal vertical overflow/scrollbars on the page/body for desktop
+ * unless the design intentionally uses a custom scroll container.
+ */
+.ds-scroll-x {
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+
+.ds-scroll-x::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, iOS */
+  height: 0;
+}

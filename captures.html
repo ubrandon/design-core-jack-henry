@@ -24,7 +24,7 @@
       background-size: 24px 24px;
       background-position: 0 0, 12px 12px;
     }
-    .cap-viewport:active { cursor: grabbing; }
+    .cap-viewport.is-panning { cursor: grabbing; }
     .cap-viewport.dragging-card { cursor: grabbing; }
 
     .cap-stage {
@@ -640,7 +640,10 @@
       <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
       <span id="zoom-label" class="zoom-level">100%</span>
       <button class="zoom-btn" onclick="pz.zoomBy(0.04)" title="Zoom in">+</button>
-      <button class="zoom-btn" onclick="pz.resetView()" title="Reset view" style="font-size:0.8rem">&#8962;</button>
+      <button class="zoom-btn" type="button" onclick="pz.resetView()" title="Reset view" aria-label="Reset view">
+        <!-- @phosphor-icons/core assets/regular/crosshair.svg (MIT) -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232,120h-8.34A96.14,96.14,0,0,0,136,32.34V24a8,8,0,0,0-16,0v8.34A96.14,96.14,0,0,0,32.34,120H24a8,8,0,0,0,0,16h8.34A96.14,96.14,0,0,0,120,223.66V232a8,8,0,0,0,16,0v-8.34A96.14,96.14,0,0,0,223.66,136H232a8,8,0,0,0,0-16Zm-96,87.6V200a8,8,0,0,0-16,0v7.6A80.15,80.15,0,0,1,48.4,136H56a8,8,0,0,0,0-16H48.4A80.15,80.15,0,0,1,120,48.4V56a8,8,0,0,0,16,0V48.4A80.15,80.15,0,0,1,207.6,120H200a8,8,0,0,0,0,16h7.6A80.15,80.15,0,0,1,136,207.6ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Z"/></svg>
+      </button>
     </div>
   </div>
 
@@ -674,6 +677,7 @@
   <script src="scripts/shared.js"></script>
   <script src="scripts/nav.js"></script>
   <script src="scripts/canvas-pan-zoom.js"></script>
+  <script src="scripts/live-reload.js"></script>
   <script>
     renderNav({
       fixed: true,
@@ -933,11 +937,45 @@
         e.stopPropagation();
         marquee = { startX: e.clientX, startY: e.clientY, moved: false, pointerId: e.pointerId };
         viewport.setPointerCapture(e.pointerId);
+      } else {
+        closeContextMenu();
+        clearSelection();
       }
     });
 
+    function releaseViewportCaptureSafe(pointerId) {
+      try {
+        if (pointerId != null && viewport.releasePointerCapture) {
+          viewport.releasePointerCapture(pointerId);
+        }
+      } catch (_) {}
+    }
+
+    function endCanvasPointerSession(e) {
+      var pid = e.pointerId;
+      if (cardPointer && cardPointer.pointerId === pid) {
+        if (cardPointer.moved) {
+          viewport.classList.remove("dragging-card");
+          updateSectionHeaders();
+          saveManifest();
+        } else if (!cardPointer.shiftHeld) {
+          setSelected([cardPointer.idx]);
+        }
+        cardPointer = null;
+        releaseViewportCaptureSafe(pid);
+        return true;
+      }
+      if (marquee && marquee.pointerId === pid) {
+        if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
+        marquee = null;
+        releaseViewportCaptureSafe(pid);
+        return true;
+      }
+      return false;
+    }
+
     viewport.addEventListener("pointermove", function(e) {
-      if (cardPointer) {
+      if (cardPointer && e.pointerId === cardPointer.pointerId) {
         var dx = e.clientX - cardPointer.startX;
         var dy = e.clientY - cardPointer.startY;
         if (!cardPointer.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
@@ -971,7 +1009,7 @@
         return;
       }
 
-      if (marquee) {
+      if (marquee && e.pointerId === marquee.pointerId) {
         var mdx = e.clientX - marquee.startX;
         var mdy = e.clientY - marquee.startY;
         if (!marquee.moved && Math.abs(mdx) < DRAG_THRESHOLD && Math.abs(mdy) < DRAG_THRESHOLD) return;
@@ -1008,7 +1046,19 @@
     });
 
     viewport.addEventListener("pointerup", function(e) {
-      if (cardPointer) {
+      if (endCanvasPointerSession(e)) return;
+
+      if (!pz.didPan && !e.target.closest(".cap-card") && !e.target.closest(".canvas-context-menu") && !e.target.closest(".canvas-selection-bar")) {
+        clearSelection();
+      }
+    });
+
+    viewport.addEventListener("pointercancel", function(e) {
+      endCanvasPointerSession(e);
+    });
+
+    viewport.addEventListener("lostpointercapture", function(e) {
+      if (cardPointer && cardPointer.pointerId === e.pointerId) {
         if (cardPointer.moved) {
           viewport.classList.remove("dragging-card");
           updateSectionHeaders();
@@ -1017,17 +1067,10 @@
           setSelected([cardPointer.idx]);
         }
         cardPointer = null;
-        return;
       }
-
-      if (marquee) {
+      if (marquee && marquee.pointerId === e.pointerId) {
         if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
         marquee = null;
-        return;
-      }
-
-      if (!pz.didPan && !e.target.closest(".cap-card") && !e.target.closest(".canvas-context-menu") && !e.target.closest(".canvas-selection-bar")) {
-        clearSelection();
       }
     });
 
@@ -1483,6 +1526,18 @@
     }
 
     loadCaptures();
+
+    /* ── Live reload ── */
+    window.__onDataChanged = function(paths) {
+      var relevant = paths.length === 0 || paths.some(function(p) {
+        return p.startsWith("data/captures/");
+      });
+      if (relevant) {
+        captures = [];
+        clearSelection();
+        loadCaptures();
+      }
+    };
   </script>
 </body>
 </html>

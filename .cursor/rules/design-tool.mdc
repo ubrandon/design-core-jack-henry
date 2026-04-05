@@ -249,6 +249,7 @@ Screens render inside an iframe at exactly the width set in `canvas.json`. Conte
 - **Use design system classes** over inline styles whenever a matching class exists (e.g. use `jh-row`, `jh-card`, `jh-label` if the company has defined them, or `ds-list-item` from the base system). Only use inline styles for layout composition or one-off spacing.
 - **Do NOT hardcode `max-width` on value text** (e.g. `max-width: 55%`). Let the flex layout handle wrapping. If a value is long, the right-aligned text will wrap naturally within the available space.
 - **When creating multiple screen variants** for ideation, vary the composition and visual hierarchy (card grouping, section structure, emphasis on different elements) -- do NOT reinvent the underlying row/label mechanics each time. Reuse the same label/value pattern across variants.
+- **Do not show horizontal scrollbars** on canvas screens (or prototypes). Horizontal strips (chips, carousels, story rails) should still scroll sideways via touch/trackpad/shift+wheel, but the scrollbar gutter should be hidden. Add the utility class **`ds-scroll-x`** from `shared.css` to those scroll containers (it sets `overflow-x: auto` and hides scrollbars in Firefox, WebKit, and IE). Prefer **`overflow-x: clip`** (or `hidden`) on the screen root if needed so the document itself never gains a horizontal scrollbar. **Vertical** page scrolling is normal on desktop — do not hide the main vertical scrollbar unless the design is an intentional full-screen app shell with its own scroller.
 
 ### Creating a new prototype
 
@@ -301,9 +302,10 @@ A prototype is a **self-contained interactive mini web app**. It lives in a sing
 3. **Use hash routing for navigation.** Every prototype with multiple views/steps **must** use `location.hash` so each view gets a unique URL. This is required for usability testing tools (e.g. Maze) that track which screen a tester is on. See "Hash routing pattern" below.
 4. **Use the design system.** Import styles using relative paths (5 levels up from the prototype folder). Use tokens and component classes as the foundation.
 5. **Add new styles inline.** If the designer asks for something not in the design system, use `<style>` blocks inside the prototype. Keep the shared design system files untouched.
-6. **Self-contained.** Everything the prototype needs goes in its folder. No external npm packages or CDN scripts unless the designer explicitly asks.
-7. **Look at the design system.** Read existing component HTML files in `public/data/design-system/components/` for visual patterns.
-8. **One file preferred.** Keep the prototype in a single `index.html` unless it grows large enough to justify splitting.
+6. **Hide horizontal scrollbars** on carousels, chip rows, and other horizontal scrollers — use **`ds-scroll-x`** from `shared.css` (see canvas screen rules). Prefer **`overflow-x: clip`** on the root if the document gets a horizontal scrollbar.
+7. **Self-contained.** Everything the prototype needs goes in its folder. No external npm packages or CDN scripts unless the designer explicitly asks.
+8. **Look at the design system.** Read existing component HTML files in `public/data/design-system/components/` for visual patterns.
+9. **One file preferred.** Keep the prototype in a single `index.html` unless it grows large enough to justify splitting.
 
 ### Hash routing pattern
 
@@ -463,6 +465,8 @@ The design system ships with generic/foundational components. Teams add their ow
 ### Layout
 
 `.ds-divider`, `.ds-divider-text`
+
+`.ds-scroll-x` — horizontal scrolling container with scrollbars hidden (chip rows, carousels); use on canvas screens and prototypes per canvas rules.
 
 ## How to Create Design System Components
 

@@ -341,6 +341,7 @@
 
     <script src="scripts/shared.js"></script>
     <script src="scripts/nav.js"></script>
+    <script src="scripts/live-reload.js"></script>
     <script>
       const projectId = getParam("id");
       if (!projectId) window.location.href = "index.html";
@@ -922,6 +923,13 @@
           node.style.setProperty("--mouse-y", e.clientY - rect.top + "px");
         }
       });
+
+      /* ── Live reload ── */
+      window.__onDataChanged = function(paths) {
+        const prefix = "data/projects/" + projectId + "/";
+        const relevant = paths.length === 0 || paths.some(p => p.startsWith(prefix));
+        if (relevant) loadProjectHub().catch(() => {});
+      };
     </script>
   </body>
 </html>

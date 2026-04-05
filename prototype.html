@@ -115,6 +115,7 @@
 
   <script src="scripts/shared.js"></script>
   <script src="scripts/nav.js"></script>
+  <script src="scripts/live-reload.js"></script>
   <script>
     const projectId = getParam("project");
     const protoId = getParam("proto");
@@ -233,6 +234,15 @@
         }
       })
       .catch(() => {});
+
+    /* ── Live reload ── */
+    window.__onDataChanged = function(paths) {
+      const protoPrefix = "data/projects/" + projectId + "/prototypes/" + protoId + "/";
+      const relevant = paths.length === 0 || paths.some(p => p.startsWith(protoPrefix));
+      if (relevant && protoFrame.src) {
+        protoFrame.src = protoFrame.src.replace(/[?].*$/, "") + "?t=" + Date.now();
+      }
+    };
   </script>
 </body>
 </html>

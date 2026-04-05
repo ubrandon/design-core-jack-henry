@@ -33,6 +33,14 @@
   display: grid;
   place-items: center;
 }
+/* Icons inside square zoom buttons (e.g. Phosphor SVGs) */
+.zoom-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: block;
+  color: inherit;
+}
 .zoom-btn:hover {
   background: #f0f0f0;
   border-color: rgba(0, 0, 0, 0.2);

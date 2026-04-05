@@ -26,16 +26,26 @@
       <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
       <span id="zoom-label" class="zoom-level">100%</span>
       <button class="zoom-btn" onclick="pz.zoomBy(0.04)" title="Zoom in">+</button>
-      <button class="zoom-btn" onclick="pz.resetView()" title="Reset view" style="font-size:0.8rem;">&#8962;</button>
+      <button class="zoom-btn" type="button" onclick="pz.resetView()" title="Reset view" aria-label="Reset view">
+        <!-- @phosphor-icons/core assets/regular/crosshair.svg (MIT) -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232,120h-8.34A96.14,96.14,0,0,0,136,32.34V24a8,8,0,0,0-16,0v8.34A96.14,96.14,0,0,0,32.34,120H24a8,8,0,0,0,0,16h8.34A96.14,96.14,0,0,0,120,223.66V232a8,8,0,0,0,16,0v-8.34A96.14,96.14,0,0,0,223.66,136H232a8,8,0,0,0,0-16Zm-96,87.6V200a8,8,0,0,0-16,0v7.6A80.15,80.15,0,0,1,48.4,136H56a8,8,0,0,0,0-16H48.4A80.15,80.15,0,0,1,120,48.4V56a8,8,0,0,0,16,0V48.4A80.15,80.15,0,0,1,207.6,120H200a8,8,0,0,0,0,16h7.6A80.15,80.15,0,0,1,136,207.6ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Z"/></svg>
+      </button>
     </div>
   </div>
 
   <script src="scripts/shared.js"></script>
   <script src="scripts/nav.js"></script>
   <script src="scripts/canvas-pan-zoom.js"></script>
+  <script src="scripts/live-reload.js"></script>
   <script>
     const CARD_GAP = 40;
     const DRAG_THRESHOLD = 5;
+    /** Stage-space snap when dragging cards (px). */
+    const GRID_SNAP = 32;
+
+    function snapToGrid(n) {
+      return Math.round(Number(n) / GRID_SNAP) * GRID_SNAP;
+    }
 
     const projectId = getParam("project");
     if (!projectId) window.location.href = "index.html";
@@ -295,11 +305,44 @@
           pointerId: e.pointerId,
         };
         viewport.setPointerCapture(e.pointerId);
+      } else {
+        closeContextMenu();
+        clearSelection();
       }
     });
 
+    function releaseViewportCaptureSafe(pointerId) {
+      try {
+        if (pointerId != null && viewport.releasePointerCapture) {
+          viewport.releasePointerCapture(pointerId);
+        }
+      } catch (_) {}
+    }
+
+    function endCanvasPointerSession(e) {
+      const pid = e.pointerId;
+      if (cardPointer && cardPointer.pointerId === pid) {
+        if (cardPointer.moved) {
+          viewport.classList.remove("dragging-card");
+          saveCanvas();
+        } else if (!cardPointer.shiftHeld) {
+          setSelected([cardPointer.idx]);
+        }
+        cardPointer = null;
+        releaseViewportCaptureSafe(pid);
+        return true;
+      }
+      if (marquee && marquee.pointerId === pid) {
+        if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
+        marquee = null;
+        releaseViewportCaptureSafe(pid);
+        return true;
+      }
+      return false;
+    }
+
     viewport.addEventListener("pointermove", (e) => {
-      if (cardPointer) {
+      if (cardPointer && e.pointerId === cardPointer.pointerId) {
         const dx = e.clientX - cardPointer.startX;
         const dy = e.clientY - cardPointer.startY;
         if (!cardPointer.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
@@ -324,8 +367,8 @@
 
         cardPointer.dragOffsets.forEach(d => {
           const s = screens[d.idx];
-          s.x = stageX - d.offX;
-          s.y = stageY - d.offY;
+          s.x = snapToGrid(stageX - d.offX);
+          s.y = snapToGrid(stageY - d.offY);
           const el = document.getElementById("card-" + d.idx);
           if (el) {
             el.style.left = s.x + "px";
@@ -335,7 +378,7 @@
         return;
       }
 
-      if (marquee) {
+      if (marquee && e.pointerId === marquee.pointerId) {
         const dx = e.clientX - marquee.startX;
         const dy = e.clientY - marquee.startY;
         if (!marquee.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
@@ -372,7 +415,19 @@
     });
 
     viewport.addEventListener("pointerup", (e) => {
-      if (cardPointer) {
+      if (endCanvasPointerSession(e)) return;
+
+      if (!pz.didPan && !e.target.closest(".canvas-card") && !e.target.closest(".canvas-context-menu")) {
+        clearSelection();
+      }
+    });
+
+    viewport.addEventListener("pointercancel", (e) => {
+      endCanvasPointerSession(e);
+    });
+
+    viewport.addEventListener("lostpointercapture", (e) => {
+      if (cardPointer && cardPointer.pointerId === e.pointerId) {
         if (cardPointer.moved) {
           viewport.classList.remove("dragging-card");
           saveCanvas();
@@ -380,17 +435,10 @@
           setSelected([cardPointer.idx]);
         }
         cardPointer = null;
-        return;
       }
-
-      if (marquee) {
+      if (marquee && marquee.pointerId === e.pointerId) {
         if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
         marquee = null;
-        return;
-      }
-
-      if (!pz.didPan && !e.target.closest(".canvas-card") && !e.target.closest(".canvas-context-menu")) {
-        clearSelection();
       }
     });
 
@@ -401,8 +449,8 @@
       screens.forEach((s, i) => {
         const card = document.getElementById("card-" + i);
         const w = s.width || 390;
-        s.x = x;
-        s.y = 0;
+        s.x = snapToGrid(x);
+        s.y = snapToGrid(0);
         if (card) {
           card.style.left = s.x + "px";
           card.style.top = s.y + "px";
@@ -411,7 +459,7 @@
       });
     }
 
-    function loadCanvas() {
+    function loadCanvas(changedFiles) {
       return fetch("data/projects/" + projectId + "/canvas.json?t=" + Date.now())
         .then(r => {
           if (!r.ok) throw new Error(r.status);
@@ -434,6 +482,8 @@
             renderCards();
             var empty = document.getElementById("canvas-empty");
             if (empty) empty.remove();
+          } else if (changedFiles && changedFiles.length) {
+            reloadChangedIframes(changedFiles);
           }
         })
         .catch(() => {
@@ -451,6 +501,22 @@
         });
     }
 
+    function reloadChangedIframes(changedFiles) {
+      const screenPrefix = "data/projects/" + projectId + "/screens/";
+      const bust = "?t=" + Date.now();
+      screens.forEach((s, i) => {
+        const fullPath = screenPrefix + s.file;
+        if (changedFiles.some(f => f === fullPath)) {
+          const card = document.getElementById("card-" + i);
+          if (!card) return;
+          const iframe = card.querySelector("iframe");
+          if (iframe) {
+            iframe.src = "data/projects/" + projectId + "/screens/" + s.file + bust;
+          }
+        }
+      });
+    }
+
     function refreshScreens() {
       screens = [];
       clearSelection();
@@ -466,6 +532,22 @@
     }
 
     loadCanvas();
+
+    /* ── Live reload ── */
+    window.__onDataChanged = function(paths) {
+      const prefix = "data/projects/" + projectId + "/";
+      const relevant = paths.filter(p => p.startsWith(prefix));
+      if (!relevant.length && paths.length > 0) return;
+
+      const canvasJsonChanged = relevant.some(p => p === prefix + "canvas.json");
+      const screenFiles = relevant.filter(p => p.startsWith(prefix + "screens/"));
+
+      if (canvasJsonChanged || relevant.length === 0) {
+        loadCanvas(screenFiles);
+      } else if (screenFiles.length) {
+        reloadChangedIframes(screenFiles);
+      }
+    };
 
     function renderCards() {
       const bust = "?t=" + Date.now();

@@ -83,6 +83,7 @@
 
   <script src="scripts/shared.js"></script>
   <script src="scripts/nav.js"></script>
+  <script src="scripts/live-reload.js"></script>
   <script>
     renderNav();
 
@@ -421,6 +422,41 @@
 
     wireMouseGlow();
     loadProjects();
+
+    /* ── Live reload ── */
+    function softReloadProjects() {
+      fetchJSON("data/projects/index.json")
+        .then((data) => {
+          const projects = data.projects || [];
+          if (!projects.length) {
+            allRows = [];
+            renderGrid([], 0);
+            return;
+          }
+          return Promise.all(
+            projects.map((p) =>
+              fetchProjectListDetails(p.id).then((d) => ({
+                ...p,
+                _updatedAt: d.updatedAt,
+                _createdAtResolved: d.createdAt || p.createdAt || null,
+                _screenCount: d.screenCount,
+                _protoCount: d.protoCount,
+              })),
+            ),
+          ).then((rows) => {
+            allRows = rows;
+            renderGrid(allRows, allRows.length);
+          });
+        })
+        .catch(() => {});
+    }
+
+    window.__onDataChanged = function(paths) {
+      const isProjectData = paths.length === 0 || paths.some(p =>
+        p.startsWith("data/projects/")
+      );
+      if (isProjectData) softReloadProjects();
+    };
   </script>
 </body>
 </html>
