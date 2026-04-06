@@ -9,30 +9,10 @@
   <link rel="stylesheet" href="styles/app.css">
   <style>
     .proto-meta {
-      margin-top: 14px;
-      text-align: center;
-      max-width: 720px;
+      width: 100%;
       margin-left: auto;
       margin-right: auto;
-    }
-    .proto-label {
-      color: var(--muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-      line-height: 1.45;
-    }
-    .proto-copy-btn {
-      margin-top: 14px;
-      min-width: 160px;
-    }
-    .proto-meta .btn-primary.proto-copy-btn.is-copied {
-      background: linear-gradient(
-        135deg,
-        rgba(var(--neon-teal-rgb), 0.95),
-        rgba(var(--neon-teal-rgb), 0.82)
-      );
-      border-color: rgba(0, 0, 0, 0.06);
-      color: #fff;
+      flex-shrink: 0;
     }
     .phone-frame--desktop {
       width: 1024px;
@@ -98,18 +78,202 @@
       width: 100% !important;
       height: 100% !important;
     }
+    .proto-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 16px;
+    }
+    .proto-bar__sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.12);
+      flex-shrink: 0;
+      margin: 0 4px;
+    }
+    .proto-bar__btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.88);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 650;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      text-decoration: none;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .proto-bar__btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.24);
+    }
+    .proto-bar__btn svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+    .proto-bar__btn--primary {
+      background: linear-gradient(135deg, rgba(var(--neon-blue-rgb),0.85), rgba(var(--neon-teal-rgb),0.7));
+      border-color: rgba(0,0,0,0.08);
+      color: #fff;
+    }
+    .proto-bar__btn--primary:hover {
+      background: linear-gradient(135deg, rgba(var(--neon-blue-rgb),0.95), rgba(var(--neon-teal-rgb),0.85));
+    }
+    .proto-bar__btn--primary.is-copied {
+      background: linear-gradient(135deg, rgba(var(--neon-teal-rgb),0.95), rgba(var(--neon-teal-rgb),0.82));
+    }
+    .proto-bar__btn--danger {
+      color: rgba(255,120,120,0.9);
+      border-color: rgba(255,120,120,0.18);
+    }
+    .proto-bar__btn--danger:hover {
+      background: rgba(255,100,100,0.12);
+      border-color: rgba(255,120,120,0.35);
+    }
+    .proto-bar__btn[hidden] { display: none !important; }
+    .proto-bar__tested {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px 5px 8px;
+      border-radius: 999px;
+      background: rgba(var(--neon-teal-rgb), 0.14);
+      border: 1px solid rgba(var(--neon-teal-rgb), 0.35);
+      color: var(--neon-teal);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: background 0.15s;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .proto-bar__tested:hover {
+      background: rgba(var(--neon-teal-rgb), 0.22);
+    }
+    .proto-bar__tested svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+    .proto-bar__tested[hidden] { display: none !important; }
+    .proto-bar__cluster-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
   </style>
 </head>
 <body>
   <div class="preview-page">
+    <div class="proto-meta">
+      <div class="proto-bar" role="toolbar" aria-label="Prototype actions">
+        <a
+          id="proto-tested-link"
+          class="proto-bar__tested"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Open usability test results"
+          hidden
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          View results
+        </a>
+        <button type="button" class="proto-bar__btn" id="btn-open-proto-test-modal" title="Paste a link to your test results" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span id="proto-test-btn-label">Add results link</span>
+        </button>
+        <span class="proto-bar__sep"></span>
+        <button type="button" class="proto-bar__btn proto-bar__btn--primary" id="copy-proto-link" title="Copy a shareable link to this prototype">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span>Share prototype</span>
+        </button>
+        <span class="proto-bar__sep"></span>
+        <button
+          type="button"
+          class="proto-bar__btn proto-bar__btn--danger"
+          id="btn-delete-prototype"
+          title="Delete this prototype and its files"
+          hidden
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Delete
+        </button>
+      </div>
+    </div>
     <div class="phone-frame-wrap">
       <div id="proto-container" class="phone-frame">
         <iframe id="proto-frame" class="phone-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
     </div>
-    <div class="proto-meta">
-      <div id="proto-name" class="proto-label"></div>
-      <button type="button" class="btn btn-primary proto-copy-btn" id="copy-proto-link">Copy link</button>
+  </div>
+
+  <div id="proto-test-link-overlay" class="tool-modal-overlay" hidden>
+    <div
+      class="tool-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="proto-test-modal-title"
+    >
+      <div class="tool-modal__header">
+        <h2 id="proto-test-modal-title" class="tool-modal__title">
+          Usability test link
+        </h2>
+        <button
+          type="button"
+          class="tool-modal__close"
+          id="proto-test-modal-close"
+          aria-label="Close"
+        >
+          &times;
+        </button>
+      </div>
+      <div class="tool-form" style="margin-top: 0">
+        <div class="tool-form__row">
+          <label class="tool-form__label" for="proto-external-test-url"
+            >Results URL</label
+          >
+          <input
+            type="text"
+            id="proto-external-test-url"
+            class="tool-form__input"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="https://… (Maze, UserTesting, etc.)"
+          />
+          <p class="tool-form__hint">
+            Saved as <code>externalTestUrl</code> in <code>meta.json</code>.
+            <strong>Tested</strong> appears only for a full <code>http://</code>
+            or <code>https://</code> URL (e.g. Maze or UserTesting).
+          </p>
+        </div>
+        <div class="tool-form__actions">
+          <button type="button" class="btn-tool" id="proto-test-modal-cancel">
+            Cancel
+          </button>
+          <button type="button" class="btn-tool" id="proto-clear-test-link">
+            Remove link
+          </button>
+          <button
+            type="button"
+            class="btn-tool btn-tool--primary"
+            id="proto-save-test-link"
+          >
+            Save
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -139,7 +303,14 @@
         if (copyProtoBtn) {
           copyProtoBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            copyLink(prototypeUrl(projectId, protoId), copyProtoBtn);
+            var url = prototypeUrl(projectId, protoId);
+            navigator.clipboard.writeText(url).then(() => {
+              var label = copyProtoBtn.querySelector("span") || copyProtoBtn.lastChild;
+              var origText = label.textContent;
+              label.textContent = "Copied!";
+              copyProtoBtn.classList.add("is-copied");
+              setTimeout(() => { label.textContent = origText; copyProtoBtn.classList.remove("is-copied"); }, 1500);
+            }).catch(() => { showToast("Could not copy link"); });
           });
         }
       });
@@ -191,29 +362,177 @@
       } catch (e) {}
     });
 
-    fetchJSON(basePath + "meta.json")
-      .then(data => {
-        document.getElementById("proto-name").textContent = data.name + " — " + data.description;
-        document.title = data.name + " — Design Core";
-        var el = document.getElementById("nav-proto");
-        if (el) el.textContent = data.name;
-        var bust =
-          data.updatedAt != null && String(data.updatedAt).trim() !== ""
-            ? String(data.updatedAt).trim()
-            : data.cacheKey != null && String(data.cacheKey).trim() !== ""
-              ? String(data.cacheKey).trim()
-              : "";
-        var src = basePath + "index.html" + (bust !== "" ? "?v=" + encodeURIComponent(bust) : "");
-        if (isToolPage(src)) {
-          showProtoError();
+    function applyMetaLabels(data) {
+      const name = data.name || protoId;
+      document.title = name + " — Design Core";
+      var navProto = document.getElementById("nav-proto");
+      if (navProto) navProto.textContent = name;
+      const rawTest = prototypeExternalTestRaw(data);
+      const testHref = prototypeExternalTestUrl(data);
+      const testedLink = document.getElementById("proto-tested-link");
+      if (testedLink) {
+        if (testHref) {
+          testedLink.href = testHref;
+          testedLink.hidden = false;
         } else {
-          protoFrame.src = src;
+          testedLink.removeAttribute("href");
+          testedLink.hidden = true;
         }
-      })
-      .catch(() => {
-        document.getElementById("proto-name").textContent = protoId;
-        protoFrame.src = basePath + "index.html";
+      }
+      const urlInput = document.getElementById("proto-external-test-url");
+      const testOverlay = document.getElementById("proto-test-link-overlay");
+      if (urlInput && (!testOverlay || testOverlay.hidden)) {
+        urlInput.value = rawTest;
+      }
+      var btnLabel = document.getElementById("proto-test-btn-label");
+      if (btnLabel) {
+        btnLabel.textContent = rawTest ? "Edit results link" : "Add results link";
+      }
+    }
+
+    function applyIframeFromMeta(data) {
+      var bust =
+        data.updatedAt != null && String(data.updatedAt).trim() !== ""
+          ? String(data.updatedAt).trim()
+          : data.cacheKey != null && String(data.cacheKey).trim() !== ""
+            ? String(data.cacheKey).trim()
+            : "";
+      var src = basePath + "index.html" + (bust !== "" ? "?v=" + encodeURIComponent(bust) : "");
+      if (isToolPage(src)) {
+        showProtoError();
+      } else {
+        protoFrame.src = src;
+      }
+    }
+
+    function refreshProtoMetaFromDisk() {
+      return fetchJSON(basePath + "meta.json")
+        .then((data) => {
+          applyMetaLabels(data);
+          applyIframeFromMeta(data);
+          return data;
+        })
+        .catch(() => {
+          const fallback = { name: protoId, description: "" };
+          applyMetaLabels(fallback);
+          var src = basePath + "index.html";
+          if (isToolPage(src)) showProtoError();
+          else protoFrame.src = src;
+          return fallback;
+        });
+    }
+
+    refreshProtoMetaFromDisk();
+
+    if (!isEmbed) {
+      isLocalToolServer().then((on) => {
+        const btnOpen = document.getElementById("btn-open-proto-test-modal");
+        const btnDelete = document.getElementById("btn-delete-prototype");
+        const overlay = document.getElementById("proto-test-link-overlay");
+        const input = document.getElementById("proto-external-test-url");
+        if (btnOpen) btnOpen.hidden = !on;
+        if (btnDelete) btnDelete.hidden = !on;
+        if (btnDelete && on) {
+          btnDelete.addEventListener("click", () => {
+            if (
+              !confirm(
+                "Delete this prototype and all files in its folder?",
+              )
+            )
+              return;
+            postProjectAdmin({
+              action: "delete-prototype",
+              projectId,
+              id: protoId,
+            })
+              .then(() => {
+                showToast("Prototype deleted");
+                window.location.href =
+                  "project.html?id=" + encodeURIComponent(projectId);
+              })
+              .catch((err) =>
+                showToast(err.message || "Could not delete"),
+              );
+          });
+        }
+        if (!on || !overlay || !input) return;
+
+        const metaPutPath =
+          "data/projects/" +
+          projectId +
+          "/prototypes/" +
+          protoId +
+          "/meta.json";
+
+        function closeTestLinkModal() {
+          overlay.hidden = true;
+          fetchJSON(basePath + "meta.json")
+            .catch(() => ({}))
+            .then((m) => {
+              input.value = prototypeExternalTestRaw(m);
+            });
+        }
+
+        function openTestLinkModal() {
+          fetchJSON(basePath + "meta.json")
+            .catch(() => ({}))
+            .then((m) => {
+              input.value = prototypeExternalTestRaw(m);
+              overlay.hidden = false;
+              input.focus();
+            });
+        }
+
+        function persistExternalTestUrl(trimmed) {
+          return fetchJSON(basePath + "meta.json")
+            .catch(() => ({}))
+            .then((existing) => {
+              const next = { ...existing };
+              if (trimmed) next.externalTestUrl = trimmed;
+              else delete next.externalTestUrl;
+              return putDataJson(metaPutPath, next);
+            })
+            .then(() => {
+              overlay.hidden = true;
+              return refreshProtoMetaFromDisk();
+            })
+            .then(() => {
+              if (
+                trimmed &&
+                !prototypeExternalTestUrl({ externalTestUrl: trimmed })
+              ) {
+                showToast(
+                  "Saved. Use a full https://… URL to show Tested on this page.",
+                );
+              } else {
+                showToast("Saved");
+              }
+            })
+            .catch((err) => showToast(err.message || "Could not save"));
+        }
+
+        btnOpen.addEventListener("click", openTestLinkModal);
+        document
+          .getElementById("proto-test-modal-close")
+          .addEventListener("click", closeTestLinkModal);
+        document
+          .getElementById("proto-test-modal-cancel")
+          .addEventListener("click", closeTestLinkModal);
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) closeTestLinkModal();
+        });
+        document
+          .getElementById("proto-save-test-link")
+          .addEventListener("click", () => {
+            persistExternalTestUrl(input.value.trim());
+          });
+        document
+          .getElementById("proto-clear-test-link")
+          .addEventListener("click", () => {
+            persistExternalTestUrl("");
+          });
       });
+    }
 
     fetchJSON("data/projects/" + projectId + "/prototypes/index.json")
       .then(data => {
@@ -242,6 +561,10 @@
       if (relevant && protoFrame.src) {
         protoFrame.src = protoFrame.src.replace(/[?].*$/, "") + "?t=" + Date.now();
       }
+      const metaTouched =
+        paths.length === 0 ||
+        paths.some((p) => p === protoPrefix + "meta.json");
+      if (metaTouched) refreshProtoMetaFromDisk().catch(() => {});
     };
   </script>
 </body>

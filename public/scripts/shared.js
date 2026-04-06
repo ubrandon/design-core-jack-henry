@@ -156,6 +156,43 @@ function fetchJSON(url) {
   });
 }
 
+/** Trimmed raw value from meta (for forms). May be invalid or incomplete. */
+function prototypeExternalTestRaw(meta) {
+  if (!meta || meta.externalTestUrl == null) return "";
+  const raw = meta.externalTestUrl;
+  return (typeof raw === "string" ? raw : String(raw)).trim();
+}
+
+/**
+ * Normalized http(s) href if the string is a plausible external test URL.
+ * Rejects junk (e.g. "true"), non-http schemes, and hostnames without a dot
+ * (except localhost). Used for "Tested" UI, counts, and navigation.
+ */
+function prototypeExternalTestHref(raw) {
+  const t = (raw && String(raw).trim()) || "";
+  if (!t) return "";
+  let u;
+  try {
+    u = new URL(t);
+  } catch {
+    try {
+      u = new URL("https://" + t.replace(/^\/+/, ""));
+    } catch {
+      return "";
+    }
+  }
+  if (u.protocol !== "http:" && u.protocol !== "https:") return "";
+  const host = (u.hostname || "").toLowerCase();
+  if (!host || host.length < 2) return "";
+  if (host !== "localhost" && !host.includes(".")) return "";
+  return u.href;
+}
+
+/** Valid usability-test URL for badge, links, and home counts. */
+function prototypeExternalTestUrl(meta) {
+  return prototypeExternalTestHref(prototypeExternalTestRaw(meta));
+}
+
 /** For home list cards: screen/proto counts and dates from project files. Counts are null if the file failed to load. */
 function fetchProjectListDetails(projectId) {
   const b = "data/projects/" + encodeURIComponent(projectId) + "/";
@@ -165,14 +202,40 @@ function fetchProjectListDetails(projectId) {
       .then((c) => ({ ok: true, count: (c.screens || []).length }))
       .catch(() => ({ ok: false, count: 0 })),
     fetchJSON(b + "prototypes/index.json")
-      .then((d) => ({ ok: true, count: (d.prototypes || []).length }))
-      .catch(() => ({ ok: false, count: 0 })),
-  ]).then(([proj, canvas, protos]) => ({
-    updatedAt: proj.updatedAt || null,
-    createdAt: proj.createdAt || null,
-    screenCount: canvas.ok ? canvas.count : null,
-    protoCount: protos.ok ? protos.count : null,
-  }));
+      .then((d) => {
+        const list = d.prototypes || [];
+        return {
+          ok: true,
+          count: list.length,
+          ids: list.map((p) => p.id).filter(Boolean),
+        };
+      })
+      .catch(() => ({ ok: false, count: 0, ids: [] })),
+  ]).then(([proj, canvas, protoIndex]) => {
+    const base = {
+      updatedAt: proj.updatedAt || null,
+      createdAt: proj.createdAt || null,
+      screenCount: canvas.ok ? canvas.count : null,
+      protoCount: protoIndex.ok ? protoIndex.count : null,
+      testedProtoCount: null,
+    };
+    if (!protoIndex.ok) return base;
+    const ids = protoIndex.ids;
+    if (!ids.length) return { ...base, testedProtoCount: 0 };
+    return Promise.all(
+      ids.map((id) =>
+        fetchJSON(
+          b + "prototypes/" + encodeURIComponent(id) + "/meta.json",
+        ).catch(() => ({})),
+      ),
+    ).then((metas) => {
+      let n = 0;
+      for (const m of metas) {
+        if (prototypeExternalTestUrl(m)) n++;
+      }
+      return { ...base, testedProtoCount: n };
+    });
+  });
 }
 
 function parseDateMs(iso) {

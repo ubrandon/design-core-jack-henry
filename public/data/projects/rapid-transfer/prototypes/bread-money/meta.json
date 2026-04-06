@@ -1,5 +1,6 @@
 {
   "name": "Hub Concept",
   "description": "Bread Financial–style hub concept: Overview, Move money, Messages, and multi-step transfer, send, and pay flows (hash navigation).",
-  "updatedAt": "2026-03-31T12:00:00.000Z"
+  "updatedAt": "2026-03-31T12:00:00.000Z",
+  "externalTestUrl": "https://app.maze.co/report/Money-Movement-Prototype-13/5yuu7mnja5sgq/intro"
 }

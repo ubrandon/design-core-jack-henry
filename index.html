@@ -222,11 +222,14 @@
     function formatStats(row) {
       const sc = row._screenCount;
       const pc = row._protoCount;
+      const tc = row._testedProtoCount;
       const parts = [];
       if (sc === null) parts.push("Screens unavailable");
       else parts.push(sc === 1 ? "1 screen" : `${sc} screens`);
       if (pc === null) parts.push("Prototypes unavailable");
       else parts.push(pc === 1 ? "1 prototype" : `${pc} prototypes`);
+      if (tc !== null)
+        parts.push(tc === 1 ? "1 tested" : `${tc} tested`);
       return parts.join(" · ");
     }
 
@@ -305,7 +308,7 @@
           <a href="${hubHref}" class="project-card">
             <div class="project-card__name">${name}</div>
             <div class="project-card__desc">${desc}</div>
-            <div class="project-card__stats" aria-label="Canvas and prototype counts">${statsLine}</div>
+            <div class="project-card__stats" aria-label="Screens, prototypes, and tested counts">${statsLine}</div>
             ${updatedHtml}
             <div class="project-card__footer">
               <div class="project-card__avatar">${escapeHtml(initials(p.createdBy))}</div>
@@ -368,6 +371,7 @@
                 _createdAtResolved: d.createdAt || p.createdAt || null,
                 _screenCount: d.screenCount,
                 _protoCount: d.protoCount,
+                _testedProtoCount: d.testedProtoCount,
               })),
             ),
           ).then((rows) => {
@@ -441,6 +445,7 @@
                 _createdAtResolved: d.createdAt || p.createdAt || null,
                 _screenCount: d.screenCount,
                 _protoCount: d.protoCount,
+                _testedProtoCount: d.testedProtoCount,
               })),
             ),
           ).then((rows) => {

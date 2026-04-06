@@ -155,8 +155,8 @@
               </button>
             </div>
             <p class="project-section__intro">
-              Click a card to preview in the tool, or open in a new tab. Copy
-              link works great for GitHub Pages.
+              Click a card to preview in the tool. Copy link works great for
+              GitHub Pages.
             </p>
             <div id="prototypes" class="card-grid card-grid--prototypes">
               <div class="empty-state">Loading prototypes…</div>
@@ -446,23 +446,6 @@
       }
 
       el.prototypes.addEventListener("click", (e) => {
-        const delBtn = e.target.closest("button[data-delete-prototype]");
-        if (delBtn) {
-          e.preventDefault();
-          const pid = delBtn.getAttribute("data-delete-prototype");
-          if (
-            !pid ||
-            !confirm("Delete this prototype and all files in its folder?")
-          )
-            return;
-          postProjectAdmin({ action: "delete-prototype", projectId, id: pid })
-            .then(() => {
-              showToast("Prototype deleted");
-              loadProjectHub().catch(() => {});
-            })
-            .catch((err) => showToast(err.message || "Could not delete"));
-          return;
-        }
         const btn = e.target.closest("button[data-copy-proto-url]");
         if (!btn) return;
         e.preventDefault();
@@ -652,7 +635,12 @@
               const deviceMeta = getPrototypeDeviceMeta(p.device);
               const name = escapeHtml(p.name);
               const desc = escapeHtml(p.description || "Interactive prototype");
-              let thumbInner;
+              const testUrl = prototypeExternalTestUrl(meta);
+              const testUrlEsc = escapeHtml(testUrl);
+              const testedBadge = testUrl
+                ? `<span class="tile-card__tested-badge" title="External usability test linked">Tested</span>`
+                : "";
+              let thumbContent;
               if (meta.thumbnail && typeof meta.thumbnail === "string") {
                 const thumbPath = meta.thumbnail
                   .split("/")
@@ -666,25 +654,26 @@
                   encodeURIComponent(p.id) +
                   "/" +
                   thumbPath;
-                thumbInner = `<img src="${escapeHtml(thumbSrc)}" alt="" loading="lazy" />`;
+                thumbContent = `<img src="${escapeHtml(thumbSrc)}" alt="" loading="lazy" />`;
               } else {
                 const initial = escapeHtml(
                   (p.name || "?").trim().slice(0, 1).toUpperCase(),
                 );
-                thumbInner = `<span class="tile-card__thumb-placeholder">${initial}</span>`;
+                thumbContent = `<span class="tile-card__thumb-placeholder">${initial}</span>`;
               }
+              const thumbInner = `<div class="tile-card__thumb">${testedBadge}${thumbContent}</div>`;
               const urlAttr = escapeHtml(url);
               const previewEsc = escapeHtml(previewHref);
               const ariaOpen = escapeHtml(
                 `Open ${p.name || "prototype"} in preview`,
               );
-              const delBtn = localEdit
-                ? `<button type="button" class="btn-tool btn-tool--danger" data-delete-prototype="${escapeHtml(p.id)}">Delete</button>`
+              const testResultsBtn = testUrl
+                ? `<a class="btn-tool btn-tool--primary" href="${testUrlEsc}" target="_blank" rel="noopener noreferrer">Test results</a>`
                 : "";
               return `
             <article class="tile-card tile-card--prototype">
               <a class="tile-card__link-body" href="${previewEsc}" aria-label="${ariaOpen}">
-                <div class="tile-card__thumb">${thumbInner}</div>
+                ${thumbInner}
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span class="tile-card__icon" aria-hidden="true">${deviceMeta.icon}</span>
                   <span class="tile-meta">${escapeHtml(deviceMeta.label)}</span>
@@ -694,8 +683,7 @@
               </a>
               <div class="tile-actions">
                 <button type="button" class="btn-tool" data-copy-proto-url="${urlAttr}">Copy link</button>
-                <a class="btn-tool" href="${previewEsc}" target="_blank" rel="noopener noreferrer">New tab</a>
-                ${delBtn}
+                ${testResultsBtn}
               </div>
             </article>`;
             })
