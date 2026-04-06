@@ -1,13 +1,48 @@
 import { defineConfig, loadEnv } from "vite";
 import { resolve, dirname, sep, relative } from "path";
 import { fileURLToPath } from "url";
-import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync, rmSync, watch as fsWatch } from "fs";
+import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync, rmSync } from "fs";
 import { spawn, execSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const LOCAL_CREDS_PATH = resolve(__dirname, ".app-screens.json");
 const DESIGNER_PATH = resolve(__dirname, ".designer");
 const PUBLIC_DATA_ROOT = resolve(__dirname, "public/data");
+
+/** True if Vite is about to full-reload the browser because a file under public/data changed. */
+function isPublicDataFullReloadPayload(payload) {
+  if (!payload || payload.type !== "full-reload") return false;
+  const norm = (s) => String(s || "").replace(/\\/g, "/");
+  const tb = norm(payload.triggeredBy);
+  if (tb.includes("/public/data/")) return true;
+  const p = norm(payload.path);
+  if (p !== "*" && p !== "") {
+    if (p.includes("/public/data/")) return true;
+    if (p.replace(/^\//, "").startsWith("public/data/")) return true;
+  }
+  return false;
+}
+
+/** Vite 8+ may send HMR through server.ws, server.hot, or environment.hot — patch every channel. */
+function patchHotChannelsPublicDataReloadFilter(server) {
+  const patched = new WeakSet();
+  function wrap(hot) {
+    if (!hot || typeof hot.send !== "function" || patched.has(hot)) return;
+    patched.add(hot);
+    const orig = hot.send.bind(hot);
+    hot.send = (payload) => {
+      if (isPublicDataFullReloadPayload(payload)) return;
+      return orig(payload);
+    };
+  }
+  wrap(server.ws);
+  if (server.hot) wrap(server.hot);
+  if (server.environments) {
+    for (const env of Object.values(server.environments)) {
+      if (env && env.hot) wrap(env.hot);
+    }
+  }
+}
 
 function safePublicDataFilePath(urlPath) {
   const pathOnly = (urlPath || "").split("?")[0];
@@ -703,33 +738,71 @@ function liveDataPlugin() {
 
   return {
     name: "live-data-watcher",
-    handleHotUpdate({ file }) {
-      if (file.includes("/public/")) return [];
+    transformIndexHtml: {
+      order: "pre",
+      handler(_html, ctx) {
+        if (!ctx.server) return;
+        const token = ctx.server.config.webSocketToken;
+        const base = ctx.server.config.base || "/";
+        return [
+          {
+            tag: "script",
+            children: `window.__VITE_WS_TOKEN__=${JSON.stringify(token)};window.__VITE_HMR_BASE__=${JSON.stringify(base)};`,
+            injectTo: "head-prepend",
+          },
+        ];
+      },
     },
     configureServer(server) {
+      if (server.__designCoreLiveDataHook) return;
+      server.__designCoreLiveDataHook = true;
+
+      patchHotChannelsPublicDataReloadFilter(server);
+
       const dataDir = resolve(__dirname, "public/data");
       if (!existsSync(dataDir)) return;
 
-      const watcher = fsWatch(dataDir, { recursive: true });
-      watcher.on("change", (_event, filename) => {
-        if (!filename) return;
-        const relPath = "data/" + String(filename).split(sep).join("/");
-        pending.add(relPath);
+      const publicDir = resolve(__dirname, "public");
+
+      function scheduleEmit() {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
           const paths = Array.from(pending);
           pending.clear();
-          server.ws.send({
-            type: "custom",
-            event: "design-core:data-changed",
-            data: { paths },
-          });
+          if (
+            paths.length &&
+            server.ws &&
+            typeof server.ws.send === "function"
+          ) {
+            server.ws.send({
+              type: "custom",
+              event: "design-core:data-changed",
+              data: { paths },
+            });
+          }
         }, 300);
-      });
+      }
 
-      server.httpServer?.on("close", () => {
-        watcher.close();
-      });
+      /** Use Vite's chokidar instance — Node fs.watch(recursive) misses many saves on macOS. */
+      function onPublicDataFsEvent(filePath) {
+        if (!filePath) return;
+        const absFile = resolve(filePath);
+        if (absFile !== dataDir && !absFile.startsWith(dataDir + sep)) return;
+        let relFromPublic = relative(publicDir, absFile);
+        if (
+          relFromPublic.startsWith(".." + sep) ||
+          relFromPublic === ".." ||
+          relFromPublic.startsWith("../")
+        ) {
+          return;
+        }
+        pending.add(relFromPublic.split(sep).join("/"));
+        scheduleEmit();
+      }
+
+      server.watcher.on("change", onPublicDataFsEvent);
+      server.watcher.on("add", onPublicDataFsEvent);
+      server.watcher.on("unlink", onPublicDataFsEvent);
     },
   };
 }

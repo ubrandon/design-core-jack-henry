@@ -12,12 +12,22 @@
  *   ["data/projects/my-app/screens/home.html",
  *    "data/projects/my-app/canvas.json"]
  *
- * On deployed (non-Vite) sites this script is a no-op — the WebSocket
- * connection simply fails silently.
+ * On deployed (non-Vite) sites this script is a no-op — the token global
+ * won't exist, so the WebSocket connection is never attempted.
  */
 (function () {
+  var token = window.__VITE_WS_TOKEN__;
+  if (!token) return;
+
+  var base = window.__VITE_HMR_BASE__ || "/";
   var protocol = location.protocol === "https:" ? "wss:" : "ws:";
-  var socketUrl = protocol + "//" + location.host + "/";
+  var socketUrl =
+    protocol +
+    "//" +
+    location.host +
+    base +
+    "?token=" +
+    encodeURIComponent(token);
   var ws;
 
   try {

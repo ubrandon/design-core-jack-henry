@@ -164,6 +164,17 @@
 
       const pz = initPanZoom(viewport, stage, { navHeight: 52, restoreState });
 
+      function dsDataPath(p) {
+        return typeof p === "string" && p.replace(/\\/g, "/").startsWith("data/design-system/");
+      }
+
+      /* ── Live reload (register before first load so WS events never miss the handler) ── */
+      window.__onDataChanged = function (paths) {
+        const relevant =
+          paths.length === 0 || paths.some(dsDataPath);
+        if (relevant) loadDesignSystem();
+      };
+
       function savePanZoom() {
         try {
           sessionStorage.setItem(DS_STORAGE_KEY, JSON.stringify({
@@ -179,10 +190,14 @@
       fetch("data/design-system/company.css?t=" + Date.now(), { method: "HEAD" })
         .then(r => {
           if (r.ok) {
-            const link = document.createElement("link");
-            link.rel = "stylesheet";
+            let link = document.getElementById("design-core-company-css");
+            if (!link) {
+              link = document.createElement("link");
+              link.id = "design-core-company-css";
+              link.rel = "stylesheet";
+              document.head.appendChild(link);
+            }
             link.href = "data/design-system/company.css?t=" + Date.now();
-            document.head.appendChild(link);
           }
         })
         .catch(() => {});
@@ -290,6 +305,11 @@
 
         stage.innerHTML = groupHtml.join("");
         pz.applyTransform();
+
+        const companyLink = document.getElementById("design-core-company-css");
+        if (companyLink) {
+          companyLink.href = "data/design-system/company.css?t=" + Date.now();
+        }
       }
 
       function refreshDS() {
@@ -305,14 +325,6 @@
       }
 
       loadDesignSystem();
-
-      /* ── Live reload ── */
-      window.__onDataChanged = function(paths) {
-        const relevant = paths.length === 0 || paths.some(p =>
-          p.startsWith("data/design-system/")
-        );
-        if (relevant) loadDesignSystem();
-      };
     </script>
   </body>
 </html>
