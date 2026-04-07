@@ -1287,6 +1287,11 @@ article.tile-card--prototype {
   text-decoration: none;
 }
 
+/* .btn-tool sets display — must beat that when [hidden], or local-only buttons show on static deploy */
+.btn-tool[hidden] {
+  display: none !important;
+}
+
 .btn-tool:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.24);

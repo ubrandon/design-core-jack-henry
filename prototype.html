@@ -87,10 +87,18 @@
     }
     .proto-bar__sep {
       width: 1px;
-      height: 20px;
+      align-self: center;
+      height: 24px;
       background: rgba(255, 255, 255, 0.12);
       flex-shrink: 0;
       margin: 0 4px;
+    }
+    /* Shared chrome height: “View results” used smaller padding/font than pill buttons */
+    .proto-bar__btn,
+    .proto-bar__tested {
+      box-sizing: border-box;
+      min-height: 36px;
+      justify-content: center;
     }
     .proto-bar__btn {
       display: inline-flex;
@@ -143,12 +151,12 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 12px 5px 8px;
+      padding: 6px 14px;
       border-radius: 999px;
       background: rgba(var(--neon-teal-rgb), 0.14);
       border: 1px solid rgba(var(--neon-teal-rgb), 0.35);
       color: var(--neon-teal);
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       font-weight: 800;
       letter-spacing: 0.04em;
       text-transform: uppercase;
