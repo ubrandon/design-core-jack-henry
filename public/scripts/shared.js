@@ -244,13 +244,26 @@ function parseDateMs(iso) {
   return Number.isNaN(t) ? 0 : t;
 }
 
-function prototypeUrl(projectId, protoId) {
+/**
+ * Share URL for a prototype (embed view). Optional hashFragment mirrors the
+ * prototype document hash (e.g. "#transfer-review") for deep links / Maze.
+ */
+function prototypeUrl(projectId, protoId, hashFragment) {
   const base = shareBaseUrl();
   const q = `prototype.html?project=${encodeURIComponent(projectId)}&proto=${encodeURIComponent(protoId)}&view=embed`;
+  let fragment = "";
+  if (hashFragment != null && hashFragment !== "") {
+    const raw = String(hashFragment).trim();
+    if (raw !== "" && raw !== "#") {
+      const inner = raw.startsWith("#") ? raw.slice(1) : raw;
+      if (inner !== "") fragment = "#" + inner;
+    }
+  }
+  const full = q + fragment;
   try {
-    return new URL(q, base).href;
+    return new URL(full, base).href;
   } catch {
-    return `${base.replace(/\/?$/, "/")}${q}`;
+    return `${base.replace(/\/?$/, "/")}${full}`;
   }
 }
 

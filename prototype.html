@@ -291,6 +291,52 @@
 
     const basePath = "data/projects/" + projectId + "/prototypes/" + protoId + "/";
 
+    function currentPrototypeHashForShare() {
+      try {
+        var ih = protoFrame.contentWindow && protoFrame.contentWindow.location.hash;
+        if (ih && ih !== "#") return ih;
+      } catch (e) {}
+      var ph = window.location.hash;
+      if (ph && ph !== "#") return ph;
+      return "";
+    }
+
+    var _protoHashPollTimer = null;
+
+    function stopProtoHashPoll() {
+      if (_protoHashPollTimer != null) {
+        clearInterval(_protoHashPollTimer);
+        _protoHashPollTimer = null;
+      }
+    }
+
+    function syncParentHashFromIframe() {
+      try {
+        var iw = protoFrame.contentWindow;
+        if (!iw) return;
+        var h = iw.location.hash || "";
+        if ((window.location.hash || "") === h) return;
+        var url = new URL(window.location.href);
+        url.hash = h;
+        history.replaceState(null, "", url.href);
+      } catch (e) {}
+    }
+
+    function onProtoIframeHashChange() {
+      syncParentHashFromIframe();
+    }
+
+    function scheduleProtoHashSyncBurst() {
+      [0, 80, 200, 500, 1200].forEach(function (ms) {
+        setTimeout(syncParentHashFromIframe, ms);
+      });
+    }
+
+    function startProtoHashPoll() {
+      stopProtoHashPoll();
+      _protoHashPollTimer = setInterval(syncParentHashFromIframe, 350);
+    }
+
     if (!isEmbed) {
       loadSiteConfig().then(() => {
         renderNav({
@@ -303,7 +349,7 @@
         if (copyProtoBtn) {
           copyProtoBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            var url = prototypeUrl(projectId, protoId);
+            var url = prototypeUrl(projectId, protoId, currentPrototypeHashForShare());
             navigator.clipboard.writeText(url).then(() => {
               var label = copyProtoBtn.querySelector("span") || copyProtoBtn.lastChild;
               var origText = label.textContent;
@@ -339,6 +385,7 @@
     }
 
     function showProtoError() {
+      stopProtoHashPoll();
       var container = document.getElementById("proto-container");
       container.innerHTML =
         '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:32px;text-align:center;font-family:var(--font-body,system-ui,sans-serif);background:var(--bg-0,#fff);">' +
@@ -358,7 +405,17 @@
         var frameUrl = protoFrame.contentWindow.location.href;
         if (isToolPage(frameUrl)) {
           showProtoError();
+          return;
         }
+      } catch (e) {}
+      try {
+        var iw = protoFrame.contentWindow;
+        if (!iw) return;
+        iw.removeEventListener("hashchange", onProtoIframeHashChange);
+        iw.addEventListener("hashchange", onProtoIframeHashChange);
+        syncParentHashFromIframe();
+        scheduleProtoHashSyncBurst();
+        startProtoHashPoll();
       } catch (e) {}
     });
 
@@ -398,6 +455,8 @@
             ? String(data.cacheKey).trim()
             : "";
       var src = basePath + "index.html" + (bust !== "" ? "?v=" + encodeURIComponent(bust) : "");
+      var ph = window.location.hash;
+      if (ph && ph !== "#") src += ph;
       if (isToolPage(src)) {
         showProtoError();
       } else {
@@ -416,6 +475,8 @@
           const fallback = { name: protoId, description: "" };
           applyMetaLabels(fallback);
           var src = basePath + "index.html";
+          var ph0 = window.location.hash;
+          if (ph0 && ph0 !== "#") src += ph0;
           if (isToolPage(src)) showProtoError();
           else protoFrame.src = src;
           return fallback;
@@ -559,7 +620,19 @@
       const protoPrefix = "data/projects/" + projectId + "/prototypes/" + protoId + "/";
       const relevant = paths.length === 0 || paths.some(p => p.startsWith(protoPrefix));
       if (relevant && protoFrame.src) {
-        protoFrame.src = protoFrame.src.replace(/[?].*$/, "") + "?t=" + Date.now();
+        var hashPart = "";
+        try {
+          var parsed = new URL(protoFrame.src, window.location.href);
+          if (parsed.hash && parsed.hash !== "#") hashPart = parsed.hash;
+        } catch (e) {}
+        if (!hashPart) {
+          try {
+            var ch = protoFrame.contentWindow && protoFrame.contentWindow.location.hash;
+            if (ch && ch !== "#") hashPart = ch;
+          } catch (err) {}
+        }
+        var withoutQueryHash = protoFrame.src.split("#")[0].replace(/[?#].*$/, "");
+        protoFrame.src = withoutQueryHash + "?t=" + Date.now() + hashPart;
       }
       const metaTouched =
         paths.length === 0 ||
