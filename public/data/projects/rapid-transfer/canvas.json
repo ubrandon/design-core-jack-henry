@@ -2,8 +2,8 @@
   "screens": [
     {
       "file": "welcome.html",
-      "x": -9,
-      "y": -13,
+      "x": -352,
+      "y": -384,
       "width": 390
     }
   ]

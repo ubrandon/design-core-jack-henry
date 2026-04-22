@@ -293,7 +293,11 @@
     const protoId = getParam("proto");
     const isEmbed = getParam("view") === "embed";
 
-    if (!projectId || !protoId) window.location.href = "index.html";
+    if (!projectId || !protoId) {
+      // Surface a hint before bouncing so the user knows why they landed back on Home.
+      try { sessionStorage.setItem("design-core-redirect-hint", "Prototype link was missing a project or prototype id."); } catch (_) {}
+      window.location.href = "index.html";
+    }
 
     if (isEmbed) document.body.classList.add("is-embed");
 

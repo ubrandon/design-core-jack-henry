@@ -777,9 +777,20 @@
       clearSelection();
       renderCards();
       saveManifest();
-      for (var i = 0; i < filesToDelete.length; i++) {
-        fetch("data/captures/" + filesToDelete[i], { method: "DELETE" }).catch(function() {});
-      }
+      var deleteFailures = 0;
+      Promise.all(filesToDelete.map(function(f) {
+        return fetch("data/captures/" + encodeURI(f), { method: "DELETE" })
+          .then(function(r) { if (!r.ok) deleteFailures++; })
+          .catch(function() { deleteFailures++; });
+      })).then(function() {
+        if (deleteFailures > 0) {
+          showToast(
+            deleteFailures === 1
+              ? "1 capture file could not be deleted on disk"
+              : deleteFailures + " capture files could not be deleted on disk",
+          );
+        }
+      });
     }
 
     function saveManifest() {
@@ -1221,7 +1232,7 @@
         }
 
         html += '<div class="cap-section-header" style="left:' + minX + 'px;top:' + (minY - HEADER_HEIGHT) + 'px;">' +
-          groupLabel(gName) + '</div>';
+          escapeHtml(groupLabel(gName)) + '</div>';
       }
 
       for (var i = 0; i < captures.length; i++) {
@@ -1231,15 +1242,19 @@
         var collapseH = Math.round(ch * 1.1);
         var displayName = c.name.replace(/-/g, " ");
         displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+        var displayNameEsc = escapeHtml(displayName);
+        var pathEsc = escapeHtml(c.path || "");
+        // encodeURI keeps the path structure but escapes spaces / special chars.
+        var fileUrl = encodeURI(c.file || "");
 
         html +=
           '<div class="cap-card' + (selected.has(i) ? ' is-selected' : '') + '" id="cap-card-' + i + '" style="left:' + c.x + 'px;top:' + c.y + 'px;width:' + cw + 'px;">' +
             '<div class="cap-card-header">' +
-              '<div class="cap-card-name">' + displayName + '</div>' +
-              '<div class="cap-card-path">' + (c.path || "") + '</div>' +
+              '<div class="cap-card-name">' + displayNameEsc + '</div>' +
+              '<div class="cap-card-path">' + pathEsc + '</div>' +
             '</div>' +
             '<div class="cap-card-image-wrap is-collapsed" data-cap-height="' + collapseH + '" style="max-height:' + collapseH + 'px;">' +
-              '<img src="data/captures/' + c.file + bust + '" alt="' + displayName + '" loading="lazy">' +
+              '<img src="data/captures/' + fileUrl + bust + '" alt="' + displayNameEsc + '" loading="lazy">' +
             '</div>' +
             '<button class="cap-card-expand" onclick="toggleExpand(this)"><span>Expand</span></button>' +
           '</div>';
@@ -1426,7 +1441,14 @@
                 currentEvent = line.slice(7);
               } else if (line.startsWith("data: ")) {
                 var data;
-                try { data = JSON.parse(line.slice(6)); } catch { continue; }
+                try {
+                  data = JSON.parse(line.slice(6));
+                } catch (err) {
+                  // Surface malformed SSE payloads so a capture doesn't silently stall.
+                  console.warn("Capture SSE parse error", err, line);
+                  if (handlers.error) handlers.error({ message: "Capture stream received malformed data; see console." });
+                  continue;
+                }
                 if (handlers[currentEvent]) handlers[currentEvent](data);
               }
             }

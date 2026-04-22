@@ -344,7 +344,10 @@
     <script src="scripts/live-reload.js"></script>
     <script>
       const projectId = getParam("id");
-      if (!projectId) window.location.href = "index.html";
+      if (!projectId) {
+        try { sessionStorage.setItem("design-core-redirect-hint", "Project link was missing an id."); } catch (_) {}
+        window.location.href = "index.html";
+      }
 
       const MAX_CANVAS_PREVIEWS = 8;
 
@@ -562,7 +565,8 @@
           .map((s) => {
             const src = `data/projects/${encodeURIComponent(projectId)}/screens/${encodeURIComponent(s.file)}${bust}`;
             const label = escapeHtml(screenLabel(s.file));
-            return `<a class="canvas-preview-card" href="${escapeHtml(canvasHref)}" title="Open canvas — ${label}">
+            const cardHref = canvasHref + (canvasHref.includes("?") ? "&" : "?") + "screen=" + encodeURIComponent(s.file);
+            return `<a class="canvas-preview-card" href="${escapeHtml(cardHref)}" title="Open canvas — ${label}">
           <div class="canvas-preview-card__frame canvas-preview-card__frame--lazy">
             <iframe data-src="${escapeHtml(src)}" title="${label}" tabindex="-1"></iframe>
           </div>

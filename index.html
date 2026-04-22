@@ -427,6 +427,14 @@
     wireMouseGlow();
     loadProjects();
 
+    try {
+      const hint = sessionStorage.getItem("design-core-redirect-hint");
+      if (hint) {
+        sessionStorage.removeItem("design-core-redirect-hint");
+        showToast(hint);
+      }
+    } catch (_) {}
+
     /* ── Live reload ── */
     function softReloadProjects() {
       fetchJSON("data/projects/index.json")

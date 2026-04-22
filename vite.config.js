@@ -208,10 +208,15 @@ function localDevDataApiPlugin() {
   function readProjectsIndex() {
     const p = resolve(PUBLIC_DATA_ROOT, "projects/index.json");
     if (!existsSync(p)) return { projects: [] };
+    const raw = readFileSync(p, "utf8");
     try {
-      return JSON.parse(readFileSync(p, "utf8"));
-    } catch {
-      return { projects: [] };
+      return JSON.parse(raw);
+    } catch (e) {
+      // Refuse to silently overwrite a corrupt index — that wipes every other
+      // project entry on the next write. Surface the error so the user can fix it.
+      throw new Error(
+        "projects/index.json is not valid JSON: " + e.message,
+      );
     }
   }
 
@@ -320,32 +325,40 @@ function localDevDataApiPlugin() {
               const createdBy = typeof body.createdBy === "string" ? body.createdBy.trim() : "";
               const description = typeof body.description === "string" ? body.description.trim() : "";
               const createdAt = new Date().toISOString();
-              mkdirSync(resolve(base, "screens"), { recursive: true });
-              mkdirSync(resolve(base, "prototypes"), { recursive: true });
-              const projectJson = {
-                name,
-                description,
-                ...(createdBy ? { createdBy } : {}),
-                createdAt,
-                updatedAt: createdAt,
-              };
-              writeFileSync(resolve(base, "project.json"), JSON.stringify(projectJson, null, 2) + "\n", "utf8");
-              writeFileSync(resolve(base, "canvas.json"), JSON.stringify({ screens: [] }, null, 2) + "\n", "utf8");
-              writeFileSync(
-                resolve(base, "prototypes/index.json"),
-                JSON.stringify({ prototypes: [] }, null, 2) + "\n",
-                "utf8",
-              );
+              // Read the current index before any disk writes so a parse failure
+              // surfaces as a clean error instead of leaving an orphan folder.
               const idx = readProjectsIndex();
-              const projects = Array.isArray(idx.projects) ? idx.projects : [];
-              projects.push({
-                id,
-                name,
-                description,
-                ...(createdBy ? { createdBy } : {}),
-                createdAt,
-              });
-              writeProjectsIndex({ projects });
+              try {
+                mkdirSync(resolve(base, "screens"), { recursive: true });
+                mkdirSync(resolve(base, "prototypes"), { recursive: true });
+                const projectJson = {
+                  name,
+                  description,
+                  ...(createdBy ? { createdBy } : {}),
+                  createdAt,
+                  updatedAt: createdAt,
+                };
+                writeFileSync(resolve(base, "project.json"), JSON.stringify(projectJson, null, 2) + "\n", "utf8");
+                writeFileSync(resolve(base, "canvas.json"), JSON.stringify({ screens: [] }, null, 2) + "\n", "utf8");
+                writeFileSync(
+                  resolve(base, "prototypes/index.json"),
+                  JSON.stringify({ prototypes: [] }, null, 2) + "\n",
+                  "utf8",
+                );
+                const projects = Array.isArray(idx.projects) ? idx.projects : [];
+                projects.push({
+                  id,
+                  name,
+                  description,
+                  ...(createdBy ? { createdBy } : {}),
+                  createdAt,
+                });
+                writeProjectsIndex({ projects });
+              } catch (writeErr) {
+                // Roll back the folder so the id isn't stuck behind a 409 on retry.
+                try { rmSync(base, { recursive: true, force: true }); } catch {}
+                throw writeErr;
+              }
               res.writeHead(200);
               res.end(JSON.stringify({ ok: true, id }));
               return;
@@ -364,9 +377,11 @@ function localDevDataApiPlugin() {
                 res.end(JSON.stringify({ error: "Forbidden" }));
                 return;
               }
-              if (existsSync(base)) rmSync(base, { recursive: true, force: true });
+              // Read and compute the new index BEFORE removing the folder so a
+              // corrupt-index throw doesn't leave the project half-deleted.
               const idx = readProjectsIndex();
               const projects = (Array.isArray(idx.projects) ? idx.projects : []).filter((p) => p.id !== id);
+              if (existsSync(base)) rmSync(base, { recursive: true, force: true });
               writeProjectsIndex({ projects });
               res.writeHead(200);
               res.end('{"ok":true}');
@@ -407,25 +422,36 @@ function localDevDataApiPlugin() {
               let device = typeof body.device === "string" ? body.device.toLowerCase() : "mobile";
               if (!["mobile", "desktop", "online", "responsive"].includes(device)) device = "mobile";
               const description = typeof body.description === "string" ? body.description.trim() : "";
-              mkdirSync(protoRoot, { recursive: true });
-              writeFileSync(
-                resolve(protoRoot, "meta.json"),
-                JSON.stringify({ name, description }, null, 2) + "\n",
-                "utf8",
-              );
-              writeFileSync(resolve(protoRoot, "index.html"), protoStubHtml, "utf8");
+              // Read the prototypes index BEFORE any disk writes. A corrupt file
+              // here used to be silently reset to []; instead fail fast so the
+              // user can fix the file without losing other prototype entries.
               const indexPath = resolve(projectDir, "prototypes/index.json");
               let list = { prototypes: [] };
               if (existsSync(indexPath)) {
+                const rawList = readFileSync(indexPath, "utf8");
                 try {
-                  list = JSON.parse(readFileSync(indexPath, "utf8"));
-                } catch {
-                  list = { prototypes: [] };
+                  list = JSON.parse(rawList);
+                } catch (e) {
+                  throw new Error(
+                    "prototypes/index.json is not valid JSON for project " + projectId + ": " + e.message,
+                  );
                 }
               }
-              const protos = Array.isArray(list.prototypes) ? list.prototypes : [];
-              protos.push({ id, name, description, device });
-              writeFileSync(indexPath, JSON.stringify({ prototypes: protos }, null, 2) + "\n", "utf8");
+              try {
+                mkdirSync(protoRoot, { recursive: true });
+                writeFileSync(
+                  resolve(protoRoot, "meta.json"),
+                  JSON.stringify({ name, description }, null, 2) + "\n",
+                  "utf8",
+                );
+                writeFileSync(resolve(protoRoot, "index.html"), protoStubHtml, "utf8");
+                const protos = Array.isArray(list.prototypes) ? list.prototypes : [];
+                protos.push({ id, name, description, device });
+                writeFileSync(indexPath, JSON.stringify({ prototypes: protos }, null, 2) + "\n", "utf8");
+              } catch (writeErr) {
+                try { rmSync(protoRoot, { recursive: true, force: true }); } catch {}
+                throw writeErr;
+              }
               res.writeHead(200);
               res.end(JSON.stringify({ ok: true, id }));
               return;
@@ -445,16 +471,25 @@ function localDevDataApiPlugin() {
                 res.end(JSON.stringify({ error: "Forbidden" }));
                 return;
               }
-              if (existsSync(protoRoot)) rmSync(protoRoot, { recursive: true, force: true });
+              // Read and filter the index BEFORE deleting. If the file is corrupt
+              // we want a clear error, not a silent wipe of the other prototypes.
               const indexPath = resolve(PUBLIC_DATA_ROOT, "projects", projectId, "prototypes/index.json");
+              let nextProtos = null;
               if (existsSync(indexPath)) {
+                const rawList = readFileSync(indexPath, "utf8");
+                let list;
                 try {
-                  const list = JSON.parse(readFileSync(indexPath, "utf8"));
-                  const protos = (Array.isArray(list.prototypes) ? list.prototypes : []).filter((p) => p.id !== id);
-                  writeFileSync(indexPath, JSON.stringify({ prototypes: protos }, null, 2) + "\n", "utf8");
-                } catch {
-                  writeFileSync(indexPath, JSON.stringify({ prototypes: [] }, null, 2) + "\n", "utf8");
+                  list = JSON.parse(rawList);
+                } catch (e) {
+                  throw new Error(
+                    "prototypes/index.json is not valid JSON for project " + projectId + ": " + e.message,
+                  );
                 }
+                nextProtos = (Array.isArray(list.prototypes) ? list.prototypes : []).filter((p) => p.id !== id);
+              }
+              if (existsSync(protoRoot)) rmSync(protoRoot, { recursive: true, force: true });
+              if (nextProtos !== null) {
+                writeFileSync(indexPath, JSON.stringify({ prototypes: nextProtos }, null, 2) + "\n", "utf8");
               }
               res.writeHead(200);
               res.end('{"ok":true}');

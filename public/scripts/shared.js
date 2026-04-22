@@ -320,7 +320,10 @@ function slugifyDataId(str, fallback) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 48);
+    .slice(0, 48)
+    // slice() can cut mid-group and leave a trailing hyphen; the server's
+    // SLUG_RE then rejects it with a confusing "must be lowercase letters…"
+    .replace(/-+$/g, "");
   return s || fb;
 }
 

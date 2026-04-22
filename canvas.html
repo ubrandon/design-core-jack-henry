@@ -26,7 +26,7 @@
       <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
       <span id="zoom-label" class="zoom-level">100%</span>
       <button class="zoom-btn" onclick="pz.zoomBy(0.04)" title="Zoom in">+</button>
-      <button class="zoom-btn" type="button" onclick="pz.resetView()" title="Reset view" aria-label="Reset view">
+      <button class="zoom-btn" type="button" onclick="centerOnContent()" title="Center on screens" aria-label="Center on screens">
         <!-- @phosphor-icons/core assets/regular/crosshair.svg (MIT) -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232,120h-8.34A96.14,96.14,0,0,0,136,32.34V24a8,8,0,0,0-16,0v8.34A96.14,96.14,0,0,0,32.34,120H24a8,8,0,0,0,0,16h8.34A96.14,96.14,0,0,0,120,223.66V232a8,8,0,0,0,16,0v-8.34A96.14,96.14,0,0,0,223.66,136H232a8,8,0,0,0,0-16Zm-96,87.6V200a8,8,0,0,0-16,0v7.6A80.15,80.15,0,0,1,48.4,136H56a8,8,0,0,0,0-16H48.4A80.15,80.15,0,0,1,120,48.4V56a8,8,0,0,0,16,0V48.4A80.15,80.15,0,0,1,207.6,120H200a8,8,0,0,0,0,16h7.6A80.15,80.15,0,0,1,136,207.6ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Z"/></svg>
       </button>
@@ -48,17 +48,27 @@
     }
 
     const projectId = getParam("project");
-    if (!projectId) window.location.href = "index.html";
+    if (!projectId) {
+      try { sessionStorage.setItem("design-core-redirect-hint", "Canvas link was missing a project id."); } catch (_) {}
+      window.location.href = "index.html";
+    }
+
+    // Paths reported by the live-reload watcher are raw (not URL-encoded), so
+    // compare against those with raw strings. Only URL-build sites use this.
+    const encProjectId = encodeURIComponent(projectId);
+    function screenUrl(file, suffix) {
+      return "data/projects/" + encProjectId + "/screens/" + encodeURIComponent(file) + (suffix || "");
+    }
 
     renderNav({
       breadcrumbs: [
-        { label: projectId, href: "project.html?id=" + projectId, id: "project-link" },
+        { label: projectId, href: "project.html?id=" + encProjectId, id: "project-link" },
         { label: "Canvas" },
       ],
       fixed: true,
     });
 
-    fetchJSON("data/projects/" + projectId + "/project.json")
+    fetchJSON("data/projects/" + encProjectId + "/project.json")
       .then(data => {
         var link = document.getElementById("project-link");
         if (link) link.textContent = data.name;
@@ -150,14 +160,25 @@
       clearSelection();
       renderCards();
       saveCanvas();
-      filesToDelete.forEach(f => {
-        fetch("data/projects/" + projectId + "/screens/" + f, { method: "DELETE" }).catch(() => {});
+      let failures = 0;
+      Promise.all(filesToDelete.map(f =>
+        fetch(screenUrl(f), { method: "DELETE" })
+          .then(r => { if (!r.ok) failures++; })
+          .catch(() => { failures++; }),
+      )).then(() => {
+        if (failures > 0) {
+          showToast(
+            failures === 1
+              ? "1 screen file could not be deleted on disk"
+              : `${failures} screen files could not be deleted on disk`,
+          );
+        }
       });
     }
 
     function saveCanvas() {
       const payload = { screens: screens.map(s => ({ file: s.file, x: Math.round(s.x), y: Math.round(s.y), width: s.width })) };
-      fetch("data/projects/" + projectId + "/canvas.json", {
+      fetch("data/projects/" + encProjectId + "/canvas.json", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload, null, 2),
@@ -209,7 +230,14 @@
         }
         const btn = document.createElement("button");
         btn.className = "canvas-context-menu-item" + (item.danger ? " canvas-context-menu-item--danger" : "");
-        btn.innerHTML = (item.icon || "") + item.label;
+        // Icons are trusted constants in this file; the label may contain a
+        // file name, so append it as text to avoid HTML injection.
+        if (item.icon) {
+          const iconWrap = document.createElement("span");
+          iconWrap.innerHTML = item.icon;
+          btn.appendChild(iconWrap);
+        }
+        btn.appendChild(document.createTextNode(item.label));
         btn.addEventListener("click", () => { closeContextMenu(); item.action(); });
         ctxMenu.appendChild(btn);
       }
@@ -459,8 +487,73 @@
       });
     }
 
+    function getScreensBounds() {
+      if (!screens.length) return null;
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (let i = 0; i < screens.length; i++) {
+        const s = screens[i];
+        const w = s.width || 390;
+        const card = document.getElementById("card-" + i);
+        // Cards start with tiny iframes until the inner doc loads, so fall back
+        // to a mobile-ish aspect ratio so initial centering frames the content.
+        const measured = card ? card.offsetHeight : 0;
+        const h = measured > 200 ? measured : Math.round(w * 2.16);
+        if (s.x < minX) minX = s.x;
+        if (s.y < minY) minY = s.y;
+        if (s.x + w > maxX) maxX = s.x + w;
+        if (s.y + h > maxY) maxY = s.y + h;
+      }
+      return { minX, minY, maxX, maxY };
+    }
+
+    /** Frame a bounds rect inside the viewport and apply the pan/zoom. */
+    function frameBounds(b, margin) {
+      const rect = viewport.getBoundingClientRect();
+      const m = margin == null ? 60 : margin;
+      const contentW = Math.max(1, b.maxX - b.minX);
+      const contentH = Math.max(1, b.maxY - b.minY);
+      const zX = (rect.width - m * 2) / contentW;
+      const zY = (rect.height - m * 2) / contentH;
+      let z = Math.min(zX, zY, 1);
+      z = Math.max(0.2, Math.min(2, z));
+      const cx = (b.minX + b.maxX) / 2;
+      const cy = (b.minY + b.maxY) / 2;
+      pz.zoom = z;
+      pz.panX = -cx * z;
+      pz.panY = -cy * z;
+      pz.applyTransform();
+    }
+
+    /** Frame all screens inside the viewport. The stage's (0,0) is CSS-positioned
+     *  at the viewport center, so panning by (-cx*z, -cy*z) lands the content
+     *  center at the viewport center. */
+    function centerOnContent() {
+      const b = getScreensBounds();
+      if (!b) {
+        pz.zoom = 1;
+        pz.panX = 0;
+        pz.panY = 0;
+        pz.applyTransform();
+        return;
+      }
+      frameBounds(b, 60);
+    }
+
+    /** Frame a single screen by its file name. Returns true if the screen was found. */
+    function centerOnScreen(file) {
+      const idx = screens.findIndex((s) => s.file === file);
+      if (idx < 0) return false;
+      const s = screens[idx];
+      const w = s.width || 390;
+      const card = document.getElementById("card-" + idx);
+      const measured = card ? card.offsetHeight : 0;
+      const h = measured > 200 ? measured : Math.round(w * 2.16);
+      frameBounds({ minX: s.x, minY: s.y, maxX: s.x + w, maxY: s.y + h }, 40);
+      return true;
+    }
+
     function loadCanvas(changedFiles) {
-      return fetch("data/projects/" + projectId + "/canvas.json?t=" + Date.now())
+      return fetch("data/projects/" + encProjectId + "/canvas.json?t=" + Date.now())
         .then(r => {
           if (!r.ok) throw new Error(r.status);
           return r.json();
@@ -502,16 +595,17 @@
     }
 
     function reloadChangedIframes(changedFiles) {
-      const screenPrefix = "data/projects/" + projectId + "/screens/";
+      // Watcher paths are raw (unencoded) — compare raw, then build encoded URL.
+      const rawPrefix = "data/projects/" + projectId + "/screens/";
       const bust = "?t=" + Date.now();
       screens.forEach((s, i) => {
-        const fullPath = screenPrefix + s.file;
+        const fullPath = rawPrefix + s.file;
         if (changedFiles.some(f => f === fullPath)) {
           const card = document.getElementById("card-" + i);
           if (!card) return;
           const iframe = card.querySelector("iframe");
           if (iframe) {
-            iframe.src = "data/projects/" + projectId + "/screens/" + s.file + bust;
+            iframe.src = screenUrl(s.file, bust);
           }
         }
       });
@@ -531,7 +625,37 @@
       });
     }
 
-    loadCanvas();
+    // An explicit ?screen=<file> deep-link always wins over the saved session
+    // view — otherwise clicking a preview card could land on a different spot.
+    const deepLinkScreen = getParam("screen");
+
+    loadCanvas().then(() => {
+      const applyInitialFrame = () => {
+        if (deepLinkScreen && centerOnScreen(deepLinkScreen)) return;
+        if (restoreState) return;
+        centerOnContent();
+      };
+
+      // First frame uses a fallback height; refine once the iframes report their
+      // real size so the initial zoom isn't skewed by the 150px default.
+      applyInitialFrame();
+      const iframes = stage.querySelectorAll("iframe");
+      let pending = iframes.length;
+      if (!pending) return;
+      let finalized = false;
+      const finalize = () => {
+        if (finalized) return;
+        finalized = true;
+        applyInitialFrame();
+      };
+      iframes.forEach((f) => {
+        f.addEventListener("load", () => {
+          if (--pending <= 0) finalize();
+        }, { once: true });
+      });
+      // Guard in case some iframes never fire load (e.g. cached errors).
+      setTimeout(finalize, 1500);
+    });
 
     /* ── Live reload ── */
     window.__onDataChanged = function(paths) {
@@ -555,7 +679,7 @@
         <div class="canvas-card${selected.has(i) ? " is-selected" : ""}" id="card-${i}"
              style="left:${s.x}px; top:${s.y}px; width:${s.width}px;">
           <div class="canvas-card-body">
-            <iframe src="data/projects/${projectId}/screens/${s.file}${bust}"
+            <iframe src="${screenUrl(s.file, bust)}"
                     width="${s.width}"
                     sandbox="allow-same-origin"
                     onload="autoSizeIframe(this)"
