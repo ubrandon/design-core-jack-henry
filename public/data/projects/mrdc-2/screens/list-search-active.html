@@ -1,0 +1,76 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .nav { background: #0d1b3d; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .nav-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+  .nav-icon-btn { background: none; border: none; color: #fff; padding: 4px; cursor: pointer; display: flex; }
+  .search-row { display: flex; gap: 10px; padding: 12px 16px; background: var(--bg-0); align-items: center; }
+  .search-field { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--bg-0); border-radius: var(--radius-md); padding: 10px 12px; font-size: 0.92rem; color: rgba(0,0,0,0.9); border: 2px solid var(--jh-blue); }
+  .search-field input { flex: 1; border: none; outline: none; font-size: 0.92rem; font-family: inherit; color: rgba(0,0,0,0.9); background: transparent; }
+  .clear-x { width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.18); display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+  .cancel { background: none; border: none; font-size: 0.92rem; font-weight: 600; color: var(--jh-blue); padding: 0 4px; cursor: pointer; }
+  .filter-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .list-header { display: flex; justify-content: space-between; padding: 10px 16px; background: rgba(0,0,0,0.03); font-size: 0.7rem; font-weight: 700; color: rgba(0,0,0,0.55); letter-spacing: 0.06em; }
+  .recipient { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .r-icon { width: 22px; flex-shrink: 0; display: flex; }
+  .r-name-row { display: flex; align-items: baseline; gap: 6px; }
+  .r-name { font-size: 0.92rem; font-weight: 600; color: rgba(0,0,0,0.88); }
+  .r-name mark { background: rgba(var(--jh-blue-rgb), 0.18); color: var(--jh-blue); padding: 0 2px; border-radius: 3px; }
+  .r-acc { font-size: 0.78rem; color: rgba(0,0,0,0.5); }
+  .r-id { font-size: 0.78rem; color: rgba(0,0,0,0.55); margin-top: 2px; }
+  .r-amt-col { text-align: right; flex-shrink: 0; }
+  .r-amt { font-size: 0.92rem; font-weight: 700; color: #16a34a; }
+  .r-type { font-size: 0.78rem; color: rgba(0,0,0,0.5); margin-top: 2px; }
+  .recipient-body { flex: 1; }
+  .recent-label { font-size: 0.7rem; font-weight: 700; color: rgba(0,0,0,0.5); letter-spacing: 0.08em; padding: 14px 16px 6px; }
+  .recent-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer; }
+  .recent-icon { color: rgba(0,0,0,0.4); display: flex; }
+  .recent-name { font-size: 0.92rem; color: rgba(0,0,0,0.85); flex: 1; }
+  .recent-arrow { color: rgba(0,0,0,0.3); display: flex; }
+</style>
+<div style="background: var(--bg-1); min-height: 100%;">
+  <div class="nav">
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <span class="nav-title">Search recipients</span>
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg></button>
+  </div>
+  <div class="search-row">
+    <div class="search-field">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input value="Mich" autofocus>
+      <span class="clear-x"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></span>
+    </div>
+    <button class="cancel">Cancel</button>
+  </div>
+
+  <div class="recent-label">RECENT SEARCHES</div>
+  <div class="recent-row">
+    <span class="recent-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+    <span class="recent-name">Michael Rivera</span>
+    <span class="recent-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+  </div>
+  <div class="recent-row">
+    <span class="recent-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+    <span class="recent-name">Michael Burke</span>
+    <span class="recent-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+  </div>
+
+  <div class="list-header"><span>MATCHES</span><span>AMOUNT</span></div>
+  <div class="recipient">
+    <span class="r-icon" style="color: #16a34a;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>
+    <div class="recipient-body"><div class="r-name-row"><span class="r-name"><mark>Mich</mark>ael Rivera</span><span class="r-acc">x1234</span></div><div class="r-id">123456789</div></div>
+    <div class="r-amt-col"><div class="r-amt">+$25.00</div><div class="r-type">Credit</div></div>
+  </div>
+  <div class="recipient">
+    <span class="r-icon" style="color: #16a34a;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>
+    <div class="recipient-body"><div class="r-name-row"><span class="r-name"><mark>Mich</mark>ael Burke</span><span class="r-acc">x9988</span></div><div class="r-id">987654321</div></div>
+    <div class="r-amt-col"><div class="r-amt">+$25.00</div><div class="r-type">Credit</div></div>
+  </div>
+  <div class="recipient">
+    <span class="r-icon" style="color: #16a34a;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>
+    <div class="recipient-body"><div class="r-name-row"><span class="r-name">Bryan <mark>Mich</mark>aelson</span><span class="r-acc">x4422</span></div><div class="r-id">555000111</div></div>
+    <div class="r-amt-col"><div class="r-amt">+$25.00</div><div class="r-type">Credit</div></div>
+  </div>
+</div>

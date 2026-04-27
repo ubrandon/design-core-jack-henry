@@ -1,0 +1,40 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .nav { background: #0d1b3d; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .nav-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+  .nav-icon-btn { background: none; border: none; color: #fff; padding: 4px; cursor: pointer; display: flex; }
+  .search-row { display: flex; gap: 10px; padding: 12px 16px; background: var(--bg-0); }
+  .search-field { flex: 1; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.04); border-radius: var(--radius-md); padding: 10px 12px; font-size: 0.9rem; color: rgba(0,0,0,0.4); }
+  .filter-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; flex-shrink: 0; opacity: 0.4; }
+  .empty-wrap { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 60px 32px 32px; }
+  .empty-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; color: rgba(0,0,0,0.4); margin-bottom: 16px; }
+  .empty-title { font-size: 1.1rem; font-weight: 700; color: rgba(0,0,0,0.9); margin-bottom: 6px; }
+  .empty-desc { font-size: 0.9rem; color: rgba(0,0,0,0.55); line-height: 1.5; margin-bottom: 20px; max-width: 280px; }
+  .empty-actions { width: 100%; max-width: 280px; }
+  .empty-actions button { padding: 12px; font-size: 0.92rem; font-weight: 700; border-radius: var(--radius-md); cursor: pointer; width: 100%; }
+</style>
+<div style="background: var(--bg-1); min-height: 100%;">
+  <div class="nav">
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <span class="nav-title">Search recipients</span>
+    <button class="nav-icon-btn" style="opacity: 0.4;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg></button>
+  </div>
+  <div class="search-row">
+    <div class="search-field"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Recipient name</div>
+    <div class="filter-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg></div>
+  </div>
+
+  <div class="empty-wrap">
+    <div class="empty-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2M17 11h6M20 8v6"/></svg>
+    </div>
+    <div class="empty-title">No recipients yet</div>
+    <div class="empty-desc">Recipients you add will appear here, ready to use in your next ACH batch.</div>
+    <div class="empty-actions">
+      <button class="jh-btn-primary">Add a recipient</button>
+    </div>
+  </div>
+</div>

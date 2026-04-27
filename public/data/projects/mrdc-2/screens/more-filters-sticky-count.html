@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .nav { background: #0d1b3d; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .nav-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+  .nav-icon-btn { background: none; border: none; color: #fff; padding: 4px; cursor: pointer; display: flex; }
+  .scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--bg-0); border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
+  .sheet-handle { width: 40px; height: 4px; border-radius: 2px; background: rgba(0,0,0,0.18); margin: 8px auto 14px; }
+  .sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 16px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .sheet-title-wrap { display: flex; align-items: baseline; gap: 8px; }
+  .sheet-title { font-size: 1.1rem; font-weight: 700; color: rgba(0,0,0,0.9); }
+  .badge { display: inline-flex; min-width: 20px; height: 20px; padding: 0 7px; border-radius: 10px; background: var(--jh-blue); color: #fff; font-size: 0.72rem; font-weight: 700; align-items: center; justify-content: center; }
+  .clear-link { background: none; border: none; font-size: 0.78rem; font-weight: 700; color: var(--jh-blue); letter-spacing: 0.04em; cursor: pointer; }
+  .body { padding: 16px 0 96px; }
+  .field { margin: 0 20px 12px; }
+  .field-input { width: 100%; padding: 13px 14px; border: 1px solid rgba(0,0,0,0.12); border-radius: var(--radius-md); font-size: 0.92rem; color: rgba(0,0,0,0.55); background: var(--bg-0); box-sizing: border-box; font-family: inherit; }
+  .field-input.has-value { color: rgba(0,0,0,0.9); font-weight: 600; border-color: rgba(var(--jh-blue-rgb), 0.4); }
+  .check-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; }
+  .check-label { font-size: 0.92rem; font-weight: 500; color: rgba(0,0,0,0.85); }
+  .check-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid rgba(0,0,0,0.2); }
+  .check-box.is-checked { background: var(--jh-blue); border-color: var(--jh-blue); display: flex; align-items: center; justify-content: center; color: #fff; }
+  .sticky-foot { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px 16px; background: var(--bg-0); border-top: 1px solid rgba(0,0,0,0.06); display: flex; gap: 10px; }
+  .sticky-foot button { flex: 1; padding: 14px; }
+</style>
+<div style="position: relative; background: var(--bg-1); min-height: 100%; overflow: hidden;">
+  <div class="nav">
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <span class="nav-title">Search recipients</span>
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg></button>
+  </div>
+  <div style="height: 80px;"></div>
+
+  <div class="scrim"></div>
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <div class="sheet-title-wrap">
+        <span class="sheet-title">More filters</span>
+        <span class="badge">3</span>
+      </div>
+      <button class="clear-link">CLEAR ALL</button>
+    </div>
+    <div class="body">
+      <div class="field"><input class="field-input has-value" value="123456"></div>
+      <div class="field"><input class="field-input" placeholder="Batch name"></div>
+      <div class="field"><input class="field-input has-value" value="$25.00"></div>
+      <div class="check-row"><span class="check-label">Prenote</span><div class="check-box"></div></div>
+      <div class="check-row"><span class="check-label">Held</span><div class="check-box is-checked"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-11"/></svg></div></div>
+    </div>
+
+    <div class="sticky-foot">
+      <button class="jh-btn-outline">Reset</button>
+      <button class="jh-btn-primary">Show 12 results</button>
+    </div>
+  </div>
+</div>

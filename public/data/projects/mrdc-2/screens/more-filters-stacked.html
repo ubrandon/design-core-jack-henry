@@ -1,0 +1,88 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .nav { background: #0d1b3d; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .nav-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+  .nav-icon-btn { background: none; border: none; color: #fff; padding: 4px; cursor: pointer; display: flex; }
+  .search-row { display: flex; gap: 10px; padding: 12px 16px; background: var(--bg-0); }
+  .search-field { flex: 1; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.04); border-radius: var(--radius-md); padding: 10px 12px; font-size: 0.9rem; color: rgba(0,0,0,0.5); }
+  .filter-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
+  .filter-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: #dc2626; border: 2px solid var(--bg-0); }
+  .list-header { display: flex; justify-content: space-between; padding: 10px 16px; background: rgba(0,0,0,0.03); font-size: 0.7rem; font-weight: 700; color: rgba(0,0,0,0.55); letter-spacing: 0.06em; }
+  .recipient { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .r-icon { width: 22px; flex-shrink: 0; display: flex; }
+  .r-name-row { display: flex; align-items: baseline; gap: 6px; }
+  .r-name { font-size: 0.92rem; font-weight: 600; color: rgba(0,0,0,0.88); }
+  .r-acc { font-size: 0.78rem; color: rgba(0,0,0,0.5); }
+  .r-id { font-size: 0.78rem; color: rgba(0,0,0,0.55); margin-top: 2px; }
+  .r-amt-col { text-align: right; flex-shrink: 0; }
+  .r-amt { font-size: 0.92rem; font-weight: 700; color: #16a34a; }
+  .r-amt.neutral { color: rgba(0,0,0,0.85); }
+  .r-type { font-size: 0.78rem; color: rgba(0,0,0,0.5); margin-top: 2px; }
+  .recipient-body { flex: 1; }
+  .scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--bg-0); border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: 8px 0 16px; }
+  .sheet-handle { width: 40px; height: 4px; border-radius: 2px; background: rgba(0,0,0,0.18); margin: 6px auto 14px; }
+  .sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 14px; }
+  .sheet-title { font-size: 1.1rem; font-weight: 700; color: rgba(0,0,0,0.9); }
+  .clear-link { background: none; border: none; font-size: 0.78rem; font-weight: 700; color: var(--jh-blue); letter-spacing: 0.04em; cursor: pointer; }
+  .field { margin: 0 20px 12px; }
+  .field-input { width: 100%; padding: 14px 14px; border: 1px solid rgba(0,0,0,0.12); border-radius: var(--radius-md); font-size: 0.92rem; color: rgba(0,0,0,0.55); background: var(--bg-0); box-sizing: border-box; font-family: inherit; }
+  .field-input.has-value { color: rgba(0,0,0,0.9); font-weight: 600; }
+  .check-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
+  .check-label { font-size: 0.95rem; font-weight: 500; color: rgba(0,0,0,0.85); }
+  .check-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid rgba(0,0,0,0.2); }
+  .check-box.is-checked { background: var(--jh-blue); border-color: var(--jh-blue); display: flex; align-items: center; justify-content: center; color: #fff; }
+  .apply { margin: 16px 20px 0; }
+  .apply button { width: 100%; padding: 14px; }
+</style>
+<div style="position: relative; background: var(--bg-1); min-height: 100%; overflow: hidden;">
+  <div class="nav">
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <span class="nav-title">Search recipients</span>
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg></button>
+  </div>
+  <div class="search-row">
+    <div class="search-field">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      Recipient name
+    </div>
+    <div class="filter-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+      <span class="filter-dot"></span>
+    </div>
+  </div>
+  <div class="list-header"><span>RECIPIENT / ID#</span><span>AMOUNT</span></div>
+  <div class="recipient">
+    <span class="r-icon" style="color: #16a34a;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>
+    <div class="recipient-body"><div class="r-name-row"><span class="r-name">Michael Rivera</span><span class="r-acc">x1234</span></div><div class="r-id">123456789</div></div>
+    <div class="r-amt-col"><div class="r-amt">+$25.00</div><div class="r-type">Credit</div></div>
+  </div>
+  <div class="recipient">
+    <span class="r-icon" style="color: #16a34a;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>
+    <div class="recipient-body"><div class="r-name-row"><span class="r-name">Elizabeth Lopez</span><span class="r-acc">x1234</span></div><div class="r-id">123456789</div></div>
+    <div class="r-amt-col"><div class="r-amt">+$25.00</div><div class="r-type">Credit</div></div>
+  </div>
+  <div class="recipient">
+    <span class="r-icon" style="color: #16a34a;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>
+    <div class="recipient-body"><div class="r-name-row"><span class="r-name">John Edward Carder</span><span class="r-acc">x1234</span></div><div class="r-id">123456789</div></div>
+    <div class="r-amt-col"><div class="r-amt">+$25.00</div><div class="r-type">Credit</div></div>
+  </div>
+
+  <div class="scrim"></div>
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title">More filters</span>
+      <button class="clear-link">CLEAR ALL</button>
+    </div>
+    <div class="field"><input class="field-input" placeholder="ID number"></div>
+    <div class="field"><input class="field-input" placeholder="Batch name"></div>
+    <div class="field"><input class="field-input" placeholder="$ Amount"></div>
+    <div class="check-row"><span class="check-label">Prenote</span><div class="check-box"></div></div>
+    <div class="check-row"><span class="check-label">Held</span><div class="check-box"></div></div>
+    <div class="apply"><button class="jh-btn-primary">Apply</button></div>
+  </div>
+</div>

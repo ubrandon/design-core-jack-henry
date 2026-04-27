@@ -1,0 +1,46 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .nav { background: #0d1b3d; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .nav-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+  .nav-icon-btn { background: none; border: none; color: #fff; padding: 4px; cursor: pointer; display: flex; }
+  .search-row { display: flex; gap: 10px; padding: 12px 16px; background: var(--bg-0); }
+  .search-field { flex: 1; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.04); border-radius: var(--radius-md); padding: 10px 12px; font-size: 0.9rem; color: rgba(0,0,0,0.5); }
+  .filter-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .err-banner { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: rgba(220, 38, 38, 0.08); border-bottom: 1px solid rgba(220, 38, 38, 0.18); }
+  .err-icon { color: #dc2626; flex-shrink: 0; display: flex; padding-top: 2px; }
+  .err-body { flex: 1; }
+  .err-title { font-size: 0.92rem; font-weight: 700; color: #991b1b; }
+  .err-desc { font-size: 0.82rem; color: rgba(127, 29, 29, 0.8); margin-top: 2px; }
+  .err-retry { background: none; border: none; color: #dc2626; font-weight: 700; font-size: 0.82rem; padding: 4px 0; cursor: pointer; margin-top: 6px; }
+  .empty-wrap { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 60px 32px 32px; }
+  .empty-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(220, 38, 38, 0.1); display: flex; align-items: center; justify-content: center; color: #dc2626; margin-bottom: 16px; }
+  .empty-title { font-size: 1.1rem; font-weight: 700; color: rgba(0,0,0,0.9); margin-bottom: 6px; }
+  .empty-desc { font-size: 0.9rem; color: rgba(0,0,0,0.55); line-height: 1.5; margin-bottom: 20px; max-width: 280px; }
+  .empty-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 280px; }
+  .empty-actions button { padding: 12px; font-size: 0.92rem; font-weight: 700; border-radius: var(--radius-md); cursor: pointer; }
+</style>
+<div style="background: var(--bg-1); min-height: 100%;">
+  <div class="nav">
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <span class="nav-title">Search recipients</span>
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg></button>
+  </div>
+  <div class="search-row">
+    <div class="search-field"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Recipient name</div>
+    <div class="filter-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg></div>
+  </div>
+
+  <div class="empty-wrap">
+    <div class="empty-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6l3-3h12l3 3M3 6h18M3 6v14a1 1 0 001 1h16a1 1 0 001-1V6"/><path d="M9 10l6 6M15 10l-6 6"/></svg>
+    </div>
+    <div class="empty-title">Couldn't load recipients</div>
+    <div class="empty-desc">We had trouble reaching the server. Check your connection and try again.</div>
+    <div class="empty-actions">
+      <button class="jh-btn-primary">Try again</button>
+    </div>
+  </div>
+</div>

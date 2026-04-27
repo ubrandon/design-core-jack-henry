@@ -1,0 +1,94 @@
+{
+  "screens": [
+    {
+      "file": "more-filters-stacked.html",
+      "x": 0,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "more-filters-grouped.html",
+      "x": 430,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "more-filters-segmented.html",
+      "x": 860,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "more-filters-tabs.html",
+      "x": 1290,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "more-filters-progressive.html",
+      "x": 1720,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "more-filters-progressive-expanded.html",
+      "x": 2150,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "more-filters-chips.html",
+      "x": 2580,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "more-filters-sticky-count.html",
+      "x": 3010,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "sort-anchored.html",
+      "x": 0,
+      "y": 1152,
+      "width": 390
+    },
+    {
+      "file": "list-applied-chips.html",
+      "x": 480,
+      "y": 1152,
+      "width": 390
+    },
+    {
+      "file": "list-search-active.html",
+      "x": 896,
+      "y": 1152,
+      "width": 390
+    },
+    {
+      "file": "state-loading.html",
+      "x": 0,
+      "y": 2240,
+      "width": 390
+    },
+    {
+      "file": "state-no-results.html",
+      "x": 416,
+      "y": 2240,
+      "width": 390
+    },
+    {
+      "file": "state-no-recipients.html",
+      "x": 864,
+      "y": 2272,
+      "width": 390
+    },
+    {
+      "file": "state-error.html",
+      "x": 1280,
+      "y": 2240,
+      "width": 390
+    }
+  ]
+}

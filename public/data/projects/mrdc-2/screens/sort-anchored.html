@@ -1,0 +1,68 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .nav { background: #0d1b3d; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 12px; position: relative; }
+  .nav-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+  .nav-icon-btn { background: none; border: none; color: #fff; padding: 4px; cursor: pointer; display: flex; }
+  .search-row { display: flex; gap: 10px; padding: 12px 16px; background: var(--bg-0); }
+  .search-field { flex: 1; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.04); border-radius: var(--radius-md); padding: 10px 12px; font-size: 0.9rem; color: rgba(0,0,0,0.5); }
+  .filter-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .list-header { display: flex; justify-content: space-between; padding: 10px 16px; background: rgba(0,0,0,0.03); font-size: 0.7rem; font-weight: 700; color: rgba(0,0,0,0.55); letter-spacing: 0.06em; }
+  .recipient { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .r-icon { width: 22px; flex-shrink: 0; display: flex; }
+  .r-name-row { display: flex; align-items: baseline; gap: 6px; }
+  .r-name { font-size: 0.92rem; font-weight: 600; color: rgba(0,0,0,0.88); }
+  .r-acc { font-size: 0.78rem; color: rgba(0,0,0,0.5); }
+  .r-id { font-size: 0.78rem; color: rgba(0,0,0,0.55); margin-top: 2px; }
+  .r-amt-col { text-align: right; flex-shrink: 0; }
+  .r-amt { font-size: 0.92rem; font-weight: 700; color: #16a34a; }
+  .r-type { font-size: 0.78rem; color: rgba(0,0,0,0.5); margin-top: 2px; }
+  .recipient-body { flex: 1; }
+  .scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.18); }
+  .sort-pop { position: absolute; top: 50px; right: 12px; background: var(--bg-0); border-radius: var(--radius-md); box-shadow: 0 12px 32px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08); min-width: 200px; padding: 6px 0; }
+  .sort-label { font-size: 0.78rem; font-weight: 600; color: rgba(0,0,0,0.55); padding: 10px 16px 6px; }
+  .sort-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; font-size: 0.95rem; color: rgba(0,0,0,0.85); cursor: pointer; }
+  .sort-item .check { width: 18px; color: var(--jh-blue); display: flex; }
+  .sort-divider { height: 1px; background: rgba(0,0,0,0.06); margin: 6px 0; }
+</style>
+<div style="position: relative; background: var(--bg-1); min-height: 100%; overflow: hidden;">
+  <div class="nav">
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <span class="nav-title">Search recipients</span>
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg></button>
+  </div>
+  <div class="search-row">
+    <div class="search-field"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Recipient name</div>
+    <div class="filter-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg></div>
+  </div>
+  <div class="list-header"><span>RECIPIENT / ID#</span><span>AMOUNT</span></div>
+  <div class="recipient">
+    <span class="r-icon" style="color: #16a34a;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>
+    <div class="recipient-body"><div class="r-name-row"><span class="r-name">Michael Rivera</span><span class="r-acc">x1234</span></div><div class="r-id">123456789</div></div>
+    <div class="r-amt-col"><div class="r-amt">+$25.00</div><div class="r-type">Credit</div></div>
+  </div>
+  <div class="recipient">
+    <span class="r-icon" style="color: #16a34a;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>
+    <div class="recipient-body"><div class="r-name-row"><span class="r-name">Elizabeth Lopez</span><span class="r-acc">x1234</span></div><div class="r-id">123456789</div></div>
+    <div class="r-amt-col"><div class="r-amt">+$25.00</div><div class="r-type">Credit</div></div>
+  </div>
+  <div class="recipient">
+    <span class="r-icon" style="color: #16a34a;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>
+    <div class="recipient-body"><div class="r-name-row"><span class="r-name">John Edward Carder</span><span class="r-acc">x1234</span></div><div class="r-id">123456789</div></div>
+    <div class="r-amt-col"><div class="r-amt">+$25.00</div><div class="r-type">Credit</div></div>
+  </div>
+
+  <div class="scrim"></div>
+  <div class="sort-pop">
+    <div class="sort-label">Sort by</div>
+    <div class="sort-item"><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>Recipient</div>
+    <div class="sort-item"><span class="check"></span>Batch name</div>
+    <div class="sort-item"><span class="check"></span>Account</div>
+    <div class="sort-item"><span class="check"></span>Amount</div>
+    <div class="sort-divider"></div>
+    <div class="sort-item"><span class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5 9-11"/></svg></span>A–Z</div>
+    <div class="sort-item"><span class="check"></span>Z–A</div>
+  </div>
+</div>

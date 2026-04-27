@@ -1,0 +1,39 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .nav { background: #0d1b3d; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .nav-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+  .nav-icon-btn { background: none; border: none; color: #fff; padding: 4px; cursor: pointer; display: flex; }
+  .search-row { display: flex; gap: 10px; padding: 12px 16px; background: var(--bg-0); }
+  .search-field { flex: 1; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.04); border-radius: var(--radius-md); padding: 10px 12px; font-size: 0.9rem; color: rgba(0,0,0,0.5); }
+  .filter-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .list-header { display: flex; justify-content: space-between; padding: 10px 16px; background: rgba(0,0,0,0.03); font-size: 0.7rem; font-weight: 700; color: rgba(0,0,0,0.55); letter-spacing: 0.06em; }
+  .skel-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .skel { background: linear-gradient(90deg, rgba(0,0,0,0.06), rgba(0,0,0,0.10), rgba(0,0,0,0.06)); background-size: 200% 100%; border-radius: 6px; animation: shimmer 1.4s infinite; }
+  .skel-circle { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; }
+  .skel-stack { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .skel-line-1 { height: 12px; width: 60%; }
+  .skel-line-2 { height: 10px; width: 40%; }
+  .skel-amt { width: 70px; height: 12px; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+</style>
+<div style="background: var(--bg-1); min-height: 100%;">
+  <div class="nav">
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <span class="nav-title">Search recipients</span>
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg></button>
+  </div>
+  <div class="search-row">
+    <div class="search-field"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Recipient name</div>
+    <div class="filter-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg></div>
+  </div>
+  <div class="list-header"><span>RECIPIENT / ID#</span><span>AMOUNT</span></div>
+  <div class="skel-row"><div class="skel skel-circle"></div><div class="skel-stack"><div class="skel skel-line-1"></div><div class="skel skel-line-2"></div></div><div class="skel skel-amt"></div></div>
+  <div class="skel-row"><div class="skel skel-circle"></div><div class="skel-stack"><div class="skel skel-line-1" style="width: 70%;"></div><div class="skel skel-line-2"></div></div><div class="skel skel-amt"></div></div>
+  <div class="skel-row"><div class="skel skel-circle"></div><div class="skel-stack"><div class="skel skel-line-1" style="width: 50%;"></div><div class="skel skel-line-2" style="width: 35%;"></div></div><div class="skel skel-amt"></div></div>
+  <div class="skel-row"><div class="skel skel-circle"></div><div class="skel-stack"><div class="skel skel-line-1" style="width: 65%;"></div><div class="skel skel-line-2"></div></div><div class="skel skel-amt"></div></div>
+  <div class="skel-row"><div class="skel skel-circle"></div><div class="skel-stack"><div class="skel skel-line-1" style="width: 45%;"></div><div class="skel skel-line-2" style="width: 30%;"></div></div><div class="skel skel-amt"></div></div>
+  <div class="skel-row"><div class="skel skel-circle"></div><div class="skel-stack"><div class="skel skel-line-1" style="width: 75%;"></div><div class="skel skel-line-2"></div></div><div class="skel skel-amt"></div></div>
+</div>

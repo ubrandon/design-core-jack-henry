@@ -1,0 +1,64 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .nav { background: #0d1b3d; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .nav-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+  .nav-icon-btn { background: none; border: none; color: #fff; padding: 4px; cursor: pointer; display: flex; }
+  .scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--bg-0); border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: 8px 0 16px; }
+  .sheet-handle { width: 40px; height: 4px; border-radius: 2px; background: rgba(0,0,0,0.18); margin: 6px auto 14px; }
+  .sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 16px; }
+  .sheet-title { font-size: 1.1rem; font-weight: 700; color: rgba(0,0,0,0.9); }
+  .clear-link { background: none; border: none; font-size: 0.78rem; font-weight: 700; color: var(--jh-blue); letter-spacing: 0.04em; cursor: pointer; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px 12px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(0,0,0,0.12); background: var(--bg-0); font-size: 0.82rem; font-weight: 600; color: rgba(0,0,0,0.75); }
+  .chip.is-active { background: rgba(var(--jh-blue-rgb), 0.1); border-color: rgba(var(--jh-blue-rgb), 0.4); color: var(--jh-blue); }
+  .chip.is-set { background: var(--jh-blue); border-color: var(--jh-blue); color: #fff; }
+  .panel { background: var(--bg-1); margin: 4px 20px 12px; border-radius: var(--radius-md); padding: 14px; }
+  .panel-title { font-size: 0.78rem; font-weight: 700; color: rgba(0,0,0,0.55); letter-spacing: 0.06em; margin-bottom: 8px; }
+  .field-input { width: 100%; padding: 12px 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: var(--radius-md); font-size: 0.92rem; color: rgba(0,0,0,0.85); background: var(--bg-0); box-sizing: border-box; font-family: inherit; }
+  .toggles { display: flex; gap: 8px; }
+  .toggle { flex: 1; padding: 10px; border: 1px solid rgba(0,0,0,0.12); border-radius: var(--radius-md); text-align: center; font-size: 0.85rem; font-weight: 600; color: rgba(0,0,0,0.7); background: var(--bg-0); }
+  .toggle.is-on { background: var(--jh-blue); color: #fff; border-color: var(--jh-blue); }
+  .apply { margin: 16px 20px 0; display: flex; gap: 10px; }
+  .apply button { flex: 1; padding: 14px; }
+  .helper { font-size: 0.78rem; color: rgba(0,0,0,0.5); padding: 0 20px 12px; }
+</style>
+<div style="position: relative; background: var(--bg-1); min-height: 100%; overflow: hidden;">
+  <div class="nav">
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <span class="nav-title">Search recipients</span>
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg></button>
+  </div>
+  <div style="height: 100px;"></div>
+
+  <div class="scrim"></div>
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title">More filters</span>
+      <button class="clear-link">CLEAR ALL</button>
+    </div>
+    <div class="helper">Tap a chip to set its value.</div>
+
+    <div class="chips">
+      <span class="chip is-set">ID# · 123456 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></span>
+      <span class="chip is-active">Amount</span>
+      <span class="chip">Batch name</span>
+      <span class="chip">Prenote</span>
+      <span class="chip">Held</span>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">AMOUNT</div>
+      <input class="field-input" placeholder="$ Amount">
+    </div>
+
+    <div class="apply">
+      <button class="jh-btn-outline">Cancel</button>
+      <button class="jh-btn-primary">Apply (1)</button>
+    </div>
+  </div>
+</div>

@@ -697,7 +697,15 @@
     function autoSizeIframe(iframe) {
       try {
         const doc = iframe.contentDocument || iframe.contentWindow.document;
-        iframe.style.height = doc.documentElement.scrollHeight + "px";
+        let max = doc.documentElement.scrollHeight;
+        const scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop || 0;
+        const all = doc.body.getElementsByTagName("*");
+        for (let i = 0; i < all.length; i++) {
+          const r = all[i].getBoundingClientRect();
+          const bottom = r.bottom + scrollTop;
+          if (bottom > max) max = bottom;
+        }
+        iframe.style.height = Math.ceil(max) + "px";
       } catch (e) {}
     }
   </script>

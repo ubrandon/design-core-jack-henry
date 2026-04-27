@@ -1,0 +1,52 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .nav { background: #0d1b3d; color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .nav-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+  .nav-icon-btn { background: none; border: none; color: #fff; padding: 4px; cursor: pointer; display: flex; }
+  .search-row { display: flex; gap: 10px; padding: 12px 16px; background: var(--bg-0); }
+  .search-field { flex: 1; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.04); border-radius: var(--radius-md); padding: 10px 12px; font-size: 0.9rem; color: rgba(0,0,0,0.85); font-weight: 600; }
+  .filter-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
+  .filter-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: #dc2626; border: 2px solid var(--bg-0); }
+  .applied-bar { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; background: var(--bg-0); border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .applied-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 12px; border-radius: 999px; background: rgba(var(--jh-blue-rgb), 0.1); color: var(--jh-blue); font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+  .applied-chip .x { width: 18px; height: 18px; border-radius: 50%; background: rgba(var(--jh-blue-rgb), 0.2); display: flex; align-items: center; justify-content: center; }
+  .empty-wrap { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 60px 32px 32px; }
+  .empty-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(var(--jh-blue-rgb), 0.08); display: flex; align-items: center; justify-content: center; color: var(--jh-blue); margin-bottom: 16px; }
+  .empty-title { font-size: 1.1rem; font-weight: 700; color: rgba(0,0,0,0.9); margin-bottom: 6px; }
+  .empty-desc { font-size: 0.9rem; color: rgba(0,0,0,0.55); line-height: 1.5; margin-bottom: 20px; max-width: 280px; }
+  .empty-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 280px; }
+  .empty-actions button { padding: 12px; font-size: 0.92rem; font-weight: 700; border-radius: var(--radius-md); cursor: pointer; }
+</style>
+<div style="background: var(--bg-1); min-height: 100%;">
+  <div class="nav">
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <span class="nav-title">Search recipients</span>
+    <button class="nav-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg></button>
+  </div>
+  <div class="search-row">
+    <div class="search-field"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Garcia</div>
+    <div class="filter-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+      <span class="filter-dot"></span>
+    </div>
+  </div>
+  <div class="applied-bar">
+    <span class="applied-chip">ID# 999000 <span class="x"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></span></span>
+    <span class="applied-chip">Held <span class="x"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></span></span>
+  </div>
+
+  <div class="empty-wrap">
+    <div class="empty-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6"/></svg>
+    </div>
+    <div class="empty-title">No recipients match</div>
+    <div class="empty-desc">No recipients match "Garcia" with these filters. Try removing a filter or clearing your search.</div>
+    <div class="empty-actions">
+      <button class="jh-btn-primary">Clear all filters</button>
+      <button class="jh-btn-outline">Adjust filters</button>
+    </div>
+  </div>
+</div>
