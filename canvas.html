@@ -20,7 +20,6 @@
   </div>
 
   <div class="zoom-controls">
-    <button class="zoom-btn zoom-btn--tidy" onclick="tidyLayout()" title="Tidy layout">Tidy</button>
     <button class="zoom-btn zoom-btn--tidy" onclick="refreshScreens()" title="Reload screens to see edits">Refresh</button>
     <div class="zoom-controls__zoom-group">
       <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
@@ -253,7 +252,6 @@
     }
 
     const ICON_SELECT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>';
-    const ICON_TIDY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>';
     const ICON_DELETE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
 
     viewport.addEventListener("contextmenu", (e) => {
@@ -270,16 +268,12 @@
         showContextMenu(e.clientX, e.clientY, [
           { label: "Select All", icon: ICON_SELECT, action: () => setSelected(screens.map((_, i) => i)) },
           { sep: true },
-          { label: "Tidy Layout", icon: ICON_TIDY, action: tidyLayout },
-          { sep: true },
           { label: "Delete " + label, icon: ICON_DELETE, danger: true, action: deleteSelected },
         ]);
       } else {
         clearSelection();
         showContextMenu(e.clientX, e.clientY, [
           { label: "Select All", icon: ICON_SELECT, action: () => setSelected(screens.map((_, i) => i)) },
-          { sep: true },
-          { label: "Tidy Layout", icon: ICON_TIDY, action: tidyLayout },
         ]);
       }
     });
@@ -471,21 +465,6 @@
     });
 
     /* ── Canvas data ── */
-
-    function tidyLayout() {
-      let x = 0;
-      screens.forEach((s, i) => {
-        const card = document.getElementById("card-" + i);
-        const w = s.width || 390;
-        s.x = snapToGrid(x);
-        s.y = snapToGrid(0);
-        if (card) {
-          card.style.left = s.x + "px";
-          card.style.top = s.y + "px";
-        }
-        x += w + CARD_GAP;
-      });
-    }
 
     function getScreensBounds() {
       if (!screens.length) return null;

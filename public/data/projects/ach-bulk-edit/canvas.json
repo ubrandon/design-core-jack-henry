@@ -1,0 +1,16 @@
+{
+  "screens": [
+    {
+      "file": "bulk-initiate-start.html",
+      "x": 0,
+      "y": 0,
+      "width": 1280
+    },
+    {
+      "file": "bulk-initiate-none-selected.html",
+      "x": 1340,
+      "y": 0,
+      "width": 1280
+    }
+  ]
+}

@@ -634,7 +634,6 @@
 
   <div class="zoom-controls">
     <button class="zoom-btn zoom-btn--tidy" onclick="openCaptureModal()" title="New capture">New Capture</button>
-    <button class="zoom-btn zoom-btn--tidy" onclick="tidyLayout()" title="Tidy layout">Tidy</button>
     <button class="zoom-btn zoom-btn--tidy" onclick="refreshCaptures()" title="Reload captures">Refresh</button>
     <div class="zoom-controls__zoom-group">
       <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
@@ -873,7 +872,6 @@
     }
 
     var ICON_SELECT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>';
-    var ICON_TIDY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>';
     var ICON_DELETE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
 
     viewport.addEventListener("contextmenu", function(e) {
@@ -890,16 +888,12 @@
         showContextMenu(e.clientX, e.clientY, [
           { label: "Select All", icon: ICON_SELECT, action: function() { var a = []; for (var i = 0; i < captures.length; i++) a.push(i); setSelected(a); } },
           { sep: true },
-          { label: "Tidy Layout", icon: ICON_TIDY, action: tidyLayout },
-          { sep: true },
           { label: "Delete " + cLabel, icon: ICON_DELETE, danger: true, action: deleteSelected },
         ]);
       } else {
         clearSelection();
         showContextMenu(e.clientX, e.clientY, [
           { label: "Select All", icon: ICON_SELECT, action: function() { var a = []; for (var i = 0; i < captures.length; i++) a.push(i); setSelected(a); } },
-          { sep: true },
-          { label: "Tidy Layout", icon: ICON_TIDY, action: tidyLayout },
         ]);
       }
     });
@@ -1111,8 +1105,7 @@
       return key.replace(/-/g, " ").replace(/\b\w/g, function(c) { return c.toUpperCase(); });
     }
 
-    /* ── Tidy layout (grouped) ── */
-    function tidyLayout() {
+    function applyDefaultLayout() {
       var info = buildGroups();
       var cursorY = 0;
       for (var gi = 0; gi < info.order.length; gi++) {
@@ -1202,7 +1195,7 @@
           });
 
           if (!stored) {
-            tidyLayout();
+            applyDefaultLayout();
           } else {
             renderCards();
           }
