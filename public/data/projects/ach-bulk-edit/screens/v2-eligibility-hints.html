@@ -1,0 +1,235 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #f4f5f7; font-family: var(--font-body); }
+  .screen { width: 1280px; background: #f4f5f7; display: flex; flex-direction: column; min-height: 760px; }
+  .layout { display: flex; flex: 1; min-height: 0; }
+  .sidebar-col { padding: 16px; width: 240px; flex-shrink: 0; }
+  .sidebar-col .jh-sidebar { border: none; box-shadow: none; padding: 14px 12px; height: 100%; display: flex; flex-direction: column; }
+  .sidebar-col .jh-sidebar-profile { margin-top: auto; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 12px; display: flex; align-items: center; gap: 10px; }
+  .sidebar-col .jh-sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,#fbbf24,#f59e0b); flex-shrink: 0; }
+  .sidebar-col .jh-sidebar-profile-name { font-size: 0.85rem; font-weight: 600; color: rgba(0,0,0,0.8); flex: 1; }
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .hero { background: linear-gradient(180deg,#1e3a5f 0%, #2c4a72 100%); color: #fff; padding: 22px 32px 100px; position: relative; }
+  .hero h1 { position: relative; margin: 0; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; }
+  .concept-tag { position: absolute; top: 22px; right: 32px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; padding: 6px 10px; border-radius: 999px; text-transform: uppercase; }
+  .panels { padding: 0 24px; margin-top: -70px; display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; position: relative; z-index: 1; }
+  .panel { background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
+
+  .selection-bar { display: flex; align-items: center; padding: 12px 20px; gap: 10px; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 0.85rem; flex-wrap: wrap; }
+  .sel-count { font-weight: 700; color: rgba(0,0,0,0.85); }
+  .sel-count .muted { color: rgba(0,0,0,0.45); font-weight: 600; margin-left: 4px; }
+  .sel-action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1px solid transparent; }
+  .sel-action-btn svg { width: 13px; height: 13px; }
+  .sel-action-btn.is-primary { background: var(--jh-blue); color: #fff; }
+  .sel-action-btn.is-secondary { background: #fff; color: rgba(0,0,0,0.75); border-color: rgba(0,0,0,0.12); }
+  .sel-action-btn.is-danger { background: #fff; color: #b91c1c; border-color: rgba(220,38,38,0.25); }
+  .sel-action-btn.is-disabled { background: rgba(0,0,0,0.04); color: rgba(0,0,0,0.3); cursor: not-allowed; border-color: transparent; }
+  .sel-action-count { font-size: 0.7rem; font-weight: 700; padding: 1px 6px; border-radius: 999px; background: rgba(255,255,255,0.25); margin-left: 2px; }
+  .sel-action-btn.is-secondary .sel-action-count { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.6); }
+  .sel-action-btn.is-disabled .sel-action-count { background: rgba(0,0,0,0.04); color: rgba(0,0,0,0.3); }
+  .sel-cancel { margin-left: auto; color: var(--jh-blue); font-weight: 700; cursor: pointer; }
+
+  .table-head { display: grid; grid-template-columns: 32px 1fr 200px 120px 120px; padding: 12px 20px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.45); border-bottom: 1px solid rgba(0,0,0,0.06); align-items: center; }
+  .table-head .right { text-align: right; }
+  .row { display: grid; grid-template-columns: 32px 1fr 200px 120px 120px; padding: 14px 20px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; }
+  .row:last-child { border-bottom: none; }
+  .row.is-selected { background: rgba(37,99,235,0.08); }
+  .row:hover { background: rgba(37,99,235,0.03); }
+  .row-name { font-size: 0.92rem; font-weight: 600; color: rgba(0,0,0,0.88); margin-bottom: 4px; }
+  .row-meta { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: rgba(0,0,0,0.55); }
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em; }
+  .badge-ready { background: rgba(22,163,74,0.1); color: #15803d; }
+  .badge-initiated { background: rgba(37,99,235,0.1); color: #1d4ed8; }
+  .badge-processed { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.6); }
+  .can-cell { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+  .can-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+  .can-pill svg { width: 10px; height: 10px; }
+  .can-pill.can-initiate { background: rgba(22,163,74,0.1); color: #15803d; }
+  .can-pill.can-delete { background: rgba(220,38,38,0.08); color: #b91c1c; }
+  .can-pill.cannot { background: rgba(0,0,0,0.05); color: rgba(0,0,0,0.5); }
+  .row-amount { text-align: right; font-size: 0.92rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .row-amount-sub { display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: rgba(0,0,0,0.4); margin-top: 2px; text-transform: uppercase; }
+  .row-recurring { display: flex; justify-content: center; align-items: center; color: rgba(0,0,0,0.3); }
+  .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid rgba(0,0,0,0.25); background: #fff; }
+  .checkbox.is-checked { background: var(--jh-blue); border-color: var(--jh-blue); display: grid; place-items: center; }
+  .checkbox.is-checked svg { width: 11px; height: 11px; color: #fff; }
+
+  .legend-card { padding: 16px 18px; }
+  .legend-title { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.45); margin-bottom: 10px; }
+  .legend-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 0.82rem; color: rgba(0,0,0,0.7); }
+  .legend-row strong { color: rgba(0,0,0,0.85); }
+
+  .right-col { display: flex; flex-direction: column; gap: 16px; }
+
+  .footer-bar { background: var(--jh-navy); color: rgba(255,255,255,0.85); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; margin-top: 24px; }
+</style>
+
+<div class="screen">
+  <div class="layout">
+    <div class="sidebar-col">
+      <div class="jh-sidebar">
+        <div style="font-size:1.05rem;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:8px;color:var(--jh-blue);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          <span>YourFI</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Dashboard</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Accounts</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Transfers</span></div>
+          <div class="jh-sidebar-item is-active"><span class="jh-sidebar-item-label">Payments / ACH</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Remote deposits</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Insights</span></div>
+        </div>
+        <div class="jh-sidebar-profile">
+          <div class="jh-sidebar-avatar"></div>
+          <span class="jh-sidebar-profile-name">Emma Reed</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="hero">
+        <h1>ACH</h1>
+        <span class="concept-tag">Concept B &middot; Eligibility hints</span>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="selection-bar">
+            <span class="sel-count">2 selected <span class="muted">/ 4 eligible to initiate</span></span>
+            <span class="sel-action-btn is-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Initiate
+              <span class="sel-action-count">2</span>
+            </span>
+            <span class="sel-action-btn is-danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Delete
+              <span class="sel-action-count">2</span>
+            </span>
+            <span class="sel-action-btn is-disabled">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Export
+              <span class="sel-action-count">0</span>
+            </span>
+            <span class="sel-cancel">Cancel</span>
+          </div>
+          <div class="table-head">
+            <div></div>
+            <div>Batch</div>
+            <div>What you can do</div>
+            <div class="right">Recurring</div>
+            <div class="right">Amount</div>
+          </div>
+          <div class="row is-selected">
+            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
+            <div>
+              <div class="row-name">ABC payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
+            </div>
+            <div class="can-cell">
+              <span class="can-pill can-initiate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Can initiate</span>
+              <span class="can-pill can-delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Can delete</span>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$500.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row is-selected">
+            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
+            <div>
+              <div class="row-name">Landscaping payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
+            </div>
+            <div class="can-cell">
+              <span class="can-pill can-initiate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Can initiate</span>
+              <span class="can-pill can-delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Can delete</span>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$1,050.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row">
+            <div class="checkbox"></div>
+            <div>
+              <div class="row-name">Construction payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
+            </div>
+            <div class="can-cell">
+              <span class="can-pill can-initiate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Can initiate</span>
+              <span class="can-pill can-delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Can delete</span>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$2,300.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row">
+            <div class="checkbox"></div>
+            <div>
+              <div class="row-name">Maintenance payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
+            </div>
+            <div class="can-cell">
+              <span class="can-pill can-initiate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Can initiate</span>
+              <span class="can-pill can-delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Can delete</span>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$750.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row">
+            <div class="checkbox"></div>
+            <div>
+              <div class="row-name">Landscaping payment</div>
+              <div class="row-meta"><span class="badge badge-initiated">Initiated</span><span>Landscape Inc</span></div>
+            </div>
+            <div class="can-cell">
+              <span class="can-pill cannot">View only &middot; pending settlement</span>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$650.00<span class="row-amount-sub">CCD</span></div>
+          </div>
+          <div class="row">
+            <div class="checkbox"></div>
+            <div>
+              <div class="row-name">ABC supplies</div>
+              <div class="row-meta"><span class="badge badge-processed">Processed</span><span>Landscape Inc</span></div>
+            </div>
+            <div class="can-cell">
+              <span class="can-pill cannot">View only &middot; complete</span>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$875.00<span class="row-amount-sub">CCD</span></div>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="panel legend-card">
+            <div class="legend-title">How this works</div>
+            <div class="legend-row">
+              <span class="can-pill can-initiate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Can initiate</span>
+              <span>Batch is <strong>Ready</strong></span>
+            </div>
+            <div class="legend-row">
+              <span class="can-pill can-delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Can delete</span>
+              <span>Not yet sent to bank</span>
+            </div>
+            <div class="legend-row">
+              <span class="can-pill cannot">View only</span>
+              <span>Already in flight or processed</span>
+            </div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.06);font-size:0.78rem;color:rgba(0,0,0,0.55);line-height:1.5;">
+              The action bar above shows how many of your selections each action will apply to. Counts update as you select.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="position:relative; margin-top:auto;">
+        <div class="footer-bar">
+          <span>&copy;2023 YourFI &middot; (555) 555-5555</span>
+          <div class="right" style="display:flex;gap:18px;align-items:center;">
+            <a href="#">Privacy policy</a>
+            <span>Member FDIC</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

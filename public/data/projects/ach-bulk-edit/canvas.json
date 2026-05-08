@@ -11,6 +11,30 @@
       "x": 1340,
       "y": 0,
       "width": 1280
+    },
+    {
+      "file": "bulk-initiate-1-selected.html",
+      "x": 2680,
+      "y": 0,
+      "width": 1280
+    },
+    {
+      "file": "v2-action-first.html",
+      "x": 0,
+      "y": 900,
+      "width": 1280
+    },
+    {
+      "file": "v2-eligibility-hints.html",
+      "x": 1340,
+      "y": 900,
+      "width": 1280
+    },
+    {
+      "file": "v2-grouped-by-status.html",
+      "x": 2680,
+      "y": 900,
+      "width": 1280
     }
   ]
 }

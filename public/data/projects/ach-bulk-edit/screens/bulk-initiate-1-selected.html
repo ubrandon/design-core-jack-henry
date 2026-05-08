@@ -17,26 +17,29 @@
   .panels { padding: 0 24px; margin-top: -70px; display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; position: relative; z-index: 1; }
   .panel { background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
   .selection-bar { display: flex; align-items: center; padding: 14px 20px; gap: 16px; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 0.85rem; }
-  .selection-label { font-weight: 600; color: rgba(0,0,0,0.55); }
-  .sel-action { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: rgba(0,0,0,0.3); cursor: not-allowed; }
+  .selection-label { font-weight: 600; color: rgba(0,0,0,0.7); }
+  .sel-action { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--jh-blue); cursor: pointer; }
+  .sel-action.is-danger { color: #dc2626; }
   .sel-action svg { width: 14px; height: 14px; }
   .sel-cancel { margin-left: auto; color: var(--jh-blue); font-weight: 700; cursor: pointer; }
 
-  .table-head { display: grid; grid-template-columns: 32px 1fr 120px 120px; padding: 12px 20px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.45); border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .table-head { display: grid; grid-template-columns: 32px 1fr 120px 120px; padding: 12px 20px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.45); border-bottom: 1px solid rgba(0,0,0,0.06); align-items: center; }
   .table-head .right { text-align: right; }
   .row { display: grid; grid-template-columns: 32px 1fr 120px 120px; padding: 14px 20px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; }
   .row:last-child { border-bottom: none; }
+  .row.is-selected { background: rgba(37,99,235,0.08); }
   .row:hover { background: rgba(37,99,235,0.03); }
+  .row.is-selected:hover { background: rgba(37,99,235,0.1); }
   .row-name { font-size: 0.92rem; font-weight: 600; color: rgba(0,0,0,0.88); margin-bottom: 4px; }
   .row-meta { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: rgba(0,0,0,0.55); }
   .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em; }
   .badge-ready { background: rgba(22,163,74,0.1); color: #15803d; }
-  .badge-pending { background: rgba(245,158,11,0.12); color: #b45309; }
-  .badge-completed { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.55); }
   .row-amount { text-align: right; font-size: 0.92rem; font-weight: 700; color: rgba(0,0,0,0.88); }
   .row-amount-sub { display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: rgba(0,0,0,0.4); margin-top: 2px; text-transform: uppercase; }
   .row-recurring { display: flex; justify-content: center; align-items: center; color: rgba(0,0,0,0.3); }
   .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid rgba(0,0,0,0.25); background: #fff; }
+  .checkbox.is-checked { background: var(--jh-blue); border-color: var(--jh-blue); display: grid; place-items: center; }
+  .checkbox.is-checked svg { color: #fff; }
 
   .right-col { display: flex; flex-direction: column; gap: 16px; }
   .actions-card { display: grid; grid-template-columns: repeat(3,1fr); padding: 18px 12px; }
@@ -141,25 +144,27 @@
       <div class="panels">
         <div class="panel">
           <div class="selection-bar">
-            <span class="selection-label">0 selected:</span>
+            <span class="selection-label">1 selected:</span>
             <span class="sel-action">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Initiate
             </span>
-            <span class="sel-action">
+            <span class="sel-action is-danger">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               Delete
             </span>
             <span class="sel-cancel">Cancel</span>
           </div>
           <div class="table-head">
-            <div></div>
+            <div class="checkbox"></div>
             <div>Batch</div>
             <div class="right">Recurring</div>
             <div class="right">Amount</div>
           </div>
-          <div class="row">
-            <div class="checkbox"></div>
+          <div class="row is-selected">
+            <div class="checkbox is-checked">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
             <div>
               <div class="row-name">ABC payroll</div>
               <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
@@ -175,24 +180,6 @@
             </div>
             <div class="row-recurring"></div>
             <div class="row-amount">$1,050.00<span class="row-amount-sub">PPD</span></div>
-          </div>
-          <div class="row">
-            <div class="checkbox"></div>
-            <div>
-              <div class="row-name">Construction payroll</div>
-              <div class="row-meta"><span class="badge badge-pending">Pending</span><span>XYZ Builders</span></div>
-            </div>
-            <div class="row-recurring"></div>
-            <div class="row-amount">$2,300.00<span class="row-amount-sub">PPD</span></div>
-          </div>
-          <div class="row">
-            <div class="checkbox"></div>
-            <div>
-              <div class="row-name">Maintenance payroll</div>
-              <div class="row-meta"><span class="badge badge-completed">Completed</span><span>LMN Services</span></div>
-            </div>
-            <div class="row-recurring"></div>
-            <div class="row-amount">$750.00<span class="row-amount-sub">PPD</span></div>
           </div>
         </div>
 
