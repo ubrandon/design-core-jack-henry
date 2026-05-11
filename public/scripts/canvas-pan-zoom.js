@@ -7,7 +7,7 @@
  */
 function initPanZoom(viewport, stage, opts) {
   const navHeight = (opts && opts.navHeight) || 52;
-  const MIN_ZOOM = 0.2;
+  const MIN_ZOOM = 0.05;
   const MAX_ZOOM = 2;
 
   var restore = opts && opts.restoreState;
@@ -153,9 +153,10 @@ function initPanZoom(viewport, stage, opts) {
     var my = e.clientY - rect.top - rect.height / 2 + navHeight;
 
     if (e.ctrlKey || e.metaKey) {
-      var delta = e.deltaY > 0 ? -0.06 : 0.06;
+      var step = Math.max(-50, Math.min(50, e.deltaY));
+      var zoomFactor = Math.exp(-step * 0.01);
       var oldZoom = zoom;
-      zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom + delta));
+      zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom * zoomFactor));
       panX = mx - (mx - panX) * (zoom / oldZoom);
       panY = my - (my - panY) * (zoom / oldZoom);
     } else {
