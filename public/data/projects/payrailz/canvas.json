@@ -1,0 +1,52 @@
+{
+  "screens": [
+    {
+      "file": "pay-att-m3.html",
+      "x": -416,
+      "y": 0,
+      "width": 360
+    },
+    {
+      "file": "select-payee-m3.html",
+      "x": 416,
+      "y": 0,
+      "width": 360
+    },
+    {
+      "file": "bill-pay-m3.html",
+      "x": 832,
+      "y": 0,
+      "width": 360
+    },
+    {
+      "file": "bill-pay-android-m3.html",
+      "x": 1248,
+      "y": 0,
+      "width": 360
+    },
+    {
+      "file": "scheduling-calendar-m3.html",
+      "x": 1664,
+      "y": 0,
+      "width": 360
+    },
+    {
+      "file": "scheduling-recurring-m3.html",
+      "x": 0,
+      "y": 0,
+      "width": 360
+    },
+    {
+      "file": "review-payment-m3.html",
+      "x": 2080,
+      "y": 0,
+      "width": 360
+    },
+    {
+      "file": "payment-submitted-m3.html",
+      "x": 2496,
+      "y": 0,
+      "width": 360
+    }
+  ]
+}

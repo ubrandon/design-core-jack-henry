@@ -1,0 +1,47 @@
+<style>
+  html, body { margin: 0; padding: 0; background: #f8faff; font-family: 'Roboto', -apple-system, sans-serif; }
+  .screen { width: 360px; min-height: 800px; background: #f8faff; }
+
+  .top-app-bar { padding: 8px 4px; display: flex; align-items: center; gap: 4px; height: 64px; }
+  .icon-btn { width: 48px; height: 48px; border-radius: 24px; display: grid; place-items: center; color: #1a1f2e; }
+  .top-title { font-size: 1.375rem; font-weight: 400; color: #1a1f2e; }
+
+  .form { padding: 8px 16px 16px; }
+  .m3-field { background: #e3e8f0; border-radius: 4px 4px 0 0; border-bottom: 1px solid #475569; padding: 8px 16px; margin-bottom: 12px; cursor: pointer; }
+  .m3-field.is-focused { border-bottom: 2px solid #2563eb; padding-bottom: 7px; }
+  .m3-field-label { font-size: 0.75rem; color: #475569; padding-top: 4px; }
+  .m3-field.is-focused .m3-field-label { color: #2563eb; font-weight: 500; }
+  .m3-field-value { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 1rem; color: #1a1f2e; }
+  .helper { font-size: 0.75rem; color: #475569; padding: 4px 16px 16px; margin-top: -8px; }
+</style>
+<div class="screen">
+  <div class="top-app-bar">
+    <div class="icon-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </div>
+    <span class="top-title">Scheduling</span>
+  </div>
+
+  <div class="form">
+    <div class="m3-field">
+      <div class="m3-field-label">Frequency</div>
+      <div class="m3-field-value">Weekly <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg></div>
+    </div>
+
+    <div class="m3-field">
+      <div class="m3-field-label">Send first payment on</div>
+      <div class="m3-field-value">Jul 7, 2026 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg></div>
+    </div>
+    <div class="helper">Arrives by Jul 14</div>
+
+    <div class="m3-field">
+      <div class="m3-field-label">Ends</div>
+      <div class="m3-field-value">Custom date <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg></div>
+    </div>
+
+    <div class="m3-field is-focused">
+      <div class="m3-field-label">End date</div>
+      <div class="m3-field-value">Jul 7, 2027 <svg width="22" height="22" viewBox="0 0 24 24" fill="#2563eb"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg></div>
+    </div>
+  </div>
+</div>

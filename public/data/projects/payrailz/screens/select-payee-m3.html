@@ -1,0 +1,111 @@
+<style>
+  html, body { margin: 0; padding: 0; font-family: 'Roboto', -apple-system, sans-serif; background: #f8faff; }
+  .screen { width: 360px; min-height: 800px; background: #f8faff; }
+
+  .top-app-bar { padding: 8px 4px; display: flex; align-items: center; gap: 4px; height: 64px; }
+  .icon-btn { width: 48px; height: 48px; border-radius: 24px; display: grid; place-items: center; color: #1a1f2e; }
+  .top-title { flex: 1; font-size: 1.375rem; font-weight: 400; color: #1a1f2e; }
+
+  .search-row { padding: 0 16px 8px; display: flex; gap: 8px; align-items: center; }
+  .search { flex: 1; background: #e3e8f0; border-radius: 28px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; color: #475569; font-size: 0.95rem; }
+  .filter-btn { width: 48px; height: 48px; border-radius: 24px; background: #dbe7ff; display: grid; place-items: center; color: #0a2a6b; }
+
+  .payee { padding: 12px 16px; display: flex; align-items: center; gap: 16px; cursor: pointer; min-height: 72px; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: #bcd1ff; color: #0a2a6b; display: grid; place-items: center; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; }
+  .p-body { flex: 1; min-width: 0; }
+  .p-name-row { display: flex; align-items: baseline; gap: 6px; }
+  .p-name { font-size: 1rem; font-weight: 500; color: #1a1f2e; }
+  .p-acc { font-size: 0.85rem; color: #475569; }
+  .p-support { font-size: 0.85rem; color: #475569; margin-top: 2px; line-height: 1.3; }
+  .p-trailing { text-align: right; }
+  .p-trailing-amt { font-size: 0.9rem; color: #1a1f2e; font-weight: 500; }
+  .p-trailing-sub { font-size: 0.78rem; color: #475569; margin-top: 2px; }
+</style>
+<div class="screen">
+  <div class="top-app-bar">
+    <div class="icon-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </div>
+    <span class="top-title">Select a payee</span>
+    <div class="icon-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    </div>
+  </div>
+
+  <div class="search-row">
+    <div class="search">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <span>Search payees</span>
+    </div>
+    <div class="filter-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg>
+    </div>
+  </div>
+
+  <div class="payee">
+    <div class="avatar">BA</div>
+    <div class="p-body">
+      <div class="p-name-row"><span class="p-name">Bank of America</span><span class="p-acc">x1234</span></div>
+      <div class="p-support">Electronic · eBill enabled</div>
+    </div>
+    <div class="p-trailing">
+      <div class="p-trailing-amt">$12.34</div>
+      <div class="p-trailing-sub">Paid Feb 14</div>
+    </div>
+  </div>
+  <div class="payee">
+    <div class="avatar">BS</div>
+    <div class="p-body">
+      <div class="p-name-row"><span class="p-name">Bright Star Montessori</span><span class="p-acc">x1234</span></div>
+      <div class="p-support">Check</div>
+    </div>
+    <div class="p-trailing">
+      <div class="p-trailing-amt">$650.00</div>
+      <div class="p-trailing-sub">Paid Feb 9</div>
+    </div>
+  </div>
+  <div class="payee">
+    <div class="avatar">CF</div>
+    <div class="p-body">
+      <div class="p-name-row"><span class="p-name">Cedar Falls Utilities</span><span class="p-acc">x1234</span></div>
+      <div class="p-support">Check · Pending</div>
+    </div>
+    <div class="p-trailing">
+      <div class="p-trailing-amt">$64.87</div>
+      <div class="p-trailing-sub">Send Feb 9</div>
+    </div>
+  </div>
+  <div class="payee">
+    <div class="avatar">C</div>
+    <div class="p-body">
+      <div class="p-name-row"><span class="p-name">Comcast</span><span class="p-acc">x1234</span></div>
+      <div class="p-support">Electronic · Scheduled</div>
+    </div>
+    <div class="p-trailing">
+      <div class="p-trailing-amt">$78.90</div>
+      <div class="p-trailing-sub">Send Feb 23</div>
+    </div>
+  </div>
+  <div class="payee">
+    <div class="avatar">CO</div>
+    <div class="p-body">
+      <div class="p-name-row"><span class="p-name">Capital One Credit Card</span><span class="p-acc">x1234</span></div>
+      <div class="p-support">Electronic · Scheduled</div>
+    </div>
+    <div class="p-trailing">
+      <div class="p-trailing-amt">$78.90</div>
+      <div class="p-trailing-sub">Send Feb 13</div>
+    </div>
+  </div>
+  <div class="payee">
+    <div class="avatar">K</div>
+    <div class="p-body">
+      <div class="p-name-row"><span class="p-name">Kohl's</span><span class="p-acc">x1234</span></div>
+      <div class="p-support">Electronic · Scheduled</div>
+    </div>
+    <div class="p-trailing">
+      <div class="p-trailing-amt">$78.90</div>
+      <div class="p-trailing-sub">Send Feb 13</div>
+    </div>
+  </div>
+</div>

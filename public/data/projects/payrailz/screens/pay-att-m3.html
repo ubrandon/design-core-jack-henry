@@ -1,0 +1,109 @@
+<style>
+  html, body { margin: 0; padding: 0; font-family: 'Roboto', -apple-system, sans-serif; background: #f8faff; }
+  .screen { width: 360px; min-height: 800px; background: #f8faff; }
+
+  .top-app-bar { padding: 8px 4px; display: flex; align-items: center; gap: 4px; height: 64px; }
+  .icon-btn { width: 48px; height: 48px; border-radius: 24px; display: grid; place-items: center; color: #1a1f2e; }
+  .top-titles { line-height: 1.2; }
+  .top-title { font-size: 1.375rem; font-weight: 400; color: #1a1f2e; }
+  .top-sub { font-size: 0.875rem; color: #475569; margin-top: 2px; }
+
+  .content { padding: 8px 16px 16px; }
+
+  .m3-card { background: #fff; border-radius: 12px; padding: 4px 0; margin-bottom: 16px; border: 1px solid #e3e8f0; }
+  .list-item { display: flex; align-items: center; gap: 16px; padding: 12px 16px; min-height: 56px; }
+  .list-item + .list-item { border-top: 1px solid #e3e8f0; }
+  .li-leading { width: 24px; height: 24px; color: #475569; flex-shrink: 0; }
+  .li-body { flex: 1; }
+  .li-headline { font-size: 1rem; color: #1a1f2e; font-weight: 500; }
+  .li-support { font-size: 0.85rem; color: #475569; margin-top: 2px; }
+  .li-trailing { text-align: right; }
+  .li-trailing-primary { font-size: 0.95rem; color: #2563eb; font-weight: 600; }
+  .li-trailing-sub { font-size: 0.85rem; color: #475569; margin-top: 2px; }
+
+  .amount-field { background: #e3e8f0; border-radius: 4px 4px 0 0; border-bottom: 2px solid #2563eb; padding: 8px 16px; margin: 8px 16px 20px; }
+  .amount-label { font-size: 0.75rem; color: #2563eb; font-weight: 500; padding-top: 4px; }
+  .amount-input { font-size: 1.5rem; color: #1a1f2e; font-weight: 500; padding: 4px 0 4px; display: flex; align-items: baseline; gap: 4px; }
+  .amount-input .c { color: #475569; font-size: 1.15rem; }
+
+  .section-title { font-size: 0.875rem; font-weight: 500; color: #475569; padding: 16px 16px 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .pm-row { display: flex; align-items: center; gap: 16px; padding: 12px 16px; min-height: 56px; cursor: pointer; }
+  .pm-row + .pm-row { border-top: 1px solid #e3e8f0; }
+  .radio { width: 20px; height: 20px; border: 2px solid #6b7280; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; }
+  .radio.is-selected { border-color: #2563eb; }
+  .radio.is-selected::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #2563eb; }
+
+  .text-field { margin: 8px 16px 0; background: #e3e8f0; border-radius: 4px 4px 0 0; border-bottom: 1px solid #475569; padding: 10px 16px; }
+  .tf-label { font-size: 0.75rem; color: #475569; }
+  .tf-value { font-size: 1rem; color: rgba(0,0,0,0.3); padding: 4px 0 6px; }
+  .tf-helper { display: flex; justify-content: space-between; padding: 4px 16px; font-size: 0.75rem; color: #475569; }
+
+  .btn-row { display: flex; justify-content: center; padding: 36px 16px 24px; }
+  .filled-btn { background: #2563eb; color: #fff; padding: 10px 36px; border-radius: 100px; font-weight: 500; font-size: 0.95rem; opacity: 0.4; }
+</style>
+<div class="screen">
+  <div class="top-app-bar">
+    <div class="icon-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </div>
+    <div class="top-titles">
+      <div class="top-title">Pay AT&T</div>
+      <div class="top-sub">Account x1234</div>
+    </div>
+  </div>
+
+  <div class="amount-field">
+    <div class="amount-label">Amount</div>
+    <div class="amount-input"><span class="c">$</span><span>0.00</span></div>
+  </div>
+
+  <div class="m3-card" style="margin: 0 16px 16px;">
+    <div class="list-item">
+      <span class="li-leading"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg></span>
+      <div class="li-body">
+        <div class="li-headline">From</div>
+        <div class="li-support">Select an account</div>
+      </div>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#475569"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+    </div>
+    <div class="list-item">
+      <span class="li-leading"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg></span>
+      <div class="li-body">
+        <div class="li-headline">Send</div>
+        <div class="li-support">One-time · Earliest available</div>
+      </div>
+      <div class="li-trailing">
+        <div class="li-trailing-primary">Today</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Payment method</div>
+  <div class="m3-card" style="margin: 0 16px 16px;">
+    <div class="pm-row">
+      <div class="radio is-selected"></div>
+      <div class="li-body">
+        <div class="li-headline">Standard check</div>
+        <div class="li-support">Arrives by Jul 14 · Free</div>
+      </div>
+    </div>
+    <div class="pm-row">
+      <div class="radio"></div>
+      <div class="li-body">
+        <div class="li-headline">Expedited check</div>
+        <div class="li-support">Arrives by Jul 8 · $25.00</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-field">
+    <div class="tf-label">Memo (optional)</div>
+    <div class="tf-value">Displayed on check to payee</div>
+  </div>
+  <div class="tf-helper"><span></span><span>0/57</span></div>
+
+  <div class="btn-row">
+    <div class="filled-btn">Review</div>
+  </div>
+</div>
