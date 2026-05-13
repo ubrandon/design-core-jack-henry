@@ -6,12 +6,18 @@
   .screen { width: 1280px; background: #e8ecf1; display: flex; flex-direction: column; min-height: 820px; position: relative; }
   .layout { display: flex; flex: 1; min-height: 0; }
   .sidebar-col { padding: 0; width: 228px; flex-shrink: 0; background: #fff; border-right: 1px solid #e2e8f0; }
-  .sidebar-col .jh-sidebar { border: none; box-shadow: none; padding: 20px 0 16px; height: 100%; display: flex; flex-direction: column; background: transparent; border-radius: 0; }
+  .sidebar-col .jh-sidebar { border: none; box-shadow: none; padding: 20px 0 0; height: 100%; display: flex; flex-direction: column; background: transparent; border-radius: 0; }
   .sidebar-col .jh-sidebar > div:first-child { padding: 0 20px 24px; }
-  .sidebar-col .jh-sidebar > div:nth-child(2) { padding: 0 12px; }
-  .sidebar-col .jh-sidebar-profile { margin-top: auto; border-top: 1px solid #e2e8f0; padding: 16px 20px 0; display: flex; align-items: center; gap: 10px; }
-  .sidebar-col .jh-sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#fbbf24,#f59e0b); flex-shrink: 0; }
-  .sidebar-col .jh-sidebar-profile-name { font-size: 0.85rem; font-weight: 600; color: rgba(0,0,0,0.8); flex: 1; }
+  .sidebar-col .jh-sidebar > div:nth-child(2) { padding: 0 12px; flex: 1; }
+  .sidebar-col .jh-sidebar-item { padding: 10px 12px; border-radius: 10px; font-size: 0.8125rem; font-weight: 600; color: #475569; gap: 10px; }
+  .sidebar-col .jh-sidebar-item:hover { background: #f8fafc; color: #0f172a; }
+  .sidebar-col .jh-sidebar-item.is-active { background: #e8f0fa; color: #0a4a7a; box-shadow: inset 4px 0 0 #1a6ebe; border-left: none; margin-left: 0; padding-left: 12px; }
+  .sidebar-col .jh-sidebar-item.is-active svg { color: #1a6ebe; }
+  .sidebar-col .jh-sidebar-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.88; }
+  .sidebar-col .jh-sidebar-profile { margin-top: auto; border-top: 1px solid #e2e8f0; padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
+  .sidebar-col .jh-sidebar-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#fbbf24,#f59e0b); flex-shrink: 0; }
+  .sidebar-col .jh-sidebar-profile-name { font-size: 0.8125rem; font-weight: 600; color: #0f172a; flex: 1; }
+  .yf-logo-mark { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(155deg, #1a6fc4 0%, #0d4f8f 100%); display: grid; place-items: center; color: #fff; box-shadow: 0 2px 8px rgba(13,92,158,0.25); flex-shrink: 0; }
   .main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
   .hero { color: #fff; padding: 26px 32px 110px; position: relative; overflow: hidden; background: linear-gradient(110deg, #002b55 0%, #0d4a8c 65%, #1a6ebe 100%); }
   .hero::before { content: ""; position: absolute; inset: 0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 280' preserveAspectRatio='xMaxYMax slice'><g fill='rgba(255,255,255,0.08)'><rect x='680' y='160' width='38' height='120'/><rect x='722' y='130' width='42' height='150'/><rect x='768' y='100' width='40' height='180'/><rect x='812' y='78' width='48' height='202'/><rect x='864' y='110' width='38' height='170'/><rect x='906' y='58' width='46' height='222'/><rect x='956' y='90' width='40' height='190'/><rect x='1000' y='38' width='54' height='242'/><rect x='1058' y='100' width='44' height='180'/><rect x='1106' y='130' width='40' height='150'/><rect x='1150' y='160' width='40' height='120'/></g><polyline points='80,210 180,190 280,200 380,160 480,170 580,120 680,130 780,90 880,100 980,50' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='1.8'/><g fill='rgba(255,255,255,0.7)'><circle cx='180' cy='190' r='3'/><circle cx='280' cy='200' r='3'/><circle cx='380' cy='160' r='3'/><circle cx='480' cy='170' r='3'/><circle cx='580' cy='120' r='3'/><circle cx='680' cy='130' r='3'/><circle cx='780' cy='90' r='3'/><circle cx='880' cy='100' r='3'/><circle cx='980' cy='50' r='4'/></g></svg>"); background-size: cover; background-position: right center; background-repeat: no-repeat; pointer-events: none; }
@@ -95,8 +101,8 @@
   <div class="layout">
     <div class="sidebar-col">
       <div class="jh-sidebar">
-        <div style="font-size:1.05rem;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:8px;color:var(--jh-blue);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        <div style="font-size:1.125rem;font-weight:800;display:flex;align-items:center;gap:10px;color:#1a6ebe;letter-spacing:-0.02em;">
+          <span class="yf-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3L4 9v12h16V9l-8-6z"/><path d="M9 21V12h6v9"/></svg></span>
           <span>YourFI</span>
         </div>
         <div style="display:flex;flex-direction:column;gap:2px;">
