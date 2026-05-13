@@ -20,38 +20,32 @@
     },
     {
       "file": "v2-action-first.html",
-      "x": -32,
-      "y": 1408,
-      "width": 1280
-    },
-    {
-      "file": "v2-eligibility-hints.html",
-      "x": 1312,
-      "y": 1408,
-      "width": 1280
-    },
-    {
-      "file": "v2-grouped-by-status.html",
-      "x": 2656,
-      "y": 1408,
+      "x": 64,
+      "y": 5568,
       "width": 1280
     },
     {
       "file": "v3-floating-bar.html",
-      "x": -32,
-      "y": 2816,
+      "x": 64,
+      "y": 3712,
       "width": 1280
     },
     {
-      "file": "v3-smart-filter.html",
-      "x": 1312,
-      "y": 2816,
+      "file": "v3-floating-bar-mixed.html",
+      "x": 1408,
+      "y": 3712,
       "width": 1280
     },
     {
       "file": "v3-toolbar-overlay.html",
-      "x": 2656,
-      "y": 2816,
+      "x": 64,
+      "y": 4640,
+      "width": 1280
+    },
+    {
+      "file": "v3-toolbar-overlay-mixed.html",
+      "x": 1408,
+      "y": 4640,
       "width": 1280
     }
   ]

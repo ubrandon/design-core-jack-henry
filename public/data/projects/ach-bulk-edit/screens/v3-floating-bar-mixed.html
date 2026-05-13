@@ -15,9 +15,7 @@
   .main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
   .hero { color: #fff; padding: 26px 32px 110px; position: relative; overflow: hidden; background: linear-gradient(110deg, #002b55 0%, #0d4a8c 65%, #1a6ebe 100%); }
   .hero::before { content: ""; position: absolute; inset: 0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 280' preserveAspectRatio='xMaxYMax slice'><g fill='rgba(255,255,255,0.08)'><rect x='680' y='160' width='38' height='120'/><rect x='722' y='130' width='42' height='150'/><rect x='768' y='100' width='40' height='180'/><rect x='812' y='78' width='48' height='202'/><rect x='864' y='110' width='38' height='170'/><rect x='906' y='58' width='46' height='222'/><rect x='956' y='90' width='40' height='190'/><rect x='1000' y='38' width='54' height='242'/><rect x='1058' y='100' width='44' height='180'/><rect x='1106' y='130' width='40' height='150'/><rect x='1150' y='160' width='40' height='120'/></g><polyline points='80,210 180,190 280,200 380,160 480,170 580,120 680,130 780,90 880,100 980,50' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='1.8'/><g fill='rgba(255,255,255,0.7)'><circle cx='180' cy='190' r='3'/><circle cx='280' cy='200' r='3'/><circle cx='380' cy='160' r='3'/><circle cx='480' cy='170' r='3'/><circle cx='580' cy='120' r='3'/><circle cx='680' cy='130' r='3'/><circle cx='780' cy='90' r='3'/><circle cx='880' cy='100' r='3'/><circle cx='980' cy='50' r='4'/></g></svg>"); background-size: cover; background-position: right center; background-repeat: no-repeat; pointer-events: none; }
-  .hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 90% 80% at 100% 0%, rgba(255,255,255,0.08), transparent 50%); pointer-events: none; }
   .hero h1 { position: relative; margin: 0; font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; }
-  .concept-tag { position: absolute; top: 22px; right: 32px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; padding: 6px 10px; border-radius: 999px; text-transform: uppercase; }
   .panels { padding: 0 24px; margin-top: -70px; display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; position: relative; z-index: 1; }
   .panel { background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
 
@@ -29,25 +27,30 @@
   .tabs-icon-btn:hover { background: rgba(0,0,0,0.05); }
   .tabs-icon-btn svg { width: 18px; height: 18px; }
 
-  .table-head { display: grid; grid-template-columns: 32px 1fr 120px 120px; padding: 12px 20px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.45); border-bottom: 1px solid rgba(0,0,0,0.06); align-items: center; }
+  .table-head { display: grid; grid-template-columns: 32px 1fr 140px 120px; padding: 12px 20px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.45); border-bottom: 1px solid rgba(0,0,0,0.06); align-items: center; }
   .table-head .right { text-align: right; }
-  .row { display: grid; grid-template-columns: 32px 1fr 120px 120px; padding: 14px 20px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .row { display: grid; grid-template-columns: 32px 1fr 140px 120px; padding: 14px 20px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
   .row:last-child { border-bottom: none; }
   .row.is-eligible { cursor: pointer; }
-  .row.is-eligible:hover { background: rgba(37,99,235,0.03); }
-  .row.is-selected { background: rgba(37,99,235,0.08); }
-  .row.is-disabled { background: rgba(0,0,0,0.015); }
+  .row.is-eligible:hover { background: rgba(37,99,235,0.025); }
+  .row.is-selected { background: rgba(37,99,235,0.06); }
+  .row.is-selected-partial { background: rgba(245,158,11,0.06); }
+  .row.is-disabled { background: rgba(0,0,0,0.012); }
   .row.is-disabled .row-name { color: rgba(0,0,0,0.45); }
+  .row.is-disabled .row-amount { color: rgba(0,0,0,0.4); }
   .row-name { font-size: 0.92rem; font-weight: 600; color: rgba(0,0,0,0.88); margin-bottom: 4px; }
   .row-meta { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: rgba(0,0,0,0.55); flex-wrap: wrap; }
-  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em; }
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; }
   .badge-ready { background: rgba(22,163,74,0.1); color: #15803d; }
   .badge-initiated { background: rgba(37,99,235,0.1); color: #1d4ed8; }
   .badge-processed { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.6); }
+  .eligible-chips { display: flex; gap: 4px; align-items: center; justify-content: flex-end; }
+  .e-chip { display: inline-flex; align-items: center; gap: 3px; font-size: 0.66rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+  .e-chip svg { width: 9px; height: 9px; }
+  .e-chip.is-yes { background: rgba(22,163,74,0.1); color: #15803d; }
+  .e-chip.is-no { background: rgba(0,0,0,0.04); color: rgba(0,0,0,0.42); }
   .row-amount { text-align: right; font-size: 0.92rem; font-weight: 700; color: rgba(0,0,0,0.88); }
   .row-amount-sub { display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: rgba(0,0,0,0.4); margin-top: 2px; text-transform: uppercase; }
-  .row.is-disabled .row-amount { color: rgba(0,0,0,0.4); }
-  .row-recurring { display: flex; justify-content: center; align-items: center; color: rgba(0,0,0,0.3); }
   .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid rgba(0,0,0,0.25); background: #fff; }
   .checkbox.is-checked { background: var(--jh-blue); border-color: var(--jh-blue); display: grid; place-items: center; }
   .checkbox.is-checked svg { width: 11px; height: 11px; color: #fff; }
@@ -60,7 +63,6 @@
   .action { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px; }
   .action-icon { width: 36px; height: 36px; display: grid; place-items: center; color: var(--jh-blue); }
   .action-label { font-size: 0.78rem; font-weight: 600; color: rgba(0,0,0,0.7); text-align: center; }
-
   .calendar-card { padding: 18px 20px 20px; }
   .calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
   .calendar-title { font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); }
@@ -72,23 +74,29 @@
   .footer-bar { background: var(--jh-navy); color: rgba(255,255,255,0.85); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; margin-top: 24px; }
   .footer-bar .right { display: flex; gap: 18px; align-items: center; }
 
-  /* Floating action bar */
+  /* Floating bar — mixed-eligibility version */
   .floating-bar-wrap { position: absolute; left: 50%; transform: translateX(-50%); bottom: 80px; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 6px; }
   .floating-bar { background: #1e293b; color: #fff; border-radius: 14px; padding: 10px 12px 10px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 18px 40px rgba(15,23,42,0.35), 0 4px 12px rgba(15,23,42,0.2); border: 1px solid rgba(255,255,255,0.06); }
   .fb-count { display: flex; align-items: center; gap: 10px; padding-right: 14px; border-right: 1px solid rgba(255,255,255,0.12); }
   .fb-count-num { width: 26px; height: 26px; border-radius: 7px; background: var(--jh-blue); display: grid; place-items: center; font-size: 0.8rem; font-weight: 800; }
   .fb-count-label { font-size: 0.85rem; font-weight: 600; }
   .fb-count-sub { font-size: 0.72rem; color: rgba(255,255,255,0.55); font-weight: 600; }
-  .fb-action { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; background: transparent; color: rgba(255,255,255,0.85); border: none; }
+  .fb-action { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; background: transparent; color: rgba(255,255,255,0.85); border: none; position: relative; }
   .fb-action svg { width: 14px; height: 14px; }
   .fb-action:hover { background: rgba(255,255,255,0.08); }
   .fb-action.is-primary { background: var(--jh-blue); color: #fff; padding: 9px 14px; }
-  .fb-action.is-primary:hover { background: #1d4ed8; }
   .fb-action.is-danger { color: #fca5a5; }
+  .fb-action .of-count { font-weight: 600; color: rgba(255,255,255,0.55); }
+  .fb-action.is-primary .of-count { color: rgba(255,255,255,0.7); }
   .fb-divider { width: 1px; height: 22px; background: rgba(255,255,255,0.12); }
   .fb-close { width: 28px; height: 28px; border-radius: 8px; background: transparent; color: rgba(255,255,255,0.6); border: none; display: grid; place-items: center; cursor: pointer; }
-  .fb-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
-  .fb-helper { font-size: 0.7rem; font-weight: 600; color: rgba(0,0,0,0.5); background: #fff; padding: 4px 10px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+
+  .fb-helper-warn { background: #fff7ed; color: #9a3412; padding: 6px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; box-shadow: 0 2px 6px rgba(154,52,18,0.12); display: flex; align-items: center; gap: 6px; border: 1px solid rgba(154,52,18,0.18); }
+  .fb-helper-warn svg { width: 12px; height: 12px; }
+
+  /* Skip indicator on rows that can be deleted but not initiated */
+  .skip-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 0.66rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: rgba(245,158,11,0.14); color: #9a3412; }
+  .skip-pill svg { width: 10px; height: 10px; }
 </style>
 
 <div class="screen">
@@ -100,30 +108,11 @@
           <span>YourFI</span>
         </div>
         <div style="display:flex;flex-direction:column;gap:2px;">
-          <div class="jh-sidebar-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-            <span class="jh-sidebar-item-label">Dashboard</span>
-          </div>
-          <div class="jh-sidebar-item" style="position:relative;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
-            <span class="jh-sidebar-item-label">Messages</span>
-            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#ef4444;color:#fff;font-size:0.6rem;font-weight:800;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;">1</span>
-          </div>
-          <div class="jh-sidebar-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg>
-            <span class="jh-sidebar-item-label">Accounts</span>
-          </div>
-          <div class="jh-sidebar-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-            <span class="jh-sidebar-item-label">Transfers</span>
-          </div>
-          <div class="jh-sidebar-item" style="justify-content:space-between;">
-            <span style="display:flex;align-items:center;gap:10px;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              <span class="jh-sidebar-item-label">Payments</span>
-            </span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-          </div>
+          <div class="jh-sidebar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span class="jh-sidebar-item-label">Dashboard</span></div>
+          <div class="jh-sidebar-item" style="position:relative;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg><span class="jh-sidebar-item-label">Messages</span><span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#ef4444;color:#fff;font-size:0.6rem;font-weight:800;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;">1</span></div>
+          <div class="jh-sidebar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg><span class="jh-sidebar-item-label">Accounts</span></div>
+          <div class="jh-sidebar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><span class="jh-sidebar-item-label">Transfers</span></div>
+          <div class="jh-sidebar-item" style="justify-content:space-between;"><span style="display:flex;align-items:center;gap:10px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="jh-sidebar-item-label">Payments</span></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
           <div style="padding-left:20px;display:flex;flex-direction:column;gap:2px;">
             <div class="jh-sidebar-item" style="padding:8px 12px;font-size:0.85rem;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Bill pay</span></div>
             <div class="jh-sidebar-item" style="padding:8px 12px;font-size:0.85rem;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Send money with Zelle&reg;</span></div>
@@ -131,34 +120,16 @@
             <div class="jh-sidebar-item is-active" style="padding:8px 12px;font-size:0.85rem;"><span class="jh-sidebar-item-label">ACH</span></div>
             <div class="jh-sidebar-item" style="padding:8px 12px;font-size:0.85rem;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Wires</span></div>
           </div>
-          <div class="jh-sidebar-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
-            <span class="jh-sidebar-item-label">Remote deposits</span>
-          </div>
-          <div class="jh-sidebar-item" style="justify-content:space-between;">
-            <span style="display:flex;align-items:center;gap:10px;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-              <span class="jh-sidebar-item-label">Insights</span>
-            </span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-          </div>
-          <div class="jh-sidebar-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg>
-            <span class="jh-sidebar-item-label">Support</span>
-          </div>
+          <div class="jh-sidebar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg><span class="jh-sidebar-item-label">Remote deposits</span></div>
+          <div class="jh-sidebar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg><span class="jh-sidebar-item-label">Insights</span></div>
+          <div class="jh-sidebar-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg><span class="jh-sidebar-item-label">Support</span></div>
         </div>
-        <div class="jh-sidebar-profile">
-          <div class="jh-sidebar-avatar"></div>
-          <span class="jh-sidebar-profile-name">Emma Reed</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:rgba(0,0,0,0.5);"><path d="M6 15l6-6 6 6"/></svg>
-        </div>
+        <div class="jh-sidebar-profile"><div class="jh-sidebar-avatar"></div><span class="jh-sidebar-profile-name">Emma Reed</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:rgba(0,0,0,0.5);"><path d="M6 15l6-6 6 6"/></svg></div>
       </div>
     </div>
 
     <div class="main">
-      <div class="hero">
-        <h1>ACH</h1>
-      </div>
+      <div class="hero"><h1>ACH</h1></div>
       <div class="panels">
         <div class="panel">
           <div class="tabs-row">
@@ -176,7 +147,7 @@
           <div class="table-head">
             <div><div class="checkbox is-indeterminate"></div></div>
             <div>Batch</div>
-            <div class="right">Recurring</div>
+            <div class="right">Can</div>
             <div class="right">Amount</div>
           </div>
           <div class="row is-eligible is-selected">
@@ -185,7 +156,10 @@
               <div class="row-name">ABC payroll</div>
               <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
             </div>
-            <div class="row-recurring"></div>
+            <div class="eligible-chips">
+              <span class="e-chip is-yes">Initiate</span>
+              <span class="e-chip is-yes">Delete</span>
+            </div>
             <div class="row-amount">$500.00<span class="row-amount-sub">PPD</span></div>
           </div>
           <div class="row is-eligible is-selected">
@@ -194,34 +168,40 @@
               <div class="row-name">Landscaping payroll</div>
               <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
             </div>
-            <div class="row-recurring"></div>
-            <div class="row-amount">$1,050.00<span class="row-amount-sub">PPD</span></div>
-          </div>
-          <div class="row is-eligible is-selected">
-            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
-            <div>
-              <div class="row-name">Construction payroll</div>
-              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>XYZ Builders</span></div>
+            <div class="eligible-chips">
+              <span class="e-chip is-yes">Initiate</span>
+              <span class="e-chip is-yes">Delete</span>
             </div>
-            <div class="row-recurring"></div>
-            <div class="row-amount">$2,300.00<span class="row-amount-sub">PPD</span></div>
+            <div class="row-amount">$1,050.00<span class="row-amount-sub">PPD</span></div>
           </div>
           <div class="row is-eligible">
             <div class="checkbox"></div>
             <div>
-              <div class="row-name">Maintenance payroll</div>
-              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>LMN Services</span></div>
+              <div class="row-name">Construction payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>XYZ Builders</span></div>
             </div>
-            <div class="row-recurring"></div>
-            <div class="row-amount">$750.00<span class="row-amount-sub">PPD</span></div>
+            <div class="eligible-chips">
+              <span class="e-chip is-yes">Initiate</span>
+              <span class="e-chip is-yes">Delete</span>
+            </div>
+            <div class="row-amount">$2,300.00<span class="row-amount-sub">PPD</span></div>
           </div>
-          <div class="row is-disabled">
-            <div class="checkbox is-locked"></div>
+          <div class="row is-eligible is-selected-partial">
+            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
             <div>
               <div class="row-name">Landscaping payment</div>
-              <div class="row-meta"><span class="badge badge-initiated">Initiated</span><span>Landscape Inc</span></div>
+              <div class="row-meta">
+                <span class="badge badge-initiated">Initiated</span>
+                <span class="skip-pill">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                  Delete only
+                </span>
+              </div>
             </div>
-            <div class="row-recurring"></div>
+            <div class="eligible-chips">
+              <span class="e-chip is-no">Initiate</span>
+              <span class="e-chip is-yes">Delete</span>
+            </div>
             <div class="row-amount">$650.00<span class="row-amount-sub">CCD</span></div>
           </div>
           <div class="row is-disabled">
@@ -230,7 +210,10 @@
               <div class="row-name">ABC supplies</div>
               <div class="row-meta"><span class="badge badge-processed">Processed</span><span>Landscape Inc</span></div>
             </div>
-            <div class="row-recurring"></div>
+            <div class="eligible-chips">
+              <span class="e-chip is-no">Initiate</span>
+              <span class="e-chip is-no">Delete</span>
+            </div>
             <div class="row-amount">$875.00<span class="row-amount-sub">CCD</span></div>
           </div>
         </div>
@@ -274,22 +257,25 @@
       </div>
 
       <div class="floating-bar-wrap">
-        <div class="fb-helper">2 more rows are <strong>Ready</strong> &middot; <span style="color: var(--jh-blue);">Select all eligible</span></div>
+        <div class="fb-helper-warn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
+          1 batch can't be initiated &mdash; it'll be skipped
+        </div>
         <div class="floating-bar">
           <div class="fb-count">
             <span class="fb-count-num">3</span>
             <div style="display:flex;flex-direction:column;">
               <span class="fb-count-label">selected</span>
-              <span class="fb-count-sub">$3,850.00 total</span>
+              <span class="fb-count-sub">$2,200.00 total</span>
             </div>
           </div>
           <button class="fb-action is-primary">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Initiate 3
+            Initiate <span class="of-count">2 of 3</span>
           </button>
           <button class="fb-action is-danger">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            Delete
+            Delete <span class="of-count">3</span>
           </button>
           <div class="fb-divider"></div>
           <button class="fb-close" title="Clear selection">
@@ -302,7 +288,7 @@
         <div class="footer-bar">
           <span>&copy;2023 YourFI &middot; (555) 555-5555</span>
           <div class="right">
-            <a href="#" style="color:inherit;text-decoration:none;">Privacy policy</a>
+            <span>Privacy policy</span>
             <span>Member FDIC</span>
           </div>
         </div>
