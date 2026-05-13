@@ -14,25 +14,31 @@
     },
     {
       "file": "bulk-initiate-1-selected.html",
-      "x": 2680,
+      "x": 2688,
       "y": 0,
       "width": 1280
     },
     {
       "file": "bulk-delete-confirm.html",
-      "x": 4020,
+      "x": 4032,
       "y": 0,
       "width": 1280
     },
     {
+      "file": "bulk-delete-confirm-ineligible.html",
+      "x": 4032,
+      "y": 800,
+      "width": 1280
+    },
+    {
       "file": "bulk-delete-success.html",
-      "x": 5360,
+      "x": 5376,
       "y": 0,
       "width": 1280
     },
     {
       "file": "bulk-delete-partial-error.html",
-      "x": 6700,
+      "x": 6688,
       "y": 0,
       "width": 1280
     },

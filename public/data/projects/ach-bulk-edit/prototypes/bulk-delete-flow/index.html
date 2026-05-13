@@ -121,6 +121,17 @@
   .modal-item-amount { text-align: right; font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); }
   .modal-item-sub { display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: rgba(0,0,0,0.4); margin-top: 4px; text-transform: uppercase; }
   .modal-actions { display: flex; justify-content: center; gap: 12px; margin-top: 22px; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Inline notice for items that can't be acted on */
+  .modal-notice { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 10px; background: rgba(220,38,38,0.07); border: 1px solid rgba(220,38,38,0.2); color: #991b1b; font-size: 0.83rem; font-weight: 600; margin-bottom: 14px; }
+  .modal-notice[hidden] { display: none; }
+  .modal-notice svg { width: 18px; height: 18px; flex-shrink: 0; color: #b91c1c; margin-top: 1px; }
+  .modal-notice .notice-body { line-height: 1.4; }
+  .modal-notice .notice-body strong { font-weight: 700; }
+  .modal-item.is-excluded { opacity: 0.5; }
+  .modal-item.is-excluded[data-action="delete"] .modal-item-name::after { content: " — can't be deleted"; color: #b91c1c; font-weight: 600; font-size: 0.78rem; margin-left: 4px; }
+  .modal-item.is-excluded[data-action="initiate"] .modal-item-name::after { content: " — can't be initiated"; color: #b91c1c; font-weight: 600; font-size: 0.78rem; margin-left: 4px; }
 
   /* Success modal — summary + check-icon batch list */
   .summary { border-top: 1px dashed rgba(0,0,0,0.12); border-bottom: 1px dashed rgba(0,0,0,0.12); padding: 16px 0; margin-bottom: 14px; }
@@ -262,6 +273,10 @@
     <div class="modal-icon" id="confirm-icon"></div>
     <div class="modal-title" id="confirm-title"></div>
     <div class="modal-desc" id="confirm-desc"></div>
+    <div class="modal-notice" id="confirm-notice" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16.5" r="1" fill="currentColor"/></svg>
+      <div class="notice-body" id="confirm-notice-body"></div>
+    </div>
     <div class="modal-list" id="confirm-list"></div>
     <div class="modal-actions">
       <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
@@ -313,6 +328,8 @@
   var confirmTitle = document.getElementById("confirm-title");
   var confirmDesc = document.getElementById("confirm-desc");
   var confirmList = document.getElementById("confirm-list");
+  var confirmNotice = document.getElementById("confirm-notice");
+  var confirmNoticeBody = document.getElementById("confirm-notice-body");
   var confirmGo = document.getElementById("confirm-go");
   var successModal = document.getElementById("success-modal");
   var successIcon = document.getElementById("success-icon");
@@ -384,8 +401,11 @@
   function openConfirm(action) {
     if (selected.size === 0) return;
     pendingAction = action;
-    var n = selected.size;
     var isDelete = action === "delete";
+    var picked = BATCHES.filter(function (b) { return selected.has(b.id); });
+    var eligible = picked.filter(function (b) { return b.status === "Ready"; });
+    var ineligible = picked.filter(function (b) { return b.status !== "Ready"; });
+    var n = eligible.length;
 
     confirmIcon.className = "modal-icon" + (isDelete ? "" : " is-info");
     confirmIcon.innerHTML = isDelete ? ICON_DELETE : ICON_INITIATE;
@@ -395,12 +415,32 @@
     confirmDesc.textContent = isDelete
       ? "The following batches will be deleted permanently and cannot be undone."
       : "The following batches will be sent for processing.";
-    confirmGo.textContent = (isDelete ? "Delete " : "Initiate ") + n + " batch" + (n === 1 ? "" : "es");
+
+    if (ineligible.length > 0) {
+      var m = ineligible.length;
+      var verb = isDelete ? "deleted" : "initiated";
+      confirmNoticeBody.innerHTML =
+        "<strong>" + m + " batch" + (m === 1 ? "" : "es") + " can't be " + verb + ".</strong> " +
+        "Only batches with a <em>Ready</em> status can be " + verb + ".";
+      confirmNotice.hidden = false;
+    } else {
+      confirmNotice.hidden = true;
+    }
+
+    if (n === 0) {
+      confirmGo.textContent = isDelete ? "Delete" : "Initiate";
+      confirmGo.disabled = true;
+    } else {
+      confirmGo.textContent = (isDelete ? "Delete " : "Initiate ") + n + " batch" + (n === 1 ? "" : "es");
+      confirmGo.disabled = false;
+    }
 
     confirmList.innerHTML = "";
-    BATCHES.filter(function (b) { return selected.has(b.id); }).forEach(function (b) {
+    picked.forEach(function (b) {
+      var isExcluded = b.status !== "Ready";
       var item = document.createElement("div");
-      item.className = "modal-item";
+      item.className = "modal-item" + (isExcluded ? " is-excluded" : "");
+      if (isExcluded) item.dataset.action = action;
       item.innerHTML =
         '<div>' +
           '<div class="modal-item-name">' + b.name + '</div>' +
@@ -426,13 +466,16 @@
   }
 
   confirmGo.addEventListener("click", function () {
-    var ids = Array.from(selected);
+    if (confirmGo.disabled) return;
+    var isDelete = pendingAction === "delete";
+    var picked = BATCHES.filter(function (b) { return selected.has(b.id); });
+    var snapshot = picked.filter(function (b) { return b.status === "Ready"; });
+    var ids = snapshot.map(function (b) { return b.id; });
     var n = ids.length;
-    var snapshot = BATCHES.filter(function (b) { return ids.includes(b.id); });
+    if (n === 0) return;
     var total = snapshot.reduce(function (acc, b) { return acc + parseAmount(b.amount); }, 0);
     confirmModal.hidden = true;
 
-    var isDelete = pendingAction === "delete";
     if (isDelete) {
       BATCHES = BATCHES.filter(function (b) { return !ids.includes(b.id); });
       successTitle.textContent = n === 1 ? "Batch deleted" : "Batches deleted";
