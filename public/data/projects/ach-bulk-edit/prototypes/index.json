@@ -1,3 +1,10 @@
 {
-  "prototypes": []
+  "prototypes": [
+    {
+      "id": "bulk-delete-flow",
+      "name": "Bulk delete flow",
+      "description": "Walks the ACH bulk-edit canvas top row: ACH start → bulk select → 1 selected → delete confirm → success / partial error.",
+      "device": "online"
+    }
+  ]
 }

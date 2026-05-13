@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280, initial-scale=1">
+  <title>Bulk delete flow</title>
+  <link rel="stylesheet" href="../../../../../styles/shared.css">
+  <link rel="stylesheet" href="../../../../../styles/ds.css">
+  <link rel="stylesheet" href="../../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #f4f5f7; font-family: var(--font-body); }
+  .screen { width: 1280px; background: #f4f5f7; display: flex; flex-direction: column; min-height: 760px; }
+  .layout { display: flex; flex: 1; min-height: 0; }
+  .sidebar-col { padding: 0; width: 228px; flex-shrink: 0; background: #fff; border-right: 1px solid #e2e8f0; }
+  .sidebar-col .jh-sidebar { border: none; box-shadow: none; padding: 20px 0 0; height: 100%; display: flex; flex-direction: column; background: transparent; border-radius: 0; }
+  .sidebar-col .jh-sidebar > div:first-child { padding: 0 20px 24px; }
+  .sidebar-col .jh-sidebar > div:nth-child(2) { padding: 0 12px; flex: 1; }
+  .sidebar-col .jh-sidebar-item { padding: 10px 12px; border-radius: 10px; font-size: 0.8125rem; font-weight: 600; color: #475569; gap: 10px; }
+  .sidebar-col .jh-sidebar-item:hover { background: #f8fafc; color: #0f172a; }
+  .sidebar-col .jh-sidebar-item.is-active { background: #e8f0fa; color: #0a4a7a; box-shadow: inset 4px 0 0 #1a6ebe; border-left: none; margin-left: 0; padding-left: 12px; }
+  .sidebar-col .jh-sidebar-item.is-active svg { color: #1a6ebe; }
+  .sidebar-col .jh-sidebar-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.88; }
+  .sidebar-col .jh-sidebar-profile { margin-top: auto; border-top: 1px solid #e2e8f0; padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
+  .sidebar-col .jh-sidebar-avatar { width: 36px; height: 36px; border-radius: 50%; background: url('https://i.pravatar.cc/96?img=47') center/cover no-repeat, linear-gradient(135deg,#fbbf24,#f59e0b); flex-shrink: 0; }
+  .sidebar-col .jh-sidebar-profile-name { font-size: 0.8125rem; font-weight: 600; color: #0f172a; flex: 1; }
+  .yf-logo-mark { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(155deg, #1a6fc4 0%, #0d4f8f 100%); display: grid; place-items: center; color: #fff; box-shadow: 0 2px 8px rgba(13,92,158,0.25); flex-shrink: 0; }
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+  .hero { color: #fff; padding: 26px 32px 110px; position: relative; overflow: hidden; background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat, #002b55; }
+  .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, rgba(0,43,85,0.82) 0%, rgba(13,74,140,0.65) 60%, rgba(26,110,190,0.45) 100%); pointer-events: none; }
+  .hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 90% 80% at 100% 0%, rgba(255,255,255,0.08), transparent 50%); pointer-events: none; }
+  .hero h1 { position: relative; margin: 0; font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; }
+  .panels { padding: 0 24px; margin-top: -70px; display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; position: relative; z-index: 1; }
+  .panel { background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
+
+  /* Default tabs row (when not in bulk mode) */
+  .tabs-row { display: flex; align-items: center; padding: 14px 20px 0; gap: 16px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .tab { font-size: 0.85rem; font-weight: 700; color: rgba(0,0,0,0.45); padding-bottom: 12px; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab.is-active { color: var(--jh-blue); border-bottom-color: var(--jh-blue); }
+  .tabs-actions { margin-left: auto; display: flex; gap: 6px; padding-bottom: 8px; }
+  .icon-btn { width: 28px; height: 28px; border-radius: 6px; border: none; background: transparent; display: grid; place-items: center; color: rgba(0,0,0,0.55); cursor: pointer; }
+  .icon-btn:hover { background: rgba(0,0,0,0.05); }
+  .icon-btn.is-active { background: rgba(37,99,235,0.1); color: var(--jh-blue); }
+
+  /* Bulk selection bar */
+  .selection-bar { display: flex; align-items: center; padding: 14px 20px; gap: 16px; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 0.85rem; }
+  .selection-label { font-weight: 600; color: rgba(0,0,0,0.55); }
+  .sel-action { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 5px 12px; border-radius: 999px; cursor: not-allowed; color: rgba(0,0,0,0.3); background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.05); user-select: none; }
+  .sel-action svg { width: 14px; height: 14px; }
+  .sel-action.is-enabled { color: var(--jh-blue); background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.18); cursor: pointer; }
+  .sel-action.is-danger.is-enabled { color: #dc2626; background: rgba(220,38,38,0.07); border-color: rgba(220,38,38,0.2); }
+  .sel-cancel { margin-left: auto; color: var(--jh-blue); font-weight: 700; cursor: pointer; }
+
+  /* Table — collapses checkbox column when not in bulk mode */
+  .table-head, .row { display: grid; grid-template-columns: 1fr 120px 120px; padding: 12px 20px; }
+  .table-head { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.45); border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .table-head .right { text-align: right; }
+  .row { padding: 14px 20px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; }
+  .row:last-child { border-bottom: none; }
+  .row:hover { background: rgba(37,99,235,0.03); }
+  body.bulk-mode .table-head, body.bulk-mode .row { grid-template-columns: 32px 1fr 120px 120px; }
+  .row.is-selected { background: rgba(37,99,235,0.05); }
+
+  .row-name { font-size: 0.92rem; font-weight: 600; color: rgba(0,0,0,0.88); margin-bottom: 4px; }
+  .row-meta { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: rgba(0,0,0,0.55); }
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em; }
+  .badge-ready { background: rgba(22,163,74,0.1); color: #15803d; }
+  .badge-initiated { background: rgba(37,99,235,0.1); color: #1d4ed8; }
+  .badge-processed { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.6); }
+  .badge-pending { background: rgba(245,158,11,0.12); color: #b45309; }
+  .badge-completed { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.55); }
+  .row-amount { text-align: right; font-size: 0.92rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .row-amount-sub { display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: rgba(0,0,0,0.4); margin-top: 2px; text-transform: uppercase; }
+  .row-recurring { display: flex; justify-content: center; align-items: center; color: rgba(0,0,0,0.3); }
+
+  .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid rgba(0,0,0,0.25); background: #fff; display: grid; place-items: center; color: transparent; }
+  .checkbox.is-checked { background: var(--jh-blue); border-color: var(--jh-blue); color: #fff; }
+
+  /* Hide bulk UI by default */
+  .selection-bar, body.bulk-mode .tabs-row { display: none; }
+  body.bulk-mode .selection-bar { display: flex; }
+  body.bulk-mode .row .checkbox { display: grid; }
+  body:not(.bulk-mode) .row .checkbox { display: none; }
+  body:not(.bulk-mode) .table-head > .col-check { display: none; }
+  body.bulk-mode .table-head > .col-check { display: block; }
+
+  .right-col { display: flex; flex-direction: column; gap: 16px; }
+  .actions-card { display: grid; grid-template-columns: repeat(3,1fr); padding: 18px 12px; }
+  .action { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px; cursor: pointer; }
+  .action-icon { width: 36px; height: 36px; display: grid; place-items: center; color: var(--jh-blue); }
+  .action-label { font-size: 0.78rem; font-weight: 600; color: rgba(0,0,0,0.7); text-align: center; }
+
+  .calendar-card { padding: 18px 20px 20px; }
+  .calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .calendar-title { font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .calendar-nav { display: flex; gap: 4px; }
+  .calendar-nav button { width: 26px; height: 26px; border: 1px solid rgba(0,0,0,0.08); background: #fff; border-radius: 50%; cursor: pointer; color: rgba(0,0,0,0.6); display: grid; place-items: center; }
+  .calendar-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+  .cal-day-name { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; color: rgba(0,0,0,0.4); text-align: center; padding: 6px 0; text-transform: uppercase; }
+  .cal-day { aspect-ratio: 1; display: grid; place-items: center; font-size: 0.78rem; color: rgba(0,0,0,0.7); border-radius: 50%; }
+  .cal-day.is-today { background: var(--jh-navy); color: #fff; font-weight: 700; }
+
+  .footer-bar { background: var(--jh-navy); color: rgba(255,255,255,0.85); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; margin-top: 24px; }
+  .footer-bar a { color: inherit; text-decoration: none; }
+  .footer-bar .right { display: flex; gap: 18px; align-items: center; }
+  .help-fab { position: absolute; bottom: 60px; right: 28px; width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 1px solid rgba(0,0,0,0.08); display: grid; place-items: center; color: rgba(0,0,0,0.5); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+
+  /* Modal */
+  .modal-scrim { position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 100; display: grid; place-items: center; }
+  .modal-scrim[hidden] { display: none; }
+  .modal { background: #fff; border-radius: 20px; box-shadow: 0 24px 60px rgba(0,0,0,0.3); width: 560px; padding: 38px 40px 28px; max-height: 85vh; overflow-y: auto; }
+  .modal-icon { width: 88px; height: 88px; border-radius: 50%; border: 5px solid #b91c1c; display: grid; place-items: center; margin: 0 auto 16px; color: #b91c1c; }
+  .modal-icon.is-success { border-color: #15803d; color: #15803d; }
+  .modal-icon.is-info { border-color: var(--jh-blue); color: var(--jh-blue); }
+  .modal-title { font-size: 1.4rem; font-weight: 700; text-align: center; color: rgba(0,0,0,0.88); margin-bottom: 8px; letter-spacing: -0.01em; }
+  .modal-desc { text-align: center; color: rgba(0,0,0,0.6); font-size: 0.9rem; margin-bottom: 18px; }
+  .modal-list { border-top: 1px solid rgba(0,0,0,0.08); padding-top: 12px; }
+  .modal-item { display: grid; grid-template-columns: 1fr auto; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .modal-item:last-child { border-bottom: none; }
+  .modal-item-name { font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .modal-item-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 0.78rem; color: rgba(0,0,0,0.55); }
+  .modal-item-amount { text-align: right; font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .modal-item-sub { display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: rgba(0,0,0,0.4); margin-top: 4px; text-transform: uppercase; }
+  .modal-actions { display: flex; justify-content: center; gap: 12px; margin-top: 22px; }
+
+  /* Success modal — summary + check-icon batch list */
+  .summary { border-top: 1px dashed rgba(0,0,0,0.12); border-bottom: 1px dashed rgba(0,0,0,0.12); padding: 16px 0; margin-bottom: 14px; }
+  .summary-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; }
+  .summary-label { color: rgba(0,0,0,0.55); }
+  .summary-value { color: rgba(0,0,0,0.88); font-weight: 600; }
+  .batch-list { padding-top: 6px; }
+  .batch-item { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.06); align-items: start; }
+  .batch-item:last-child { border-bottom: none; }
+  .batch-icon { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #15803d; display: grid; place-items: center; color: #15803d; margin-top: 2px; }
+  .batch-icon.is-info { border-color: var(--jh-blue); color: var(--jh-blue); }
+  .batch-name { font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .batch-meta { font-size: 0.8rem; color: rgba(0,0,0,0.55); margin-top: 4px; }
+  .batch-amount { font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); text-align: right; }
+  .success-actions { display: flex; justify-content: center; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.06); }
+  .btn { font-size: 0.9rem; font-weight: 700; padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; font-family: inherit; }
+  .btn-secondary { background: #fff; color: var(--jh-blue); border: 1.5px solid var(--jh-blue); }
+  .btn-primary { background: var(--jh-blue); color: #fff; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.25); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 200; }
+  .toast.is-on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Success view — its own page, not a modal */
+  .success-view { display: none; flex: 1; flex-direction: column; }
+  body.is-success .success-view { display: flex; }
+  body.is-success .list-view { display: none; }
+  body.is-success .hero h1 { display: none; }
+  .success-area { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 24px 24px 42px; margin-top: -120px; position: relative; z-index: 1; }
+  .success-card { background: #fff; border-radius: 20px; box-shadow: 0 24px 60px rgba(0,0,0,0.18); width: 560px; padding: 40px 40px 28px; }
+  .success-card .modal-icon { width: 112px; height: 112px; margin: 0 auto 22px; }
+  .success-card .modal-icon svg { width: 58px; height: 58px; }
+  .success-card .modal-title { font-size: 1.5rem; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="layout">
+    <div class="sidebar-col">
+      <div class="jh-sidebar">
+        <div style="font-size:1.125rem;font-weight:800;display:flex;align-items:center;gap:10px;color:#1a6ebe;letter-spacing:-0.02em;">
+          <span class="yf-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3L4 9v12h16V9l-8-6z"/><path d="M9 21V12h6v9"/></svg></span>
+          <span>YourFI</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <div class="jh-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span class="jh-sidebar-item-label">Dashboard</span></div>
+          <div class="jh-sidebar-item" style="position:relative;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg><span class="jh-sidebar-item-label">Messages</span><span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#ef4444;color:#fff;font-size:0.6rem;font-weight:800;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;">1</span></div>
+          <div class="jh-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg><span class="jh-sidebar-item-label">Accounts</span></div>
+          <div class="jh-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><span class="jh-sidebar-item-label">Transfers</span></div>
+          <div class="jh-sidebar-item" style="justify-content:space-between;"><span style="display:flex;align-items:center;gap:10px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="jh-sidebar-item-label">Payments</span></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div style="padding-left:20px;display:flex;flex-direction:column;gap:2px;">
+            <div class="jh-sidebar-item" style="padding:8px 12px;font-size:0.85rem;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Bill pay</span></div>
+            <div class="jh-sidebar-item" style="padding:8px 12px;font-size:0.85rem;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Send money with Zelle&reg;</span></div>
+            <div class="jh-sidebar-item" style="padding:8px 12px;font-size:0.85rem;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Positive pay</span></div>
+            <div class="jh-sidebar-item is-active" style="padding:8px 12px;font-size:0.85rem;"><span class="jh-sidebar-item-label">ACH</span></div>
+            <div class="jh-sidebar-item" style="padding:8px 12px;font-size:0.85rem;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Wires</span></div>
+          </div>
+          <div class="jh-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg><span class="jh-sidebar-item-label">Remote deposits</span></div>
+          <div class="jh-sidebar-item" style="justify-content:space-between;"><span style="display:flex;align-items:center;gap:10px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg><span class="jh-sidebar-item-label">Insights</span></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div class="jh-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg><span class="jh-sidebar-item-label">Support</span></div>
+        </div>
+        <div class="jh-sidebar-profile">
+          <div class="jh-sidebar-avatar"></div>
+          <span class="jh-sidebar-profile-name">Emma Reed</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:rgba(0,0,0,0.5);"><path d="M6 15l6-6 6 6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="hero"><h1>ACH</h1></div>
+      <div class="panels">
+        <div class="panel">
+          <div class="tabs-row">
+            <div class="tab is-active">Active</div>
+            <div class="tab">History</div>
+            <div class="tabs-actions">
+              <button class="icon-btn" id="bulk-toggle" title="Bulk select">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h9a2 2 0 0 1 2 2v9"/><rect x="3" y="8" width="13" height="13" rx="2"/><path d="M7 14l2 2 4-4"/></svg>
+              </button>
+              <button class="icon-btn" title="Filters">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="9" y2="9"/><circle cx="11" cy="9" r="1.8" fill="currentColor"/><line x1="13" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="13" y2="15"/><circle cx="15" cy="15" r="1.8" fill="currentColor"/><line x1="17" y1="15" x2="20" y2="15"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="selection-bar">
+            <span class="selection-label" id="sel-label">0 selected:</span>
+            <span class="sel-action" id="act-initiate">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Initiate
+            </span>
+            <span class="sel-action is-danger" id="act-delete">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Delete
+            </span>
+            <span class="sel-cancel" id="sel-cancel">Cancel</span>
+          </div>
+
+          <div class="table-head">
+            <div class="col-check"></div>
+            <div>Batch</div>
+            <div class="right">Recurring</div>
+            <div class="right">Amount</div>
+          </div>
+
+          <div id="rows"></div>
+        </div>
+
+        <div class="right-col">
+          <div class="panel actions-card">
+            <div class="action"><div class="action-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><text x="0" y="17" font-family="system-ui" font-size="15" font-weight="700" fill="currentColor">A</text><path d="M12 12h8M17 9l3 3-3 3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg></div><div class="action-label">Create a batch</div></div>
+            <div class="action"><div class="action-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg></div><div class="action-label">Upload a file</div></div>
+            <div class="action"><div class="action-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><rect x="7" y="7" width="6" height="5" rx="0.5"/><line x1="15" y1="8" x2="17" y2="8"/><line x1="15" y1="11" x2="17" y2="11"/><line x1="7" y1="15" x2="17" y2="15"/><line x1="7" y1="18" x2="14" y2="18"/></svg></div><div class="action-label">Pay taxes</div></div>
+          </div>
+          <div class="panel calendar-card">
+            <div class="calendar-head"><div class="calendar-title">January</div><div class="calendar-nav"><button><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button><button><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></button></div></div>
+            <div class="calendar-grid">
+              <div class="cal-day-name">Sun</div><div class="cal-day-name">Mon</div><div class="cal-day-name">Tue</div><div class="cal-day-name">Wed</div><div class="cal-day-name">Thu</div><div class="cal-day-name">Fri</div><div class="cal-day-name">Sat</div>
+              <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div>
+              <div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day is-today">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day">14</div>
+              <div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div>
+              <div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div>
+              <div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="position:relative; margin-top:auto;">
+        <div class="help-fab"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></div>
+        <div class="footer-bar"><span>&copy;2023 YourFI &middot; (555) 555-5555</span><div class="right"><a href="#">Privacy policy</a><span>Member FDIC</span><span style="display:flex;align-items:center;gap:6px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Equal Housing Lender</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-scrim" id="confirm-modal" hidden>
+  <div class="modal">
+    <div class="modal-icon" id="confirm-icon"></div>
+    <div class="modal-title" id="confirm-title"></div>
+    <div class="modal-desc" id="confirm-desc"></div>
+    <div class="modal-list" id="confirm-list"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-primary" id="confirm-go"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-scrim" id="success-modal" hidden>
+  <div class="modal">
+    <div class="modal-icon is-success" id="success-icon">
+      <svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="modal-title" id="success-title">Batches deleted</div>
+    <div class="summary">
+      <div class="summary-row"><span class="summary-label">Total batches</span><span class="summary-value" id="success-count">0</span></div>
+      <div class="summary-row"><span class="summary-label">Total amount</span><span class="summary-value" id="success-total">$0.00</span></div>
+    </div>
+    <div class="batch-list" id="success-list"></div>
+    <div class="success-actions">
+      <button class="btn btn-primary" id="success-done">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  var BATCHES = [
+    { id: "b1", name: "ABC payroll",          status: "Ready",     statusClass: "badge-ready",     party: "ABC Company",    amount: "$500.00",   sub: "PPD" },
+    { id: "b2", name: "Landscaping payroll",  status: "Ready",     statusClass: "badge-ready",     party: "ABC Company",    amount: "$1,050.00", sub: "PPD" },
+    { id: "b3", name: "Construction payroll", status: "Ready",     statusClass: "badge-ready",     party: "ABC Company",    amount: "$2,300.00", sub: "PPD" },
+    { id: "b4", name: "Maintenance payroll", status: "Ready",     statusClass: "badge-ready",     party: "ABC Company",    amount: "$750.00",   sub: "PPD" },
+    { id: "b5", name: "Landscaping payment",  status: "Initiated", statusClass: "badge-initiated", party: "Landscape Inc",  amount: "$650.00",   sub: "CCD" },
+    { id: "b6", name: "ABC supplies",         status: "Processed", statusClass: "badge-processed", party: "Landscape Inc",  amount: "$875.00",   sub: "CCD" }
+  ];
+
+  var selected = new Set();
+  var bulkMode = false;
+
+  var rowsEl = document.getElementById("rows");
+  var bulkBtn = document.getElementById("bulk-toggle");
+  var cancelBtn = document.getElementById("sel-cancel");
+  var labelEl = document.getElementById("sel-label");
+  var actInitiate = document.getElementById("act-initiate");
+  var actDelete = document.getElementById("act-delete");
+  var confirmModal = document.getElementById("confirm-modal");
+  var confirmIcon = document.getElementById("confirm-icon");
+  var confirmTitle = document.getElementById("confirm-title");
+  var confirmDesc = document.getElementById("confirm-desc");
+  var confirmList = document.getElementById("confirm-list");
+  var confirmGo = document.getElementById("confirm-go");
+  var successModal = document.getElementById("success-modal");
+  var successIcon = document.getElementById("success-icon");
+  var successTitle = document.getElementById("success-title");
+  var successCount = document.getElementById("success-count");
+  var successTotal = document.getElementById("success-total");
+  var successList = document.getElementById("success-list");
+  var toastEl = document.getElementById("toast");
+
+  var ICON_DELETE = '<svg width="48" height="48" viewBox="0 0 24 24"><rect x="10.3" y="4.5" width="3.4" height="11" rx="1.7" fill="currentColor"/><circle cx="12" cy="18.6" r="1.85" fill="currentColor"/></svg>';
+  var ICON_INITIATE = '<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg>';
+
+  var pendingAction = null;
+
+  function renderRows() {
+    rowsEl.innerHTML = "";
+    BATCHES.forEach(function (b) {
+      var row = document.createElement("div");
+      row.className = "row" + (selected.has(b.id) ? " is-selected" : "");
+      row.dataset.id = b.id;
+      row.innerHTML =
+        '<div class="checkbox' + (selected.has(b.id) ? ' is-checked' : '') + '">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+        '</div>' +
+        '<div>' +
+          '<div class="row-name">' + b.name + '</div>' +
+          '<div class="row-meta"><span class="badge ' + b.statusClass + '">' + b.status + '</span><span>' + b.party + '</span></div>' +
+        '</div>' +
+        '<div class="row-recurring"></div>' +
+        '<div class="row-amount">' + b.amount + '<span class="row-amount-sub">' + b.sub + '</span></div>';
+      row.addEventListener("click", function () {
+        if (!bulkMode) return;
+        if (selected.has(b.id)) selected.delete(b.id);
+        else selected.add(b.id);
+        renderRows();
+        updateSelectionUI();
+      });
+      rowsEl.appendChild(row);
+    });
+  }
+
+  function updateSelectionUI() {
+    var n = selected.size;
+    labelEl.textContent = n + (n === 1 ? " selected:" : " selected:");
+    actInitiate.classList.toggle("is-enabled", n > 0);
+    actDelete.classList.toggle("is-enabled", n > 0);
+  }
+
+  function enterBulk() {
+    bulkMode = true;
+    document.body.classList.add("bulk-mode");
+    bulkBtn.classList.add("is-active");
+    updateSelectionUI();
+  }
+  function exitBulk() {
+    bulkMode = false;
+    selected.clear();
+    document.body.classList.remove("bulk-mode");
+    bulkBtn.classList.remove("is-active");
+    renderRows();
+    updateSelectionUI();
+  }
+
+  bulkBtn.addEventListener("click", function () {
+    if (bulkMode) exitBulk(); else enterBulk();
+  });
+  cancelBtn.addEventListener("click", exitBulk);
+
+  function openConfirm(action) {
+    if (selected.size === 0) return;
+    pendingAction = action;
+    var n = selected.size;
+    var isDelete = action === "delete";
+
+    confirmIcon.className = "modal-icon" + (isDelete ? "" : " is-info");
+    confirmIcon.innerHTML = isDelete ? ICON_DELETE : ICON_INITIATE;
+    confirmTitle.textContent = isDelete
+      ? (n === 1 ? "Delete ACH batch?" : "Delete ACH batches?")
+      : (n === 1 ? "Initiate ACH batch?" : "Initiate ACH batches?");
+    confirmDesc.textContent = isDelete
+      ? "The following batches will be deleted permanently and cannot be undone."
+      : "The following batches will be sent for processing.";
+    confirmGo.textContent = (isDelete ? "Delete " : "Initiate ") + n + " batch" + (n === 1 ? "" : "es");
+
+    confirmList.innerHTML = "";
+    BATCHES.filter(function (b) { return selected.has(b.id); }).forEach(function (b) {
+      var item = document.createElement("div");
+      item.className = "modal-item";
+      item.innerHTML =
+        '<div>' +
+          '<div class="modal-item-name">' + b.name + '</div>' +
+          '<div class="modal-item-meta"><span class="badge ' + b.statusClass + '">' + b.status + '</span><span>' + b.party + '</span></div>' +
+        '</div>' +
+        '<div class="modal-item-amount">' + b.amount + '<span class="modal-item-sub">' + b.sub + '</span></div>';
+      confirmList.appendChild(item);
+    });
+    confirmModal.hidden = false;
+  }
+
+  actDelete.addEventListener("click", function () { openConfirm("delete"); });
+  actInitiate.addEventListener("click", function () { openConfirm("initiate"); });
+
+  document.getElementById("confirm-cancel").addEventListener("click", function () {
+    confirmModal.hidden = true;
+    pendingAction = null;
+  });
+
+  function parseAmount(s) { return parseFloat(s.replace(/[^0-9.]/g, "")) || 0; }
+  function formatAmount(n) {
+    return "$" + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  confirmGo.addEventListener("click", function () {
+    var ids = Array.from(selected);
+    var n = ids.length;
+    var snapshot = BATCHES.filter(function (b) { return ids.includes(b.id); });
+    var total = snapshot.reduce(function (acc, b) { return acc + parseAmount(b.amount); }, 0);
+    confirmModal.hidden = true;
+
+    var isDelete = pendingAction === "delete";
+    if (isDelete) {
+      BATCHES = BATCHES.filter(function (b) { return !ids.includes(b.id); });
+      successTitle.textContent = n === 1 ? "Batch deleted" : "Batches deleted";
+      successIcon.className = "modal-icon is-success";
+    } else {
+      BATCHES.forEach(function (b) {
+        if (ids.includes(b.id)) { b.status = "Initiated"; b.statusClass = "badge-initiated"; }
+      });
+      successTitle.textContent = n === 1 ? "Batch initiated" : "Batches initiated";
+      successIcon.className = "modal-icon is-info";
+    }
+    successCount.textContent = String(n);
+    successTotal.textContent = formatAmount(total);
+    successList.innerHTML = "";
+    snapshot.forEach(function (b) {
+      var item = document.createElement("div");
+      item.className = "batch-item";
+      item.innerHTML =
+        '<div class="batch-icon' + (isDelete ? '' : ' is-info') + '">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+        '</div>' +
+        '<div>' +
+          '<div class="batch-name">' + b.name + '</div>' +
+          '<div class="batch-meta">' + b.party + ' &middot; ' + b.sub + '</div>' +
+        '</div>' +
+        '<div class="batch-amount">' + b.amount + '</div>';
+      successList.appendChild(item);
+    });
+
+    pendingAction = null;
+    successModal.hidden = false;
+    exitBulk();
+  });
+
+  document.getElementById("success-done").addEventListener("click", function () {
+    successModal.hidden = true;
+  });
+
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("is-on");
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function () { toastEl.classList.remove("is-on"); }, 2200);
+  }
+
+  renderRows();
+  updateSelectionUI();
+</script>
+</body>
+</html>

@@ -19,6 +19,24 @@
       "width": 1280
     },
     {
+      "file": "bulk-delete-confirm.html",
+      "x": 4020,
+      "y": 0,
+      "width": 1280
+    },
+    {
+      "file": "bulk-delete-success.html",
+      "x": 5360,
+      "y": 0,
+      "width": 1280
+    },
+    {
+      "file": "bulk-delete-partial-error.html",
+      "x": 6700,
+      "y": 0,
+      "width": 1280
+    },
+    {
       "file": "v2-action-first.html",
       "x": 64,
       "y": 5568,

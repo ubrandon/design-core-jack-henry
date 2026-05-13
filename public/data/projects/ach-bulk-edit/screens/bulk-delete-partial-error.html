@@ -1,0 +1,128 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #f4f5f7; font-family: var(--font-body); }
+  .screen { width: 1280px; background: #f4f5f7; display: flex; flex-direction: column; min-height: 760px; position: relative; }
+  .layout { display: flex; flex: 1; min-height: 0; }
+  .sidebar-col { padding: 0; width: 228px; flex-shrink: 0; background: #fff; border-right: 1px solid #e2e8f0; }
+  .sidebar-col .jh-sidebar { border: none; box-shadow: none; padding: 20px 0 0; height: 100%; display: flex; flex-direction: column; background: transparent; border-radius: 0; }
+  .sidebar-col .jh-sidebar > div:first-child { padding: 0 20px 24px; }
+  .sidebar-col .jh-sidebar > div:nth-child(2) { padding: 0 12px; flex: 1; }
+  .sidebar-col .jh-sidebar-item { padding: 10px 12px; border-radius: 10px; font-size: 0.8125rem; font-weight: 600; color: #475569; gap: 10px; }
+  .sidebar-col .jh-sidebar-item:hover { background: #f8fafc; color: #0f172a; }
+  .sidebar-col .jh-sidebar-item.is-active { background: #e8f0fa; color: #0a4a7a; box-shadow: inset 4px 0 0 #1a6ebe; border-left: none; margin-left: 0; padding-left: 12px; }
+  .sidebar-col .jh-sidebar-item.is-active svg { color: #1a6ebe; }
+  .sidebar-col .jh-sidebar-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.88; }
+  .sidebar-col .jh-sidebar-profile { margin-top: auto; border-top: 1px solid #e2e8f0; padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
+  .sidebar-col .jh-sidebar-avatar { width: 36px; height: 36px; border-radius: 50%; background: url('https://i.pravatar.cc/96?img=47') center/cover no-repeat, linear-gradient(135deg,#fbbf24,#f59e0b); flex-shrink: 0; }
+  .sidebar-col .jh-sidebar-profile-name { font-size: 0.8125rem; font-weight: 600; color: #0f172a; flex: 1; }
+  .yf-logo-mark { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(155deg, #1a6fc4 0%, #0d4f8f 100%); display: grid; place-items: center; color: #fff; box-shadow: 0 2px 8px rgba(13,92,158,0.25); flex-shrink: 0; }
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+  .hero { color: #fff; padding: 26px 32px 110px; position: relative; overflow: hidden; background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat, #002b55; }
+  .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, rgba(0,43,85,0.82) 0%, rgba(13,74,140,0.65) 60%, rgba(26,110,190,0.45) 100%); pointer-events: none; }
+  .hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 90% 80% at 100% 0%, rgba(255,255,255,0.08), transparent 50%); pointer-events: none; }
+  .hero h1 { display: none; }
+  .modal-area { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 24px 24px 42px; margin-top: -120px; position: relative; z-index: 1; }
+  .modal { background: #fff; border-radius: 20px; box-shadow: 0 24px 60px rgba(0,0,0,0.18); width: 560px; padding: 40px 40px 28px; }
+  .modal-icon { width: 112px; height: 112px; border-radius: 50%; border: 5px solid #b91c1c; display: grid; place-items: center; margin: 0 auto 22px; color: #b91c1c; }
+  .modal-title { font-size: 1.5rem; font-weight: 700; text-align: center; color: rgba(0,0,0,0.88); margin-bottom: 20px; letter-spacing: -0.01em; line-height: 1.2; }
+  .summary { border-top: 1px dashed rgba(0,0,0,0.12); border-bottom: 1px dashed rgba(0,0,0,0.12); padding: 16px 0; margin-bottom: 14px; }
+  .summary-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; }
+  .summary-label { color: rgba(0,0,0,0.55); }
+  .summary-value { color: rgba(0,0,0,0.88); font-weight: 600; }
+  .batch-list { padding-top: 6px; }
+  .batch-item { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.06); align-items: start; }
+  .batch-item:last-child { border-bottom: none; }
+  .batch-icon { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #15803d; display: grid; place-items: center; color: #15803d; margin-top: 2px; }
+  .batch-icon.is-error { border-color: #b91c1c; color: #b91c1c; }
+  .batch-name { font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .batch-meta { font-size: 0.8rem; color: rgba(0,0,0,0.55); margin-top: 4px; }
+  .batch-error { font-size: 0.8rem; color: #b91c1c; font-weight: 600; margin-top: 6px; }
+  .batch-error a { color: #b91c1c; text-decoration: none; font-weight: 700; }
+  .batch-amount { font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); text-align: right; }
+  .modal-actions { display: flex; justify-content: center; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.06); }
+  .btn { font-size: 0.9rem; font-weight: 700; padding: 9px 22px; border-radius: 8px; border: none; cursor: pointer; }
+  .btn-primary { background: var(--jh-blue); color: #fff; }
+
+  .footer-bar { background: var(--jh-navy); color: rgba(255,255,255,0.85); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; }
+  .footer-bar a { color: inherit; text-decoration: none; }
+  .footer-bar .right { display: flex; gap: 18px; align-items: center; }
+</style>
+
+<div class="screen">
+  <div class="layout">
+    <div class="sidebar-col">
+      <div class="jh-sidebar">
+        <div style="font-size:1.125rem;font-weight:800;display:flex;align-items:center;gap:10px;color:#1a6ebe;letter-spacing:-0.02em;">
+          <span class="yf-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3L4 9v12h16V9l-8-6z"/><path d="M9 21V12h6v9"/></svg></span>
+          <span>YourFI</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <div class="jh-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span class="jh-sidebar-item-label">Dashboard</span></div>
+          <div class="jh-sidebar-item" style="position:relative;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg><span class="jh-sidebar-item-label">Messages</span><span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#ef4444;color:#fff;font-size:0.6rem;font-weight:800;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;">1</span></div>
+          <div class="jh-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg><span class="jh-sidebar-item-label">Accounts</span></div>
+          <div class="jh-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><span class="jh-sidebar-item-label">Transfers</span></div>
+          <div class="jh-sidebar-item" style="justify-content:space-between;"><span style="display:flex;align-items:center;gap:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="jh-sidebar-item-label">Payments</span></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div style="padding-left:20px;display:flex;flex-direction:column;gap:2px;">
+            <div class="jh-sidebar-item" style="padding:8px 12px;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Bill pay</span></div>
+            <div class="jh-sidebar-item" style="padding:8px 12px;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Send money with Zelle&reg;</span></div>
+            <div class="jh-sidebar-item" style="padding:8px 12px;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Positive pay</span></div>
+            <div class="jh-sidebar-item is-active" style="padding:8px 12px;"><span class="jh-sidebar-item-label">ACH</span></div>
+            <div class="jh-sidebar-item" style="padding:8px 12px;"><span class="jh-sidebar-item-label" style="color:rgba(0,0,0,0.65);">Wires</span></div>
+          </div>
+          <div class="jh-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg><span class="jh-sidebar-item-label">Remote deposits</span></div>
+          <div class="jh-sidebar-item" style="justify-content:space-between;"><span style="display:flex;align-items:center;gap:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg><span class="jh-sidebar-item-label">Insights</span></span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div class="jh-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg><span class="jh-sidebar-item-label">Support</span></div>
+        </div>
+        <div class="jh-sidebar-profile">
+          <div class="jh-sidebar-avatar"></div>
+          <span class="jh-sidebar-profile-name">Emma Reed</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:rgba(0,0,0,0.5);"><path d="M6 15l6-6 6 6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="hero"><h1>ACH</h1></div>
+      <div class="modal-area">
+        <div class="modal">
+          <div class="modal-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24"><rect x="10.3" y="4.5" width="3.4" height="11" rx="1.7" fill="currentColor"/><circle cx="12" cy="18.6" r="1.85" fill="currentColor"/></svg>
+          </div>
+          <div class="modal-title">Some batches could not<br/>be deleted</div>
+          <div class="summary">
+            <div class="summary-row"><span class="summary-label">Total batches</span><span class="summary-value">2</span></div>
+            <div class="summary-row"><span class="summary-label">Total amount</span><span class="summary-value">$1,900.00</span></div>
+          </div>
+          <div class="batch-list">
+            <div class="batch-item">
+              <div class="batch-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div>
+                <div class="batch-name">ABC payroll</div>
+                <div class="batch-meta">June 4, Business Checking (x1234)</div>
+              </div>
+              <div class="batch-amount">$1,050.00</div>
+            </div>
+            <div class="batch-item">
+              <div class="batch-icon is-error"><svg width="16" height="16" viewBox="0 0 24 24"><rect x="10.3" y="4.5" width="3.4" height="11" rx="1.7" fill="currentColor"/><circle cx="12" cy="18.6" r="1.85" fill="currentColor"/></svg></div>
+              <div>
+                <div class="batch-name">Landscaping payment</div>
+                <div class="batch-meta">June 4, Business Checking (x1234)</div>
+                <div class="batch-error">This batch is currently being processed and cannot be deleted.</div>
+              </div>
+              <div class="batch-amount">$850.00</div>
+            </div>
+          </div>
+          <div class="modal-actions"><button class="btn btn-primary">Done</button></div>
+        </div>
+      </div>
+      <div style="margin-top:auto;">
+        <div class="footer-bar">
+          <span>&copy;2023 YourFI &middot; (555) 555-5555</span>
+          <div class="right"><a href="#">Privacy policy</a><span>Member FDIC</span><span style="display:flex;align-items:center;gap:6px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Equal Housing Lender</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+{
+  "name": "Bulk delete flow",
+  "description": "Walks the ACH bulk-edit canvas top row: ACH start → bulk select → 1 selected → delete confirm → success / partial error.",
+  "updatedAt": "2026-05-13T12:00:00.000Z"
+}
