@@ -1,0 +1,267 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #f4f5f7; font-family: var(--font-body); }
+  .screen { width: 1280px; background: #f4f5f7; display: flex; flex-direction: column; min-height: 820px; position: relative; }
+  .layout { display: flex; flex: 1; min-height: 0; }
+  .sidebar-col { padding: 16px; width: 240px; flex-shrink: 0; }
+  .sidebar-col .jh-sidebar { border: none; box-shadow: none; padding: 14px 12px; height: 100%; display: flex; flex-direction: column; }
+  .sidebar-col .jh-sidebar-profile { margin-top: auto; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 12px; display: flex; align-items: center; gap: 10px; }
+  .sidebar-col .jh-sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,#fbbf24,#f59e0b); flex-shrink: 0; }
+  .sidebar-col .jh-sidebar-profile-name { font-size: 0.85rem; font-weight: 600; color: rgba(0,0,0,0.8); flex: 1; }
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+  .hero { background: linear-gradient(180deg,#1e3a5f 0%, #2c4a72 100%); color: #fff; padding: 22px 32px 100px; position: relative; }
+  .hero h1 { position: relative; margin: 0; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; }
+  .concept-tag { position: absolute; top: 22px; right: 32px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; padding: 6px 10px; border-radius: 999px; text-transform: uppercase; }
+  .panels { padding: 0 24px; margin-top: -70px; display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; position: relative; z-index: 1; }
+  .panel { background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
+
+  .tabs-row { display: flex; align-items: center; padding: 14px 20px 0; gap: 16px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .tab { font-size: 0.85rem; font-weight: 700; color: rgba(0,0,0,0.45); padding-bottom: 12px; border-bottom: 2px solid transparent; }
+  .tab.is-active { color: var(--jh-blue); border-bottom-color: var(--jh-blue); }
+  .tabs-actions { margin-left: auto; display: flex; gap: 6px; padding-bottom: 8px; align-items: center; font-size: 0.78rem; color: rgba(0,0,0,0.55); font-weight: 600; }
+
+  .table-head { display: grid; grid-template-columns: 32px 1fr 120px 120px; padding: 12px 20px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.45); border-bottom: 1px solid rgba(0,0,0,0.06); align-items: center; }
+  .table-head .right { text-align: right; }
+  .row { display: grid; grid-template-columns: 32px 1fr 120px 120px; padding: 14px 20px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .row:last-child { border-bottom: none; }
+  .row.is-eligible { cursor: pointer; }
+  .row.is-eligible:hover { background: rgba(37,99,235,0.03); }
+  .row.is-selected { background: rgba(37,99,235,0.08); }
+  .row.is-disabled { background: rgba(0,0,0,0.015); }
+  .row.is-disabled .row-name { color: rgba(0,0,0,0.45); }
+  .row-name { font-size: 0.92rem; font-weight: 600; color: rgba(0,0,0,0.88); margin-bottom: 4px; }
+  .row-meta { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: rgba(0,0,0,0.55); flex-wrap: wrap; }
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em; }
+  .badge-ready { background: rgba(22,163,74,0.1); color: #15803d; }
+  .badge-initiated { background: rgba(37,99,235,0.1); color: #1d4ed8; }
+  .badge-processed { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.6); }
+  .row-amount { text-align: right; font-size: 0.92rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .row-amount-sub { display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: rgba(0,0,0,0.4); margin-top: 2px; text-transform: uppercase; }
+  .row.is-disabled .row-amount { color: rgba(0,0,0,0.4); }
+  .row-recurring { display: flex; justify-content: center; align-items: center; color: rgba(0,0,0,0.3); }
+  .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid rgba(0,0,0,0.25); background: #fff; }
+  .checkbox.is-checked { background: var(--jh-blue); border-color: var(--jh-blue); display: grid; place-items: center; }
+  .checkbox.is-checked svg { width: 11px; height: 11px; color: #fff; }
+  .checkbox.is-indeterminate { background: var(--jh-blue); border-color: var(--jh-blue); display: grid; place-items: center; }
+  .checkbox.is-indeterminate::after { content: ""; width: 9px; height: 2px; background: #fff; border-radius: 1px; }
+  .checkbox.is-locked { background: rgba(0,0,0,0.04); border-style: dashed; border-color: rgba(0,0,0,0.18); }
+
+  .right-col { display: flex; flex-direction: column; gap: 16px; }
+  .actions-card { display: grid; grid-template-columns: repeat(3,1fr); padding: 18px 12px; }
+  .action { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px; }
+  .action-icon { width: 36px; height: 36px; display: grid; place-items: center; color: var(--jh-blue); }
+  .action-label { font-size: 0.78rem; font-weight: 600; color: rgba(0,0,0,0.7); text-align: center; }
+
+  .calendar-card { padding: 18px 20px 20px; }
+  .calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .calendar-title { font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .calendar-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+  .cal-day-name { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; color: rgba(0,0,0,0.4); text-align: center; padding: 6px 0; text-transform: uppercase; }
+  .cal-day { aspect-ratio: 1; display: grid; place-items: center; font-size: 0.78rem; color: rgba(0,0,0,0.7); border-radius: 50%; }
+  .cal-day.is-today { background: var(--jh-navy); color: #fff; font-weight: 700; }
+
+  .footer-bar { background: var(--jh-navy); color: rgba(255,255,255,0.85); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; margin-top: 24px; }
+  .footer-bar .right { display: flex; gap: 18px; align-items: center; }
+
+  /* Floating action bar */
+  .floating-bar-wrap { position: absolute; left: 50%; transform: translateX(-50%); bottom: 80px; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .floating-bar { background: #1e293b; color: #fff; border-radius: 14px; padding: 10px 12px 10px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 18px 40px rgba(15,23,42,0.35), 0 4px 12px rgba(15,23,42,0.2); border: 1px solid rgba(255,255,255,0.06); }
+  .fb-count { display: flex; align-items: center; gap: 10px; padding-right: 14px; border-right: 1px solid rgba(255,255,255,0.12); }
+  .fb-count-num { width: 26px; height: 26px; border-radius: 7px; background: var(--jh-blue); display: grid; place-items: center; font-size: 0.8rem; font-weight: 800; }
+  .fb-count-label { font-size: 0.85rem; font-weight: 600; }
+  .fb-count-sub { font-size: 0.72rem; color: rgba(255,255,255,0.55); font-weight: 600; }
+  .fb-action { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; background: transparent; color: rgba(255,255,255,0.85); border: none; }
+  .fb-action svg { width: 14px; height: 14px; }
+  .fb-action:hover { background: rgba(255,255,255,0.08); }
+  .fb-action.is-primary { background: var(--jh-blue); color: #fff; padding: 9px 14px; }
+  .fb-action.is-primary:hover { background: #1d4ed8; }
+  .fb-action.is-danger { color: #fca5a5; }
+  .fb-divider { width: 1px; height: 22px; background: rgba(255,255,255,0.12); }
+  .fb-close { width: 28px; height: 28px; border-radius: 8px; background: transparent; color: rgba(255,255,255,0.6); border: none; display: grid; place-items: center; cursor: pointer; }
+  .fb-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .fb-helper { font-size: 0.7rem; font-weight: 600; color: rgba(0,0,0,0.5); background: #fff; padding: 4px 10px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+</style>
+
+<div class="screen">
+  <div class="layout">
+    <div class="sidebar-col">
+      <div class="jh-sidebar">
+        <div style="font-size:1.05rem;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:8px;color:var(--jh-blue);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          <span>YourFI</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Dashboard</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Accounts</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Transfers</span></div>
+          <div class="jh-sidebar-item is-active"><span class="jh-sidebar-item-label">Payments / ACH</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Remote deposits</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Insights</span></div>
+        </div>
+        <div class="jh-sidebar-profile">
+          <div class="jh-sidebar-avatar"></div>
+          <span class="jh-sidebar-profile-name">Emma Reed</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="hero">
+        <h1>ACH</h1>
+        <span class="concept-tag">v3 &middot; Floating action bar</span>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="tabs-row">
+            <div class="tab is-active">Active</div>
+            <div class="tab">History</div>
+            <div class="tabs-actions">
+              <span>6 batches</span>
+            </div>
+          </div>
+          <div class="table-head">
+            <div><div class="checkbox is-indeterminate"></div></div>
+            <div>Batch</div>
+            <div class="right">Recurring</div>
+            <div class="right">Amount</div>
+          </div>
+          <div class="row is-eligible is-selected">
+            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
+            <div>
+              <div class="row-name">ABC payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$500.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row is-eligible is-selected">
+            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
+            <div>
+              <div class="row-name">Landscaping payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$1,050.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row is-eligible is-selected">
+            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
+            <div>
+              <div class="row-name">Construction payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>XYZ Builders</span></div>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$2,300.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row is-eligible">
+            <div class="checkbox"></div>
+            <div>
+              <div class="row-name">Maintenance payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>LMN Services</span></div>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$750.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row is-disabled">
+            <div class="checkbox is-locked"></div>
+            <div>
+              <div class="row-name">Landscaping payment</div>
+              <div class="row-meta"><span class="badge badge-initiated">Initiated</span><span>Landscape Inc</span></div>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$650.00<span class="row-amount-sub">CCD</span></div>
+          </div>
+          <div class="row is-disabled">
+            <div class="checkbox is-locked"></div>
+            <div>
+              <div class="row-name">ABC supplies</div>
+              <div class="row-meta"><span class="badge badge-processed">Processed</span><span>Landscape Inc</span></div>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$875.00<span class="row-amount-sub">CCD</span></div>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="panel actions-card">
+            <div class="action">
+              <div class="action-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M16 12l4 4M20 12l-4 4"/><path d="M4 21v-1a4 4 0 0 1 4-4h4"/></svg>
+              </div>
+              <div class="action-label">Create a batch</div>
+            </div>
+            <div class="action">
+              <div class="action-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div class="action-label">Upload a file</div>
+            </div>
+            <div class="action">
+              <div class="action-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="10"/></svg>
+              </div>
+              <div class="action-label">Pay taxes</div>
+            </div>
+          </div>
+
+          <div class="panel calendar-card">
+            <div class="calendar-head">
+              <div class="calendar-title">January</div>
+            </div>
+            <div class="calendar-grid">
+              <div class="cal-day-name">Sun</div><div class="cal-day-name">Mon</div><div class="cal-day-name">Tue</div><div class="cal-day-name">Wed</div><div class="cal-day-name">Thu</div><div class="cal-day-name">Fri</div><div class="cal-day-name">Sat</div>
+              <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div>
+              <div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day is-today">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day">14</div>
+              <div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div>
+              <div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div>
+              <div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="floating-bar-wrap">
+        <div class="fb-helper">2 more rows are <strong>Ready</strong> &middot; <span style="color: var(--jh-blue);">Select all eligible</span></div>
+        <div class="floating-bar">
+          <div class="fb-count">
+            <span class="fb-count-num">3</span>
+            <div style="display:flex;flex-direction:column;">
+              <span class="fb-count-label">selected</span>
+              <span class="fb-count-sub">$3,850.00 total</span>
+            </div>
+          </div>
+          <button class="fb-action is-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Initiate 3
+          </button>
+          <button class="fb-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 12l2 2 4-4"/></svg>
+            Approve
+          </button>
+          <button class="fb-action is-danger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Delete
+          </button>
+          <div class="fb-divider"></div>
+          <button class="fb-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>
+          </button>
+          <button class="fb-close" title="Clear selection">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div style="position:relative; margin-top:auto;">
+        <div class="footer-bar">
+          <span>&copy;2023 YourFI &middot; (555) 555-5555</span>
+          <div class="right">
+            <a href="#" style="color:inherit;text-decoration:none;">Privacy policy</a>
+            <span>Member FDIC</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

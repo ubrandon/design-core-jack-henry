@@ -1,0 +1,253 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #f4f5f7; font-family: var(--font-body); }
+  .screen { width: 1280px; background: #f4f5f7; display: flex; flex-direction: column; min-height: 820px; }
+  .layout { display: flex; flex: 1; min-height: 0; }
+  .sidebar-col { padding: 16px; width: 240px; flex-shrink: 0; }
+  .sidebar-col .jh-sidebar { border: none; box-shadow: none; padding: 14px 12px; height: 100%; display: flex; flex-direction: column; }
+  .sidebar-col .jh-sidebar-profile { margin-top: auto; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 12px; display: flex; align-items: center; gap: 10px; }
+  .sidebar-col .jh-sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,#fbbf24,#f59e0b); flex-shrink: 0; }
+  .sidebar-col .jh-sidebar-profile-name { font-size: 0.85rem; font-weight: 600; color: rgba(0,0,0,0.8); flex: 1; }
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .hero { background: linear-gradient(180deg,#1e3a5f 0%, #2c4a72 100%); color: #fff; padding: 22px 32px 100px; position: relative; }
+  .hero h1 { position: relative; margin: 0; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; }
+  .concept-tag { position: absolute; top: 22px; right: 32px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; padding: 6px 10px; border-radius: 999px; text-transform: uppercase; }
+  .panels { padding: 0 24px; margin-top: -70px; display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; position: relative; z-index: 1; }
+  .panel { background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
+
+  .filter-row { display: flex; align-items: center; gap: 8px; padding: 14px 20px; border-bottom: 1px solid rgba(0,0,0,0.06); flex-wrap: wrap; }
+  .filter-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(0,0,0,0.4); margin-right: 4px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; cursor: pointer; background: rgba(0,0,0,0.04); color: rgba(0,0,0,0.7); border: 1px solid transparent; }
+  .chip .count { font-size: 0.72rem; color: rgba(0,0,0,0.4); font-weight: 700; }
+  .chip.is-active { background: rgba(22,163,74,0.12); color: #15803d; border-color: rgba(22,163,74,0.3); }
+  .chip.is-active .count { color: rgba(21,128,61,0.7); }
+  .chip-spacer { flex: 1; }
+  .chip-search { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; color: rgba(0,0,0,0.55); background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06); }
+  .chip-search svg { width: 13px; height: 13px; }
+
+  .bulk-banner { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: linear-gradient(90deg, rgba(22,163,74,0.06), rgba(37,99,235,0.05)); border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .bulk-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(22,163,74,0.14); color: #15803d; display: grid; place-items: center; flex-shrink: 0; }
+  .bulk-icon svg { width: 18px; height: 18px; }
+  .bulk-text-main { font-size: 0.95rem; font-weight: 700; color: rgba(0,0,0,0.88); margin-bottom: 2px; }
+  .bulk-text-sub { font-size: 0.78rem; color: rgba(0,0,0,0.55); font-weight: 600; }
+  .bulk-text-sub strong { color: rgba(0,0,0,0.85); }
+  .bulk-cta { margin-left: auto; padding: 11px 18px; background: var(--jh-blue); color: #fff; font-weight: 700; font-size: 0.88rem; border-radius: 10px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .bulk-cta svg { width: 14px; height: 14px; }
+  .bulk-secondary { padding: 10px 14px; background: #fff; color: rgba(0,0,0,0.7); font-weight: 700; font-size: 0.82rem; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; }
+
+  .table-head { display: grid; grid-template-columns: 32px 1fr 120px 120px; padding: 12px 20px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.45); border-bottom: 1px solid rgba(0,0,0,0.06); align-items: center; }
+  .table-head .right { text-align: right; }
+  .row { display: grid; grid-template-columns: 32px 1fr 120px 120px; padding: 14px 20px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; }
+  .row:last-child { border-bottom: none; }
+  .row:hover { background: rgba(37,99,235,0.03); }
+  .row.is-selected { background: rgba(22,163,74,0.06); }
+  .row-name { font-size: 0.92rem; font-weight: 600; color: rgba(0,0,0,0.88); margin-bottom: 4px; }
+  .row-meta { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: rgba(0,0,0,0.55); }
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; }
+  .badge-ready { background: rgba(22,163,74,0.1); color: #15803d; }
+  .row-amount { text-align: right; font-size: 0.92rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .row-amount-sub { display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: rgba(0,0,0,0.4); margin-top: 2px; text-transform: uppercase; }
+  .row-recurring { display: flex; justify-content: center; align-items: center; color: rgba(0,0,0,0.3); }
+  .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid rgba(0,0,0,0.25); background: #fff; }
+  .checkbox.is-checked { background: #15803d; border-color: #15803d; display: grid; place-items: center; }
+  .checkbox.is-checked svg { width: 11px; height: 11px; color: #fff; }
+
+  .hidden-strip { display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-top: 1px dashed rgba(0,0,0,0.08); font-size: 0.78rem; color: rgba(0,0,0,0.5); font-weight: 600; background: rgba(0,0,0,0.015); }
+  .hidden-strip svg { width: 14px; height: 14px; }
+  .hidden-strip a { color: var(--jh-blue); font-weight: 700; cursor: pointer; }
+
+  .review-card { padding: 18px 18px 16px; }
+  .review-title { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.45); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .review-title .edit-link { color: var(--jh-blue); font-size: 0.7rem; text-transform: none; letter-spacing: 0; }
+  .review-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 0.85rem; color: rgba(0,0,0,0.75); border-bottom: 1px dashed rgba(0,0,0,0.06); }
+  .review-row strong { font-weight: 700; color: rgba(0,0,0,0.9); }
+  .review-row.is-total { padding-top: 12px; font-size: 0.95rem; }
+  .review-row.is-total strong { font-size: 1.1rem; color: rgba(0,0,0,0.95); }
+  .review-list { margin-top: 8px; }
+  .review-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 0.8rem; color: rgba(0,0,0,0.7); }
+  .review-item-name { display: flex; align-items: center; gap: 8px; }
+  .review-item-name .dot { width: 8px; height: 8px; border-radius: 50%; background: #15803d; }
+  .review-cta { width: 100%; margin-top: 14px; padding: 13px 14px; background: var(--jh-blue); color: #fff; font-weight: 700; font-size: 0.92rem; border-radius: 10px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .review-cta svg { width: 14px; height: 14px; }
+  .review-foot { margin-top: 8px; font-size: 0.72rem; color: rgba(0,0,0,0.45); text-align: center; }
+
+  .right-col { display: flex; flex-direction: column; gap: 16px; }
+
+  .footer-bar { background: var(--jh-navy); color: rgba(255,255,255,0.85); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; margin-top: 24px; }
+  .footer-bar .right { display: flex; gap: 18px; align-items: center; }
+</style>
+
+<div class="screen">
+  <div class="layout">
+    <div class="sidebar-col">
+      <div class="jh-sidebar">
+        <div style="font-size:1.05rem;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:8px;color:var(--jh-blue);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          <span>YourFI</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Dashboard</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Accounts</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Transfers</span></div>
+          <div class="jh-sidebar-item is-active"><span class="jh-sidebar-item-label">Payments / ACH</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Remote deposits</span></div>
+          <div class="jh-sidebar-item"><span class="jh-sidebar-item-label">Insights</span></div>
+        </div>
+        <div class="jh-sidebar-profile">
+          <div class="jh-sidebar-avatar"></div>
+          <span class="jh-sidebar-profile-name">Emma Reed</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="hero">
+        <h1>ACH</h1>
+        <span class="concept-tag">v3 &middot; Smart filter</span>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="filter-row">
+            <span class="filter-label">Filter</span>
+            <span class="chip is-active">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              Ready <span class="count">4</span>
+            </span>
+            <span class="chip">Initiated <span class="count">1</span></span>
+            <span class="chip">Processed <span class="count">1</span></span>
+            <span class="chip">All <span class="count">6</span></span>
+            <span class="chip-spacer"></span>
+            <span class="chip-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Search batches
+            </span>
+          </div>
+
+          <div class="bulk-banner">
+            <div class="bulk-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </div>
+            <div>
+              <div class="bulk-text-main">All 4 Ready batches can be initiated</div>
+              <div class="bulk-text-sub"><strong>$4,600.00</strong> total &middot; Settles <strong>Jan 11</strong> (next business day)</div>
+            </div>
+            <button class="bulk-secondary">Pick batches</button>
+            <button class="bulk-cta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Initiate all 4
+            </button>
+          </div>
+
+          <div class="table-head">
+            <div><div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div></div>
+            <div>Batch</div>
+            <div class="right">Recurring</div>
+            <div class="right">Amount</div>
+          </div>
+          <div class="row is-selected">
+            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
+            <div>
+              <div class="row-name">ABC payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$500.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row is-selected">
+            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
+            <div>
+              <div class="row-name">Landscaping payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>ABC Company</span></div>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$1,050.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row is-selected">
+            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
+            <div>
+              <div class="row-name">Construction payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>XYZ Builders</span></div>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$2,300.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+          <div class="row is-selected">
+            <div class="checkbox is-checked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div>
+            <div>
+              <div class="row-name">Maintenance payroll</div>
+              <div class="row-meta"><span class="badge badge-ready">Ready</span><span>LMN Services</span></div>
+            </div>
+            <div class="row-recurring"></div>
+            <div class="row-amount">$750.00<span class="row-amount-sub">PPD</span></div>
+          </div>
+
+          <div class="hidden-strip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="1" fill="currentColor"/></svg>
+            <span>2 batches hidden &mdash; not eligible to initiate.</span>
+            <a>Show all</a>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="panel review-card">
+            <div class="review-title">
+              Review &amp; initiate
+              <span class="edit-link">Edit</span>
+            </div>
+            <div class="review-row">
+              <span>Batches</span>
+              <strong>4 selected</strong>
+            </div>
+            <div class="review-row">
+              <span>Effective</span>
+              <strong>Jan 11, 2024</strong>
+            </div>
+            <div class="review-row">
+              <span>Funding account</span>
+              <strong>Operating &middot; *4421</strong>
+            </div>
+            <div class="review-row is-total">
+              <span>Total</span>
+              <strong>$4,600.00</strong>
+            </div>
+            <div class="review-list">
+              <div class="review-item">
+                <span class="review-item-name"><span class="dot"></span>ABC payroll</span>
+                <span>$500.00</span>
+              </div>
+              <div class="review-item">
+                <span class="review-item-name"><span class="dot"></span>Landscaping payroll</span>
+                <span>$1,050.00</span>
+              </div>
+              <div class="review-item">
+                <span class="review-item-name"><span class="dot"></span>Construction payroll</span>
+                <span>$2,300.00</span>
+              </div>
+              <div class="review-item">
+                <span class="review-item-name"><span class="dot"></span>Maintenance payroll</span>
+                <span>$750.00</span>
+              </div>
+            </div>
+            <button class="review-cta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Initiate 4 batches
+            </button>
+            <div class="review-foot">You'll review one more time before submitting.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="position:relative; margin-top:auto;">
+        <div class="footer-bar">
+          <span>&copy;2023 YourFI &middot; (555) 555-5555</span>
+          <div class="right">
+            <a href="#" style="color:inherit;text-decoration:none;">Privacy policy</a>
+            <span>Member FDIC</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -20,20 +20,38 @@
     },
     {
       "file": "v2-action-first.html",
-      "x": 0,
-      "y": 900,
+      "x": -32,
+      "y": 1408,
       "width": 1280
     },
     {
       "file": "v2-eligibility-hints.html",
-      "x": 1340,
-      "y": 900,
+      "x": 1312,
+      "y": 1408,
       "width": 1280
     },
     {
       "file": "v2-grouped-by-status.html",
-      "x": 2680,
-      "y": 900,
+      "x": 2656,
+      "y": 1408,
+      "width": 1280
+    },
+    {
+      "file": "v3-floating-bar.html",
+      "x": -32,
+      "y": 2816,
+      "width": 1280
+    },
+    {
+      "file": "v3-smart-filter.html",
+      "x": 1312,
+      "y": 2816,
+      "width": 1280
+    },
+    {
+      "file": "v3-toolbar-overlay.html",
+      "x": 2656,
+      "y": 2816,
       "width": 1280
     }
   ]
