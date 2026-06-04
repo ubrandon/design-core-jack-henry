@@ -11,6 +11,55 @@
   <link rel="stylesheet" href="styles/app.css">
   <style>
     .canvas-card-body { overflow: hidden; max-height: none; }
+    .export-toast {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999; opacity: 0; transition: opacity 0.18s ease;
+      pointer-events: none;
+    }
+    .export-toast.is-visible { opacity: 1; pointer-events: auto; }
+    .export-toast__panel {
+      background: #1b1b1b; color: #fff;
+      padding: 32px 40px; border-radius: 14px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      min-width: 320px; max-width: 420px; text-align: center;
+      font: 16px/1.4 -apple-system, system-ui, sans-serif;
+      transform: scale(0.96); transition: transform 0.18s ease;
+    }
+    .export-toast.is-visible .export-toast__panel { transform: scale(1); }
+    .export-toast__spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(255,255,255,0.18);
+      border-top-color: #fff; border-radius: 50%;
+      animation: export-spin 0.8s linear infinite;
+    }
+    .export-toast__label { font-size: 16px; font-weight: 500; }
+    .export-toast--done .export-toast__spinner,
+    .export-toast--error .export-toast__spinner { display: none; }
+    .export-toast--error .export-toast__panel { background: #6b1d1d; }
+    @keyframes export-spin { to { transform: rotate(360deg); } }
+
+    .canvas-space-viewport.placing-text { cursor: crosshair; }
+    .canvas-space-viewport.placing-text .canvas-card { cursor: crosshair; }
+    .canvas-text-layer { position: absolute; inset: 0; pointer-events: none; }
+    .canvas-text {
+      position: absolute; pointer-events: auto; cursor: grab;
+      font-family: -apple-system, system-ui, sans-serif;
+      font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+      color: rgba(0,0,0,0.82); white-space: pre; max-width: none;
+      padding: 4px 6px; border-radius: 8px; border: 1.5px solid transparent;
+      user-select: none;
+    }
+    .canvas-text:hover { background: rgba(0,0,0,0.03); }
+    .canvas-text.is-selected { border-color: #4a8cff; background: rgba(74,140,255,0.06); cursor: grab; }
+    .dragging-card .canvas-text { cursor: grabbing; }
+    .canvas-text-input {
+      font-family: inherit; font-weight: inherit; line-height: inherit; letter-spacing: inherit;
+      color: inherit; background: transparent; border: none; outline: none; padding: 0; margin: 0;
+      box-sizing: content-box; overflow: visible; min-width: 120px; width: 120px;
+    }
   </style>
 </head>
 <body>
@@ -20,6 +69,7 @@
   </div>
 
   <div class="zoom-controls">
+    <button class="zoom-btn zoom-btn--tidy" onclick="addText()" title="Add a title (T)">Title</button>
     <button class="zoom-btn zoom-btn--tidy" onclick="refreshScreens()" title="Reload screens to see edits">Refresh</button>
     <div class="zoom-controls__zoom-group">
       <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
@@ -39,6 +89,8 @@
   <script>
     const CARD_GAP = 40;
     const DRAG_THRESHOLD = 5;
+    const TITLE_FONT_SIZE = 48;
+    const DUPLICATE_OFFSET = 64;
     /** Stage-space snap when dragging cards (px). */
     const GRID_SNAP = 32;
 
@@ -99,15 +151,32 @@
     window.addEventListener("pagehide", savePanZoom);
 
     let screens = [];
+    let texts = [];
 
     /* ── Selection state ── */
     const selected = new Set();
+    const selectedTexts = new Set();
+
+    function setCanvasSelection(screenIndices, textIndices) {
+      selected.clear();
+      screenIndices.forEach(i => selected.add(i));
+      selectedTexts.clear();
+      textIndices.forEach(i => selectedTexts.add(i));
+      selectedText = selectedTexts.size ? Math.min(...selectedTexts) : -1;
+      applySelectionClasses();
+      applyTextSelectionClasses();
+      updateSelectionBar();
+    }
 
     function setSelected(indices) {
-      selected.clear();
-      indices.forEach(i => selected.add(i));
-      applySelectionClasses();
-      updateSelectionBar();
+      setCanvasSelection(indices, []);
+    }
+
+    function setAllSelected() {
+      setCanvasSelection(
+        screens.map((_, i) => i),
+        texts.map((_, i) => i),
+      );
     }
 
     function toggleSelected(idx) {
@@ -117,9 +186,7 @@
     }
 
     function clearSelection() {
-      selected.clear();
-      applySelectionClasses();
-      updateSelectionBar();
+      setCanvasSelection([], []);
     }
 
     function applySelectionClasses() {
@@ -133,7 +200,8 @@
     let selectionBar = null;
 
     function updateSelectionBar() {
-      if (selected.size === 0) {
+      const total = selected.size + selectedTexts.size;
+      if (total === 0) {
         if (selectionBar) { selectionBar.remove(); selectionBar = null; }
         return;
       }
@@ -142,7 +210,10 @@
         selectionBar.className = "canvas-selection-bar";
         document.body.appendChild(selectionBar);
       }
-      const label = selected.size === 1 ? "1 screen" : selected.size + " screens";
+      const parts = [];
+      if (selected.size) parts.push(selected.size === 1 ? "1 screen" : selected.size + " screens");
+      if (selectedTexts.size) parts.push(selectedTexts.size === 1 ? "1 title" : selectedTexts.size + " titles");
+      const label = parts.join(" + ");
       selectionBar.innerHTML =
         '<span class="canvas-selection-bar-label">' + label + ' selected</span>' +
         '<button class="canvas-selection-bar-btn" onclick="deleteSelected()">' +
@@ -150,15 +221,25 @@
         'Delete</button>';
     }
 
-    /* ── Delete selected screens ── */
+    function selectedObjectLabel() {
+      const parts = [];
+      if (selected.size) parts.push(selected.size === 1 ? "1 screen" : selected.size + " screens");
+      if (selectedTexts.size) parts.push(selectedTexts.size === 1 ? "1 title" : selectedTexts.size + " titles");
+      return parts.join(" + ") || "selection";
+    }
+
+    /* ── Delete selected canvas objects ── */
     function deleteSelected() {
-      if (selected.size === 0) return;
-      const indices = Array.from(selected).sort((a, b) => b - a);
-      const filesToDelete = indices.map(i => screens[i].file);
-      indices.forEach(i => screens.splice(i, 1));
+      if (selected.size === 0 && selectedTexts.size === 0) return;
+      const screenIndices = Array.from(selected).sort((a, b) => b - a);
+      const textIndices = Array.from(selectedTexts).sort((a, b) => b - a);
+      const filesToDelete = screenIndices.map(i => screens[i].file);
+      screenIndices.forEach(i => screens.splice(i, 1));
+      textIndices.forEach(i => texts.splice(i, 1));
       clearSelection();
       renderCards();
       saveCanvas();
+      if (!filesToDelete.length) return;
       let failures = 0;
       Promise.all(filesToDelete.map(f =>
         fetch(screenUrl(f), { method: "DELETE" })
@@ -176,31 +257,106 @@
     }
 
     function saveCanvas() {
-      const payload = { screens: screens.map(s => ({ file: s.file, x: Math.round(s.x), y: Math.round(s.y), width: s.width })) };
-      fetch("data/projects/" + encProjectId + "/canvas.json", {
+      const payload = { screens: screens.map(s => {
+        const out = { file: s.file, x: Math.round(s.x), y: Math.round(s.y), width: s.width };
+        if (s.name && s.name.trim()) out.name = s.name.trim();
+        return out;
+      }) };
+      if (texts.length) {
+        payload.texts = texts.map(t => ({ text: t.text, x: Math.round(t.x), y: Math.round(t.y), size: t.size }));
+      }
+      return fetch("data/projects/" + encProjectId + "/canvas.json", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload, null, 2),
       }).catch(() => {});
     }
 
+    async function duplicateScreenFile(file) {
+      const resp = await fetch("/api/duplicate-screen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectId, file }),
+      });
+      let data = {};
+      try { data = await resp.json(); } catch (_) {}
+      if (!resp.ok || !data.file) {
+        throw new Error(data.error || "Could not duplicate screen file.");
+      }
+      return data.file;
+    }
+
+    async function duplicateSelection(options) {
+      const opts = options || {};
+      const offsetX = opts.offsetX == null ? DUPLICATE_OFFSET : opts.offsetX;
+      const offsetY = opts.offsetY == null ? DUPLICATE_OFFSET : opts.offsetY;
+      const screenIndices = Array.from(selected).sort((a, b) => a - b).filter(i => screens[i]);
+      const textIndices = Array.from(selectedTexts).sort((a, b) => a - b).filter(i => texts[i]);
+      if (!screenIndices.length && !textIndices.length) return null;
+
+      const copiedScreens = [];
+      try {
+        for (const i of screenIndices) {
+          const s = screens[i];
+          const file = await duplicateScreenFile(s.file);
+          copiedScreens.push({
+            file,
+            x: snapToGrid(s.x + offsetX),
+            y: snapToGrid(s.y + offsetY),
+            width: s.width,
+            name: s.name && s.name.trim() ? s.name.trim() + " Copy" : "",
+          });
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Could not copy screen file");
+        return null;
+      }
+
+      const copiedTexts = textIndices.map(i => ({
+        text: texts[i].text,
+        x: snapToGrid(texts[i].x + offsetX),
+        y: snapToGrid(texts[i].y + offsetY),
+        size: texts[i].size,
+      }));
+
+      const firstScreenIdx = screens.length;
+      const firstTextIdx = texts.length;
+      screens.push(...copiedScreens);
+      texts.push(...copiedTexts);
+
+      const nextScreens = copiedScreens.map((_, i) => firstScreenIdx + i);
+      const nextTexts = copiedTexts.map((_, i) => firstTextIdx + i);
+      setCanvasSelection(nextScreens, nextTexts);
+      renderCards();
+      if (opts.save !== false) saveCanvas();
+      return { screens: nextScreens, texts: nextTexts };
+    }
+
     /* ── Keyboard shortcuts ── */
     window.addEventListener("keydown", function (e) {
+      const inField = e.target.closest("input, textarea, [contenteditable]");
       if (e.key === "Delete" || e.key === "Backspace") {
-        if (selected.size > 0 && !e.target.closest("input, textarea, [contenteditable]")) {
+        if (!inField && (selected.size > 0 || selectedTexts.size > 0)) {
           e.preventDefault();
           deleteSelected();
         }
       }
+      if ((e.key === "t" || e.key === "T") && !inField && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        addText();
+      }
       if ((e.key === "a" || e.key === "A") && (e.metaKey || e.ctrlKey)) {
         if (!e.target.closest("input, textarea, [contenteditable]")) {
           e.preventDefault();
-          setSelected(screens.map((_, i) => i));
+          setAllSelected();
         }
       }
       if (e.key === "Escape") {
         closeContextMenu();
         clearSelection();
+        clearTextSelection();
+        cancelPlaceText();
       }
     });
 
@@ -229,15 +385,36 @@
         }
         const btn = document.createElement("button");
         btn.className = "canvas-context-menu-item" + (item.danger ? " canvas-context-menu-item--danger" : "");
-        // Icons are trusted constants in this file; the label may contain a
-        // file name, so append it as text to avoid HTML injection.
-        if (item.icon) {
-          const iconWrap = document.createElement("span");
-          iconWrap.innerHTML = item.icon;
-          btn.appendChild(iconWrap);
-        }
-        btn.appendChild(document.createTextNode(item.label));
-        btn.addEventListener("click", () => { closeContextMenu(); item.action(); });
+        const iconWrap = document.createElement("span");
+        iconWrap.className = "canvas-context-menu-icon";
+        if (item.icon) iconWrap.innerHTML = item.icon;
+        btn.appendChild(iconWrap);
+        const labelEl = document.createElement("span");
+        labelEl.className = "canvas-context-menu-label";
+        labelEl.textContent = item.label;
+        btn.appendChild(labelEl);
+        btn.addEventListener("click", () => {
+          if (btn.dataset.busy === "1") return;
+          if (item.async) {
+            const startBusy = (text) => {
+              btn.dataset.busy = "1";
+              btn.disabled = true;
+              iconWrap.innerHTML = SPINNER_SVG;
+              if (text) labelEl.textContent = text;
+              for (const other of ctxMenu.querySelectorAll(".canvas-context-menu-item")) {
+                if (other !== btn) other.disabled = true;
+              }
+              window.removeEventListener("pointerdown", onCtxOutside);
+            };
+            const setLabel = (text) => { if (text) labelEl.textContent = text; };
+            Promise.resolve(item.action({ startBusy, setLabel }))
+              .catch(err => { console.error(err); })
+              .finally(() => { closeContextMenu(); });
+          } else {
+            closeContextMenu();
+            item.action();
+          }
+        });
         ctxMenu.appendChild(btn);
       }
       ctxMenu.style.left = x + "px";
@@ -251,29 +428,162 @@
       setTimeout(() => window.addEventListener("pointerdown", onCtxOutside), 0);
     }
 
+    const SPINNER_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" class="canvas-context-menu-spinner"><path d="M21 12a9 9 0 1 1-6.2-8.55"/></svg>';
+
     const ICON_SELECT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>';
+    const ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
     const ICON_DELETE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+    const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>';
+
+    let jszipPromise = null;
+    function loadJSZip() {
+      if (!jszipPromise) {
+        jszipPromise = import("https://esm.sh/jszip@3.10.1").then(m => m.default || m);
+      }
+      return jszipPromise;
+    }
+
+    let exportToastEl = null;
+    let exportToastTimer = null;
+    function showExportToast(message, state) {
+      if (!exportToastEl) {
+        exportToastEl = document.createElement("div");
+        exportToastEl.className = "export-toast";
+        exportToastEl.innerHTML = '<div class="export-toast__panel"><span class="export-toast__spinner"></span><span class="export-toast__label"></span></div>';
+        document.body.appendChild(exportToastEl);
+      }
+      clearTimeout(exportToastTimer);
+      exportToastEl.classList.remove("export-toast--done", "export-toast--error");
+      if (state) exportToastEl.classList.add("export-toast--" + state);
+      exportToastEl.querySelector(".export-toast__label").textContent = message;
+      requestAnimationFrame(() => exportToastEl.classList.add("is-visible"));
+    }
+    function hideExportToast(delay) {
+      if (!exportToastEl) return;
+      exportToastTimer = setTimeout(() => {
+        exportToastEl && exportToastEl.classList.remove("is-visible");
+      }, delay || 0);
+    }
+
+    async function renderScreenToPng(idx) {
+      const screen = screens[idx];
+      if (!screen) return null;
+      const file = "data/projects/" + encProjectId + "/screens/" + screen.file;
+      const width = screen.width || 390;
+      const url = "/api/render-png?file=" + encodeURIComponent(file) + "&width=" + width + "&scale=2";
+      const resp = await fetch(url);
+      if (!resp.ok) {
+        console.error("render-png failed", resp.status, await resp.text().catch(() => ""));
+        return null;
+      }
+      return await resp.blob();
+    }
+
+    function triggerDownload(dataUrl, name) {
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    async function downloadScreensAsPng(indices) {
+      const list = indices.filter(i => screens[i]);
+      if (!list.length) return;
+
+      try {
+        if (list.length === 1) {
+          showExportToast("Rendering screen…");
+          const idx = list[0];
+          const blob = await renderScreenToPng(idx);
+          if (!blob) {
+            showExportToast("Couldn't render screen — see console.", "error");
+            hideExportToast(2800);
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          triggerDownload(url, screens[idx].file.replace(/\.html$/, "") + ".png");
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          showExportToast("Downloaded 1 screen", "done");
+          hideExportToast(1600);
+          return;
+        }
+
+        showExportToast("Rendering 1 of " + list.length + "…");
+        const JSZip = await loadJSZip();
+        const zip = new JSZip();
+        const skipped = [];
+        for (let i = 0; i < list.length; i++) {
+          const idx = list[i];
+          showExportToast("Rendering " + (i + 1) + " of " + list.length + "…");
+          const blob = await renderScreenToPng(idx);
+          if (!blob) {
+            skipped.push(screens[idx].file);
+            continue;
+          }
+          zip.file(screens[idx].file.replace(/\.html$/, "") + ".png", blob);
+        }
+        showExportToast("Zipping " + (list.length - skipped.length) + " screens…");
+        const blob = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(blob);
+        const stamp = new Date().toISOString().slice(0, 10);
+        triggerDownload(url, "screens-" + stamp + ".zip");
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        const doneCount = list.length - skipped.length;
+        const doneMsg = skipped.length
+          ? "Downloaded " + doneCount + " — skipped " + skipped.length + " (render failed)"
+          : "Downloaded " + doneCount + " screens";
+        showExportToast(doneMsg, "done");
+        hideExportToast(skipped.length ? 3200 : 1800);
+      } catch (err) {
+        console.error("Screen export failed", err);
+        showExportToast("Couldn't export — see console for details.", "error");
+        hideExportToast(3200);
+      }
+    }
 
     viewport.addEventListener("contextmenu", (e) => {
       e.preventDefault();
+      const textEl = e.target.closest(".canvas-text");
       const card = e.target.closest(".canvas-card");
 
-      if (card) {
+      if (textEl) {
+        const idx = parseInt(textEl.dataset.idx, 10);
+        if (isNaN(idx)) return;
+        if (!selectedTexts.has(idx)) {
+          clearSelection();
+          selectText(idx);
+        }
+
+        const label = selectedObjectLabel();
+        showContextMenu(e.clientX, e.clientY, [
+          { label: "Select All", icon: ICON_SELECT, action: setAllSelected },
+          { label: "Duplicate " + label, icon: ICON_COPY, async: true, action: ({ startBusy }) => { startBusy("Duplicating…"); return duplicateSelection(); } },
+          { sep: true },
+          { label: "Delete " + label, icon: ICON_DELETE, danger: true, action: deleteSelected },
+        ]);
+      } else if (card) {
         const idx = parseInt(card.id.replace("card-", ""), 10);
         if (isNaN(idx)) return;
         if (!selected.has(idx)) setSelected([idx]);
 
         const count = selected.size;
-        const label = count === 1 ? screens[idx].file.replace(".html", "") : count + " screens";
-        showContextMenu(e.clientX, e.clientY, [
-          { label: "Select All", icon: ICON_SELECT, action: () => setSelected(screens.map((_, i) => i)) },
+        const label = selectedTexts.size ? selectedObjectLabel() : (count === 1 ? screenDisplayName(screens[idx]) : count + " screens");
+        const downloadLabel = count === 1 ? "Download as PNG" : "Download " + count + " as PNG";
+        const duplicateLabel = "Duplicate " + label;
+        const items = [
+          { label: "Select All", icon: ICON_SELECT, action: setAllSelected },
+          { label: duplicateLabel, icon: ICON_COPY, async: true, action: ({ startBusy }) => { startBusy("Duplicating…"); return duplicateSelection(); } },
+          { label: downloadLabel, icon: ICON_DOWNLOAD, action: () => downloadScreensAsPng([...selected]) },
           { sep: true },
           { label: "Delete " + label, icon: ICON_DELETE, danger: true, action: deleteSelected },
-        ]);
+        ];
+        showContextMenu(e.clientX, e.clientY, items);
       } else {
         clearSelection();
         showContextMenu(e.clientX, e.clientY, [
-          { label: "Select All", icon: ICON_SELECT, action: () => setSelected(screens.map((_, i) => i)) },
+          { label: "Select All", icon: ICON_SELECT, action: setAllSelected },
         ]);
       }
     });
@@ -285,6 +595,7 @@
 
     function onCardPointerDown(e, idx) {
       if (e.button !== 0) return;
+      if (placingText) return;
       if (pz.spaceHeld) return;
       e.stopPropagation();
       e.preventDefault();
@@ -304,9 +615,15 @@
         idx,
         startX: e.clientX,
         startY: e.clientY,
+        lastX: e.clientX,
+        lastY: e.clientY,
         moved: false,
         shiftHeld,
+        duplicateOnDrag: e.altKey,
+        duplicateReady: !e.altKey,
+        duplicatePromise: null,
         dragOffsets: null,
+        textDragOffsets: null,
         pointerId: e.pointerId,
       };
       viewport.setPointerCapture(e.pointerId);
@@ -314,6 +631,12 @@
 
     viewport.addEventListener("pointerdown", (e) => {
       if (e.button !== 0) return;
+      if (placingText) {
+        e.preventDefault();
+        e.stopPropagation();
+        placeTextAt(e.clientX, e.clientY);
+        return;
+      }
       if (pz.spaceHeld) return;
       if (e.target.closest(".canvas-card")) return;
 
@@ -326,10 +649,13 @@
           moved: false,
           pointerId: e.pointerId,
         };
-        viewport.setPointerCapture(e.pointerId);
+        window.addEventListener("pointermove", onMarqueeWindowPointerMove, true);
+        window.addEventListener("pointerup", onMarqueeWindowPointerEnd);
+        window.addEventListener("pointercancel", onMarqueeWindowPointerEnd);
       } else {
         closeContextMenu();
         clearSelection();
+        clearTextSelection();
       }
     });
 
@@ -341,8 +667,83 @@
       } catch (_) {}
     }
 
+    function stagePointFromClient(clientX, clientY) {
+      const rect = viewport.getBoundingClientRect();
+      return {
+        x: (clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom,
+        y: (clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom,
+      };
+    }
+
+    function beginSelectionDrag(pointer) {
+      pointer.moved = true;
+      viewport.classList.add("dragging-card");
+      const start = stagePointFromClient(pointer.startX, pointer.startY);
+      pointer.dragOffsets = [];
+      selected.forEach(i => {
+        const s = screens[i];
+        if (s) pointer.dragOffsets.push({ idx: i, offX: start.x - s.x, offY: start.y - s.y });
+      });
+      pointer.textDragOffsets = [];
+      selectedTexts.forEach(i => {
+        const t = texts[i];
+        if (t) pointer.textDragOffsets.push({ idx: i, offX: start.x - t.x, offY: start.y - t.y });
+      });
+    }
+
+    function moveSelectionDragToClient(pointer, clientX, clientY) {
+      const point = stagePointFromClient(clientX, clientY);
+      pointer.dragOffsets.forEach(d => {
+        const s = screens[d.idx];
+        if (!s) return;
+        s.x = snapToGrid(point.x - d.offX);
+        s.y = snapToGrid(point.y - d.offY);
+        const el = document.getElementById("card-" + d.idx);
+        if (el) {
+          el.style.left = s.x + "px";
+          el.style.top = s.y + "px";
+        }
+      });
+      pointer.textDragOffsets.forEach(d => {
+        const t = texts[d.idx];
+        if (!t) return;
+        t.x = snapToGrid(point.x - d.offX);
+        t.y = snapToGrid(point.y - d.offY);
+        const el = textLayer && textLayer.querySelector('.canvas-text[data-idx="' + d.idx + '"]');
+        if (el) { el.style.left = t.x + "px"; el.style.top = t.y + "px"; }
+      });
+    }
+
+    function startAltDuplicateDrag(pointer, isActive) {
+      if (pointer.duplicatePromise) return;
+      pointer.duplicatePromise = duplicateSelection({ offsetX: 0, offsetY: 0, save: false })
+        .then((result) => {
+          if (!isActive()) {
+            if (result) saveCanvas();
+            return;
+          }
+          if (!result) {
+            pointer.duplicateOnDrag = false;
+            pointer.duplicateReady = true;
+            return;
+          }
+          pointer.duplicateReady = true;
+          beginSelectionDrag(pointer);
+          moveSelectionDragToClient(pointer, pointer.lastX, pointer.lastY);
+        })
+        .catch((err) => {
+          console.error(err);
+          if (isActive()) {
+            pointer.duplicateOnDrag = false;
+            pointer.duplicateReady = true;
+            showToast("Could not copy selection");
+          }
+        });
+    }
+
     function endCanvasPointerSession(e) {
       const pid = e.pointerId;
+      if (textPointer && textPointer.pointerId === pid) { return endTextPointer(e); }
       if (cardPointer && cardPointer.pointerId === pid) {
         if (cardPointer.moved) {
           viewport.classList.remove("dragging-card");
@@ -355,86 +756,109 @@
         return true;
       }
       if (marquee && marquee.pointerId === pid) {
-        if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
-        marquee = null;
-        releaseViewportCaptureSafe(pid);
-        return true;
+        return endMarqueePointer(e);
       }
       return false;
     }
 
     viewport.addEventListener("pointermove", (e) => {
+      if (textPointer && e.pointerId === textPointer.pointerId) { onTextPointerMove(e); return; }
       if (cardPointer && e.pointerId === cardPointer.pointerId) {
+        cardPointer.lastX = e.clientX;
+        cardPointer.lastY = e.clientY;
         const dx = e.clientX - cardPointer.startX;
         const dy = e.clientY - cardPointer.startY;
         if (!cardPointer.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
 
         if (!cardPointer.moved) {
-          cardPointer.moved = true;
-          viewport.classList.add("dragging-card");
-
-          const rect = viewport.getBoundingClientRect();
-          const sX = (cardPointer.startX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
-          const sY = (cardPointer.startY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
-
-          cardPointer.dragOffsets = [];
-          selected.forEach(i => {
-            cardPointer.dragOffsets.push({ idx: i, offX: sX - screens[i].x, offY: sY - screens[i].y });
-          });
+          if (cardPointer.duplicateOnDrag && !cardPointer.duplicateReady) {
+            startAltDuplicateDrag(cardPointer, () => cardPointer && cardPointer.pointerId === e.pointerId);
+            return;
+          }
+          beginSelectionDrag(cardPointer);
         }
 
-        const rect = viewport.getBoundingClientRect();
-        const stageX = (e.clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
-        const stageY = (e.clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
-
-        cardPointer.dragOffsets.forEach(d => {
-          const s = screens[d.idx];
-          s.x = snapToGrid(stageX - d.offX);
-          s.y = snapToGrid(stageY - d.offY);
-          const el = document.getElementById("card-" + d.idx);
-          if (el) {
-            el.style.left = s.x + "px";
-            el.style.top = s.y + "px";
-          }
-        });
+        moveSelectionDragToClient(cardPointer, e.clientX, e.clientY);
         return;
       }
 
+      if (marquee && e.pointerId === marquee.pointerId) { updateMarqueeSelection(e); return; }
+    });
+
+    function clearMarqueePointerListeners() {
+      window.removeEventListener("pointermove", onMarqueeWindowPointerMove, true);
+      window.removeEventListener("pointerup", onMarqueeWindowPointerEnd);
+      window.removeEventListener("pointercancel", onMarqueeWindowPointerEnd);
+    }
+
+    function onMarqueeWindowPointerMove(e) {
       if (marquee && e.pointerId === marquee.pointerId) {
-        const dx = e.clientX - marquee.startX;
-        const dy = e.clientY - marquee.startY;
-        if (!marquee.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
+        updateMarqueeSelection(e);
+      }
+    }
 
-        if (!marquee.moved) {
-          marquee.moved = true;
-          pz.isPanning = false;
-          marqueeEl = document.createElement("div");
-          marqueeEl.className = "canvas-marquee";
-          document.body.appendChild(marqueeEl);
+    function onMarqueeWindowPointerEnd(e) {
+      if (marquee && e.pointerId === marquee.pointerId) {
+        endMarqueePointer(e);
+      }
+    }
+
+    function updateMarqueeSelection(e) {
+      if (!marquee || e.pointerId !== marquee.pointerId) return false;
+      const dx = e.clientX - marquee.startX;
+      const dy = e.clientY - marquee.startY;
+      if (!marquee.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return true;
+
+      if (!marquee.moved) {
+        marquee.moved = true;
+        pz.isPanning = false;
+        marqueeEl = document.createElement("div");
+        marqueeEl.className = "canvas-marquee";
+        document.body.appendChild(marqueeEl);
+      }
+
+      const x = Math.min(marquee.startX, e.clientX);
+      const y = Math.min(marquee.startY, e.clientY);
+      const w = Math.abs(dx);
+      const h = Math.abs(dy);
+      marqueeEl.style.left = x + "px";
+      marqueeEl.style.top = y + "px";
+      marqueeEl.style.width = w + "px";
+      marqueeEl.style.height = h + "px";
+
+      const hits = [];
+      const textHits = [];
+      screens.forEach((s, i) => {
+        const card = document.getElementById("card-" + i);
+        if (card) {
+          const cr = card.getBoundingClientRect();
+          if (cr.right > x && cr.left < x + w && cr.bottom > y && cr.top < y + h) {
+            hits.push(i);
+          }
         }
-
-        const x = Math.min(marquee.startX, e.clientX);
-        const y = Math.min(marquee.startY, e.clientY);
-        const w = Math.abs(dx);
-        const h = Math.abs(dy);
-        marqueeEl.style.left = x + "px";
-        marqueeEl.style.top = y + "px";
-        marqueeEl.style.width = w + "px";
-        marqueeEl.style.height = h + "px";
-
-        const hits = [];
-        screens.forEach((s, i) => {
-          const card = document.getElementById("card-" + i);
-          if (card) {
-            const cr = card.getBoundingClientRect();
-            if (cr.right > x && cr.left < x + w && cr.bottom > y && cr.top < y + h) {
-              hits.push(i);
-            }
+      });
+      if (textLayer) {
+        textLayer.querySelectorAll(".canvas-text").forEach((el) => {
+          const tr = el.getBoundingClientRect();
+          if (tr.right > x && tr.left < x + w && tr.bottom > y && tr.top < y + h) {
+            const idx = parseInt(el.dataset.idx, 10);
+            if (!isNaN(idx)) textHits.push(idx);
           }
         });
-        setSelected(hits);
       }
-    });
+      setCanvasSelection(hits, textHits);
+      return true;
+    }
+
+    function endMarqueePointer(e) {
+      if (!marquee || marquee.pointerId !== e.pointerId) return false;
+      if (marquee.moved) updateMarqueeSelection(e);
+      if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
+      marquee = null;
+      clearMarqueePointerListeners();
+      releaseViewportCaptureSafe(e.pointerId);
+      return true;
+    }
 
     viewport.addEventListener("pointerup", (e) => {
       if (endCanvasPointerSession(e)) return;
@@ -449,6 +873,7 @@
     });
 
     viewport.addEventListener("lostpointercapture", (e) => {
+      if (textPointer && textPointer.pointerId === e.pointerId) { endTextPointer(e); return; }
       if (cardPointer && cardPointer.pointerId === e.pointerId) {
         if (cardPointer.moved) {
           viewport.classList.remove("dragging-card");
@@ -459,8 +884,7 @@
         cardPointer = null;
       }
       if (marquee && marquee.pointerId === e.pointerId) {
-        if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
-        marquee = null;
+        endMarqueePointer(e);
       }
     });
 
@@ -544,10 +968,20 @@
             const x = s.x != null ? s.x : autoX;
             const y = s.y != null ? s.y : 0;
             autoX = x + w + CARD_GAP;
-            return { file: s.file, x, y, width: w };
+            const name = typeof s.name === "string" ? s.name : "";
+            return { file: s.file, x, y, width: w, name };
           });
+          const nextTexts = Array.isArray(data.texts) ? data.texts.map(t => ({
+            text: typeof t.text === "string" ? t.text : "",
+            x: t.x != null ? t.x : 0,
+            y: t.y != null ? t.y : 0,
+            size: t.size || TITLE_FONT_SIZE,
+          })) : [];
           const structureSame = screens.length === next.length && next.every((n, i) =>
-            screens[i] && n.file === screens[i].file && n.width === screens[i].width
+            screens[i] && n.file === screens[i].file && n.width === screens[i].width && (n.name || "") === (screens[i].name || "")
+          );
+          const textsSame = texts.length === nextTexts.length && nextTexts.every((n, i) =>
+            texts[i] && n.text === texts[i].text && n.x === texts[i].x && n.y === texts[i].y && n.size === texts[i].size
           );
           if (!structureSame) {
             screens = next;
@@ -556,6 +990,10 @@
             if (empty) empty.remove();
           } else if (changedFiles && changedFiles.length) {
             reloadChangedIframes(changedFiles);
+          }
+          if (!textsSame) {
+            texts = nextTexts;
+            renderTexts();
           }
         })
         .catch(() => {
@@ -592,6 +1030,7 @@
 
     function refreshScreens() {
       screens = [];
+      texts = [];
       clearSelection();
       const btn = document.querySelector('[onclick="refreshScreens()"]');
       if (btn) { btn.disabled = true; }
@@ -652,11 +1091,26 @@
       }
     };
 
+    function screenDisplayName(s) {
+      if (s.name && s.name.trim()) return s.name.trim();
+      return (s.file || "").replace(/\.html$/, "");
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
     function renderCards() {
       const bust = "?t=" + Date.now();
       stage.innerHTML = screens.map((s, i) => `
         <div class="canvas-card${selected.has(i) ? " is-selected" : ""}" id="card-${i}"
              style="left:${s.x}px; top:${s.y}px; width:${s.width}px;">
+          <div class="canvas-card-label" data-idx="${i}" title="Double-click to rename">${escapeHtml(screenDisplayName(s))}</div>
           <div class="canvas-card-body">
             <iframe src="${screenUrl(s.file, bust)}"
                     width="${s.width}"
@@ -671,21 +1125,371 @@
       stage.querySelectorAll(".canvas-card").forEach((card, i) => {
         card.addEventListener("pointerdown", (e) => onCardPointerDown(e, i));
       });
+      stage.querySelectorAll(".canvas-card-label").forEach((label) => {
+        // Block the card's pointerdown so its preventDefault doesn't swallow the
+        // double-click and so dragging the title doesn't move the card.
+        label.addEventListener("pointerdown", (e) => {
+          if (label.querySelector("input")) return;
+          e.stopPropagation();
+        });
+        label.addEventListener("mousedown", (e) => {
+          if (label.querySelector("input")) return;
+          e.stopPropagation();
+        });
+        label.addEventListener("click", (e) => e.stopPropagation());
+        label.addEventListener("dblclick", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const idx = parseInt(label.dataset.idx, 10);
+          if (!isNaN(idx)) startLabelEdit(idx);
+        });
+      });
+      // stage.innerHTML reset above drops the text layer; rebuild it.
+      textLayer = null;
+      renderTexts();
+    }
+
+    function startLabelEdit(idx) {
+      const card = document.getElementById("card-" + idx);
+      if (!card) return;
+      const label = card.querySelector(".canvas-card-label");
+      if (!label || label.querySelector("input")) return;
+      const current = screenDisplayName(screens[idx]);
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "canvas-card-label-input";
+      input.value = current;
+      label.textContent = "";
+      label.appendChild(input);
+      input.focus();
+      input.select();
+
+      const stop = (e) => e.stopPropagation();
+      input.addEventListener("pointerdown", stop);
+      input.addEventListener("mousedown", stop);
+      input.addEventListener("click", stop);
+      input.addEventListener("dblclick", stop);
+
+      let committed = false;
+      const commit = () => {
+        if (committed) return;
+        committed = true;
+        const next = input.value.trim();
+        const defaultName = (screens[idx].file || "").replace(/\.html$/, "");
+        const nameToStore = (!next || next === defaultName) ? "" : next;
+        const changed = (screens[idx].name || "") !== nameToStore;
+        screens[idx].name = nameToStore;
+        label.textContent = screenDisplayName(screens[idx]);
+        if (changed) saveCanvas();
+      };
+      const cancel = () => {
+        if (committed) return;
+        committed = true;
+        label.textContent = current;
+      };
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); commit(); input.blur(); }
+        else if (e.key === "Escape") { e.preventDefault(); cancel(); input.blur(); }
+      });
+      input.addEventListener("blur", () => {
+        commit();
+        window.removeEventListener("pointerdown", onOutside, true);
+      });
+      // Capture-phase: fires before pan-zoom and card handlers can preventDefault.
+      const onOutside = (e) => {
+        if (e.target === input || input.contains(e.target)) return;
+        commit();
+        window.removeEventListener("pointerdown", onOutside, true);
+      };
+      setTimeout(() => window.addEventListener("pointerdown", onOutside, true), 0);
+    }
+
+    /* ── Canvas titles (free-floating text) ── */
+    let textLayer = null;
+    let selectedText = -1;
+    let textPointer = null;
+
+    function ensureTextLayer() {
+      if (!textLayer) {
+        textLayer = document.createElement("div");
+        textLayer.className = "canvas-text-layer";
+        stage.appendChild(textLayer);
+      }
+      return textLayer;
+    }
+
+    function selectText(idx) {
+      selectedText = idx;
+      selectedTexts.clear();
+      if (idx >= 0) selectedTexts.add(idx);
+      applyTextSelectionClasses();
+      updateSelectionBar();
+    }
+
+    function applyTextSelectionClasses() {
+      if (!textLayer) return;
+      textLayer.querySelectorAll(".canvas-text").forEach((el) => {
+        el.classList.toggle("is-selected", selectedTexts.has(parseInt(el.dataset.idx, 10)));
+      });
+    }
+
+    function clearTextSelection() {
+      selectedText = -1;
+      selectedTexts.clear();
+      applyTextSelectionClasses();
+      updateSelectionBar();
+    }
+
+    function singleLineText(str) {
+      return String(str || "").replace(/\s*\n+\s*/g, " ").trim();
+    }
+
+    function renderTexts() {
+      const layer = ensureTextLayer();
+      layer.innerHTML = texts.map((t, i) => `
+        <div class="canvas-text${selectedTexts.has(i) ? " is-selected" : ""}" data-idx="${i}"
+             style="left:${t.x}px; top:${t.y}px; font-size:${t.size}px;">${escapeHtml(singleLineText(t.text) || "Title")}</div>
+      `).join("");
+      layer.querySelectorAll(".canvas-text").forEach((el) => {
+        const idx = parseInt(el.dataset.idx, 10);
+        el.addEventListener("pointerdown", (e) => onTextPointerDown(e, idx));
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (e.detail >= 2) {
+            e.preventDefault();
+            startTextEdit(idx);
+          }
+        });
+        el.addEventListener("dblclick", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          startTextEdit(idx);
+        });
+      });
+    }
+
+    // Arm placement: the next click on the canvas drops the title where you click.
+    let placingText = false;
+    function addText() {
+      placingText = true;
+      viewport.classList.add("placing-text");
+    }
+    function cancelPlaceText() {
+      placingText = false;
+      viewport.classList.remove("placing-text");
+    }
+    function placeTextAt(clientX, clientY) {
+      const rect = viewport.getBoundingClientRect();
+      const x = (clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
+      const y = (clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
+      texts.push({ text: "", x: snapToGrid(x), y: snapToGrid(y), size: TITLE_FONT_SIZE });
+      cancelPlaceText();
+      renderTexts();
+      const idx = texts.length - 1;
+      selectText(idx);
+      startTextEdit(idx);
+    }
+
+    function onTextPointerDown(e, idx) {
+      if (e.button !== 0) return;
+      if (placingText) return;
+      if (pz.spaceHeld) return;
+      const el = e.currentTarget;
+      if (el.querySelector("input, textarea")) return;
+      if (e.ctrlKey || e.metaKey) return;
+      e.stopPropagation();
+      closeContextMenu();
+      if (selectedTexts.has(idx)) {
+        selectedText = idx;
+      } else {
+        clearSelection();
+        selectText(idx);
+      }
+      textPointer = {
+        idx,
+        startX: e.clientX,
+        startY: e.clientY,
+        lastX: e.clientX,
+        lastY: e.clientY,
+        moved: false,
+        duplicateOnDrag: e.altKey,
+        duplicateReady: !e.altKey,
+        duplicatePromise: null,
+        dragOffsets: null,
+        textDragOffsets: null,
+        pointerId: e.pointerId,
+      };
+      window.addEventListener("pointermove", onTextWindowPointerMove, true);
+      window.addEventListener("pointerup", onTextWindowPointerEnd, true);
+      window.addEventListener("pointercancel", onTextWindowPointerEnd, true);
+    }
+
+    function clearTextPointerListeners() {
+      window.removeEventListener("pointermove", onTextWindowPointerMove, true);
+      window.removeEventListener("pointerup", onTextWindowPointerEnd, true);
+      window.removeEventListener("pointercancel", onTextWindowPointerEnd, true);
+    }
+
+    function onTextWindowPointerMove(e) {
+      if (textPointer && e.pointerId === textPointer.pointerId) {
+        onTextPointerMove(e);
+      }
+    }
+
+    function onTextWindowPointerEnd(e) {
+      if (textPointer && e.pointerId === textPointer.pointerId) {
+        endTextPointer(e);
+      }
+    }
+
+    function onTextPointerMove(e) {
+      if (!textPointer || e.pointerId !== textPointer.pointerId) return false;
+      textPointer.lastX = e.clientX;
+      textPointer.lastY = e.clientY;
+      const dx = e.clientX - textPointer.startX;
+      const dy = e.clientY - textPointer.startY;
+      if (!textPointer.moved && Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return true;
+      if (!textPointer.moved) {
+        if (textPointer.duplicateOnDrag && !textPointer.duplicateReady) {
+          startAltDuplicateDrag(textPointer, () => textPointer && textPointer.pointerId === e.pointerId);
+          return true;
+        }
+        beginSelectionDrag(textPointer);
+      }
+      moveSelectionDragToClient(textPointer, e.clientX, e.clientY);
+      return true;
+    }
+
+    function endTextPointer(e) {
+      if (!textPointer || textPointer.pointerId !== e.pointerId) return false;
+      if (textPointer.moved) {
+        viewport.classList.remove("dragging-card");
+        saveCanvas();
+      }
+      textPointer = null;
+      clearTextPointerListeners();
+      releaseViewportCaptureSafe(e.pointerId);
+      return true;
+    }
+
+    function startTextEdit(idx) {
+      const el = textLayer && textLayer.querySelector('.canvas-text[data-idx="' + idx + '"]');
+      if (!el || el.querySelector("input, textarea")) return;
+      const current = singleLineText(texts[idx].text);
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "canvas-text-input";
+      input.value = current;
+      input.style.fontSize = texts[idx].size + "px";
+      el.textContent = "";
+      el.appendChild(input);
+      const measure = document.createElement("span");
+      measure.style.cssText = "position:absolute;left:-99999px;top:-99999px;visibility:hidden;white-space:pre;font:inherit;letter-spacing:inherit;";
+      el.appendChild(measure);
+      const autoSize = () => {
+        measure.textContent = input.value || input.placeholder || "Title";
+        const measured = measure.offsetWidth || (measure.getBoundingClientRect().width / pz.zoom);
+        input.style.width = Math.max(120, Math.ceil(measured) + 24) + "px";
+      };
+      autoSize();
+      requestAnimationFrame(() => {
+        input.focus();
+        const caret = input.value.length;
+        input.setSelectionRange(caret, caret);
+        autoSize();
+      });
+
+      const stop = (e) => e.stopPropagation();
+      input.addEventListener("pointerdown", stop);
+      input.addEventListener("mousedown", stop);
+      input.addEventListener("click", stop);
+      input.addEventListener("dblclick", stop);
+      input.addEventListener("input", autoSize);
+
+      let committed = false;
+      let removeOutsideListeners = () => {};
+      const commit = () => {
+        if (committed) return;
+        committed = true;
+        const next = singleLineText(input.value);
+        if (!next) {
+          texts.splice(idx, 1);
+          clearTextSelection();
+          renderTexts();
+          saveCanvas();
+          removeOutsideListeners();
+          return;
+        }
+        const changed = texts[idx].text !== next;
+        texts[idx].text = next;
+        renderTexts();
+        selectText(idx);
+        if (changed) saveCanvas();
+        removeOutsideListeners();
+      };
+      const cancel = () => {
+        if (committed) return;
+        committed = true;
+        if (!current) { texts.splice(idx, 1); clearTextSelection(); }
+        renderTexts();
+        removeOutsideListeners();
+      };
+      input.addEventListener("keydown", (e) => {
+        e.stopPropagation();
+        if (e.key === "Enter") { e.preventDefault(); commit(); }
+        else if (e.key === "Escape") { e.preventDefault(); cancel(); }
+      });
+      input.addEventListener("blur", commit);
+      const onOutside = (e) => {
+        if (e.target === input || input.contains(e.target)) return;
+        commit();
+      };
+      setTimeout(() => {
+        if (committed) return;
+        window.addEventListener("pointerdown", onOutside, true);
+        window.addEventListener("mousedown", onOutside, true);
+        removeOutsideListeners = () => {
+          window.removeEventListener("pointerdown", onOutside, true);
+          window.removeEventListener("mousedown", onOutside, true);
+        };
+      }, 0);
+    }
+
+    function deleteSelectedText() {
+      if (selectedTexts.size === 0) return;
+      Array.from(selectedTexts).sort((a, b) => b - a).forEach(i => texts.splice(i, 1));
+      clearTextSelection();
+      renderTexts();
+      saveCanvas();
     }
 
     function autoSizeIframe(iframe) {
       try {
         const doc = iframe.contentDocument || iframe.contentWindow.document;
-        let max = doc.documentElement.scrollHeight;
+        const win = iframe.contentWindow;
         const scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop || 0;
+        let max = 0;
         const all = doc.body.getElementsByTagName("*");
         for (let i = 0; i < all.length; i++) {
-          const r = all[i].getBoundingClientRect();
+          const el = all[i];
+          if (isClippedByAncestor(el, win)) continue;
+          const r = el.getBoundingClientRect();
           const bottom = r.bottom + scrollTop;
           if (bottom > max) max = bottom;
         }
+        if (!max) max = doc.documentElement.scrollHeight;
         iframe.style.height = Math.ceil(max) + "px";
       } catch (e) {}
+    }
+
+    function isClippedByAncestor(el, win) {
+      let p = el.parentElement;
+      while (p && p !== el.ownerDocument.body) {
+        const ov = win.getComputedStyle(p).overflowY;
+        if (ov === "hidden" || ov === "auto" || ov === "scroll") return true;
+        p = p.parentElement;
+      }
+      return false;
     }
   </script>
 </body>

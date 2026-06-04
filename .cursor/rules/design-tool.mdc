@@ -179,6 +179,8 @@ The design system page (`design-system.html`) uses an **infinite canvas**: main 
 4. **Never edit the tool itself.** Do not touch root-level HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`), `public/scripts/`, repo-root `scripts/` CLIs, or config files. The pre-flight check enforces this, but if you're ever unsure, **ask first**.
 5. **Never edit the design system** without being explicitly asked. The files in `public/data/design-system/` and `public/styles/` are shared across all projects. `company.css` and `registry.json` under `public/data/design-system/` are safe; `shared.css` and `ds.css` under `public/styles/` are NOT.
 6. **Use the design system.** Always use existing CSS classes from `public/styles/ds.css` and design tokens from `public/styles/shared.css`. Read both files before creating anything.
+7. **Only the Phosphor `regular` and `fill` icon weights are loaded** (`company.css` imports just those two from `@phosphor-icons/web`). Any other weight renders as a blank box, NOT an error. A plain checkmark must be `ph ph-check` (regular) — `ph-bold ph-check` and `ph-fill ph-check` both render empty; use `ph-fill ph-check-square` only when you want the boxed check. Icon weight comes from the class (`ph` / `ph-fill`), never from CSS `font-weight`.
+8. **Mount canvas screens before building them.** When creating a new canvas screen, you MUST do these two things FIRST, before writing any real screen content, and in this order: (a) create the HTML file containing only an empty wrapper `<div style="background: var(--bg-0);"></div>`, then (b) add the entry to `canvas.json`. ONLY after both of those exist do you write the real screen content by editing the same file. This is non-negotiable -- it makes the card appear on the designer's canvas immediately so they watch it fill in live. If you write the finished HTML first and then add it to `canvas.json` at the end, you have violated this rule. When creating multiple screens, mount ALL of their empty placeholders + `canvas.json` entries first, then fill them in one at a time. See "Creating a new canvas screen" below for the full procedure.
 
 ## Before Creating Anything
 
@@ -216,20 +218,27 @@ When a designer asks you to create screens, prototypes, or any design work, **al
 
 ### Creating a new canvas screen
 
-1. Create the HTML file: `public/data/projects/<project>/screens/<name>.html`
-2. **Add an entry to `canvas.json`** -- this is required or the screen won't appear on the canvas:
+**Mount the screen on the canvas first, then build it in place.** The designer should see an empty card appear immediately and watch the screen fill in as you work — not wait for the whole file to be written before anything shows up. Edits to a file that already exists stream into the canvas live; new screens need the same feel, which means the file and the `canvas.json` entry must exist before you write the real content.
+
+1. **Create a minimal placeholder HTML file** at `public/data/projects/<project>/screens/<name>.html`. Just the wrapper, empty inside:
+   ```html
+   <div style="background: var(--bg-0);"></div>
+   ```
+   Write this first, as its own step, before doing anything else for this screen.
+2. **Immediately add an entry to `canvas.json`** -- this is what makes the (currently empty) card appear on the canvas:
    ```json
    { "file": "<name>.html", "x": 0, "y": 0, "width": 390 }
    ```
    Space screens apart by adjusting `x` (add the width + 40px gap for each new screen). Standard widths: **390** for mobile, **1024** for tablet, **1440** for desktop. Match the width to what the screen is designed for -- a desktop dashboard should be 1440, a mobile screen should be 390.
-3. Use the standard screen wrapper:
+3. **Now build the screen by editing that same file.** Replace the empty wrapper with the real content. Each edit streams live into the card on the canvas, so prefer one larger write of the finished screen over many tiny edits (each edit causes the card to refresh). Use the standard screen wrapper:
    ```html
    <div style="background: var(--bg-0);">
      <!-- Screen content -->
    </div>
    ```
    The wrapper is just a background container. Do NOT add `padding`, `max-width`, or `margin: 0 auto` to it -- those prevent full-width elements (nav bars, hero backgrounds, footers) from reaching the edges. Individual content sections inside the wrapper handle their own padding (e.g. `padding: 16px`).
-4. **HTML + CSS only.** No JavaScript. No interactivity.
+4. **When creating multiple new screens at once**, mount all of them as empty placeholders + `canvas.json` entries first (so every card shows up on the canvas right away), then fill them in one at a time. Don't build screen 1 to completion before screen 2's card even exists.
+5. **HTML + CSS only.** No JavaScript. No interactivity.
 
 #### Canvas screen content rules
 

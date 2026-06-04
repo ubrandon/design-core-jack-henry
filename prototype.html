@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Prototype — Design Core</title>
   <link rel="stylesheet" href="styles/shared.css">
   <link rel="stylesheet" href="styles/ds.css">
@@ -77,6 +77,28 @@
     body.is-embed-fullscreen #proto-frame {
       width: 100% !important;
       height: 100% !important;
+    }
+    /* Embed on phones: behave like fullscreen without clipping mobile browser safe areas */
+    @media (max-width: 800px) {
+      body.is-embed .preview-page {
+        min-height: 100svh !important;
+        padding: 0 0 env(safe-area-inset-bottom) !important;
+        box-sizing: border-box !important;
+        display: block !important;
+        background: none !important;
+      }
+      body.is-embed .phone-frame-wrap { display: block !important; }
+      body.is-embed #proto-container {
+        width: 100vw !important;
+        height: calc(100svh - env(safe-area-inset-bottom)) !important;
+        border-radius: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      body.is-embed #proto-frame {
+        width: 100% !important;
+        height: 100% !important;
+      }
     }
     .proto-bar {
       display: flex;

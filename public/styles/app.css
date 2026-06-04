@@ -1328,6 +1328,35 @@ article.tile-card--prototype {
   display: block;
 }
 
+/* On phones: drop the frame and fill the viewport */
+@media (max-width: 800px) {
+  html, body { max-width: 100vw; overflow-x: hidden; }
+  .preview-page {
+    min-height: 100svh !important;
+    padding: 0 0 env(safe-area-inset-bottom) !important;
+    box-sizing: border-box;
+  }
+  .phone-frame-wrap { width: 100%; }
+  .phone-frame,
+  .phone-frame--desktop,
+  .phone-frame--online,
+  .phone-frame--responsive {
+    width: 100vw !important;
+    height: calc(100svh - env(safe-area-inset-bottom)) !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .phone-iframe,
+  .phone-frame--desktop .phone-iframe,
+  .phone-frame--online .phone-iframe,
+  .phone-frame--responsive .phone-iframe {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
 /* ── Preview page (prototype viewer) ── */
 .preview-page {
   min-height: 100vh;

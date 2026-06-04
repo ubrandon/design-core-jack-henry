@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
 import { resolve, dirname, sep, relative } from "path";
 import { fileURLToPath } from "url";
-import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync, rmSync } from "fs";
+import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync, rmSync, copyFileSync } from "fs";
 import { spawn, execSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -69,6 +69,17 @@ function readJsonBody(req) {
 }
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const SCREEN_FILE_RE = /^[a-zA-Z0-9][a-zA-Z0-9._-]*\.html$/;
+
+function uniqueScreenCopyFile(screensDir, file) {
+  const base = file.replace(/\.html$/i, "");
+  for (let i = 1; i < 1000; i++) {
+    const suffix = i === 1 ? "-copy" : `-copy-${i}`;
+    const candidate = `${base}${suffix}.html`;
+    if (!existsSync(resolve(screensDir, candidate))) return candidate;
+  }
+  throw new Error("Could not find an available copy filename.");
+}
 
 function parseGithubRemoteForPages(raw) {
   if (!raw) return null;
@@ -290,6 +301,43 @@ function localDevDataApiPlugin() {
           return;
         }
 
+        if (pathOnly === "/api/duplicate-screen" && req.method === "POST") {
+          res.setHeader("Content-Type", "application/json");
+          try {
+            const data = await readJsonBody(req);
+            const projectId = typeof data.projectId === "string" ? data.projectId.trim() : "";
+            const file = typeof data.file === "string" ? data.file.trim() : "";
+            if (!SLUG_RE.test(projectId) || !SCREEN_FILE_RE.test(file)) {
+              res.writeHead(400);
+              res.end(JSON.stringify({ error: "Invalid project or screen file." }));
+              return;
+            }
+
+            const screensDir = resolve(PUBLIC_DATA_ROOT, "projects", projectId, "screens");
+            if (!screensDir.startsWith(resolve(PUBLIC_DATA_ROOT, "projects") + sep)) {
+              res.writeHead(403);
+              res.end(JSON.stringify({ error: "Forbidden" }));
+              return;
+            }
+
+            const source = resolve(screensDir, file);
+            if (!source.startsWith(screensDir + sep) || !existsSync(source)) {
+              res.writeHead(404);
+              res.end(JSON.stringify({ error: "Screen file not found." }));
+              return;
+            }
+
+            const nextFile = uniqueScreenCopyFile(screensDir, file);
+            copyFileSync(source, resolve(screensDir, nextFile));
+            res.writeHead(200);
+            res.end(JSON.stringify({ ok: true, file: nextFile }));
+          } catch (e) {
+            res.writeHead(500);
+            res.end(JSON.stringify({ error: e.message || "Server error" }));
+          }
+          return;
+        }
+
         if (pathOnly === "/api/project-admin" && req.method === "POST") {
           res.setHeader("Content-Type", "application/json");
           let body;
@@ -506,6 +554,150 @@ function localDevDataApiPlugin() {
         }
 
         next();
+      });
+    },
+  };
+}
+
+/** Renders a screen URL to a pixel-perfect PNG using Playwright. */
+function screenPngPlugin() {
+  let browserPromise = null;
+  function getBrowser() {
+    if (!browserPromise) {
+      browserPromise = (async () => {
+        const { chromium } = await import("playwright");
+        return chromium.launch({ headless: true });
+      })().catch((err) => { browserPromise = null; throw err; });
+    }
+    return browserPromise;
+  }
+
+  return {
+    name: "screen-png",
+    configureServer(server) {
+      server.middlewares.use("/api/render-png", async (req, res) => {
+        if (req.method !== "GET") { res.writeHead(405); res.end("method not allowed"); return; }
+        const u = new URL(req.url, "http://localhost");
+        const file = u.searchParams.get("file");
+        const width = Math.max(120, Math.min(2400, parseInt(u.searchParams.get("width") || "390", 10) || 390));
+        const scale = Math.max(1, Math.min(3, parseInt(u.searchParams.get("scale") || "2", 10) || 2));
+        if (!file) { res.writeHead(400); res.end("missing file"); return; }
+        const safe = file.replace(/^\/+/, "");
+        if (safe.includes("..") || safe.includes("\0")) { res.writeHead(400); res.end("bad file"); return; }
+        const target = `http://localhost:${server.config.server.port || 3000}/${safe}`;
+
+        let page;
+        try {
+          const browser = await getBrowser();
+          const ctx = await browser.newContext({
+            viewport: { width, height: 800 },
+            deviceScaleFactor: scale,
+          });
+          page = await ctx.newPage();
+          await page.goto(target, { waitUntil: "networkidle", timeout: 30000 });
+          try { await page.evaluate(() => document.fonts && document.fonts.ready); } catch {}
+          // Sticky/fixed elements would otherwise stamp mid-document on a full-page
+          // screenshot. Inject a screenshot-only stylesheet that pins them to the
+          // bottom of the document. The bottom nav anchors at bottom:0; smaller
+          // bottom-anchored floats (FAB) sit above it via an inferred offset.
+          await page.evaluate(() => {
+            const vh = window.innerHeight;
+            const candidates = [];
+            for (const el of document.querySelectorAll("body *")) {
+              const cs = getComputedStyle(el);
+              if (cs.position !== "sticky" && cs.position !== "fixed") continue;
+              const r = el.getBoundingClientRect();
+              const isBottom = cs.bottom !== "auto" || r.top + r.height / 2 > vh / 2;
+              if (!isBottom) continue;
+              candidates.push({ el, r });
+            }
+            candidates.sort((a, b) => b.r.bottom - a.r.bottom);
+            const navHeight = candidates.length ? candidates[0].r.height : 0;
+            for (let i = 0; i < candidates.length; i++) {
+              const { el, r } = candidates[i];
+              const isNav = i === 0;
+              el.style.setProperty("position", "absolute", "important");
+              el.style.setProperty("left", r.left + "px", "important");
+              el.style.setProperty("width", r.width + "px", "important");
+              el.style.setProperty("right", "auto", "important");
+              el.style.setProperty("top", "auto", "important");
+              el.style.setProperty("margin", "0", "important");
+              el.style.setProperty("transform", "none", "important");
+              el.style.setProperty(
+                "bottom",
+                (isNav ? 0 : navHeight + 12) + "px",
+                "important",
+              );
+            }
+            // Handle top-anchored sticky/fixed (headers) — keep them at top:0.
+            for (const el of document.querySelectorAll("body *")) {
+              const cs = getComputedStyle(el);
+              if (cs.position !== "sticky" && cs.position !== "fixed") continue;
+              const r = el.getBoundingClientRect();
+              const isBottom = cs.bottom !== "auto" || r.top + r.height / 2 > vh / 2;
+              if (isBottom) continue;
+              el.style.setProperty("position", "absolute", "important");
+              el.style.setProperty("top", "0", "important");
+              el.style.setProperty("bottom", "auto", "important");
+              el.style.setProperty("left", r.left + "px", "important");
+              el.style.setProperty("width", r.width + "px", "important");
+            }
+            document.body.style.position = "relative";
+          });
+          await page.waitForTimeout(150);
+          const buf = await page.screenshot({ type: "png", fullPage: true });
+          await ctx.close();
+          res.writeHead(200, {
+            "Content-Type": "image/png",
+            "Cache-Control": "no-store",
+          });
+          res.end(buf);
+        } catch (e) {
+          try { if (page) await page.context().close(); } catch {}
+          res.writeHead(500);
+          res.end("render error: " + (e && e.message ? e.message : String(e)));
+        }
+      });
+    },
+  };
+}
+
+/** Proxies external images (Unsplash, pravatar, etc.) so the PNG exporter can inline them without CORS errors. */
+function imageProxyPlugin() {
+  const ALLOWED_HOSTS = new Set([
+    "images.unsplash.com",
+    "i.pravatar.cc",
+    "source.unsplash.com",
+    "picsum.photos",
+    "fastly.picsum.photos",
+  ]);
+
+  return {
+    name: "image-proxy",
+    configureServer(server) {
+      server.middlewares.use("/api/img-proxy", async (req, res) => {
+        const u = new URL(req.url, "http://localhost");
+        const target = u.searchParams.get("url");
+        if (!target) { res.writeHead(400); res.end("missing url"); return; }
+        let parsed;
+        try { parsed = new URL(target); } catch { res.writeHead(400); res.end("bad url"); return; }
+        if (!ALLOWED_HOSTS.has(parsed.hostname)) {
+          res.writeHead(403); res.end("host not allowed"); return;
+        }
+        try {
+          const upstream = await fetch(parsed.toString(), { redirect: "follow" });
+          if (!upstream.ok) { res.writeHead(upstream.status); res.end("upstream " + upstream.status); return; }
+          const ct = upstream.headers.get("content-type") || "image/jpeg";
+          const buf = Buffer.from(await upstream.arrayBuffer());
+          res.writeHead(200, {
+            "Content-Type": ct,
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "public, max-age=86400",
+          });
+          res.end(buf);
+        } catch (e) {
+          res.writeHead(502); res.end("proxy error: " + e.message);
+        }
       });
     },
   };
@@ -854,6 +1046,8 @@ export default defineConfig(({ mode }) => {
       liveDataPlugin(),
       dataFilesPlugin(),
       localDevDataApiPlugin(),
+      imageProxyPlugin(),
+      screenPngPlugin(),
       captureApiPlugin(),
     ],
     build: {

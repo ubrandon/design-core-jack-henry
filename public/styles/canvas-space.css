@@ -40,13 +40,7 @@
 /* Screen card on canvas */
 .canvas-card {
   position: absolute;
-  border-radius: 16px;
-  overflow: hidden;
   border: none;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.18),
-    0 2px 8px rgba(0, 0, 0, 0.1);
-  background: #fff;
   cursor: grab;
   user-select: none;
   -webkit-user-drag: none;
@@ -57,13 +51,60 @@
   -webkit-user-drag: none;
 }
 
-.canvas-card:hover {
+/* Screen name label, sits above the card frame */
+.canvas-card-label {
+  pointer-events: auto;
+  display: block;
+  max-width: 100%;
+  margin: 0 0 10px 2px;
+  padding: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: text;
+}
+
+.canvas-card.is-selected .canvas-card-label {
+  color: var(--neon-blue, #0066ff);
+}
+
+.canvas-card-label-input {
+  pointer-events: auto;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--neon-blue, #0066ff);
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.canvas-card-body {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.18),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.canvas-card:hover .canvas-card-body {
   box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.22),
     0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-.canvas-card.is-selected {
+.canvas-card.is-selected .canvas-card-body {
   box-shadow:
     0 0 0 3px var(--neon-blue),
     0 12px 40px rgba(0, 0, 0, 0.22);
@@ -160,11 +201,6 @@
 .canvas-card-remove:hover {
   background: rgba(255, 80, 80, 0.3);
   color: #ff6b6b;
-}
-
-.canvas-card-body {
-  overflow: auto;
-  max-height: 400px;
 }
 
 .canvas-card-body iframe {
