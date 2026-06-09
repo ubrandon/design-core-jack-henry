@@ -1,0 +1,60 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  /* Unsplash bg (free license); swap photo id to change it. */
+  html, body { margin: 0; padding: 0; }
+  .se-stage { position: relative; width: 390px; min-height: 844px; box-sizing: border-box; font-family: var(--font-body); background: linear-gradient(180deg, rgba(15,25,55,0.32) 0%, rgba(18,38,86,0.55) 100%), url("https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?auto=format&fit=crop&w=900&h=1500&q=70") center / cover no-repeat; display: flex; align-items: center; justify-content: center; padding: 40px 18px; }
+  .se-card { position: relative; width: 100%; box-sizing: border-box; background: #fff; border-radius: 22px; box-shadow: 0 20px 55px rgba(10,20,45,0.35); padding: 30px 26px; overflow: hidden; }
+  .se-back { position: absolute; top: 26px; left: 24px; background: none; border: none; padding: 0; cursor: pointer; z-index: 2; }
+  .se-logo { display: flex; align-items: center; justify-content: center; gap: 11px; margin-bottom: 22px; }
+  .se-logo-word { font-size: 1.7rem; font-weight: 800; color: #16235c; letter-spacing: -0.01em; }
+  .se-logo-word b { color: #3a5ca8; font-weight: 700; }
+  .se-title { text-align: center; font-size: 1.5rem; font-weight: 700; color: rgba(0,0,0,0.85); margin: 0 0 8px; }
+  .se-sub { text-align: center; font-size: 0.98rem; color: rgba(0,0,0,0.62); margin: 0 0 22px; line-height: 1.45; }
+  .se-footer { margin: 28px -26px -30px; background: #14224d; color: rgba(255,255,255,0.85); padding: 15px 20px 18px; text-align: center; font-size: 0.72rem; line-height: 1.7; }
+  .se-footer a { color: #7fa8ff; text-decoration: none; }
+  .se-footer .se-house { display: inline-block; vertical-align: -2px; margin-right: 4px; }
+  .opt { display: flex; align-items: flex-start; gap: 13px; border: 1px solid rgba(0,0,0,0.2); border-radius: 12px; padding: 16px; margin-bottom: 14px; cursor: pointer; }
+  .opt.is-sel { border-color: #2f49d6; box-shadow: inset 0 0 0 1px #2f49d6; background: rgba(47,73,214,0.04); }
+  .opt .radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.35); flex-shrink: 0; margin-top: 1px; }
+  .opt.is-sel .radio { border-color: #2f49d6; border-width: 6px; }
+  .opt-title { font-size: 1.02rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .opt-sub { font-size: 0.88rem; color: rgba(0,0,0,0.55); margin-top: 3px; line-height: 1.4; }
+  .btn { display: block; width: 100%; box-sizing: border-box; margin-top: 8px; padding: 16px; border: none; border-radius: 10px; background: #3949d1; color: #fff; font-family: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+</style>
+<div class="se-stage">
+  <div class="se-card">
+    <button class="se-back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="se-logo">
+      <svg width="34" height="34" viewBox="0 0 64 64" fill="none" stroke="#5b8fd6" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="29"/><path d="M17 27 L32 18 L47 27"/><line x1="16" y1="29" x2="48" y2="29"/><line x1="22" y1="29" x2="22" y2="43"/><line x1="32" y1="29" x2="32" y2="43"/><line x1="42" y1="29" x2="42" y2="43"/><line x1="15" y1="45" x2="49" y2="45"/></svg>
+      <span class="se-logo-word">Your<b>FI</b></span>
+    </div>
+
+    <h1 class="se-title">Do you already have a login?</h1>
+    <p class="se-sub">If you already sign in to YourFI, link that login instead of creating a second one.</p>
+
+    <div class="opt is-sel">
+      <div class="radio"></div>
+      <div>
+        <div class="opt-title">Yes, link my existing login</div>
+        <div class="opt-sub">Use the username and password you already have. We'll add this business to it.</div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="radio"></div>
+      <div>
+        <div class="opt-title">No, create a new login</div>
+        <div class="opt-sub">Set up a brand-new username and password for this business.</div>
+      </div>
+    </div>
+
+    <button class="btn">Next</button>
+
+    <div class="se-footer">
+      &copy;2023 YourFI &nbsp;&middot;&nbsp; (555) 555-5555 &nbsp;&middot;&nbsp; <a href="#">Privacy policy</a> &nbsp;&middot;<br>
+      Member FDIC &nbsp;&middot;&nbsp;
+      <svg class="se-house" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Equal Housing Lender
+    </div>
+  </div>
+</div>

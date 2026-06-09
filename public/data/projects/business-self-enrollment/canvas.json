@@ -23,6 +23,60 @@
       "x": 1320,
       "y": 0,
       "width": 390
+    },
+    {
+      "file": "biz-found.html",
+      "x": 0,
+      "y": 1300,
+      "width": 390
+    },
+    {
+      "file": "biz-details.html",
+      "x": 440,
+      "y": 1300,
+      "width": 390
+    },
+    {
+      "file": "biz-existing-account.html",
+      "x": 880,
+      "y": 1300,
+      "width": 390
+    },
+    {
+      "file": "biz-create-login.html",
+      "x": 1320,
+      "y": 1300,
+      "width": 390
+    },
+    {
+      "file": "biz-2fa.html",
+      "x": 1760,
+      "y": 1300,
+      "width": 390
+    },
+    {
+      "file": "biz-pending-approval.html",
+      "x": 2200,
+      "y": 1300,
+      "width": 390
+    },
+    {
+      "file": "biz-admin-welcome.html",
+      "x": 2640,
+      "y": 1300,
+      "width": 390
+    },
+    {
+      "file": "biz-invite.html",
+      "x": 3080,
+      "y": 1300,
+      "width": 390
+    },
+    {
+      "file": "biz-verify-identity.html",
+      "x": 3520,
+      "y": 1300,
+      "width": 390
     }
   ]
 }
