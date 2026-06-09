@@ -1,0 +1,74 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  /* Unsplash bg (free license); swap photo id to change it. */
+  html, body { margin: 0; padding: 0; }
+  .se-stage { position: relative; width: 390px; min-height: 844px; box-sizing: border-box; font-family: var(--font-body); background: linear-gradient(180deg, rgba(15,25,55,0.32) 0%, rgba(18,38,86,0.55) 100%), url("https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?auto=format&fit=crop&w=900&h=1500&q=70") center / cover no-repeat; display: flex; align-items: center; justify-content: center; padding: 40px 18px; }
+  .se-card { position: relative; width: 100%; box-sizing: border-box; background: #fff; border-radius: 22px; box-shadow: 0 20px 55px rgba(10,20,45,0.35); padding: 30px 26px; overflow: hidden; }
+  .se-logo { display: flex; align-items: center; justify-content: center; gap: 11px; margin-bottom: 24px; }
+  .se-logo-word { font-size: 1.95rem; font-weight: 800; color: #16235c; letter-spacing: -0.01em; }
+  .se-logo-word b { color: #3a5ca8; font-weight: 700; }
+  .se-fab { position: absolute; right: 20px; bottom: 86px; width: 46px; height: 46px; border-radius: 50%; background: #fff; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 4px 14px rgba(0,0,0,0.18); display: grid; place-items: center; color: rgba(0,0,0,0.6); font-size: 1.25rem; font-weight: 700; cursor: pointer; z-index: 2; }
+  .se-footer { margin: 28px -26px -30px; background: #14224d; color: rgba(255,255,255,0.85); padding: 15px 20px 18px; text-align: center; font-size: 0.72rem; line-height: 1.7; }
+  .se-footer a { color: #7fa8ff; text-decoration: none; }
+  .se-footer .se-house { display: inline-block; vertical-align: -2px; margin-right: 4px; }
+  .banner { display: flex; align-items: flex-start; gap: 12px; background: #f1f3f6; border-radius: 8px;
+    padding: 16px 18px; margin-bottom: 26px; }
+  .banner p { margin: 0; font-size: 1.05rem; color: rgba(0,0,0,0.82); line-height: 1.35; }
+  .create-btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%;
+    box-sizing: border-box; padding: 16px; border: 1.5px solid #2f49d6; border-radius: 8px; background: #fff;
+    color: #2f49d6; font-family: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; margin-bottom: 34px; }
+  .divider { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+  .divider span { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.04em; color: rgba(0,0,0,0.6); white-space: nowrap; }
+  .divider .line { flex: 1; height: 1px; background: rgba(0,0,0,0.18); }
+  .input { width: 100%; box-sizing: border-box; border: 1px solid rgba(0,0,0,0.3); border-radius: 8px;
+    padding: 18px 16px; font-size: 1.05rem; color: rgba(0,0,0,0.55); }
+  .forgot { display: block; text-align: right; margin: 14px 2px 0; color: #2f49d6; font-size: 1rem; font-weight: 600; text-decoration: none; }
+  .continue { display: block; margin: 28px auto 8px; padding: 14px 34px; border: none; border-radius: 10px;
+    background: #3949d1; color: #fff; font-family: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+</style>
+<div class="se-stage">
+  <div class="se-card">
+    <div class="se-logo">
+      <svg width="44" height="44" viewBox="0 0 64 64" fill="none" stroke="#5b8fd6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="32" cy="32" r="29"/>
+        <path d="M17 27 L32 18 L47 27"/>
+        <line x1="16" y1="29" x2="48" y2="29"/>
+        <line x1="22" y1="29" x2="22" y2="43"/>
+        <line x1="32" y1="29" x2="32" y2="43"/>
+        <line x1="42" y1="29" x2="42" y2="43"/>
+        <line x1="15" y1="45" x2="49" y2="45"/>
+      </svg>
+      <span class="se-logo-word">Your<b>FI</b></span>
+    </div>
+
+    <div class="banner">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2f49d6" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.5" r="0.8" fill="#2f49d6" stroke="none"/></svg>
+      <p>Create your YourFI ID to establish your account access.</p>
+    </div>
+
+    <button class="create-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Create my YourFI ID
+    </button>
+
+    <div class="divider">
+      <span>ALREADY HAVE A YOURFI ID?</span>
+      <div class="line"></div>
+    </div>
+
+    <div class="input">Username</div>
+    <a class="forgot" href="#">Forgot?</a>
+
+    <button class="continue">Continue</button>
+
+    <button class="se-fab">?</button>
+
+    <div class="se-footer">
+      &copy;2023 YourFI &nbsp;&middot;&nbsp; (555) 555-5555 &nbsp;&middot;&nbsp; <a href="#">Privacy policy</a> &nbsp;&middot;<br>
+      Member FDIC &nbsp;&middot;&nbsp;
+      <svg class="se-house" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Equal Housing Lender
+    </div>
+  </div>
+</div>

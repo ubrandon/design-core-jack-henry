@@ -35,6 +35,13 @@
       "description": "",
       "createdBy": "Brandon Unglaub",
       "createdAt": "2026-05-11T16:19:21.777Z"
+    },
+    {
+      "id": "business-self-enrollment",
+      "name": "Business Self Enrollment",
+      "description": "",
+      "createdBy": "Brandon Unglaub",
+      "createdAt": "2026-06-09T14:53:42.871Z"
     }
   ]
 }

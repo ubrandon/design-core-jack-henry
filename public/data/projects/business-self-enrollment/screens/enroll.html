@@ -1,0 +1,53 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  /* Unsplash bg (free license); swap photo id to change it. */
+  html, body { margin: 0; padding: 0; }
+  .se-stage { position: relative; width: 390px; min-height: 844px; box-sizing: border-box; font-family: var(--font-body); background: linear-gradient(180deg, rgba(15,25,55,0.32) 0%, rgba(18,38,86,0.55) 100%), url("https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?auto=format&fit=crop&w=900&h=1500&q=70") center / cover no-repeat; display: flex; align-items: center; justify-content: center; padding: 40px 18px; }
+  .se-card { position: relative; width: 100%; box-sizing: border-box; background: #fff; border-radius: 22px; box-shadow: 0 20px 55px rgba(10,20,45,0.35); padding: 30px 26px; overflow: hidden; }
+  .se-back { position: absolute; top: 26px; left: 24px; background: none; border: none; padding: 0; cursor: pointer; z-index: 2; }
+  .se-iconcircle { width: 52px; height: 52px; border-radius: 50%; background: var(--jh-navy); display: grid; place-items: center; margin: 0 auto 16px; }
+  .se-title { text-align: center; font-size: 1.55rem; font-weight: 700; color: rgba(0,0,0,0.85); margin: 0 0 8px; }
+  .se-sub { text-align: center; font-size: 0.98rem; color: rgba(0,0,0,0.62); margin: 0 0 22px; line-height: 1.45; }
+  .field { width: 100%; box-sizing: border-box; border: 1px solid rgba(0,0,0,0.3); border-radius: 8px;
+    padding: 17px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .field span { font-size: 1.05rem; color: rgba(0,0,0,0.55); }
+  .field svg { color: rgba(0,0,0,0.55); flex-shrink: 0; }
+  .help { font-size: 0.82rem; color: rgba(0,0,0,0.5); margin: 7px 2px 0; }
+  .next { width: 100%; box-sizing: border-box; margin-top: 26px; padding: 16px; border: none; border-radius: 10px;
+    background: #aebbf2; color: #fff; font-family: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+</style>
+<div class="se-stage">
+  <div class="se-card">
+    <button class="se-back">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <div class="se-iconcircle">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <h1 class="se-title">Enroll</h1>
+    <p class="se-sub">Tell us a little bit about yourself.</p>
+
+    <div class="field" style="margin-bottom:7px;">
+      <span>SSN</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    </div>
+    <p class="help" style="margin-bottom:18px;">EIN and ITIN are also accepted</p>
+
+    <div class="field" style="margin-bottom:18px;">
+      <span>Account number</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    </div>
+
+    <div class="field" style="margin-bottom:18px;">
+      <span>Email</span>
+    </div>
+
+    <div class="field">
+      <span>Phone</span>
+    </div>
+
+    <button class="next">Next</button>
+  </div>
+</div>

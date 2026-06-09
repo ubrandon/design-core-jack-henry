@@ -1,0 +1,28 @@
+{
+  "screens": [
+    {
+      "file": "create-yourfi-id.html",
+      "x": 0,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "enroll.html",
+      "x": 440,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "verify-number.html",
+      "x": 880,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "create-yourfi-id-profile.html",
+      "x": 1320,
+      "y": 0,
+      "width": 390
+    }
+  ]
+}

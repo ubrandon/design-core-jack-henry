@@ -1,0 +1,51 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  /* Unsplash bg (free license); swap photo id to change it. */
+  html, body { margin: 0; padding: 0; }
+  .se-stage { position: relative; width: 390px; min-height: 844px; box-sizing: border-box; font-family: var(--font-body); background: linear-gradient(180deg, rgba(15,25,55,0.32) 0%, rgba(18,38,86,0.55) 100%), url("https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?auto=format&fit=crop&w=900&h=1500&q=70") center / cover no-repeat; display: flex; align-items: center; justify-content: center; padding: 40px 18px; }
+  .se-card { position: relative; width: 100%; box-sizing: border-box; background: #fff; border-radius: 22px; box-shadow: 0 20px 55px rgba(10,20,45,0.35); padding: 30px 26px; overflow: hidden; }
+  .se-back { position: absolute; top: 26px; left: 24px; background: none; border: none; padding: 0; cursor: pointer; z-index: 2; }
+  .se-iconcircle { width: 52px; height: 52px; border-radius: 50%; background: var(--jh-navy); display: grid; place-items: center; margin: 0 auto 16px; }
+  .se-title { text-align: center; font-size: 1.55rem; font-weight: 700; color: rgba(0,0,0,0.85); margin: 0 0 8px; }
+  .se-sub { text-align: center; font-size: 0.98rem; color: rgba(0,0,0,0.62); margin: 0 0 22px; line-height: 1.45; }
+  .option { display: flex; align-items: flex-start; gap: 14px; padding: 8px 0; margin-bottom: 8px; }
+  .radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.45); flex-shrink: 0; margin-top: 2px; }
+  .option-title { font-size: 1.05rem; font-weight: 700; color: rgba(0,0,0,0.88); }
+  .option-sub { font-size: 0.95rem; color: rgba(0,0,0,0.55); margin-top: 2px; }
+  .next { display: block; width: 240px; margin: 26px auto 0; padding: 15px; border: none; border-radius: 10px;
+    background: #aebbf2; color: #fff; font-family: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+  .help-link { display: block; text-align: center; margin-top: 20px; color: var(--jh-blue);
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 0.02em; text-decoration: none; }
+</style>
+<div class="se-stage">
+  <div class="se-card">
+    <button class="se-back">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <div class="se-iconcircle">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/><circle cx="8" cy="10" r="1.3" fill="#1e3a5f"/><circle cx="12" cy="10" r="1.3" fill="#1e3a5f"/><circle cx="16" cy="10" r="1.3" fill="#1e3a5f"/></svg>
+    </div>
+    <h1 class="se-title">Let's verify your number</h1>
+    <p class="se-sub">We will call or send a one-time code to the phone number you provided. It will be valid for 5 minutes.</p>
+
+    <div class="option">
+      <div class="radio"></div>
+      <div>
+        <div class="option-title">Text message (SMS)</div>
+        <div class="option-sub">(555) 555-5555</div>
+      </div>
+    </div>
+    <div class="option">
+      <div class="radio"></div>
+      <div>
+        <div class="option-title">Phone call</div>
+        <div class="option-sub">(555) 555-5555</div>
+      </div>
+    </div>
+
+    <button class="next">Next</button>
+    <a class="help-link" href="#">NEED HELP?</a>
+  </div>
+</div>
