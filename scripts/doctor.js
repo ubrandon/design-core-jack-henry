@@ -196,12 +196,15 @@ function checkDrift(repo) {
     note("Could not reach GitHub just now; comparing tool files against the last downloaded copy of the official tool.");
   }
   const excludes = COMPANY_OWNED_PATHS.map((p) => `":(exclude)${p}"`).join(" ");
-  const out = sh(`git diff --name-only upstream/main...HEAD -- . ${excludes}`);
-  if (out === null) {
+  // Real drift = changed on the company side AND still different from the official tip.
+  const changedHere = sh(`git diff --name-only upstream/main...HEAD -- . ${excludes}`);
+  const differsNow = sh(`git diff --name-only upstream/main HEAD -- . ${excludes}`);
+  if (changedHere === null || differsNow === null) {
     note("Tool-files comparison could not run (git diff failed).");
     return;
   }
-  const files = out.split("\n").filter(Boolean);
+  const stillDifferent = new Set(differsNow.split("\n").filter(Boolean));
+  const files = changedHere.split("\n").filter(Boolean).filter((f) => stillDifferent.has(f));
   if (!files.length) {
     ok("No tool files modified in this repo (design work only, as intended)");
     return;

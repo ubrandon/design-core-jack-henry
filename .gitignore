@@ -4,3 +4,4 @@ dist/
 .designer
 .app-screens.json
 .capture-browser-data/
+.claude/

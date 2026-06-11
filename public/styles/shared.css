@@ -80,3 +80,33 @@ body {
   display: none; /* Chrome, Safari, iOS */
   height: 0;
 }
+
+/*
+ * Hide scrollbars entirely (vertical + horizontal) on canvas screens. Mobile
+ * device frames should never reveal a desktop scrollbar — it breaks the
+ * illusion. Scrolling still works via touch/trackpad/wheel. Apply to the
+ * scope root of a screen, or use `ds-no-scrollbar` on a specific container.
+ */
+.ds-no-scrollbar,
+.ds-no-scrollbar * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ds-no-scrollbar::-webkit-scrollbar,
+.ds-no-scrollbar *::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.chat-scope,
+.chat-scope * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.chat-scope::-webkit-scrollbar,
+.chat-scope *::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
