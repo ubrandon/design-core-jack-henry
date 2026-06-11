@@ -1,7 +1,9 @@
 {
   "name": "Your Name",
-  "company": "Your Company",
+  "company": "Jack Henry",
   "team": [
-    { "name": "Your Name" }
+    {
+      "name": "Your Name"
+    }
   ]
 }
