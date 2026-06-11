@@ -36,15 +36,16 @@ You are helping a **designer** create UI screens and interactive prototypes. The
 
 ### NEVER make tool-level changes in a company repo
 
-**This is critical.** Company repos receive tool updates by pulling from the upstream core repo (`ubrandon/design-core`). If you make tool-level changes directly in a company repo, those changes will conflict with or be overwritten by future upstream merges.
+**This is critical, and it applies to every AI assistant working in this repo** -- Cursor, Claude Code (VSCode extension, desktop app, or CLI), Copilot, or anything else. Company repos receive tool updates by pulling from the upstream core repo (`ubrandon/design-core`). If you make tool-level changes directly in a company repo, those changes will conflict with or be overwritten by future upstream merges, and can break the tool for the whole team. `npm run doctor` compares this repo's tool files against the official tool and flags any drift, so unauthorized tool edits WILL surface.
 
 **Tool-level files** are anything that is NOT project data or designer identity. This includes:
 
 - `.cursor/rules/` -- all Cursor rule files (`design-tool.mdc`, `setup.mdc`, etc.)
+- `CLAUDE.md`, `AGENTS.md` -- the AI instruction shims at the repo root
 - `GETTING_STARTED.md`, `README.md`
 - Root HTML pages (`index.html`, `project.html`, `canvas.html`, `prototype.html`, `design-system.html`)
 - `public/scripts/` -- JavaScript that powers the tool in the browser (must live here so `vite build` deploys it to GitHub Pages)
-- `scripts/` (repo root) -- Node-only CLIs (`capture-screens.js`, `sync-public-site-url.js`), not loaded by HTML
+- `scripts/` (repo root) -- Node-only CLIs (`capture-screens.js`, `sync-public-site-url.js`, `doctor.js`, `finish-setup.js`, `update-tool.js`, `start-company-setup.js`), not loaded by HTML
 - `public/styles/shared.css`, `public/styles/ds.css` -- shared design system styles
 - `vite.config.js`, `package.json`, `package-lock.json`
 - `.github/` -- GitHub Actions workflows
@@ -53,7 +54,7 @@ You are helping a **designer** create UI screens and interactive prototypes. The
 **What to do instead:**
 
 - If a tool-level fix or improvement is needed, tell the user: "This change belongs in the core Design Core tool, not your company repo. Reach out to **Brandon Unglaub** if you need a change to the tool."
-- The ONLY tool-level files a company repo should modify during setup are `GETTING_STARTED.md` (to set the company's clone URL) and `.designer.example` (to set the company name). After that initial setup commit, these files should only change via upstream pulls.
+- The ONLY tool-level files a company repo should modify during setup are `GETTING_STARTED.md` and `.designer.example`, and `npm run finish-setup` writes both automatically -- never edit them by hand. After that initial setup commit, they should only change via `npm run update-tool`.
 
 **What you CAN create and edit in a company repo (user content):**
 
@@ -104,10 +105,8 @@ If the path matches a safe pattern, proceed normally.
 
 - **NEVER commit or push without the user explicitly asking.** Do not auto-commit, do not commit as part of a multi-step task, do not commit "to save progress." The user controls when commits happen.
 - **NEVER run `git fetch`, `git pull`, `git merge`, or any command that syncs with a remote** without the user explicitly asking. These can introduce unexpected changes.
-- If the user asks to pull updates from the core repo, do it in two steps:
-  1. Run `git fetch upstream` to download the changes
-  2. Run `git log HEAD..upstream/main --oneline` to show the user what's incoming
-  3. **Wait for the user to confirm** before running `git merge upstream/main` -- the merge will auto-commit, so the user should see what's coming first.
+- If the user asks to pull updates from the core repo, run `npm run update-tool` (use `--dry-run` first to show what's incoming). It fetches, shows the changes, merges, keeps the company's own files when they conflict, and reinstalls dependencies. Do NOT hand-run `git merge upstream/main`.
+- The maintenance scripts are the sanctioned exception to the no-sync rule, when the user asks for what they do: `npm run doctor` may fetch (read-only) to compare tool files, and `npm run update-tool` fetches, merges, and commits as its explicit job.
 
 ---
 

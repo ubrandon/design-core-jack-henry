@@ -2,36 +2,29 @@
 
 **Build interactive prototypes by chatting with AI. No coding needed.**
 
-Design Core is a design tool for teams. You describe what you want, AI builds it, and you share it with a link.
+Design Core is a design tool for teams. You describe what you want, AI builds it, and you share it with a link. It works alongside Figma, not instead of it: keep Figma for what it's great at, use this for fast AI-powered prototyping.
 
 ---
 
 ## Get Started
 
-**New to Design Core?** Follow the setup guide -- it takes about 10 minutes:
+Setup takes about 10 minutes and the AI does most of it:
 
 **[Get Started](GETTING_STARTED.md)**
 
 ---
 
-## What is this?
+## Pick your editor
 
-Design Core is a file-based design prototyping tool. Designers use [Cursor](https://cursor.com) (an AI-powered editor) to build UI screens and interactive prototypes by prompting AI in plain language.
+Design Core is a normal folder of files plus an AI that edits them, so it works in any of these. Same repo, same rules, same result:
 
-No frameworks, no databases, no backend. Just HTML/CSS/JS served by Vite.
+| Tool | Best for | What it costs |
+| --- | --- | --- |
+| **[Cursor](https://www.cursor.com)** | The original Design Core experience | Free Hobby tier to try it; Pro (~$20/mo) for real use. Auto mode gives near-unlimited fast usage |
+| **[VSCode](https://code.visualstudio.com)** + **Claude Code** extension or **GitHub Copilot** | People who already live in VSCode | A Claude subscription or Copilot plan |
+| **[Claude desktop app](https://claude.com/download)** (Mac/Windows) | Non-developers: no editor, no terminal | Claude Pro or Max subscription |
 
-### Why not other AI design tools?
-
-Design Core works **alongside** Figma, not instead of it. Keep using Figma for what it's great at -- this is for AI-powered prototyping.
-
-The difference is cost and quality compared to other AI design tools. Figma Make, Google Stitch, and similar tools are expensive, slow, or produce mediocre results. Design Core is **free and open source** -- the only cost is a [Cursor](https://cursor.com) subscription:
-
-- **Hobby (free)** -- limited requests, but enough to try it out
-- **Pro ($20/mo per person)** -- the sweet spot for most designers
-
-Cursor's **Auto mode** and **Composer 1.5** model give you near-unlimited usage at the Pro tier -- fast responses, high-quality output, and a fraction of the cost of dedicated AI design tools.
-
-Each person on the team needs their own Cursor account. There's no separate Design Core license. Companies can use [Cursor Teams ($40/user/mo)](https://cursor.com/pricing) for centralized billing and admin controls, but individual Pro plans work fine too.
+Each person needs their own account for whichever tool they pick. There is no separate Design Core license: the tool itself is **free and open source**.
 
 ### Who is it for?
 
@@ -55,6 +48,21 @@ Each person on the team needs their own Cursor account. There's no separate Desi
 
 ---
 
+## How a team uses it
+
+1. **One person sets it up** ([Get Started](GETTING_STARTED.md)): a private company repo on GitHub, created from this public template.
+2. **Designers join** by pasting one prompt; the AI clones the repo and walks each person through a 2-minute setup.
+3. **Everyone works locally** at http://localhost:3000, and nobody needs a terminal: designers ask the AI to start the tool, save and share work, or grab the latest from teammates.
+4. **Stakeholders just get links**: pushes deploy to GitHub Pages automatically.
+5. **Tool updates** flow from this repo: any teammate asks the AI to update the tool, then pushes. Designs and the tool never fight, because design work lives entirely under `public/data/`.
+6. **Something looks broken?** Ask the AI to run the health check; it explains the problem and the fix in plain language.
+
+---
+
+## Why not other AI design tools?
+
+Figma Make, Google Stitch, and similar tools are expensive, slow, or produce mediocre results. Design Core is free and open source; the only cost is the AI subscription you probably already have. You also keep everything: it's your repo, your files, plain HTML/CSS that any developer can read.
+
 ## Features
 
 - **AI-powered** -- describe what you want, get working HTML/CSS/JS
@@ -63,8 +71,6 @@ Each person on the team needs their own Cursor account. There's no separate Desi
 - **Design system** -- shared tokens, components, and styles across all projects
 - **Shareable links** -- push to Git and prototypes deploy to GitHub Pages automatically
 - **Team-friendly** -- each designer gets their own identity, projects track who made what
-
----
 
 ## Workspaces
 
@@ -80,7 +86,7 @@ Each person on the team needs their own Cursor account. There's no separate Desi
 
 ## Technical Details
 
-Built with vanilla HTML/CSS/JS + Vite. No framework, no database, no backend.
+Built with vanilla HTML/CSS/JS + Vite. No framework, no database, no backend. The dev server runs on **port 3000** (fixed, so links always match).
 
 ### File structure
 
@@ -90,7 +96,7 @@ Vite serves `public/` at the site root. On disk, design data lives under `public
 public/
   styles/                 # Tool + design tokens (shared.css, ds.css, app.css, …)
   data/
-    site.json             Optional public site URL for prototype “Copy link” (local dev); see Sharing
+    site.json             Public site URL for prototype "Copy link" (written by finish-setup)
     projects/
       index.json
       <project-id>/
@@ -110,36 +116,37 @@ public/
     captures/             Capture config + manifest (see docs/captures.md)
 ```
 
-Root HTML pages (`index.html`, `canvas.html`, …) sit at the repo root; browser JS lives in `public/scripts/` (so it ships with `vite build` / GitHub Pages). Node CLIs (`capture-screens.js`, …) stay in repo-root `scripts/`. See `docs/DESIGN_TOOL_PLAN.md` for the full tree.
+Root HTML pages (`index.html`, `canvas.html`, …) sit at the repo root; browser JS lives in `public/scripts/` (so it ships with `vite build` / GitHub Pages). Node CLIs (`doctor.js`, `update-tool.js`, …) stay in repo-root `scripts/`. See `docs/DESIGN_TOOL_PLAN.md` for the full tree.
 
-### Maintaining the tool
+### Commands
 
-Improvement ideas for core contributors (architecture, dev API safety, testing, captures): [docs/core-improvements.md](docs/core-improvements.md).
-
-### Local development
+Designers never need these directly: they ask the AI ("start the tool", "update the tool", "run the doctor") and the AI runs them. For reference:
 
 ```bash
-npm install
-npm run dev
+npm run dev                  # start the tool at http://localhost:3000
+npm run doctor               # health check with plain-language fixes
+npm run update-tool          # (company repos) pull the latest tool improvements
+npm run finish-setup         # (company repos) one-time setup finalizer
+npm run sync-public-url      # re-sync the public share-link URL
+npm run build                # production build (CI runs this for GitHub Pages)
 ```
 
 ### Sharing
 
-Push to `main` and prototypes deploy to GitHub Pages automatically.
+Push to `main` and prototypes deploy to GitHub Pages automatically (enable once: **Settings → Pages → Source → GitHub Actions**).
 
-**Typical flow:** designers run the tool on **localhost** in Cursor; stakeholders open **Copy link** in a normal browser — that must be the **GitHub Pages** URL, not `localhost`.
+Designers run the tool on **localhost**; stakeholders open **Copy link** URLs in a normal browser. Those links point at the deployed GitHub Pages site. `npm run finish-setup` configures this during company setup; run `npm run sync-public-url` again if the repo ever moves, or set the URL manually in `public/data/site.json`:
 
-**Copy link** on the project hub and prototype preview uses your **deployed** URL, not `localhost`:
+```json
+{ "publicBaseUrl": "https://your-org.github.io/your-repo/" }
+```
 
-- On **`*.github.io`**, the base URL is taken from the current path (no config needed).
-- On **`npm run dev` (localhost)**, Vite serves a merged `data/site.json`: it adds **`publicBaseUrl`** inferred from **`git remote get-url origin`** when your `public/data/site.json` doesn’t set it (standard `github.com` SSH/HTTPS remotes only). Restart dev if you change remotes.
-- To override or persist for CI / `vite preview`, run **`npm run sync-public-url`** or edit `public/data/site.json` manually:
+### More docs
 
-  ```json
-  { "publicBaseUrl": "https://your-org.github.io/your-repo/" }
-  ```
-
-  Commit `site.json` so teammates get the same share links. You can also set `DESIGN_CORE_PUBLIC_URL` when running the sync script, or use `window.__DESIGN_CORE_PUBLIC_BASE__` / `<meta name="design-core-public-url" content="https://…/">` for edge cases.
+- [Getting started](GETTING_STARTED.md)
+- [Updating the tool](docs/UPDATING.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Captures](docs/captures.md)
 
 ---
 

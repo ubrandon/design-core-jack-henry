@@ -9,7 +9,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "capture": "node scripts/capture-screens.js",
-    "sync-public-url": "node scripts/sync-public-site-url.js"
+    "sync-public-url": "node scripts/sync-public-site-url.js",
+    "doctor": "node scripts/doctor.js",
+    "start-company-setup": "node scripts/start-company-setup.js",
+    "finish-setup": "node scripts/finish-setup.js",
+    "update-tool": "node scripts/update-tool.js"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "devDependencies": {
     "playwright": "^1.58.2",

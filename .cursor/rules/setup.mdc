@@ -5,111 +5,84 @@ alwaysApply: true
 
 # First-Time Setup Guide
 
+These instructions apply to ANY AI assistant working in this repo: Cursor, VSCode with the Claude Code extension or Copilot, the Claude desktop app, or the Claude Code CLI.
+
+## Assume the user cannot use a terminal
+
+Most Design Core users are designers, not developers. Treat every command in this file as something YOU run, never something you tell the user to run:
+
+- **Run every command yourself** (`npm install`, `npm run doctor`, `npm run dev`, `gh ...`, all of them). Never say "run this in your terminal" or paste commands for the user to type.
+- **When a step needs clicks you cannot do** (Publish Branch, Git: Clone, GitHub settings pages, accepting an invite, signing in), give exact click-by-click instructions, ONE step at a time, and wait for the user to confirm before the next one.
+- **Narrate simply.** One plain sentence about what you are doing and why ("I'm starting the preview so you can see the tool"). No jargon, no git terminology unless the user uses it first.
+
+## Step zero: verify before you act
+
+At the start of any setup conversation (and any time something seems off), run:
+
+```
+npm run doctor
+```
+
+It prints, in plain language, which kind of repo this is (public template, company repo mid-setup, finished company repo, or misconfigured), what is broken, and the exact fix for each problem. **Fix what doctor reports before continuing. Never proceed with setup on a misconfigured repo.** If `npm install` has not run yet, run it first.
+
 ## When to trigger setup
 
-**If you are in the core repo** (repo name is `design-core` and git origin points to `ubrandon/design-core`): the user is a developer maintaining the tool. **Do not run this setup flow** — skip it entirely and follow `design-tool.mdc` in core repo mode.
+**If doctor says this is the core repo** (the public template, `ubrandon/design-core`): the user is a developer maintaining the tool. **Do not run this setup flow** -- skip it entirely and follow `design-tool.mdc` in core repo mode.
 
-Check if the file `.designer` exists in the repo root. If it **does not exist**, the user has not completed setup yet. When they ask to "set up" or "get started" or paste a getting-started prompt, walk them through the setup flow below.
+Otherwise, check if the file `.designer` exists in the repo root. If it **does not exist**, the user has not completed setup yet. When they ask to "set up" or "get started" or paste a getting-started prompt, walk them through the right flow below.
 
 If `.designer` already exists, setup is done -- skip this entirely and follow the normal `design-tool.mdc` rules.
 
 ## Detecting setup type
 
-There are two setup paths:
+Doctor's "Repo:" line tells you which flow applies:
 
-- **Company setup** -- the user is the first person at their org setting up Design Core. They need the full setup: clone the public repo, create a new company repo on GitHub, connect them, identity, team members. Detect this when: they say "setting up for my company" or "first time", or their prompt uses the company setup prompt from GETTING_STARTED.md.
-- **Designer joining** -- the user's company already has a Design Core repo. They just clone their company's repo and set up their identity. Detect this when: they say "joining my team" or their prompt uses the designer joining prompt from GETTING_STARTED.md, or git origin already points to a company repo (not `ubrandon/design-core`).
+- **"a company repo mid-setup"** or **"the public Design Core template"** (after the user pasted the company prompt) → **Company setup** (first person at the org). They also say things like "setting up for my company" or "first time".
+- **"a company repo (org/repo)"** with no `.designer` → **Designer joining** (the company repo already exists; this person just cloned it). They say things like "joining my team".
 
-If unclear, ask: "Are you setting this up for your company for the first time, or joining a team that already has it?"
+If genuinely unclear, ask: "Are you setting this up for your company for the first time, or joining a team that already has it?"
 
-## Setup flow
+## Working outside Cursor
 
-Walk the user through these steps conversationally. Ask one thing at a time -- don't dump everything at once. Be friendly and non-technical.
+Where these rules mention Cursor-specific UI, use the equivalent:
 
-### 1. Collect company info
+- **"Open the AI chat"** -- Cursor: Cmd+L / Ctrl+L. VSCode: the Claude Code or Copilot panel. Claude desktop app: the conversation you are already in.
+- **"Source Control panel / Publish Branch"** -- exists in Cursor and VSCode (the branch icon in the sidebar). In the Claude desktop app or CLI there is no panel; use the GitHub CLI flow described in "Publishing without an editor panel" below.
+- **Cursor settings** (Agent mode on, model set to Auto) apply only in Cursor. In other clients there is nothing to configure.
 
-Ask these two questions (one at a time):
+---
+
+## Company setup flow (first person at the org)
+
+Walk the user through conversationally. Ask one thing at a time. Be friendly and non-technical.
+
+### 1. Verify the bootstrap
+
+The getting-started prompt has the user clone over HTTPS, run `npm install`, then `npm run start-company-setup` (which disconnects the clone from the public template and blocks accidental pushes to it). Verify with `npm run doctor`:
+
+- **"a company repo mid-setup"** -- bootstrap done, continue to step 2.
+- **"the public Design Core template"** -- the bootstrap was skipped. Run `npm run start-company-setup` now. If it refuses because the folder is named `design-core`, the clone step was wrong; the folder should be `design-core-<company>`.
+- Anything else -- follow doctor's fixes first.
+
+Also confirm the basics exist: `git --version` and `node --version`. If git is missing on macOS: `xcode-select --install`. If Node is missing: download from [nodejs.org](https://nodejs.org) (or `brew install node` on a Mac). Node must be 18 or newer.
+
+### 2. Collect company info
+
+Ask, one at a time:
 
 1. **"What's your company or team name?"** (e.g. `Acme Design`)
 2. **"What's your GitHub organization or account name?"** (e.g. `acme-design`) -- where the new repo will live.
 
-The new repo will be named **`design-core-<company-slug>`** (lowercase, hyphenated). Examples: "Acme Design" → `design-core-acme-design`, "Globex Corp" → `design-core-globex-corp`.
+The repo will be named **`design-core-<company-slug>`** (lowercase, hyphenated). "Acme Design" → `design-core-acme-design`.
 
-### 2. Ensure tools are available
+### 3. Collect identity and create `.designer`
 
-The setup needs `git`, `node`, and `npm`. Check for each and install any that are missing:
+Ask:
 
-1. **git** -- run `git --version`. Should already be installed. If not, on macOS: `xcode-select --install`.
-2. **Node.js** -- run `node --version`. If missing, on macOS: `brew install node`. Otherwise: download from [nodejs.org](https://nodejs.org).
+1. **"What's your name?"** -- display name for attribution on projects
+2. **"Who else is on your design team?"** -- optional, they can add people later
 
-No other CLI tools are needed. The company repo is created through Cursor's built-in Git integration.
-
-### 3. Prepare the repo and publish through Cursor
-
-**Critical:** The public repo (`ubrandon/design-core`) is **never modified**. The user's prompt from GETTING_STARTED.md already handles cloning, renaming the remote to `upstream`, unsetting branch tracking, and installing dependencies. By the time you are reading this file, those steps are done.
-
-**Verify the setup is correct.** Run `git remote -v` -- you should see only `upstream` pointing to `ubrandon/design-core` for fetch, and `no-push-allowed` for push. There should be NO `origin` remote. If `origin` exists and points to `ubrandon/design-core`, the prompt steps were skipped -- run them now:
-```
-git remote rename origin upstream
-git branch --unset-upstream main
-git remote set-url --push upstream no-push-allowed
-```
-
-The `set-url --push` step is critical -- it prevents accidental pushes to the public core repo. Without it, `git push` from a company repo could push company-specific content upstream.
-
-Now continue with:
-
-1. **Update `GETTING_STARTED.md`** -- replace `YOUR_ORG` and `YOUR_REPO` with the company's org and repo name so teammates get the right clone URL.
-
-2. **Update `.designer.example`** with the company name (see step 5 below for the format).
-
-3. **Tell the user to publish from Cursor.** Stop and tell the user:
-
-   > "Your repo is ready. To connect it to GitHub:
-   > 1. Open the **Source Control** tab in Cursor (the branch icon in the sidebar)
-   > 2. Click **Publish Branch**
-   > 3. Name it `design-core-COMPANY_SLUG` and choose **private**
-   > 4. Cursor will create the repo on GitHub and push everything
-   >
-   > Let me know when that's done and I'll continue with the rest of the setup."
-
-   Wait for the user to confirm before continuing. Do NOT try to create the repo or push via the terminal -- Cursor's Git integration handles authentication and remote setup.
-
-4. **Enable GitHub Pages** (optional, for shareable prototype links). After the user has published, tell them:
-
-   > "If you want shareable prototype links, enable GitHub Pages: go to your repo on GitHub → **Settings → Pages → Source → GitHub Actions**. After that, prototypes will be live at `https://THEIR_ORG.github.io/design-core-COMPANY_SLUG/` after each push."
-   >
-   > Designers use the tool on **localhost** in Cursor, but people they share with open links in a normal browser on the **deployed** site. After Pages is set up, run **`npm run sync-public-url`** once (with the repo folder open in a terminal) so `public/data/site.json` gets the right `publicBaseUrl`. Then **Copy link** in the tool pastes the GitHub Pages URL, not localhost. Commit `site.json` so the whole team gets it."
-
-### Pulling updates from the public repo later
-
-The `upstream` remote is **fetch-only** -- pushing to it is disabled by design. To get updates from the public Design Core repo at any time:
-```
-git fetch upstream
-git merge upstream/main
-```
-
-### For designers joining (skip steps 1–3 above)
-
-Designers joining an existing team just clone the company repo directly. There's no fork or repo creation — the admin already did that. They only need identity setup (step 5 below).
-
-### 4. Check Cursor settings
-
-Before going further, remind the user to set up Cursor for the best experience:
-
-- **Agent mode** should be active (it's the default in the chat panel). This lets the AI create files, run commands, and build things for them.
-- **Model set to Auto** -- tell them to check the model dropdown at the bottom of the chat and pick **Auto**. It's the fastest and cheapest option.
-
-### 5. Collect identity info
-
-#### Company setup (first person at the org)
-
-You already have the company name from step 1. Now ask:
-
-1. **"What's your name?"** -- their display name for attribution on projects
-2. **"Who else is on your design team?"** -- optional, they can add people later. If they provide names, collect them.
-
-Create `.designer` in the repo root:
+Create `.designer` in the repo root (it is gitignored, never committed):
 
 ```json
 {
@@ -117,96 +90,136 @@ Create `.designer` in the repo root:
   "company": "Their Company",
   "team": [
     { "name": "Their Name" },
-    { "name": "Teammate 1" },
-    { "name": "Teammate 2" }
+    { "name": "Teammate 1" }
   ]
 }
 ```
 
-Also update `.designer.example` so future teammates see the right format with the company name pre-filled:
+Creating `.designer` now matters: `npm run finish-setup` reads the company name from it.
 
-```json
-{
-  "name": "Your Name",
-  "company": "Their Company",
-  "team": [
-    { "name": "Your Name" }
-  ]
-}
+### 4. Publish the repo to GitHub
+
+**In Cursor or VSCode:** stop and tell the user:
+
+> "Your repo is ready. To connect it to GitHub:
+> 1. Open the **Source Control** tab (the branch icon in the sidebar)
+> 2. Click **Publish Branch**
+> 3. Name it `design-core-COMPANY_SLUG` and choose **private**
+>
+> Let me know when that's done and I'll finish the setup."
+
+Wait for confirmation. Do NOT try to create the repo via the terminal in these editors -- the editor's Git integration handles GitHub authentication cleanly.
+
+**Publishing without an editor panel (Claude desktop app or CLI):** use the GitHub CLI:
+
+1. Check for it: `gh --version`. If missing, install it (macOS: `brew install gh`; otherwise [cli.github.com](https://cli.github.com)).
+2. Check sign-in: `gh auth status`. If not signed in, run `gh auth login --web` -- the user just types a short code into their browser. Never ask the user to create or paste tokens.
+3. Create and push: `gh repo create ORG/design-core-COMPANY_SLUG --private --source=. --remote=origin --push`
+
+If `gh` cannot be installed, fallback: have the user create an empty **private** repo named `design-core-COMPANY_SLUG` on github.com (walk them through the clicks), then run `git remote add origin <their repo's HTTPS URL>` and `git push -u origin main`.
+
+### 5. Run finish-setup
+
+After the repo is on GitHub, run:
+
+```
+npm run finish-setup
 ```
 
-Commit the updated `.designer.example` to git so teammates get it when they clone.
+It automatically: rewrites `GETTING_STARTED.md` so it contains only joining instructions with the company's real repo link (teammates can no longer follow the wrong prompt), fills `.designer.example` with the company name, wires the read-only upstream connection for future tool updates, and sets the public share-link URL. Do not make these edits by hand.
 
-#### Designer joining (team already exists)
+Then ask the user once: "Ready for me to commit and push the setup files?" On yes, commit `GETTING_STARTED.md`, `.designer.example`, and `public/data/site.json` and push.
 
-Ask the user:
+### 6. Enable GitHub Pages (optional, for shareable links)
 
-1. **"What's your name?"** -- their display name for attribution
+Tell the user:
 
-Read `.designer.example` to get the company name and pre-fill it. If the example file doesn't have a company name, ask them.
+> "If you want shareable prototype links, enable GitHub Pages: on your repo's GitHub page go to **Settings → Pages → Source → GitHub Actions**. After the next push, prototypes will be live at `https://THEIR_ORG.github.io/design-core-COMPANY_SLUG/`."
 
-Create `.designer` in the repo root:
+### 7. Start the preview server
+
+Run `npm run dev` and tell them to open **http://localhost:3000**. Explain what they'll see: the home page with a project hub.
+
+### 8. Next steps
+
+> "You're all set! A few things you might want to do:
+> - **Create your first project** -- just tell me a name and I'll set it up
+> - **Invite your team** -- two parts: (1) on GitHub, invite each designer to the repo with **write** access (repo **Settings → Collaborators**) -- without this they can't open or save work; (2) send them the joining guide: `https://github.com/THEIR_ORG/THEIR_REPO/blob/main/GETTING_STARTED.md`
+> - **Explore the design system** -- click Design System in the nav
+>
+> What would you like to do first?"
+
+---
+
+## Designer joining flow (team already exists)
+
+### 1. Verify the clone
+
+Run `npm run doctor`:
+
+- **"a company repo (org/repo)"** -- correct, continue.
+- **"the public Design Core template"** -- they cloned the wrong repo (the empty template, not their team's). Explain that their designs and team setup live in the company repo, and help them clone the right one: ask their admin for the link, then in Cursor/VSCode use **Cmd+Shift+P → Git: Clone** (it signs into GitHub for them, which a terminal `git clone` of a private repo cannot do). In the Claude desktop app, use the `gh` flow: `gh auth login --web`, then `gh repo clone ORG/REPO`.
+- Anything else -- follow doctor's fixes.
+
+Run `npm install` if `node_modules` is missing.
+
+### 2. Identity
+
+Ask: **"What's your name?"**
+
+Read `.designer.example` to get the company name. Create `.designer` in the repo root:
 
 ```json
 {
   "name": "Their Name",
   "company": "Company from .designer.example",
-  "team": [
-    { "name": "Their Name" }
-  ]
+  "team": [{ "name": "Their Name" }]
 }
 ```
 
-The team array only needs them -- they don't need to list the whole org. The `company` field should match what the admin set up.
+Their file only needs their own name in `team`. The `company` field should match what the admin set up.
 
-### 6. Start the preview server
+### 3. Start the preview server
 
-Run `npm run dev` and tell them the URL to open in their browser. Explain what they'll see: the home page with a project hub.
+Run `npm run dev`, tell them to open **http://localhost:3000**, and explain the home page.
 
-### 7. Offer next steps
-
-#### For company setup
-
-> "You're all set! A few things you might want to do:
-> - **Create your first project** -- just tell me a name and I'll set it up
-> - **Share with your team** -- send them the Getting Started page on your repo: `https://github.com/THEIR_ORG/THEIR_REPO_NAME/blob/main/GETTING_STARTED.md` -- the designer joining prompt already has your org's repo link.
-> - **Explore the design system** -- click Design System in the nav to see available components
->
-> What would you like to do first?"
-
-#### For designer joining
+### 4. Next steps
 
 > "You're all set! Here's what you can do:
 > - **Create a project** -- just tell me a name and I'll set it up
 > - **Look at existing projects** -- check the home page to see what your team has built
-> - **Explore the design system** -- click Design System in the nav to see available components
+> - **Explore the design system** -- click Design System in the nav
 >
 > What would you like to build?"
 
-#### Quick reference
+---
 
-After the next-steps message, show this cheat sheet so the user has it handy:
+## Quick reference (show after next-steps)
 
 > **Commands**
-> - `npm run dev` -- start the preview server
+> - `npm run dev` -- start the preview server (http://localhost:3000)
+> - `npm run doctor` -- check the repo's health and get plain-language fixes
+> - `npm run update-tool` -- pull the latest tool improvements (any teammate can run it)
 >
 > **Prompts you can try**
 > - "Create a project called ___"
-> - "Create 5 screen designs the project ___"
+> - "Create 5 screen designs for the project ___"
 > - "Create a prototype for ___"
 > - "Add to the design system from these screenshots" (attach images)
 
+## Getting tool updates later
+
+When the user asks for updates, run `npm run update-tool`. It connects the read-only upstream link if missing (so updating is not tied to one person's computer), shows what's incoming, merges, keeps the company's own files when they conflict, and reinstalls dependencies. After it finishes, remind the user to push so the team gets the update. Details: `docs/UPDATING.md`. Never hand-run `git merge upstream/main`; use the script.
+
 ## Important notes
 
-- The `.designer` file is gitignored -- each person on the team creates their own when they first set up
-- `.designer.example` IS committed to git -- the admin updates it with the company name so new designers get it pre-filled
-- `GETTING_STARTED.md` IS committed to git -- the admin updates it with their org's repo URL so designers get the right clone link
-- The `company` field helps the AI understand the team context
-- The `team` array is a local reference -- each person's file only needs their own name (the admin's file may list everyone)
-- Do NOT commit `.designer` to git. Only `.designer.example` gets committed.
+- `.designer` is gitignored -- each person creates their own. Do NOT commit it.
+- `.designer.example` IS committed -- `finish-setup` fills it with the company name so new designers get it pre-filled.
+- `GETTING_STARTED.md` in a company repo is generated by `finish-setup` -- do not edit it by hand.
+- In Cursor, remind the user once: Agent mode on (default), model set to **Auto**.
 
 ## Tool updates belong in the core repo ONLY
 
-**NEVER make tool-level changes in a company repo.** Company repos pull tool updates from the upstream core repo (`ubrandon/design-core`) via `git fetch upstream && git merge upstream/main`. If you edit tool files (Cursor rules, root HTML pages, scripts, styles, config, docs) directly in a company repo, those changes will conflict with future upstream merges.
+**NEVER make tool-level changes in a company repo.** Company repos receive tool updates via `npm run update-tool` (which merges from the upstream core repo, `ubrandon/design-core`). If you edit tool files (rule files, root HTML pages, scripts, styles, config, docs) directly in a company repo, those changes will conflict with future updates and can break the tool for the whole team. `npm run doctor` detects this drift.
 
-The only tool-level files modified in a company repo are `GETTING_STARTED.md` and `.designer.example` -- and only during the initial setup. After that, all tool changes flow from the core repo downstream.
+The only tool-level files that change in a company repo are `GETTING_STARTED.md` and `.designer.example`, and `npm run finish-setup` writes those automatically during setup. After that, all tool changes flow from the core repo downstream.

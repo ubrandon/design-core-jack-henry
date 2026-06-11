@@ -1040,7 +1040,7 @@ export default defineConfig(({ mode }) => {
   return {
     appType: "mpa",
     base: "./",
-    server: { port: 3000 },
+    server: { port: 3000, strictPort: true },
     plugins: [
       siteJsonDevPlugin(viteEnv),
       liveDataPlugin(),
