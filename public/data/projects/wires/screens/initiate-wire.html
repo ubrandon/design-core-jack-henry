@@ -1,0 +1,164 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  .yf-app *, .yf-app *::before, .yf-app *::after { box-sizing: border-box; }
+  .yf-app {
+    --yf-page:#e8ecf1; --yf-white:#fff; --yf-navy-deep:#00264d;
+    --yf-blue:#2563eb; --yf-blue-active:#0a4a7a; --yf-nav-active-bg:#e8f0fa;
+    --yf-text:#0f172a; --yf-muted:#64748b; --yf-border:#e2e8f0; --yf-green:#16a34a;
+    --yf-rad-lg:20px; --yf-rad-md:14px; --yf-rad-sm:10px; --yf-sidebar:236px;
+    --yf-font:"Open Sans",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    position:relative; display:flex; height:880px;
+    font-family:var(--yf-font); color:var(--yf-text); background:var(--yf-page);
+    -webkit-font-smoothing:antialiased;
+  }
+  /* Sidebar */
+  .yf-sidebar { width:var(--yf-sidebar); flex-shrink:0; background:var(--yf-white); border-right:1px solid var(--yf-border); display:flex; flex-direction:column; padding:20px 0 0; }
+  .yf-logo { display:flex; align-items:center; gap:10px; padding:0 20px 22px; font-size:1.32rem; font-weight:800; letter-spacing:-0.02em; }
+  .yf-logo b { color:var(--yf-navy-deep); } .yf-logo i { color:var(--yf-blue); font-style:normal; }
+  .yf-logo__mark { width:34px; height:34px; border-radius:50%; border:2px solid var(--yf-blue); display:grid; place-items:center; color:var(--yf-blue); flex-shrink:0; }
+  .yf-nav { list-style:none; margin:0; padding:0 12px; flex:1; overflow-y:auto; }
+  .yf-nav > li { margin-bottom:2px; }
+  .yf-nav button { width:100%; display:flex; align-items:center; gap:11px; padding:10px 12px; border:none; border-radius:var(--yf-rad-sm); background:transparent; font-size:0.875rem; font-weight:600; color:#475569; cursor:pointer; text-align:left; font-family:inherit; }
+  .yf-nav button:hover { background:#f8fafc; color:var(--yf-text); }
+  .yf-nav__icon { width:20px; height:20px; flex-shrink:0; opacity:0.85; }
+  .yf-badge { margin-left:auto; min-width:18px; height:18px; padding:0 5px; border-radius:99px; background:#dc2626; color:#fff; font-size:0.625rem; font-weight:800; display:grid; place-items:center; }
+  .yf-nav__chev { margin-left:auto; opacity:0.45; width:15px; height:15px; flex-shrink:0; }
+  .yf-subnav { list-style:none; margin:2px 0 4px; padding:0; }
+  .yf-subnav button { padding:9px 12px 9px 44px; font-size:0.84rem; }
+  .yf-subnav button.is-active { background:var(--yf-nav-active-bg); color:var(--yf-navy-deep); font-weight:700; }
+  .yf-profile { margin-top:auto; padding:16px 20px; border-top:1px solid var(--yf-border); display:flex; align-items:center; gap:10px; font-size:0.875rem; font-weight:700; }
+  .yf-avatar { width:36px; height:36px; border-radius:50%; flex-shrink:0; object-fit:cover; background:linear-gradient(135deg,#93c5fd,#3b82f6); }
+  .yf-profile__chev { margin-left:auto; opacity:0.4; }
+  /* Main + hero */
+  .yf-main { flex:1; min-width:0; display:flex; flex-direction:column; overflow:hidden; }
+  .yf-scroll { flex:1; min-height:0; overflow-y:auto; }
+  .yf-hero-band { height:230px; background-color:#042042; background-image:linear-gradient(105deg,rgba(0,38,77,0.92) 0%,rgba(0,55,105,0.72) 45%,rgba(12,90,150,0.5) 100%),url("hero-bg.jpg"); background-size:cover; background-position:72% 30%; }
+  .yf-card-wrap { width:100%; max-width:520px; margin:-140px auto 28px; padding:0 20px; }
+  /* Card shell */
+  .yf-flow-card { background:var(--yf-white); border-radius:var(--yf-rad-md); box-shadow:0 8px 40px rgba(15,40,70,0.14); border:1px solid var(--yf-border); }
+  .yf-flow-hd { display:grid; grid-template-columns:36px 1fr 36px; align-items:center; padding:18px 18px 14px; border-bottom:1px solid var(--yf-border); }
+  .yf-back { width:32px; height:32px; border:none; border-radius:50%; background:transparent; color:var(--yf-text); cursor:pointer; display:grid; place-items:center; }
+  .yf-flow-hd h2 { margin:0; font-size:1.05rem; font-weight:800; text-align:center; }
+  /* Review */
+  .yf-review-body { padding:22px 22px 6px; }
+  .yf-tmpl-label { font-size:0.8rem; font-weight:700; color:var(--yf-muted); margin:0; }
+  .yf-tmpl-amt { font-size:1.95rem; font-weight:800; letter-spacing:-0.02em; margin:3px 0 14px; }
+  .yf-tmpl-chip { display:flex; align-items:center; gap:9px; font-size:0.92rem; font-weight:600; color:var(--yf-text); }
+  .yf-tmpl-chip svg { color:var(--yf-muted); flex-shrink:0; }
+  .yf-dotted { border:none; border-top:1px dotted #cbd5e1; margin:18px 0; }
+  .yf-kv { display:flex; justify-content:space-between; gap:16px; padding:9px 0; }
+  .yf-kv .k { color:var(--yf-muted); font-weight:600; font-size:0.92rem; }
+  .yf-kv .v { font-weight:600; font-size:0.92rem; text-align:right; color:var(--yf-text); }
+  .yf-show-details { display:inline-block; margin-top:12px; color:var(--yf-blue); font-weight:700; font-size:0.9rem; cursor:pointer; }
+  .yf-kv-total .k { color:var(--yf-text); }
+  .yf-kv-total.grand .k, .yf-kv-total.grand .v { font-weight:800; font-size:1rem; }
+  /* List rows */
+  .yf-listrows { padding:0 22px; border-top:1px solid var(--yf-border); }
+  .yf-row { display:flex; align-items:center; gap:12px; padding:16px 0; border-bottom:1px solid var(--yf-border); }
+  .yf-row:last-child { border-bottom:none; }
+  .yf-row__lbl { font-size:0.9375rem; font-weight:700; color:var(--yf-text); flex-shrink:0; }
+  .yf-row__val { flex:1; min-width:0; text-align:right; }
+  .yf-row__link { font-size:0.9375rem; font-weight:700; color:var(--yf-blue); }
+  .yf-row__chev { color:#cbd5e1; flex-shrink:0; display:inline-flex; }
+  /* Actions */
+  .yf-actions-row { padding:18px 22px 22px; display:flex; gap:12px; }
+  .yf-btn { flex:1; padding:13px 16px; border-radius:var(--yf-rad-md); font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; }
+  .yf-btn--ghost { background:#fff; color:var(--yf-blue); border:1.5px solid var(--yf-blue); }
+  .yf-btn--primary { background:var(--yf-blue); color:#fff; border:none; }
+  .yf-btn--primary:hover { background:var(--yf-blue-active); }
+  /* Footer + help */
+  .yf-footer { flex-shrink:0; background:var(--yf-navy-deep); color:rgba(255,255,255,0.8); font-size:0.6875rem; padding:13px 24px; display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; justify-content:center; }
+  .yf-footer a { color:rgba(255,255,255,0.92); text-decoration:none; }
+  .yf-fab { position:absolute; bottom:22px; right:26px; width:46px; height:46px; border-radius:50%; border:none; background:#fff; color:var(--yf-blue); font-size:1.15rem; font-weight:700; cursor:pointer; box-shadow:0 6px 22px rgba(0,0,0,0.18); }
+</style>
+<div class="yf-app">
+  <aside class="yf-sidebar" aria-label="Navigation">
+    <div class="yf-logo">
+      <span class="yf-logo__mark" aria-hidden="true">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 10l9-6 9 6"/><path d="M4 10v8M9 10v8M15 10v8M20 10v8"/><path d="M2 21h20"/></svg>
+      </span>
+      <span><b>Your</b><i>FI</i></span>
+    </div>
+    <ul class="yf-nav">
+      <li><button type="button"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</button></li>
+      <li><button type="button"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Messages <span class="yf-badge">1</span></button></li>
+      <li><button type="button"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Accounts</button></li>
+      <li><button type="button"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Transfers</button></li>
+      <li>
+        <button type="button"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3h12l4 4v14H4z"/><path d="M9 8h4M9 12h6M9 16h6"/></svg>Payments<svg class="yf-nav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button>
+        <ul class="yf-subnav">
+          <li><button type="button">Bill pay</button></li>
+          <li><button type="button">Send money with Zelle&reg;</button></li>
+          <li><button type="button">Positive pay</button></li>
+          <li><button type="button">ACH</button></li>
+          <li><button type="button" class="is-active">Wires</button></li>
+        </ul>
+      </li>
+      <li><button type="button"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Remote deposits</button></li>
+      <li><button type="button"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>Insights<svg class="yf-nav__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></li>
+      <li><button type="button"><svg class="yf-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg>Support</button></li>
+    </ul>
+    <div class="yf-profile">
+      <img class="yf-avatar" src="avatar.jpg" width="36" height="36" alt="Emma Reed">
+      <span>Emma Reed</span>
+      <svg class="yf-profile__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+    </div>
+  </aside>
+
+  <div class="yf-main">
+    <div class="yf-scroll">
+      <div class="yf-hero-band"></div>
+      <div class="yf-card-wrap">
+        <div class="yf-flow-card">
+          <div class="yf-flow-hd">
+            <button type="button" class="yf-back" aria-label="Back"><svg width="11" height="18" viewBox="0 0 11 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 1L1.5 9l8 8"/></svg></button>
+            <h2>Initiate wire</h2>
+            <span aria-hidden="true"></span>
+          </div>
+          <div class="yf-review-body">
+            <p class="yf-tmpl-label">Wire template</p>
+            <p class="yf-tmpl-amt">$500.00</p>
+            <div class="yf-tmpl-chip">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+              Template
+            </div>
+            <hr class="yf-dotted">
+            <div class="yf-kv"><span class="k">From</span><span class="v">Business Checking (x1234)</span></div>
+            <div class="yf-kv"><span class="k">Remittance info</span><span class="v">Payment for service</span></div>
+            <span class="yf-show-details">Show details</span>
+            <hr class="yf-dotted">
+            <div class="yf-kv yf-kv-total"><span class="k">Wire amount</span><span class="v">$500.00</span></div>
+            <div class="yf-kv yf-kv-total"><span class="k">Wire fee</span><span class="v">$25.00</span></div>
+            <div class="yf-kv yf-kv-total grand"><span class="k">Total</span><span class="v">$525.00</span></div>
+          </div>
+          <div class="yf-listrows">
+            <div class="yf-row">
+              <span class="yf-row__lbl">Frequency</span>
+              <span class="yf-row__val"><span class="yf-row__link">Once</span></span>
+              <span class="yf-row__chev"><svg width="9" height="16" viewBox="0 0 9 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l6 7-6 7"/></svg></span>
+            </div>
+            <div class="yf-row">
+              <span class="yf-row__lbl">Schedule</span>
+              <span class="yf-row__val"><span class="yf-row__link">Nov 20</span></span>
+              <span class="yf-row__chev"><svg width="9" height="16" viewBox="0 0 9 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l6 7-6 7"/></svg></span>
+            </div>
+          </div>
+          <div class="yf-actions-row">
+            <button type="button" class="yf-btn yf-btn--ghost">Cancel</button>
+            <button type="button" class="yf-btn yf-btn--primary">Initiate</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="yf-footer">
+      <span>&copy;2024 YourFI</span><span>&middot;</span>
+      <span>(555) 555-5555</span><span>&middot;</span>
+      <a href="#" onclick="return false;">Privacy policy</a><span>&middot;</span>
+      <span>Member FDIC</span><span>&middot;</span>
+      <span>Equal Housing Lender</span>
+    </footer>
+  </div>
+  <button type="button" class="yf-fab" aria-label="Help">?</button>
+</div>
