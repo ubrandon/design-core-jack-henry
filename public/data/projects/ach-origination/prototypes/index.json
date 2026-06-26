@@ -1,0 +1,10 @@
+{
+  "prototypes": [
+    {
+      "id": "ach-feature",
+      "name": "ACH Feature",
+      "description": "Bank-admin ACH management rebuilt to match the original: outgoing batches, incoming NACHA files, batch detail, search, and NACHA generation.",
+      "device": "online"
+    }
+  ]
+}

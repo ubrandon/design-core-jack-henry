@@ -1,0 +1,75 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .ach, .ach * { box-sizing: border-box; }
+  .ach { font-family: 'Open Sans', sans-serif; color: #1f2733; background: #fff; display: flex; min-height: 820px; }
+  .ach-rail { width: 56px; flex-shrink: 0; background: #12233f; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 0; }
+  .ach-rail .logo { color: #fff; font-weight: 800; font-size: 15px; margin-bottom: 12px; letter-spacing: -.02em; }
+  .ach-rail .ico { width: 40px; height: 40px; border-radius: 9px; display: grid; place-items: center; color: rgba(255,255,255,.6); }
+  .ach-rail .ico.active { background: #2563eb; color: #fff; }
+  .ach-rail .ico svg { width: 20px; height: 20px; }
+  .ach-rail .spacer { flex: 1; }
+  .ach-rail .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(150deg,#7d93b8,#3f567d); border: 2px solid rgba(255,255,255,.25); }
+  .ach-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .ach-topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid #e8eaee; display: flex; align-items: center; gap: 24px; padding: 0 24px; }
+  .ach-brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 14px; }
+  .ach-tabs { display: flex; align-items: center; gap: 4px; }
+  .ach-tab { padding: 6px 12px; border-radius: 7px; font-size: 13.5px; color: #5b6470; cursor: pointer; }
+  .ach-tab.active { background: #eef0f3; color: #1f2733; font-weight: 600; }
+  .ach-body { padding: 44px 36px; }
+  .center { max-width: 770px; margin: 0 auto; }
+  .s-title { text-align: center; font-size: 24px; font-weight: 600; }
+  .s-sub { text-align: center; font-size: 14px; color: #6b7280; margin-top: 10px; line-height: 1.6; }
+  .bigsearch { display: flex; align-items: center; gap: 14px; margin-top: 30px; background: #eef0f2; border: 2px solid #2563eb; border-radius: 12px; padding: 18px 22px; color: #9aa1ab; font-size: 15px; }
+  .bigsearch svg { width: 20px; height: 20px; color: #6b7280; }
+  .empty { border: 1px solid #e6e8ec; border-radius: 12px; margin-top: 26px; padding: 60px 20px; text-align: center; }
+  .empty .ic { width: 56px; height: 56px; margin: 0 auto; color: #9aa1ab; }
+  .empty .ic svg { width: 56px; height: 56px; }
+  .empty .et { font-size: 18px; font-weight: 600; margin-top: 16px; }
+  .empty .es { font-size: 14px; color: #6b7280; margin-top: 8px; }
+</style>
+<div class="ach">
+  <aside class="ach-rail">
+    <div class="logo">jh</div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l2 3h6l2-3h4"/><path d="M5 6h14l2 7v5H3v-5z"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M15.5 14c2.4.2 4 2 4 4.5"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/></svg></div>
+    <div class="ico active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 12a7.4 7.4 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L16.6 2H12l-.4 2.5a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7.4 7.4 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2L12 22h4.6l-.4-2.5a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.06-.4.1-.8.1-1.2z"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.5 1.5c0 1.7-2.5 2-2.5 3.5"/><circle cx="12" cy="17.5" r=".6" fill="currentColor"/></svg></div>
+    <div class="spacer"></div>
+    <div class="avatar"></div>
+  </aside>
+  <div class="ach-main">
+    <header class="ach-topbar">
+      <div class="ach-brand">
+        <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2.4" fill="#2563eb"/><circle cx="6" cy="12" r="2.4" fill="#06b6d4"/><circle cx="12" cy="12" r="2.4" fill="#2563eb"/><circle cx="18" cy="12" r="2.4" fill="#22c55e"/><circle cx="12" cy="18" r="2.4" fill="#2563eb"/></svg>
+        ACH
+      </div>
+      <nav class="ach-tabs">
+        <div class="ach-tab">Outgoing</div>
+        <div class="ach-tab">Incoming</div>
+        <div class="ach-tab active">Search</div>
+      </nav>
+    </header>
+    <div class="ach-body">
+      <div class="center">
+        <div class="s-title">Search</div>
+        <div class="s-sub">Search entries, batches, and files to research transactions or investigate discrepancies<br>Entry search uses GET /entries · Batch and file search paths are pending API confirmation</div>
+
+        <div class="bigsearch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+          Search by ID, name, account, amount, description, or status...
+        </div>
+
+        <div class="empty">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+          <div class="et">Start searching</div>
+          <div class="es">Enter a search term to find batches, entries, or files</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

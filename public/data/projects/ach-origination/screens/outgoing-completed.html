@@ -1,0 +1,118 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .ach, .ach * { box-sizing: border-box; }
+  .ach { font-family: 'Open Sans', sans-serif; color: #1f2733; background: #fff; display: flex; min-height: 760px; }
+  .ach-rail { width: 56px; flex-shrink: 0; background: #12233f; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 0; }
+  .ach-rail .logo { color: #fff; font-weight: 800; font-size: 15px; margin-bottom: 12px; letter-spacing: -.02em; }
+  .ach-rail .ico { width: 40px; height: 40px; border-radius: 9px; display: grid; place-items: center; color: rgba(255,255,255,.6); }
+  .ach-rail .ico.active { background: #2563eb; color: #fff; }
+  .ach-rail .ico svg { width: 20px; height: 20px; }
+  .ach-rail .spacer { flex: 1; }
+  .ach-rail .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(150deg,#7d93b8,#3f567d); border: 2px solid rgba(255,255,255,.25); }
+  .ach-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .ach-topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid #e8eaee; display: flex; align-items: center; gap: 24px; padding: 0 24px; }
+  .ach-brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 14px; }
+  .ach-tabs { display: flex; align-items: center; gap: 4px; }
+  .ach-tab { padding: 6px 12px; border-radius: 7px; font-size: 13.5px; color: #5b6470; cursor: pointer; }
+  .ach-tab.active { background: #eef0f3; color: #1f2733; font-weight: 600; }
+  .ach-body { padding: 28px 36px 36px; }
+  .ach-h1 { font-size: 23px; font-weight: 600; margin: 0; }
+  .ach-sub { font-size: 13.5px; color: #6b7280; margin-top: 6px; }
+  .subtabs { display: flex; gap: 28px; border-bottom: 1px solid #e8eaee; margin-top: 22px; }
+  .subtab { padding-bottom: 12px; font-size: 14px; color: #6b7280; cursor: pointer; }
+  .subtab.active { color: #1f2733; font-weight: 600; border-bottom: 2px solid #2563eb; margin-bottom: -1px; }
+  .infobar { background: #1f2733; color: #fff; font-size: 12.5px; font-weight: 600; padding: 13px 18px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-top: 22px; }
+  .infobar .x { color: rgba(255,255,255,.7); cursor: pointer; }
+  .pillrow { display: flex; gap: 10px; align-items: center; margin-top: 22px; }
+  .fpill { background: #f1f2f4; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; color: #3a4250; cursor: pointer; font-family: inherit; }
+  .fpill.active { background: #1f2733; color: #fff; font-weight: 600; }
+  table.tbl { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 13px; }
+  .tbl thead th { background: #f3f4f6; text-align: left; font-weight: 600; color: #3a4250; padding: 13px 14px; font-size: 12.5px; white-space: nowrap; }
+  .tbl thead th.r { text-align: right; }
+  .tbl thead th:first-child { border-radius: 8px 0 0 8px; }
+  .tbl thead th:last-child { border-radius: 0 8px 8px 0; }
+  .tbl tbody td { padding: 16px 14px; border-bottom: 1px solid #eef0f2; color: #2b323d; vertical-align: middle; white-space: nowrap; }
+  .tbl tbody td.r { text-align: right; }
+  .tbl tbody tr:last-child td { border-bottom: none; }
+  .mono { font-family: 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 12.5px; }
+  .tag { display: inline-block; padding: 3px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+  .tag-scheduled { background: #e6e9ed; color: #414b59; }
+  .tag-completed { background: #dcf3e4; color: #1a7f3c; }
+  .tag-generating { background: #dbe9fe; color: #1d4ed8; }
+</style>
+<div class="ach">
+  <aside class="ach-rail">
+    <div class="logo">jh</div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l2 3h6l2-3h4"/><path d="M5 6h14l2 7v5H3v-5z"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M15.5 14c2.4.2 4 2 4 4.5"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/></svg></div>
+    <div class="ico active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 12a7.4 7.4 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L16.6 2H12l-.4 2.5a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7.4 7.4 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2L12 22h4.6l-.4-2.5a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.06-.4.1-.8.1-1.2z"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.5 1.5c0 1.7-2.5 2-2.5 3.5"/><circle cx="12" cy="17.5" r=".6" fill="currentColor"/></svg></div>
+    <div class="spacer"></div>
+    <div class="avatar"></div>
+  </aside>
+  <div class="ach-main">
+    <header class="ach-topbar">
+      <div class="ach-brand">
+        <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2.4" fill="#2563eb"/><circle cx="6" cy="12" r="2.4" fill="#06b6d4"/><circle cx="12" cy="12" r="2.4" fill="#2563eb"/><circle cx="18" cy="12" r="2.4" fill="#22c55e"/><circle cx="12" cy="18" r="2.4" fill="#2563eb"/></svg>
+        ACH
+      </div>
+      <nav class="ach-tabs">
+        <div class="ach-tab active">Outgoing</div>
+        <div class="ach-tab">Incoming</div>
+        <div class="ach-tab">Search</div>
+      </nav>
+    </header>
+    <div class="ach-body">
+      <div>
+        <h1 class="ach-h1">Outgoing ACH</h1>
+        <div class="ach-sub">Batches created by account holders for processing</div>
+      </div>
+
+      <div class="subtabs">
+        <div class="subtab">Unprocessed</div>
+        <div class="subtab active">Completed</div>
+        <div class="subtab">Receipt files</div>
+      </div>
+
+      <div class="infobar">
+        <span>Outgoing NACHA files generated from completed batches, ready for transmission to the Federal Reserve.</span>
+        <span class="x">✕</span>
+      </div>
+
+      <div class="pillrow">
+        <button class="fpill active">All files</button>
+        <button class="fpill">Scheduled</button>
+        <button class="fpill">Generating</button>
+        <button class="fpill">Completed</button>
+      </div>
+
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>File name</th>
+            <th>Effective date</th>
+            <th>Generated</th>
+            <th class="r">Batches</th>
+            <th class="r">Entries</th>
+            <th class="r">Total amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">nacha_20260514_001.ach</td><td>2026-05-14</td><td>05/14/2026 06:45 AM</td><td class="r">8</td><td class="r">112</td><td class="r">$1,847,293.42</td><td><span class="tag tag-completed">completed</span></td></tr>
+          <tr><td class="mono">nacha_20260514_002.ach</td><td>2026-05-14</td><td>05/14/2026 07:30 AM</td><td class="r">6</td><td class="r">87</td><td class="r">$923,741.18</td><td><span class="tag tag-completed">completed</span></td></tr>
+          <tr><td class="mono">nacha_20260514_003.ach</td><td>2026-05-14</td><td>05/14/2026 09:12 AM</td><td class="r">4</td><td class="r">56</td><td class="r">$487,102.55</td><td><span class="tag tag-generating">generating</span></td></tr>
+          <tr><td class="mono">nacha_20260515_001.ach</td><td>2026-05-15</td><td>—</td><td class="r">5</td><td class="r">71</td><td class="r">$632,847.90</td><td><span class="tag tag-scheduled">scheduled</span></td></tr>
+          <tr><td class="mono">nacha_20260515_002.ach</td><td>2026-05-15</td><td>—</td><td class="r">3</td><td class="r">42</td><td class="r">$298,416.77</td><td><span class="tag tag-scheduled">scheduled</span></td></tr>
+          <tr><td class="mono">nacha_20260515_003.ach</td><td>2026-05-15</td><td>05/15/2026 06:58 AM</td><td class="r">7</td><td class="r">98</td><td class="r">$1,104,382.64</td><td><span class="tag tag-generating">generating</span></td></tr>
+          <tr><td class="mono">nacha_20260516_001.ach</td><td>2026-05-16</td><td>—</td><td class="r">4</td><td class="r">60</td><td class="r">$519,274.33</td><td><span class="tag tag-scheduled">scheduled</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

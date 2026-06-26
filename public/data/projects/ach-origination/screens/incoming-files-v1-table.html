@@ -1,0 +1,181 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  .achv1, .achv1 * { box-sizing: border-box; }
+  .achv1 { font-family: 'Open Sans', sans-serif; color: #1f2733; background: #fff; display: flex; min-height: 880px; }
+  .achv1 .ach-rail { width: 56px; flex-shrink: 0; background: #12233f; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 0; }
+  .achv1 .ach-rail .logo { color: #fff; font-weight: 800; font-size: 15px; margin-bottom: 12px; letter-spacing: -.02em; }
+  .achv1 .ach-rail .ico { width: 40px; height: 40px; border-radius: 9px; display: grid; place-items: center; color: rgba(255,255,255,.6); }
+  .achv1 .ach-rail .ico.active { background: #2563eb; color: #fff; }
+  .achv1 .ach-rail .ico svg { width: 20px; height: 20px; }
+  .achv1 .ach-rail .spacer { flex: 1; }
+  .achv1 .ach-rail .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(150deg,#7d93b8,#3f567d); border: 2px solid rgba(255,255,255,.25); }
+  .achv1 .ach-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .achv1 .ach-topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid #e8eaee; display: flex; align-items: center; gap: 24px; padding: 0 24px; }
+  .achv1 .ach-brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 14px; }
+  .achv1 .ach-tabs { display: flex; align-items: center; gap: 4px; }
+  .achv1 .ach-tab { padding: 6px 12px; border-radius: 7px; font-size: 13.5px; color: #5b6470; cursor: pointer; }
+  .achv1 .ach-tab.active { background: #eef0f3; color: #1f2733; font-weight: 600; }
+
+  .achv1 .ach-body { padding: 28px 36px 36px; }
+  .achv1 .head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+  .achv1 .ach-h1 { font-size: 23px; font-weight: 600; margin: 0; }
+  .achv1 .ach-sub { font-size: 13.5px; color: #6b7280; margin-top: 6px; }
+  .achv1 .btn-blue { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 11px 18px; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; }
+  .achv1 .btn-blue svg { width: 16px; height: 16px; }
+
+  .achv1 .banner { display: flex; align-items: center; gap: 11px; margin-top: 22px; padding: 11px 16px; border: 1px solid #e6e8ec; background: #fafbfc; border-radius: 10px; font-size: 13px; color: #4b5563; line-height: 1.4; }
+  .achv1 .banner svg { width: 17px; height: 17px; flex-shrink: 0; color: #2563eb; }
+  .achv1 .banner b { color: #1f2733; font-weight: 600; }
+
+  .achv1 .tbl-wrap { margin-top: 22px; border: 1px solid #e6e8ec; border-radius: 12px; overflow: hidden; }
+  .achv1 table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+  .achv1 thead th { text-align: left; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #6b7280; background: #f7f8fa; padding: 12px 18px; border-bottom: 1px solid #e6e8ec; white-space: nowrap; }
+  .achv1 th.r, .achv1 td.r { text-align: right; }
+  .achv1 tbody td { padding: 15px 18px; border-bottom: 1px solid #eef0f2; vertical-align: middle; }
+  .achv1 tbody tr:last-child td { border-bottom: none; }
+  .achv1 tbody tr:hover { background: #f9fafb; }
+  .achv1 .col-file { width: 24%; }
+  .achv1 .col-route { width: 22%; }
+  .achv1 .col-n { width: 9%; }
+  .achv1 .col-amt { width: 14%; }
+  .achv1 .col-status { width: 11%; }
+  .achv1 .col-action { width: 11%; }
+
+  .achv1 .fname { color: #2563eb; font-weight: 600; font-size: 13.5px; cursor: pointer; word-break: break-all; }
+  .achv1 .fname:hover { text-decoration: underline; }
+  .achv1 .fdate { font-size: 12px; color: #6b7280; margin-top: 3px; }
+  .achv1 .route { font-size: 12.5px; color: #4b5563; }
+  .achv1 .route .ids { white-space: nowrap; }
+  .achv1 .route .arrow { color: #9aa3af; margin: 0 5px; }
+  .achv1 .route .lbl { font-size: 11px; color: #9aa3af; display: block; margin-top: 2px; }
+  .achv1 .num { font-size: 13px; color: #1f2733; }
+  .achv1 .amt { font-weight: 700; font-size: 13.5px; color: #1f2733; white-space: nowrap; }
+
+  .achv1 .pill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+  .achv1 .pill-processed { background: #dcf3e4; color: #1a7f3c; }
+  .achv1 .pill-unproc { background: #eef0f3; color: #5b6470; }
+  .achv1 .pill-failed { background: #fbe3e3; color: #9c1c1c; }
+  .achv1 .pill-sub { display: block; font-size: 11px; font-weight: 700; color: #c0392b; margin-top: 5px; white-space: nowrap; }
+
+  .achv1 .act { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .achv1 .link-quiet { color: #5b6470; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .achv1 .link-quiet:hover { color: #2563eb; text-decoration: underline; }
+  .achv1 .btn-red { background: #9c1c1c; border: none; color: #fff; border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+
+  .achv1 .tbl-foot { display: flex; align-items: center; gap: 8px; padding: 13px 18px; background: #f7f8fa; border-top: 1px solid #e6e8ec; font-size: 12.5px; color: #6b7280; }
+  .achv1 .tbl-foot b { color: #1f2733; font-weight: 700; }
+  .achv1 .tbl-foot .dot { color: #cbd2da; }
+</style>
+<div class="achv1">
+  <aside class="ach-rail">
+    <div class="logo">jh</div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l2 3h6l2-3h4"/><path d="M5 6h14l2 7v5H3v-5z"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M15.5 14c2.4.2 4 2 4 4.5"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/></svg></div>
+    <div class="ico active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 12a7.4 7.4 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L16.6 2H12l-.4 2.5a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7.4 7.4 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2L12 22h4.6l-.4-2.5a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.06-.4.1-.8.1-1.2z"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.5 1.5c0 1.7-2.5 2-2.5 3.5"/><circle cx="12" cy="17.5" r=".6" fill="currentColor"/></svg></div>
+    <div class="spacer"></div>
+    <div class="avatar"></div>
+  </aside>
+  <div class="ach-main">
+    <header class="ach-topbar">
+      <div class="ach-brand">
+        <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2.4" fill="#2563eb"/><circle cx="6" cy="12" r="2.4" fill="#06b6d4"/><circle cx="12" cy="12" r="2.4" fill="#2563eb"/><circle cx="18" cy="12" r="2.4" fill="#22c55e"/><circle cx="12" cy="18" r="2.4" fill="#2563eb"/></svg>
+        ACH
+      </div>
+      <nav class="ach-tabs">
+        <div class="ach-tab">Outgoing</div>
+        <div class="ach-tab active">Incoming</div>
+        <div class="ach-tab">Search</div>
+      </nav>
+    </header>
+    <div class="ach-body">
+      <div class="head-row">
+        <div>
+          <h1 class="ach-h1">Incoming NACHA files</h1>
+          <div class="ach-sub">Files received from Fed sync or manual import pending processing</div>
+        </div>
+        <button class="btn-blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          Import file
+        </button>
+      </div>
+
+      <div class="banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span><b>Automated processing.</b> Incoming files automatically post at 11:00 PM EST. Entries without issues post automatically, while flagged entries require manual review in the Exceptions tool.</span>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-file">File</th>
+              <th class="col-route">Source &rarr; Destination</th>
+              <th class="r col-n">Batches</th>
+              <th class="r col-n">Entries</th>
+              <th class="r col-amt">Total amount</th>
+              <th class="col-status">Status</th>
+              <th class="r col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="fname">ach_incoming_20260518.txt</div>
+                <div class="fdate">05/18/2026 08:30 AM &middot; 14 KB</div>
+              </td>
+              <td>
+                <div class="route"><span class="ids">021000021 <span class="arrow">&rarr;</span> 111000025</span><span class="lbl">Federal Reserve Bank &rarr; Pioneer Bank</span></div>
+              </td>
+              <td class="r num">3</td>
+              <td class="r num">12</td>
+              <td class="r amt">$66,350.00</td>
+              <td><span class="pill pill-processed">Processed</span></td>
+              <td class="r"><div class="act"><span class="link-quiet">View batches</span></div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="fname">ach_incoming_20260519.txt</div>
+                <div class="fdate">05/19/2026 08:30 AM &middot; 16 KB</div>
+              </td>
+              <td>
+                <div class="route"><span class="ids">021000021 <span class="arrow">&rarr;</span> 111000025</span><span class="lbl">Federal Reserve Bank &rarr; Pioneer Bank</span></div>
+              </td>
+              <td class="r num">3</td>
+              <td class="r num">14</td>
+              <td class="r amt">$63,450.00</td>
+              <td><span class="pill pill-unproc">Unprocessed</span><span class="pill-sub">3 entries flagged</span></td>
+              <td class="r">
+                <div class="act">
+                  <button class="btn-red">Review 3 issues</button>
+                  <span class="link-quiet">View batches</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="fname">ach_incoming_20260520.txt</div>
+                <div class="fdate">05/20/2026 08:30 AM &middot; 9 KB</div>
+              </td>
+              <td>
+                <div class="route"><span class="ids">021000021 <span class="arrow">&rarr;</span> 111000025</span><span class="lbl">Federal Reserve Bank &rarr; Pioneer Bank</span></div>
+              </td>
+              <td class="r num">2</td>
+              <td class="r num">7</td>
+              <td class="r amt">$5,700.00</td>
+              <td><span class="pill pill-failed">Failed</span></td>
+              <td class="r"><div class="act"><span class="link-quiet">View batches</span></div></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="tbl-foot">
+          <b>3 files</b><span class="dot">&middot;</span><b>33 entries</b><span class="dot">&middot;</span><b>$135,500.00</b> total
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

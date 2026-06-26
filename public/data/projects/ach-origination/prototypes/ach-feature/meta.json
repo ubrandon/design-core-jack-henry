@@ -1,0 +1,5 @@
+{
+  "name": "ACH Feature",
+  "description": "Bank-admin ACH management, rebuilt to match the original app: outgoing batches (unprocessed, completed, receipt files), incoming NACHA files, batch detail with entries, search, and NACHA file generation.",
+  "device": "online"
+}

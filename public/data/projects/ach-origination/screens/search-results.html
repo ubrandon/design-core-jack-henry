@@ -1,0 +1,164 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  html, body { margin: 0; padding: 0; }
+  .ach, .ach * { box-sizing: border-box; }
+  .ach { font-family: 'Open Sans', sans-serif; color: #1f2733; background: #fff; display: flex; min-height: 940px; }
+  .ach-rail { width: 56px; flex-shrink: 0; background: #12233f; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 0; }
+  .ach-rail .logo { color: #fff; font-weight: 800; font-size: 15px; margin-bottom: 12px; letter-spacing: -.02em; }
+  .ach-rail .ico { width: 40px; height: 40px; border-radius: 9px; display: grid; place-items: center; color: rgba(255,255,255,.6); }
+  .ach-rail .ico.active { background: #2563eb; color: #fff; }
+  .ach-rail .ico svg { width: 20px; height: 20px; }
+  .ach-rail .spacer { flex: 1; }
+  .ach-rail .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(150deg,#7d93b8,#3f567d); border: 2px solid rgba(255,255,255,.25); }
+  .ach-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .ach-topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid #e8eaee; display: flex; align-items: center; gap: 24px; padding: 0 24px; }
+  .ach-brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 14px; }
+  .ach-tabs { display: flex; align-items: center; gap: 4px; }
+  .ach-tab { padding: 6px 12px; border-radius: 7px; font-size: 13.5px; color: #5b6470; cursor: pointer; }
+  .ach-tab.active { background: #eef0f3; color: #1f2733; font-weight: 600; }
+  .ach-body { padding: 40px 36px; }
+  .center { max-width: 770px; margin: 0 auto; }
+  .s-title { text-align: center; font-size: 24px; font-weight: 600; }
+  .s-sub { text-align: center; font-size: 14px; color: #6b7280; margin-top: 10px; line-height: 1.6; }
+  .bigsearch { display: flex; align-items: center; gap: 14px; margin-top: 26px; background: #eef0f2; border: 2px solid #2563eb; border-radius: 12px; padding: 18px 22px; color: #1f2733; font-size: 15px; }
+  .bigsearch svg { width: 20px; height: 20px; color: #6b7280; }
+  .frow { display: flex; align-items: center; gap: 10px; margin-top: 20px; font-size: 13px; flex-wrap: wrap; }
+  .frow .flabel { color: #6b7280; }
+  .chip { background: #f1f2f4; border: none; border-radius: 8px; padding: 7px 14px; font-size: 12.5px; color: #3a4250; cursor: pointer; font-family: inherit; }
+  .chip.active { background: #e3e6ea; color: #1f2733; font-weight: 600; }
+  .found { font-size: 13px; color: #6b7280; margin-top: 22px; }
+  .rcard { border: 1px solid #e6e8ec; border-radius: 12px; padding: 18px 20px; margin-top: 14px; }
+  .rtop { display: flex; align-items: center; justify-content: space-between; }
+  .rleft { display: flex; align-items: center; gap: 12px; }
+  .rleft .pkg { width: 26px; height: 26px; color: #8a929d; }
+  .rleft .pkg svg { width: 26px; height: 26px; }
+  .typepill { background: #5b6470; color: #fff; border-radius: 999px; padding: 3px 12px; font-size: 11.5px; font-weight: 600; }
+  .rid { font-weight: 600; font-size: 14px; }
+  .rright { display: flex; align-items: center; gap: 14px; }
+  .ramount { font-weight: 700; font-size: 14px; }
+  .rline { font-size: 13px; color: #4b5563; margin-top: 12px; }
+  .rline2 { font-size: 13px; color: #6b7280; margin-top: 6px; }
+  .rsource { font-size: 13px; color: #4b5563; margin-top: 12px; }
+  .rsource b { color: #1f2733; font-weight: 600; }
+  .rsource a { color: #2563eb; text-decoration: none; }
+  .tag { display: inline-block; padding: 3px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+  .tag-draft { background: #eceef1; color: #5b6470; }
+  .tag-generating { background: #dbe9fe; color: #1d4ed8; }
+  .tag-completed { background: #dcf3e4; color: #1a7f3c; }
+  .tag-deleted { background: #fbe2e2; color: #c0392b; }
+</style>
+<div class="ach">
+  <aside class="ach-rail">
+    <div class="logo">jh</div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l2 3h6l2-3h4"/><path d="M5 6h14l2 7v5H3v-5z"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M15.5 14c2.4.2 4 2 4 4.5"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/></svg></div>
+    <div class="ico active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 12a7.4 7.4 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L16.6 2H12l-.4 2.5a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7.4 7.4 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2L12 22h4.6l-.4-2.5a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.06-.4.1-.8.1-1.2z"/></svg></div>
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.5 1.5c0 1.7-2.5 2-2.5 3.5"/><circle cx="12" cy="17.5" r=".6" fill="currentColor"/></svg></div>
+    <div class="spacer"></div>
+    <div class="avatar"></div>
+  </aside>
+  <div class="ach-main">
+    <header class="ach-topbar">
+      <div class="ach-brand">
+        <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2.4" fill="#2563eb"/><circle cx="6" cy="12" r="2.4" fill="#06b6d4"/><circle cx="12" cy="12" r="2.4" fill="#2563eb"/><circle cx="18" cy="12" r="2.4" fill="#22c55e"/><circle cx="12" cy="18" r="2.4" fill="#2563eb"/></svg>
+        ACH
+      </div>
+      <nav class="ach-tabs">
+        <div class="ach-tab">Outgoing</div>
+        <div class="ach-tab">Incoming</div>
+        <div class="ach-tab active">Search</div>
+      </nav>
+    </header>
+    <div class="ach-body">
+      <div class="center">
+        <div class="s-title">Search</div>
+        <div class="s-sub">Search entries, batches, and files to research transactions or investigate discrepancies<br>Entry search uses GET /entries · Batch and file search paths are pending API confirmation</div>
+
+        <div class="bigsearch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+          Acme
+        </div>
+
+        <div class="frow">
+          <span class="flabel">Filters:</span>
+          <button class="chip active">All</button>
+          <button class="chip">Outgoing</button>
+          <button class="chip">Incoming</button>
+          <button class="chip">Date range</button>
+          <button class="chip">Amount range</button>
+          <button class="chip">Status</button>
+          <button class="chip">SEC code</button>
+        </div>
+        <div class="frow">
+          <span class="flabel">Filter by type:</span>
+          <button class="chip active">All (634)</button>
+          <button class="chip">Batches (10)</button>
+          <button class="chip">Entries (624)</button>
+          <button class="chip">Files (0)</button>
+        </div>
+
+        <div class="found">Found 634 results</div>
+
+        <div class="rcard">
+          <div class="rtop">
+            <div class="rleft">
+              <span class="pkg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>
+              <span class="typepill">Batch</span>
+              <span class="rid">ACH-OUT-026</span>
+            </div>
+            <div class="rright"><span class="ramount">$610,752.99</span><span class="tag tag-draft">draft</span></div>
+          </div>
+          <div class="rline">Acme Batch 001 • Acme Corporation</div>
+          <div class="rline2">32 entries • $610,752.99</div>
+          <div class="rsource">Direction: <b>Outgoing</b>&nbsp;&nbsp;&nbsp;Source: <a href="#">ACH-OUT-026</a></div>
+        </div>
+
+        <div class="rcard">
+          <div class="rtop">
+            <div class="rleft">
+              <span class="pkg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>
+              <span class="typepill">Batch</span>
+              <span class="rid">ACH-OUT-036</span>
+            </div>
+            <div class="rright"><span class="ramount">$320,786.79</span><span class="tag tag-generating">generating</span></div>
+          </div>
+          <div class="rline">Acme Batch 011 • Acme Corporation</div>
+          <div class="rline2">18 entries • $320,786.79</div>
+          <div class="rsource">Direction: <b>Outgoing</b>&nbsp;&nbsp;&nbsp;Source: <a href="#">ACH-OUT-036</a></div>
+        </div>
+
+        <div class="rcard">
+          <div class="rtop">
+            <div class="rleft">
+              <span class="pkg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>
+              <span class="typepill">Batch</span>
+              <span class="rid">ACH-OUT-046</span>
+            </div>
+            <div class="rright"><span class="ramount">$434,783.59</span><span class="tag tag-completed">completed</span></div>
+          </div>
+          <div class="rline">Acme Batch 021 • Acme Corporation</div>
+          <div class="rline2">20 entries • $434,783.59</div>
+          <div class="rsource">Direction: <b>Outgoing</b>&nbsp;&nbsp;&nbsp;Source: <a href="#">ACH-OUT-046</a></div>
+        </div>
+
+        <div class="rcard">
+          <div class="rtop">
+            <div class="rleft">
+              <span class="pkg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>
+              <span class="typepill">Batch</span>
+              <span class="rid">ACH-OUT-056</span>
+            </div>
+            <div class="rright"><span class="ramount">$426,750.17</span><span class="tag tag-deleted">deleted</span></div>
+          </div>
+          <div class="rline">Acme Batch 031 • Acme Corporation</div>
+          <div class="rline2">22 entries • $426,750.17</div>
+          <div class="rsource">Direction: <b>Outgoing</b>&nbsp;&nbsp;&nbsp;Source: <a href="#">ACH-OUT-056</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,88 @@
+{
+  "screens": [
+    {
+      "file": "outgoing-unprocessed.html",
+      "x": 32,
+      "y": 0,
+      "width": 1440
+    },
+    {
+      "file": "outgoing-completed.html",
+      "x": 1500,
+      "y": 0,
+      "width": 1440
+    },
+    {
+      "file": "outgoing-receipt-files.html",
+      "x": 2976,
+      "y": 0,
+      "width": 1440
+    },
+    {
+      "file": "batch-details.html",
+      "x": 32,
+      "y": 1024,
+      "width": 1440
+    },
+    {
+      "file": "incoming-files.html",
+      "x": 1504,
+      "y": 1024,
+      "width": 1440
+    },
+    {
+      "file": "incoming-batches.html",
+      "x": 2976,
+      "y": 1024,
+      "width": 1440
+    },
+    {
+      "file": "search.html",
+      "x": 32,
+      "y": 2176,
+      "width": 1440
+    },
+    {
+      "file": "search-results.html",
+      "x": 1536,
+      "y": 2176,
+      "width": 1440
+    },
+    {
+      "file": "generate-nacha.html",
+      "x": 3008,
+      "y": 2176,
+      "width": 1440
+    },
+    {
+      "file": "import-file.html",
+      "x": 4512,
+      "y": 2176,
+      "width": 1440
+    },
+    {
+      "file": "incoming-files-copy.html",
+      "x": -5664,
+      "y": 64,
+      "width": 1440
+    },
+    {
+      "file": "incoming-files-v1-table.html",
+      "x": -5664,
+      "y": 1100,
+      "width": 1440
+    },
+    {
+      "file": "incoming-files-v2-triage.html",
+      "x": -5664,
+      "y": 2048,
+      "width": 1440
+    },
+    {
+      "file": "incoming-files-v3-detail.html",
+      "x": -5664,
+      "y": 3232,
+      "width": 1440
+    }
+  ]
+}
