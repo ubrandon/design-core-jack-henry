@@ -1,12 +1,17 @@
 {
   "name": "Brandon Unglaub",
   "favorites": [
+    "ach-revamp",
     "brandon-misc",
     "ach-bulk-edit",
     "retail-wires",
     "wires"
   ],
   "recents": [
+    {
+      "id": "ach-revamp",
+      "ts": 1782860985280
+    },
     {
       "id": "brandon-misc",
       "ts": 1782850894619
@@ -24,11 +29,11 @@
       "ts": 1782840727113
     }
   ],
-  "theme": null,
+  "theme": "light",
   "filters": {
     "sort": "",
     "status": ""
   },
-  "navCollapsed": null,
-  "updatedAt": 1782850894619
+  "navCollapsed": false,
+  "updatedAt": 1782860987256
 }

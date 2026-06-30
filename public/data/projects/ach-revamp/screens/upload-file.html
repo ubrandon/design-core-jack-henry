@@ -1,0 +1,139 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  .yf, .yf * { box-sizing: border-box; }
+  .yf { font-family: 'Open Sans', -apple-system, sans-serif; color: #1f2733; background: #e7ebf0; display: flex; height: 1040px; overflow: hidden; position: relative; }
+
+  .yf-side { width: 270px; flex-shrink: 0; background: #fff; border-right: 1px solid #e6e9ee; display: flex; flex-direction: column; padding: 0; }
+  .yf-logo { display: flex; align-items: center; gap: 10px; padding: 22px 22px 18px; }
+  .yf-logo-mark { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #2f6fc0; display: grid; place-items: center; color: #2f6fc0; flex-shrink: 0; }
+  .yf-logo-mark svg { width: 19px; height: 19px; }
+  .yf-logo-text { font-size: 24px; font-weight: 800; letter-spacing: -.01em; color: #16335c; }
+  .yf-logo-text b { color: #16335c; }
+  .yf-nav { display: flex; flex-direction: column; padding: 4px 14px; gap: 2px; flex: 1; overflow: hidden; }
+  .yf-nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 12px; border-radius: 8px; font-size: 15px; color: #2b3340; cursor: pointer; text-decoration: none; }
+  .yf-nav-item svg { width: 21px; height: 21px; color: #5b6470; flex-shrink: 0; }
+  .yf-nav-item .yf-chev { width: 16px; height: 16px; margin-left: auto; color: #9aa1ab; }
+  .yf-nav-item.is-section { color: #16335c; font-weight: 700; }
+  .yf-nav-item.is-section svg { color: #16335c; }
+  .yf-badge { margin-left: auto; background: #e11d2a; color: #fff; font-size: 11px; font-weight: 700; min-width: 19px; height: 19px; border-radius: 50%; display: grid; place-items: center; padding: 0 5px; }
+  .yf-subnav { display: flex; flex-direction: column; }
+  .yf-subnav-item { padding: 11px 12px 11px 47px; font-size: 14.5px; color: #3a4250; border-radius: 8px; cursor: pointer; text-decoration: none; }
+  .yf-subnav-item.is-active { background: #e7f0fd; color: #16335c; font-weight: 700; }
+  .yf-profile { display: flex; align-items: center; gap: 11px; padding: 16px 20px; border-top: 1px solid #edeff2; }
+  .yf-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(150deg,#d8a98c,#9c6f57); flex-shrink: 0; }
+  .yf-profile-name { font-size: 15px; font-weight: 600; color: #2b3340; }
+  .yf-profile .yf-chev { width: 16px; height: 16px; margin-left: auto; color: #9aa1ab; }
+
+  .yf-main { flex: 1; min-width: 0; position: relative; display: flex; flex-direction: column; }
+  .yf-hero { height: 200px; flex-shrink: 0; background: linear-gradient(115deg,#16335c 0%,#1f4f8f 45%,#2a63ad 100%); position: relative; overflow: hidden; }
+  .yf-hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 72% 22%, rgba(120,150,190,.55), transparent 42%); }
+  .yf-stage { flex: 1; background: #e7ebf0; }
+  .yf-footer { background: #0e2547; color: rgba(255,255,255,.92); height: 46px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; flex-shrink: 0; }
+  .yf-footer a { color: #6db1ff; text-decoration: none; }
+  .yf-footer .sep { color: rgba(255,255,255,.45); }
+  .yf-help { position: absolute; right: 22px; bottom: 60px; width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid #e1e5ea; box-shadow: 0 3px 10px rgba(0,0,0,.12); color: #16335c; font-weight: 700; font-size: 17px; cursor: pointer; }
+
+  .yf-modal { position: absolute; top: 104px; left: 50%; transform: translateX(-50%); width: 596px; background: #fff; border-radius: 16px; box-shadow: 0 18px 50px rgba(15,40,70,.22); z-index: 5; }
+  .yf-modal-head { display: flex; align-items: center; padding: 22px 22px 18px; position: relative; border-bottom: 1px solid #eceef1; }
+  .yf-modal-back { position: absolute; left: 22px; color: #2b3340; cursor: pointer; display: grid; place-items: center; }
+  .yf-modal-back svg { width: 20px; height: 20px; }
+  .yf-modal-title { flex: 1; text-align: center; font-size: 17px; font-weight: 700; color: #1f2733; }
+
+  .up-body { padding: 20px 24px 26px; }
+  .up-sub { font-size: 14px; color: #5b6470; margin: 0 0 18px; }
+  .up-dropzone { border: 1.5px dashed #c4cbd4; border-radius: 10px; background: #f5f6f8; padding: 36px 20px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .up-file { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e6e9ee; border-radius: 8px; padding: 9px 14px; font-size: 14px; color: #1f2733; }
+  .up-file svg.doc { width: 18px; height: 18px; color: #6b7280; }
+  .up-file .del { color: #9aa1ab; cursor: pointer; display: grid; place-items: center; }
+  .up-file .del svg { width: 17px; height: 17px; }
+  .btn-blue { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 11px 24px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+  .up-recent-head { display: flex; align-items: center; justify-content: space-between; margin-top: 26px; margin-bottom: 4px; }
+  .up-recent-title { font-size: 15px; font-weight: 700; color: #1f2733; }
+  .up-recent-title span { font-weight: 400; color: #6b7280; }
+  .up-info { color: #9aa1ab; display: grid; place-items: center; }
+  .up-info svg { width: 18px; height: 18px; }
+  .up-row { display: grid; grid-template-columns: 1fr 170px 92px; align-items: center; padding: 16px 0; border-top: 1px solid #eceef1; font-size: 14px; }
+  .up-row .nm { font-weight: 700; color: #1f2733; }
+  .up-row .dt { color: #5b6470; }
+  .up-pill { justify-self: end; padding: 4px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600; }
+  .up-pill.ok { background: #e3f3e8; color: #1f8a4c; }
+  .up-pill.err { background: #fde7e9; color: #d63341; }
+</style>
+<div class="yf">
+  <aside class="yf-side">
+    <div class="yf-logo">
+      <span class="yf-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8"/><path d="M3.5 18.5h17"/></svg></span>
+      <span class="yf-logo-text">Your<b>FI</b></span>
+    </div>
+    <nav class="yf-nav">
+      <a class="yf-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg> Dashboard</a>
+      <a class="yf-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg> Messages <span class="yf-badge">1</span></a>
+      <a class="yf-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/></svg> Accounts</a>
+      <a class="yf-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg> Transfers</a>
+      <a class="yf-nav-item is-section"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M12 8.5v7M13.7 10.2c-.4-.5-1-.8-1.7-.8-1 0-1.8.6-1.8 1.4s.8 1.2 1.8 1.4 1.8.6 1.8 1.4-.8 1.4-1.8 1.4c-.7 0-1.3-.3-1.7-.8"/></svg> Payments <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg></a>
+      <div class="yf-subnav">
+        <a class="yf-subnav-item">Bill pay</a>
+        <a class="yf-subnav-item">Send money with Zelle&reg;</a>
+        <a class="yf-subnav-item">Positive pay</a>
+        <a class="yf-subnav-item is-active">ACH</a>
+        <a class="yf-subnav-item">Wires</a>
+      </div>
+      <a class="yf-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11m0 0 4-4m-4 4-4-4"/><path d="M5 19h14"/></svg> Remote deposits</a>
+      <a class="yf-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.3 1 2.5h6c0-1.2.2-1.7 1-2.5A6 6 0 0 0 12 3Z"/></svg> Insights <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 10 6 6 6-6"/></svg></a>
+      <a class="yf-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.5 1.5c0 1.7-2.5 2-2.5 3.5"/><circle cx="12" cy="17.4" r=".6" fill="currentColor"/></svg> Support</a>
+    </nav>
+    <div class="yf-profile">
+      <span class="yf-avatar"></span>
+      <span class="yf-profile-name">Emma Reed</span>
+      <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg>
+    </div>
+  </aside>
+
+  <div class="yf-main">
+    <div class="yf-hero"></div>
+    <div class="yf-stage"></div>
+    <footer class="yf-footer">
+      <span>&copy;2023 YourFI</span><span class="sep">&bull;</span>
+      <span>(555) 555-5555</span><span class="sep">&bull;</span>
+      <a href="#">Privacy policy</a><span class="sep">&bull;</span>
+      <span>Member FDIC</span><span class="sep">&bull;</span>
+      <span>&#8962; Equal Housing Lender</span>
+    </footer>
+    <button class="yf-help">?</button>
+
+    <!-- Modal: Upload a file (file selected) -->
+    <div class="yf-modal">
+      <div class="yf-modal-head">
+        <span class="yf-modal-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></span>
+        <div class="yf-modal-title">Upload a file</div>
+      </div>
+      <div class="up-body">
+        <p class="up-sub">Upload your NACHA formatted files below to create new ACH batches.</p>
+        <div class="up-dropzone">
+          <div class="up-file">
+            <svg class="doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+            <span>payroll.txt</span>
+            <span class="del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></span>
+          </div>
+          <button class="btn-blue">Upload</button>
+        </div>
+
+        <div class="up-recent-head">
+          <div class="up-recent-title">Recent uploads <span>(Last 7 days)</span></div>
+          <span class="up-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r=".6" fill="currentColor"/></svg></span>
+        </div>
+        <div class="up-row">
+          <span class="nm">9457 MATHEW 2.txt</span>
+          <span class="dt">10/25/2020 10:41 AM</span>
+          <span class="up-pill ok">Uploaded</span>
+        </div>
+        <div class="up-row">
+          <span class="nm">9457 MATHEW 3.txt</span>
+          <span class="dt">10/25/2020 10:41 AM</span>
+          <span class="up-pill err">Error</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
