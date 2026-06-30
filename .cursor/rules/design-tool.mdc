@@ -140,7 +140,7 @@ All paths below are **disk paths** (relative to repo root):
 - `public/data/projects/<project>/project.json` -- **Project name and metadata.** Contains `name`, `description`, and optionally `createdBy`, `createdAt`, `updatedAt` (shown on the project hub with relative dates when present). Set `updatedAt` when the project meaningfully changes — the **home** page uses it for "Recently updated" sorting.
 - `public/data/projects/index.json` -- List of all projects (`id`, `name`, `description`, `createdBy`, `createdAt`). The home page also loads each project's `project.json`, `canvas.json`, and `prototypes/index.json` for search, sort, and screen/prototype counts on cards.
 - `public/data/site.json` -- Optional tool config: `{ "publicBaseUrl": "https://org.github.io/repo/" }` so **Copy link** for prototypes uses the GitHub Pages URL while developing on localhost (people you share with open that link in a browser, not Cursor). Run **`npm run sync-public-url`** to fill it from `git remote get-url origin`. On `*.github.io`, the base is inferred from the current URL if this is omitted.
-- `public/data/projects/<project>/canvas.json` -- **Canvas screen layout.** Lists which screens appear on the canvas and their positions/sizes. Contains `{ "screens": [{ "file": "home.html", "x": 0, "y": 0, "width": 390 }, ...] }`. When adding a new screen, you MUST also add an entry here or it won't show on the canvas. Standard widths: **390** for mobile, **1024** for tablet, **1440** for desktop. Use whatever fits the screen being designed.
+- `public/data/projects/<project>/canvas.json` -- **Canvas screen layout.** Lists which screens appear on the canvas and their positions/sizes. Contains `{ "screens": [{ "file": "home.html", "x": 0, "y": 0, "width": 390 }, ...] }`. When adding a new screen, you MUST also add an entry here or it won't show on the canvas. Standard widths: **390** for mobile, **1024** for tablet, **1280** for desktop. Use whatever fits the screen being designed.
 - `public/data/projects/<project>/screens/` -- Static screen HTML files for the ideation canvas
 - `public/data/projects/<project>/prototypes/<prototype>/index.html` -- Interactive prototype
 - `public/data/projects/<project>/prototypes/<prototype>/meta.json` -- Prototype name and description; optional `thumbnail` (filename or path under the prototype folder, e.g. `preview.png`) for the project page card image. Optional `externalTestUrl` (string): full **http://** or **https://** URL to Maze, UserTesting, etc. The tool shows **Tested** only when this parses as a plausible web URL (hostname with a dot, or `localhost`).
@@ -228,7 +228,7 @@ When a designer asks you to create screens, prototypes, or any design work, **al
    ```json
    { "file": "<name>.html", "x": 0, "y": 0, "width": 390 }
    ```
-   Space screens apart by adjusting `x` (add the width + 40px gap for each new screen). Standard widths: **390** for mobile, **1024** for tablet, **1440** for desktop. Match the width to what the screen is designed for -- a desktop dashboard should be 1440, a mobile screen should be 390.
+   Space screens apart by adjusting `x` (add the width + 40px gap for each new screen). Standard widths: **390** for mobile, **1024** for tablet, **1280** for desktop. Match the width to what the screen is designed for -- a desktop dashboard should be 1280, a mobile screen should be 390.
 3. **Now build the screen by editing that same file.** Replace the empty wrapper with the real content. Each edit streams live into the card on the canvas, so prefer one larger write of the finished screen over many tiny edits (each edit causes the card to refresh). Use the standard screen wrapper:
    ```html
    <div style="background: var(--bg-0);">
@@ -409,7 +409,7 @@ When the designer specifies a target platform (iOS, Android, or desktop), adapt 
 2. **If no matching component exists**, build native-looking UI for the specified platform using the team's brand colors and tokens from `company.css` (or `shared.css` if no company overrides exist):
    - **iOS** -- SF-style navigation bars, large titles, rounded grouped list rows, iOS-style toggles, tab bars with icons, subtle separators, system-like blur effects. Use the team's accent color for tint/interactive elements.
    - **Android / Material** -- Top app bars, FABs, bottom navigation with labels, outlined/filled text fields, Material-style cards with subtle elevation, ripple-like interaction areas. Use the team's primary color for Material theming.
-   - **Desktop** -- Sidebar navigation, multi-column layouts, data tables, breadcrumbs, dropdown menus, toolbar actions. Use wider content areas (1024–1440px frames).
+   - **Desktop** -- Sidebar navigation, multi-column layouts, data tables, breadcrumbs, dropdown menus, toolbar actions. Use wider content areas (1024–1280px frames).
 3. **Always use the team's brand colors.** Native-looking doesn't mean default blue iOS or purple Material -- it means the platform's layout patterns and interaction idioms rendered in the team's color palette.
 4. **If no platform is specified**, default to a generic/neutral style using the design system's existing components.
 
