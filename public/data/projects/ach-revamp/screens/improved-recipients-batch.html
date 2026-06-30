@@ -60,41 +60,65 @@
   .yf-overlay { position: absolute; inset: 0; background: rgba(12,28,52,.5); z-index: 4; }
   .yf-help { position: absolute; right: 22px; bottom: 22px; width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid #e1e5ea; box-shadow: 0 3px 10px rgba(0,0,0,.16); color: #16335c; font-weight: 700; font-size: 17px; cursor: pointer; z-index: 6; }
 
-  /* ---- Recipients modal ---- */
-  .rb-modal { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); width: 604px; max-height: 960px; background: #fff; border-radius: 16px; box-shadow: 0 22px 60px rgba(10,25,50,.35); z-index: 5; display: flex; flex-direction: column; }
-  .rb-head { display: flex; align-items: center; padding: 18px 20px 16px; position: relative; flex-shrink: 0; }
-  .rb-back { position: absolute; left: 20px; top: 20px; color: #2b3340; cursor: pointer; }
-  .rb-back svg { width: 20px; height: 20px; }
-  .rb-x { position: absolute; right: 20px; top: 20px; color: #6b7280; cursor: pointer; }
-  .rb-x svg { width: 19px; height: 19px; }
-  .rb-titles { flex: 1; text-align: center; }
-  .rb-title { font-size: 17px; font-weight: 700; color: #1f2733; }
-  .rb-sub-title { font-size: 12.5px; color: #8a929c; margin-top: 2px; }
+  /* ---- Improved recipients modal ---- */
+  .rcp-modal { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); width: 720px; max-height: 940px; background: #fff; border-radius: 16px; box-shadow: 0 22px 60px rgba(10,25,50,.35); z-index: 5; display: flex; flex-direction: column; overflow: hidden; }
+  .rcp-head { display: flex; align-items: center; padding: 18px 22px 16px; position: relative; flex-shrink: 0; border-bottom: 1px solid #eef0f3; }
+  .rcp-back { position: absolute; left: 22px; top: 20px; color: #2b3340; cursor: pointer; }
+  .rcp-back svg { width: 20px; height: 20px; }
+  .rcp-x { position: absolute; right: 22px; top: 20px; color: #6b7280; cursor: pointer; }
+  .rcp-x svg { width: 19px; height: 19px; }
+  .rcp-titles { flex: 1; text-align: center; }
+  .rcp-title { font-size: 18px; font-weight: 700; color: #1f2733; }
+  .rcp-subtitle { font-size: 12.5px; color: #8a929c; margin-top: 2px; }
 
-  .rb-colhead { display: grid; grid-template-columns: 1fr 56px 64px 116px 120px; align-items: center; gap: 10px; padding: 10px 22px; background: #f3f4f6; font-size: 11px; font-weight: 700; color: #6b7280; letter-spacing: .04em; flex-shrink: 0; }
-  .rb-colhead .c-center { text-align: center; }
+  /* toolbar */
+  .rcp-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 22px; flex-shrink: 0; }
+  .rcp-search { position: relative; width: 280px; }
+  .rcp-search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: #8a929c; }
+  .rcp-search input { width: 100%; height: 40px; border: 1px solid #cfd4db; border-radius: 8px; padding: 0 12px 0 36px; font-family: inherit; font-size: 13.5px; color: #1f2733; background: #fff; outline: none; }
+  .rcp-search input::placeholder { color: #8a929c; }
+  .rcp-bulk { display: flex; align-items: center; gap: 8px; }
+  .rcp-bulk-btn { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; color: #2563eb; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; padding: 8px 10px; border-radius: 8px; }
+  .rcp-bulk-btn svg { width: 16px; height: 16px; }
+  .rcp-bulk-sep { width: 1px; height: 18px; background: #e1e5ea; }
 
-  .rb-body { overflow: hidden; }
-  .rb-row { display: grid; grid-template-columns: 1fr 56px 64px 116px 120px; align-items: center; gap: 10px; padding: 11px 22px; border-bottom: 1px solid #f0f1f4; }
-  .rb-name { font-size: 14px; font-weight: 600; color: #1f2733; display: flex; align-items: center; gap: 6px; }
-  .rb-name .yf-chev { width: 14px; height: 14px; color: #6b7280; }
-  .rb-sub { font-size: 12px; color: #8a929c; margin-top: 3px; }
-  .rb-center { display: flex; justify-content: center; }
-  .cbx { width: 18px; height: 18px; border: 1.5px solid #b8bfc8; border-radius: 4px; }
+  /* column headers + row grid */
+  .rcp-cols, .rcp-row { display: grid; grid-template-columns: 1fr 56px 72px 124px 110px; align-items: center; gap: 12px; }
+  .rcp-cols { padding: 10px 22px; background: #f4f6f8; border-top: 1px solid #eef0f3; border-bottom: 1px solid #eef0f3; font-size: 10.5px; font-weight: 700; color: #8a929c; letter-spacing: .05em; flex-shrink: 0; }
+  .rcp-cols .c-center { text-align: center; }
+  .rcp-cols .c-right { text-align: right; }
 
-  .rb-fld { position: relative; }
-  .rb-fld-label { position: absolute; top: -6px; left: 9px; background: #fff; padding: 0 4px; font-size: 9.5px; color: #8a929c; white-space: nowrap; }
-  .rb-fld-box { height: 42px; border: 1px solid #cfd4db; border-radius: 6px; padding: 0 10px; display: flex; align-items: center; font-size: 13px; color: #1f2733; }
-  .rb-fld-box .amt-pre { margin-right: 3px; }
-  .rb-fld-box .sel-chev { margin-left: auto; color: #6b7280; }
-  .rb-fld-box .sel-chev svg { width: 14px; height: 14px; display: block; }
+  .rcp-body { overflow-y: auto; flex: 1; min-height: 0; }
+  .rcp-row { padding: 12px 22px; border-bottom: 1px solid #f0f1f4; }
+  .rcp-name { font-size: 14px; font-weight: 600; color: #1f2733; }
+  .rcp-acct { font-size: 12px; color: #8a929c; margin-top: 3px; }
+  .rcp-center { display: flex; justify-content: center; }
+  .rcp-cbx { width: 18px; height: 18px; border: 1.5px solid #b8bfc8; border-radius: 4px; flex-shrink: 0; }
+  .rcp-cbx.on { background: #2563eb; border-color: #2563eb; display: grid; place-items: center; }
+  .rcp-cbx.on svg { width: 12px; height: 12px; color: #fff; }
 
-  .rb-pag { display: flex; align-items: center; justify-content: flex-end; position: relative; padding: 16px 22px 18px; flex-shrink: 0; }
-  .rb-dots { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 13px; color: #c4c9d0; }
-  .rb-dots .d { width: 8px; height: 8px; border-radius: 50%; background: #d4d8de; }
-  .rb-dots .d.on { background: #16335c; }
-  .rb-dots .arr svg { width: 16px; height: 16px; display: block; }
-  .btn-disabled { background: #aac6f4; color: #fff; border: none; border-radius: 8px; padding: 10px 26px; font-size: 14px; font-weight: 700; cursor: default; font-family: inherit; }
+  .rcp-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .rcp-pill.credit { background: #e6f4ec; color: #1f8a4c; }
+  .rcp-pill.debit { background: #f7ecd4; color: #a8730a; }
+  .rcp-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .rcp-amt { text-align: right; font-size: 14px; font-weight: 700; color: #1f2733; }
+
+  /* sticky totals footer */
+  .rcp-totals { position: sticky; bottom: 0; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 13px 22px; background: #f4f6f8; border-top: 1px solid #e6e9ee; font-size: 13px; color: #5b6470; flex-shrink: 0; }
+  .rcp-totals b { color: #1f2733; font-weight: 700; }
+  .rcp-totals .tsep { color: #c4c9d0; }
+  .rcp-totals .t-credit b { color: #1f8a4c; }
+  .rcp-totals .t-debit b { color: #a8730a; }
+  .rcp-totals .t-net b { color: #16335c; }
+
+  /* pagination + save */
+  .rcp-foot { display: flex; align-items: center; justify-content: flex-end; position: relative; padding: 16px 22px 18px; flex-shrink: 0; border-top: 1px solid #eef0f3; }
+  .rcp-dots { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 13px; color: #c4c9d0; }
+  .rcp-dots .d { width: 8px; height: 8px; border-radius: 50%; background: #d4d8de; }
+  .rcp-dots .d.on { background: #16335c; }
+  .rcp-dots .arr { cursor: pointer; }
+  .rcp-dots .arr svg { width: 16px; height: 16px; display: block; }
+  .rcp-save { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 10px 30px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
 </style>
 <div class="yf">
   <aside class="yf-side">
@@ -172,108 +196,113 @@
     <div class="yf-overlay"></div>
     <button class="yf-help">?</button>
 
-    <div class="rb-modal">
-      <div class="rb-head">
-        <span class="rb-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></span>
-        <div class="rb-titles">
-          <div class="rb-title">Recipients</div>
-          <div class="rb-sub-title">ABC Payroll</div>
+    <div class="rcp-modal">
+      <div class="rcp-head">
+        <span class="rcp-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></span>
+        <div class="rcp-titles">
+          <div class="rcp-title">Recipients</div>
+          <div class="rcp-subtitle">ABC Payroll</div>
         </div>
-        <span class="rb-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+        <span class="rcp-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
       </div>
 
-      <div class="rb-colhead">
-        <span>RECIPIENT</span><span class="c-center">HOLD</span><span class="c-center">PRENOTE</span><span></span><span>AMOUNT</span>
-      </div>
-
-      <div class="rb-body">
-        <!-- row template repeated -->
-        <div class="rb-row">
-          <div><div class="rb-name">Michael Rivera <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Credit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
+      <!-- Toolbar: search + bulk actions -->
+      <div class="rcp-toolbar">
+        <div class="rcp-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+          <input type="text" placeholder="Search recipients">
         </div>
-        <div class="rb-row">
-          <div><div class="rb-name">John Edward Carder <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Debit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
-        </div>
-        <div class="rb-row">
-          <div><div class="rb-name">Bobby Erickson <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Credit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
-        </div>
-        <div class="rb-row">
-          <div><div class="rb-name">Another Recipient <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Credit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
-        </div>
-        <div class="rb-row">
-          <div><div class="rb-name">Another Recipient <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Credit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
-        </div>
-        <div class="rb-row">
-          <div><div class="rb-name">Another Recipient <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Credit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
-        </div>
-        <div class="rb-row">
-          <div><div class="rb-name">Another Recipient <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Credit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
-        </div>
-        <div class="rb-row">
-          <div><div class="rb-name">Another Recipient <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Credit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
-        </div>
-        <div class="rb-row">
-          <div><div class="rb-name">Another Recipient <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Credit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
-        </div>
-        <div class="rb-row">
-          <div><div class="rb-name">Another Recipient <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Credit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
-        </div>
-        <div class="rb-row" style="border-bottom:none">
-          <div><div class="rb-name">Another Recipient <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="rb-sub">x1234 / 123456789</div></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-center"><span class="cbx"></span></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit/debit</span><div class="rb-fld-box">Credit<span class="sel-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
-          <div class="rb-fld"><span class="rb-fld-label">Credit amount</span><div class="rb-fld-box"><span class="amt-pre">$</span>25.00</div></div>
+        <div class="rcp-bulk">
+          <button class="rcp-bulk-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>Hold all</button>
+          <span class="rcp-bulk-sep"></span>
+          <button class="rcp-bulk-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Prenote all</button>
         </div>
       </div>
 
-      <div class="rb-pag">
-        <div class="rb-dots">
+      <!-- Column headers aligned to row grid -->
+      <div class="rcp-cols">
+        <span>RECIPIENT</span>
+        <span class="c-center">HOLD</span>
+        <span class="c-center">PRENOTE</span>
+        <span>CREDIT/DEBIT</span>
+        <span class="c-right">AMOUNT</span>
+      </div>
+
+      <div class="rcp-body">
+        <div class="rcp-row">
+          <div><div class="rcp-name">Michael Rivera</div><div class="rcp-acct">&bull;&bull;&bull;&bull;2345 / 123456789</div></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div><span class="rcp-pill credit"><span class="dot"></span>Credit</span></div>
+          <div class="rcp-amt">$25.00</div>
+        </div>
+        <div class="rcp-row">
+          <div><div class="rcp-name">John Edward Carder</div><div class="rcp-acct">&bull;&bull;&bull;&bull;6781 / 123456789</div></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div><span class="rcp-pill debit"><span class="dot"></span>Debit</span></div>
+          <div class="rcp-amt">$25.00</div>
+        </div>
+        <div class="rcp-row">
+          <div><div class="rcp-name">Bobby Erickson</div><div class="rcp-acct">&bull;&bull;&bull;&bull;0094 / 123456789</div></div>
+          <div class="rcp-center"><span class="rcp-cbx on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div><span class="rcp-pill credit"><span class="dot"></span>Credit</span></div>
+          <div class="rcp-amt">$25.00</div>
+        </div>
+        <div class="rcp-row">
+          <div><div class="rcp-name">Sandra Whitfield</div><div class="rcp-acct">&bull;&bull;&bull;&bull;5520 / 123456789</div></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div class="rcp-center"><span class="rcp-cbx on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span></div>
+          <div><span class="rcp-pill credit"><span class="dot"></span>Credit</span></div>
+          <div class="rcp-amt">$15.00</div>
+        </div>
+        <div class="rcp-row">
+          <div><div class="rcp-name">Derek Nakamura</div><div class="rcp-acct">&bull;&bull;&bull;&bull;7732 / 123456789</div></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div><span class="rcp-pill credit"><span class="dot"></span>Credit</span></div>
+          <div class="rcp-amt">$25.00</div>
+        </div>
+        <div class="rcp-row">
+          <div><div class="rcp-name">Priya Sundaram</div><div class="rcp-acct">&bull;&bull;&bull;&bull;1188 / 123456789</div></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div><span class="rcp-pill credit"><span class="dot"></span>Credit</span></div>
+          <div class="rcp-amt">$25.00</div>
+        </div>
+        <div class="rcp-row">
+          <div><div class="rcp-name">Marcus Bell</div><div class="rcp-acct">&bull;&bull;&bull;&bull;4407 / 123456789</div></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div><span class="rcp-pill credit"><span class="dot"></span>Credit</span></div>
+          <div class="rcp-amt">$35.00</div>
+        </div>
+        <div class="rcp-row" style="border-bottom:none">
+          <div><div class="rcp-name">Helen Ostrowski</div><div class="rcp-acct">&bull;&bull;&bull;&bull;9963 / 123456789</div></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div class="rcp-center"><span class="rcp-cbx"></span></div>
+          <div><span class="rcp-pill credit"><span class="dot"></span>Credit</span></div>
+          <div class="rcp-amt">$25.00</div>
+        </div>
+      </div>
+
+      <!-- Sticky totals footer -->
+      <div class="rcp-totals">
+        <span><b>8</b> recipients</span><span class="tsep">&bull;</span>
+        <span class="t-credit">Credits <b>$175.00</b></span><span class="tsep">&bull;</span>
+        <span class="t-debit">Debits <b>$25.00</b></span><span class="tsep">&bull;</span>
+        <span class="t-net">Net <b>$150.00</b></span>
+      </div>
+
+      <!-- Pagination + Save -->
+      <div class="rcp-foot">
+        <div class="rcp-dots">
           <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></span>
           <span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span>
           <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>
         </div>
-        <button class="btn-disabled">Save</button>
+        <button class="rcp-save">Save</button>
       </div>
     </div>
   </div>
