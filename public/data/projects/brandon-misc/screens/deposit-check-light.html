@@ -1,0 +1,160 @@
+<link rel="stylesheet" href="../../../../styles/shared.css">
+<link rel="stylesheet" href="../../../../styles/ds.css">
+<link rel="stylesheet" href="../../../../data/design-system/company.css">
+<style>
+  .dc-screen {
+    --acc: #c2410c;
+    --acc-bright: #ea580c;
+    --acc-soft: rgba(194, 65, 12, 0.10);
+    background: var(--bg-0);
+    color: rgba(0, 0, 0, 0.88);
+    font-family: var(--font-body);
+  }
+  .dc-statusbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 18px 4px; font-size: 0.72rem; font-weight: 700;
+    color: rgba(0, 0, 0, 0.85);
+  }
+  .dc-statusbar .dc-status-icons { display: flex; align-items: center; gap: 6px; }
+  .dc-appbar {
+    display: flex; align-items: center; gap: 18px;
+    padding: 12px 16px 14px;
+  }
+  .dc-appbar svg { color: var(--acc); }
+  .dc-appbar-title { font-size: 1.15rem; font-weight: 700; color: rgba(0, 0, 0, 0.9); }
+  .dc-body { padding: 0 18px; }
+
+  .dc-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding: 18px 0; border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  .dc-row-label { font-size: 0.95rem; font-weight: 700; color: rgba(0, 0, 0, 0.85); }
+
+  .dc-amount-box {
+    display: flex; align-items: center; gap: 8px;
+    min-width: 190px; padding: 12px 16px;
+    background: var(--bg-1); border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-sm);
+  }
+  .dc-amount-prefix { font-size: 1rem; font-weight: 600; color: rgba(0, 0, 0, 0.4); }
+  .dc-amount-val { flex: 1; text-align: right; font-size: 1.05rem; font-weight: 700; color: var(--acc); }
+
+  .dc-link { font-size: 0.95rem; font-weight: 700; color: var(--acc); text-align: right; }
+
+  .dc-cap-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 18px 0; border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  .dc-cap-side { display: flex; flex-direction: column; gap: 8px; color: rgba(0, 0, 0, 0.8); }
+  .dc-cap-side svg { color: rgba(0, 0, 0, 0.55); }
+  .dc-cap-label { font-size: 0.95rem; font-weight: 700; color: rgba(0, 0, 0, 0.85); }
+
+  .dc-thumb {
+    position: relative; width: 140px; height: 94px; flex-shrink: 0;
+    border: 2px solid var(--acc); border-radius: 6px; overflow: hidden;
+    background: #eef0f3;
+  }
+  .dc-check {
+    position: absolute; inset: 0; padding: 8px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .dc-check-line { height: 4px; border-radius: 2px; background: rgba(0, 0, 0, 0.12); }
+  .dc-check-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 6px; }
+  .dc-check-box { width: 34px; height: 16px; border: 1px solid rgba(0, 0, 0, 0.22); border-radius: 2px; }
+  .dc-check-micr {
+    font-family: monospace; font-size: 0.4rem; letter-spacing: 1px;
+    color: rgba(0, 0, 0, 0.38);
+  }
+  .dc-edit {
+    position: absolute; right: 4px; bottom: 4px;
+    width: 22px; height: 22px; border-radius: 5px;
+    background: var(--acc); color: #fff;
+    display: grid; place-items: center;
+  }
+
+  .dc-submit-wrap { display: flex; justify-content: center; padding: 30px 0 8px; }
+  .dc-submit {
+    width: 60%; padding: 14px; border: none; border-radius: var(--radius-sm);
+    background: var(--acc); color: #fff; font-family: inherit;
+    font-size: 1rem; font-weight: 700; cursor: pointer;
+  }
+
+  .dc-gesturebar { display: flex; justify-content: center; padding: 14px 0 10px; }
+  .dc-gesture { width: 130px; height: 4px; border-radius: 999px; background: rgba(0, 0, 0, 0.35); }
+</style>
+
+<div class="dc-screen">
+  <div class="dc-statusbar">
+    <span>3:19</span>
+    <span class="dc-status-icons">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4C7 4 3 8 2 10c1 2 5 6 10 6s9-4 10-6c-1-2-5-6-10-6zm0 9a3 3 0 110-6 3 3 0 010 6z"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9l10-6 10 6-10 13z" opacity="0.85"/></svg>
+      <svg width="20" height="13" viewBox="0 0 26 13" fill="none"><rect x="1" y="1" width="22" height="11" rx="2.5" stroke="currentColor" stroke-width="1.4"/><rect x="3" y="3" width="16" height="7" rx="1" fill="currentColor"/><rect x="24" y="4" width="2" height="5" rx="1" fill="currentColor"/></svg>
+    </span>
+  </div>
+
+  <div class="dc-appbar">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span class="dc-appbar-title">Deposit check</span>
+  </div>
+
+  <div class="dc-body">
+    <div class="dc-row">
+      <span class="dc-row-label">Amount</span>
+      <div class="dc-amount-box">
+        <span class="dc-amount-prefix">$</span>
+        <span class="dc-amount-val">4.44</span>
+      </div>
+    </div>
+
+    <div class="dc-row">
+      <span class="dc-row-label">To</span>
+      <span class="dc-link">Money Mk 0007 (x5555)</span>
+    </div>
+
+    <div class="dc-cap-row">
+      <div class="dc-cap-side">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span class="dc-cap-label">Front</span>
+      </div>
+      <div class="dc-thumb">
+        <div class="dc-check">
+          <div class="dc-check-line" style="width:55%;"></div>
+          <div class="dc-check-line" style="width:80%;"></div>
+          <div class="dc-check-row">
+            <div class="dc-check-line" style="width:45px;"></div>
+            <div class="dc-check-box"></div>
+          </div>
+          <div class="dc-check-micr">&#9286;000123&#9286; 0007&#9288; 5555</div>
+        </div>
+        <div class="dc-edit">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="dc-cap-row">
+      <div class="dc-cap-side">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span class="dc-cap-label">Back</span>
+      </div>
+      <div class="dc-thumb">
+        <div class="dc-check">
+          <div class="dc-check-line" style="width:70%; background: rgba(0,0,0,0.10);"></div>
+          <div class="dc-check-line" style="width:50%; background: rgba(0,0,0,0.10);"></div>
+          <div class="dc-check-line" style="width:62%; background: rgba(0,0,0,0.10);"></div>
+          <div class="dc-check-micr">FOR MOBILE DEPOSIT ONLY</div>
+        </div>
+        <div class="dc-edit">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="dc-submit-wrap">
+      <button class="dc-submit">Submit</button>
+    </div>
+  </div>
+
+  <div class="dc-gesturebar"><span class="dc-gesture"></span></div>
+</div>

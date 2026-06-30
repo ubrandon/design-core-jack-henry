@@ -1,0 +1,16 @@
+{
+  "screens": [
+    {
+      "file": "deposit-check-light.html",
+      "x": 0,
+      "y": 0,
+      "width": 390
+    },
+    {
+      "file": "capture-v4-fab.html",
+      "x": 416,
+      "y": 0,
+      "width": 390
+    }
+  ]
+}
