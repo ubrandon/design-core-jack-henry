@@ -3,5 +3,9 @@
   "description": "",
   "createdBy": "Brandon Unglaub",
   "createdAt": "2026-06-09T14:53:42.871Z",
-  "updatedAt": "2026-06-09T14:53:42.871Z"
+  "updatedAt": "2026-06-09T14:53:42.871Z",
+  "status": "draft",
+  "tags": [
+    "Onboarding"
+  ]
 }

@@ -388,6 +388,123 @@ function saveDesignerProfile(data) {
   });
 }
 
+/**
+ * Wire a "Created by" dropdown that only lets you pick a real user from
+ * `.designer`. No free-typed attribution — choosing "Add a user…" reveals an
+ * input that persists the new name to `.designer` and re-selects it.
+ * opts: { select, addRow, addInput, addBtn, defaultToOwner }.
+ * Returns { refresh(preferredName) -> Promise, getValue() -> Promise<string> }.
+ */
+function setupAttributionPicker(opts) {
+  const select = opts.select;
+  const addRow = opts.addRow;
+  const addInput = opts.addInput;
+  const addBtn = opts.addBtn;
+  const ADD = "__add_user__";
+  let profile = { name: "", company: "", team: [] };
+
+  function names() {
+    return designerAttributionNames(profile);
+  }
+
+  // Toggle the add-user row via inline display so it works regardless of the
+  // `hidden` attribute, which an inline display style would otherwise override.
+  function showAddRow(on) {
+    addRow.style.display = on ? "flex" : "none";
+  }
+
+  function rebuild(selected) {
+    const list = names();
+    const want = String(selected == null ? "" : selected).trim();
+    const known = list.some((n) => n.toLowerCase() === want.toLowerCase());
+    select.innerHTML = "";
+    select.appendChild(new Option(opts.emptyLabel || "Unassigned", ""));
+    if (want && !known) select.appendChild(new Option(want, want));
+    list.forEach((n) => select.appendChild(new Option(n, n)));
+    select.appendChild(new Option("+ Add a user…", ADD));
+    select.value = want;
+    syncAddRow();
+  }
+
+  function syncAddRow() {
+    const adding = select.value === ADD;
+    showAddRow(adding);
+    if (adding) {
+      addInput.value = "";
+      addInput.focus();
+    }
+  }
+
+  // Persist a new team member to `.designer`, then re-select them. Resolves to
+  // the added name, or null if nothing was added (blank input or save failed).
+  function commitAdd() {
+    const name = addInput.value.trim();
+    if (!name) {
+      addInput.focus();
+      return Promise.resolve(null);
+    }
+    const existing = names().find((n) => n.toLowerCase() === name.toLowerCase());
+    if (existing) {
+      rebuild(existing);
+      return Promise.resolve(existing);
+    }
+    const team = Array.isArray(profile.team) ? profile.team.slice() : [];
+    team.push({ name });
+    const next = { name: profile.name || "", company: profile.company || "", team };
+    return saveDesignerProfile(next)
+      .then(() => {
+        profile = next;
+        rebuild(name);
+        return name;
+      })
+      .catch((err) => {
+        if (typeof showToast === "function") showToast(err.message || "Could not add user");
+        return null;
+      });
+  }
+
+  showAddRow(false);
+  select.addEventListener("change", syncAddRow);
+  addBtn.addEventListener("click", function () {
+    commitAdd();
+  });
+  addInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      commitAdd();
+    }
+  });
+
+  return {
+    refresh: function (preferredName) {
+      return fetchDesignerProfile()
+        .then((prof) => {
+          profile = prof || { name: "", company: "", team: [] };
+          let want = preferredName != null ? String(preferredName).trim() : "";
+          if (!want && opts.defaultToOwner) want = String(profile.name || "").trim();
+          rebuild(want);
+          return profile;
+        })
+        .catch(() => {
+          profile = { name: "", company: "", team: [] };
+          rebuild(preferredName || "");
+        });
+    },
+    // Resolves to the chosen name ("" = Unassigned). If "Add a user…" is active,
+    // commit the typed name first; rejects if nothing valid was added so the
+    // caller can abort instead of wiping attribution.
+    getValue: function () {
+      if (select.value === ADD) {
+        return commitAdd().then((added) => {
+          if (!added) return Promise.reject(new Error("add-user-incomplete"));
+          return added;
+        });
+      }
+      return Promise.resolve(select.value.trim());
+    },
+  };
+}
+
 function syncProjectIndexEntry(projectId, patch) {
   return fetchJSON("data/projects/index.json").then((idx) => {
     const projects = Array.isArray(idx.projects) ? idx.projects.slice() : [];
@@ -399,5 +516,108 @@ function syncProjectIndexEntry(projectId, patch) {
     });
     projects[i] = next;
     return putDataJson("data/projects/index.json", { projects });
+  });
+}
+
+/* ── Project status & tags (optional metadata) ── */
+const PROJECT_STATUSES = [
+  { value: "draft", label: "Draft" },
+  { value: "in-progress", label: "In progress" },
+  { value: "shipped", label: "Shipped" },
+  { value: "archived", label: "Archived" },
+];
+
+function normalizeProjectStatus(value) {
+  const v = String(value || "").trim().toLowerCase();
+  return PROJECT_STATUSES.some((s) => s.value === v) ? v : "";
+}
+
+function projectStatusLabel(value) {
+  const s = PROJECT_STATUSES.find((x) => x.value === normalizeProjectStatus(value));
+  return s ? s.label : "";
+}
+
+/** Accepts an array or comma-separated string; returns a de-duped, trimmed list. */
+function normalizeProjectTags(value) {
+  const raw = Array.isArray(value) ? value : String(value || "").split(",");
+  const seen = new Set();
+  const out = [];
+  for (const item of raw) {
+    const t = String(item || "").trim();
+    if (!t) continue;
+    const key = t.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(t);
+  }
+  return out;
+}
+
+/** Stable hue (0–359) derived from a project id, for per-project color accents. */
+function projectHue(id) {
+  const s = String(id || "");
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360;
+  return h;
+}
+
+/* ── Favorites & recents (per-browser, localStorage) ── */
+const FAVORITES_KEY = "design-core:favorites";
+const RECENTS_KEY = "design-core:recents";
+const RECENTS_MAX = 12;
+
+function readLsArray(key) {
+  try {
+    const v = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLs(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {}
+}
+
+function getFavoriteProjectIds() {
+  return readLsArray(FAVORITES_KEY).filter((x) => typeof x === "string");
+}
+
+function isFavoriteProject(id) {
+  return getFavoriteProjectIds().includes(id);
+}
+
+/** Toggles favorite state for a project id; returns the new state (true = favorited). */
+function toggleFavoriteProject(id) {
+  const list = getFavoriteProjectIds();
+  const i = list.indexOf(id);
+  if (i >= 0) list.splice(i, 1);
+  else list.unshift(id);
+  writeLs(FAVORITES_KEY, list);
+  return list.includes(id);
+}
+
+/** Records that the user just opened a project (most-recent first, capped). */
+function recordRecentProject(id) {
+  if (!id) return;
+  const list = readLsArray(RECENTS_KEY).filter((e) => e && e.id && e.id !== id);
+  list.unshift({ id, ts: Date.now() });
+  writeLs(RECENTS_KEY, list.slice(0, RECENTS_MAX));
+}
+
+/** Recently opened project ids, most recent first. */
+function getRecentProjectIds() {
+  return readLsArray(RECENTS_KEY)
+    .filter((e) => e && typeof e.id === "string")
+    .map((e) => e.id);
+}
+
+/** One request that returns counts/dates for every project (local dev server only). */
+function fetchProjectsSummary() {
+  return fetch("/api/projects-summary").then((r) => {
+    if (!r.ok) throw new Error("unavailable");
+    return r.json();
   });
 }

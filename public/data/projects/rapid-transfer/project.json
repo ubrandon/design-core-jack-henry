@@ -3,5 +3,9 @@
   "description": "Money movement flows and screens — quick-send, pay, and transfer ideation and prototypes.",
   "createdBy": "Brandon Unglaub",
   "createdAt": "2026-03-25T00:00:00Z",
-  "updatedAt": "2026-03-31T00:00:00Z"
+  "updatedAt": "2026-03-31T00:00:00Z",
+  "status": "in-progress",
+  "tags": [
+    "Money movement"
+  ]
 }

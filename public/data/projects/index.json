@@ -5,7 +5,11 @@
       "name": "Retail Wires",
       "description": "Wire transfer details screens for retail banking — ideation variants using the design system plus exploratory layouts.",
       "createdBy": "Brandon Unglaub",
-      "createdAt": "2026-03-16T00:00:00Z"
+      "createdAt": "2026-03-16T00:00:00Z",
+      "status": "in-progress",
+      "tags": [
+        "Wires"
+      ]
     },
     {
       "id": "rapid-transfer",
@@ -13,49 +17,77 @@
       "description": "Money movement flows and screens — quick-send, pay, and transfer ideation and prototypes.",
       "createdBy": "Brandon Unglaub",
       "createdAt": "2026-03-25T00:00:00Z",
-      "updatedAt": "2026-03-31T00:00:00Z"
+      "updatedAt": "2026-03-31T00:00:00Z",
+      "status": "in-progress",
+      "tags": [
+        "Money movement"
+      ]
     },
     {
       "id": "mrdc-2",
       "name": "mRDC",
       "description": "",
       "createdBy": "Brandon Unglaub",
-      "createdAt": "2026-04-27T04:50:16.013Z"
+      "createdAt": "2026-04-27T04:50:16.013Z",
+      "status": "archived",
+      "tags": [
+        "Deposits"
+      ]
     },
     {
       "id": "ach-bulk-edit",
       "name": "ACH - Bulk Edit",
       "description": "",
       "createdBy": "Brandon Unglaub",
-      "createdAt": "2026-05-08T16:30:46.131Z"
+      "createdAt": "2026-05-08T16:30:46.131Z",
+      "status": "draft",
+      "tags": [
+        "ACH"
+      ]
     },
     {
       "id": "payrailz",
       "name": "Payrailz",
       "description": "",
       "createdBy": "Brandon Unglaub",
-      "createdAt": "2026-05-11T16:19:21.777Z"
+      "createdAt": "2026-05-11T16:19:21.777Z",
+      "status": "draft",
+      "tags": [
+        "Payments"
+      ]
     },
     {
       "id": "business-self-enrollment",
       "name": "Business Self Enrollment",
       "description": "",
       "createdBy": "Brandon Unglaub",
-      "createdAt": "2026-06-09T14:53:42.871Z"
+      "createdAt": "2026-06-09T14:53:42.871Z",
+      "status": "draft",
+      "tags": [
+        "Onboarding"
+      ]
     },
     {
       "id": "wires",
       "name": "Wires",
       "description": "",
       "createdBy": "Brandon Unglaub",
-      "createdAt": "2026-06-23T16:14:00.290Z"
+      "createdAt": "2026-06-23T16:14:00.290Z",
+      "status": "in-progress",
+      "tags": [
+        "Wires"
+      ]
     },
     {
       "id": "ach-origination",
       "name": "ACH Origination",
       "description": "ACH management for bank admins: outgoing batches, incoming NACHA files, batch detail, and NACHA file generation.",
       "createdBy": "Brandon Unglaub",
-      "createdAt": "2026-06-26T17:49:19.318Z"
+      "createdAt": "2026-06-26T17:49:19.318Z",
+      "status": "shipped",
+      "tags": [
+        "ACH"
+      ]
     }
   ]
 }

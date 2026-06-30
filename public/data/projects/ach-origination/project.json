@@ -3,5 +3,9 @@
   "description": "ACH management for bank admins: outgoing batches, incoming NACHA files, batch detail, and NACHA file generation.",
   "createdBy": "Brandon Unglaub",
   "createdAt": "2026-06-26T17:49:19.318Z",
-  "updatedAt": "2026-06-26T18:30:00.000Z"
+  "updatedAt": "2026-06-26T18:30:00.000Z",
+  "status": "shipped",
+  "tags": [
+    "ACH"
+  ]
 }

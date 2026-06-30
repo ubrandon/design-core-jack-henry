@@ -19,6 +19,43 @@ const NAV_ICONS = {
     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
 };
 
+const THEME_ICONS = {
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+};
+
+function currentTheme() {
+  return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+}
+
+// Light/dark toggle. Persists choice in localStorage (key dc-theme) so it sticks across pages.
+function makeThemeToggle() {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.id = "theme-toggle";
+  btn.className = "site-nav__theme";
+
+  function paint() {
+    const isLight = currentTheme() === "light";
+    btn.innerHTML = isLight ? THEME_ICONS.moon : THEME_ICONS.sun;
+    const label = isLight ? "Switch to dark mode" : "Switch to light mode";
+    btn.setAttribute("aria-label", label);
+    btn.title = label;
+  }
+
+  btn.addEventListener("click", function () {
+    const next = currentTheme() === "light" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem("dc-theme", next);
+    } catch (e) {}
+    paint();
+  });
+
+  paint();
+  return btn;
+}
+
 function navItem(href, label, icon, isActive) {
   const a = document.createElement("a");
   a.href = href;
@@ -84,6 +121,8 @@ function renderNav(opts = {}) {
   right.appendChild(navItem("index.html", "Projects", NAV_ICONS.projects, isHome));
   right.appendChild(navItem("captures.html", "Captures", NAV_ICONS.captures, isCaptures));
   right.appendChild(navItem("design-system.html", "Design System", NAV_ICONS.designSystem, isDesignSystem));
+
+  right.appendChild(makeThemeToggle());
 
   for (const action of actions) {
     const link = document.createElement("a");

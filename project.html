@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project — Design Core</title>
+    <script>(function(){try{var t=localStorage.getItem('dc-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){}})();</script>
     <link rel="stylesheet" href="styles/shared.css" />
     <link rel="stylesheet" href="styles/app.css" />
   </head>
@@ -27,6 +28,7 @@
               <div class="project-hero__titles">
                 <h1 id="project-name" class="project-hero__title">Loading…</h1>
                 <p id="project-desc" class="project-hero__desc" hidden></p>
+                <div id="project-badges" class="project-hero__badges" hidden></div>
                 <div id="project-meta" class="project-hero__meta" hidden></div>
               </div>
               <div id="project-local-tools" class="project-local-tools" hidden>
@@ -211,16 +213,79 @@
             ></textarea>
           </div>
           <div class="tool-form__row">
+            <label class="tool-form__label" for="edit-project-status"
+              >Status</label
+            >
+            <select
+              id="edit-project-status"
+              class="tool-form__select tool-form__select--full"
+            >
+              <option value="">No status</option>
+              <option value="draft">Draft</option>
+              <option value="in-progress">In progress</option>
+              <option value="shipped">Shipped</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+          <div class="tool-form__row">
+            <label class="tool-form__label">Tags</label>
+            <div id="edit-project-tags-chips" class="tag-edit__chips"></div>
+            <select
+              id="edit-project-tags-select"
+              class="tool-form__select tool-form__select--full"
+              aria-label="Add a tag"
+            >
+              <option value="">Add a tag…</option>
+            </select>
+            <div id="edit-project-tags-new" class="tag-edit__new" hidden>
+              <input
+                type="text"
+                id="edit-project-tags-new-input"
+                class="tool-form__input"
+                placeholder="New tag name"
+                autocomplete="off"
+              />
+              <button
+                type="button"
+                id="edit-project-tags-new-btn"
+                class="btn-tool btn-tool--primary"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+          <div class="tool-form__row">
             <label class="tool-form__label" for="edit-project-by"
               >Created by</label
             >
-            <input
-              type="text"
+            <select
               id="edit-project-by"
-              class="tool-form__input"
-              placeholder="Shown on the project card"
-              autocomplete="name"
-            />
+              class="tool-form__select tool-form__select--full"
+              aria-label="Created by"
+            ></select>
+            <div
+              id="edit-project-by-add"
+              style="display: none; gap: 8px; margin-top: 8px"
+            >
+              <input
+                type="text"
+                id="edit-project-by-add-input"
+                class="tool-form__input"
+                placeholder="New user's name"
+                autocomplete="name"
+              />
+              <button
+                type="button"
+                id="edit-project-by-add-btn"
+                class="btn-tool btn-tool--primary"
+              >
+                Add
+              </button>
+            </div>
+            <p class="tool-form__hint">
+              Everyone here comes from your <code>.designer</code> profile. Pick
+              <strong>Add a user…</strong> to add someone new.
+            </p>
           </div>
           <div class="tool-form__actions">
             <button type="button" class="btn-tool" id="edit-project-cancel">
@@ -378,6 +443,8 @@
 
       let localEdit = false;
       let projectPayload = {};
+      let editTags = [];
+      let knownTags = [];
 
       const uiLocalTools = document.getElementById("project-local-tools");
       const btnNewProto = document.getElementById("btn-new-prototype");
@@ -392,6 +459,60 @@
         "delete-project-modal-desc",
       );
 
+      const editProjectPicker = setupAttributionPicker({
+        select: document.getElementById("edit-project-by"),
+        addRow: document.getElementById("edit-project-by-add"),
+        addInput: document.getElementById("edit-project-by-add-input"),
+        addBtn: document.getElementById("edit-project-by-add-btn"),
+        defaultToOwner: false,
+      });
+
+      (function wireTagEditor() {
+        const select = document.getElementById("edit-project-tags-select");
+        const newWrap = document.getElementById("edit-project-tags-new");
+        const newInput = document.getElementById("edit-project-tags-new-input");
+        const newBtn = document.getElementById("edit-project-tags-new-btn");
+
+        document
+          .getElementById("edit-project-tags-chips")
+          .addEventListener("click", (e) => {
+            const btn = e.target.closest("[data-remove-tag]");
+            if (!btn) return;
+            const t = btn.getAttribute("data-remove-tag");
+            editTags = editTags.filter((x) => x !== t);
+            renderEditTagChips();
+          });
+
+        select.addEventListener("change", () => {
+          const v = select.value;
+          if (v === "__new__") {
+            newWrap.hidden = false;
+            newInput.focus();
+            return;
+          }
+          if (v) {
+            addEditTag(v);
+            select.value = "";
+            newWrap.hidden = true;
+          }
+        });
+
+        function commitNewTag() {
+          addEditTag(newInput.value);
+          newInput.value = "";
+          newWrap.hidden = true;
+          select.value = "";
+        }
+
+        newBtn.addEventListener("click", commitNewTag);
+        newInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            commitNewTag();
+          }
+        });
+      })();
+
       function applyLocalChrome() {
         uiLocalTools.hidden = !localEdit;
         btnNewProto.hidden = !localEdit;
@@ -402,7 +523,89 @@
         document.getElementById("edit-project-name").value = data.name || "";
         document.getElementById("edit-project-desc").value =
           data.description || "";
-        document.getElementById("edit-project-by").value = data.createdBy || "";
+        document.getElementById("edit-project-status").value =
+          normalizeProjectStatus(data.status);
+        setEditTags(data.tags);
+      }
+
+      /* ── Tag editor (chips + pick existing or add new) ── */
+      function setEditTags(tags) {
+        editTags = normalizeProjectTags(tags);
+        renderEditTagChips();
+      }
+
+      function renderEditTagChips() {
+        const host = document.getElementById("edit-project-tags-chips");
+        if (!editTags.length) {
+          host.innerHTML = '<span class="tag-edit__empty">No tags yet</span>';
+        } else {
+          host.innerHTML = editTags
+            .map(
+              (t) =>
+                `<span class="tag-edit__chip">${escapeHtml(t)}<button type="button" class="tag-edit__remove" data-remove-tag="${escapeHtml(t)}" aria-label="Remove ${escapeHtml(t)}">&times;</button></span>`,
+            )
+            .join("");
+        }
+        populateEditTagSelect();
+      }
+
+      function populateEditTagSelect() {
+        const select = document.getElementById("edit-project-tags-select");
+        const available = knownTags.filter(
+          (t) => !editTags.some((e) => e.toLowerCase() === t.toLowerCase()),
+        );
+        select.innerHTML =
+          '<option value="">Add a tag…</option>' +
+          available
+            .map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`)
+            .join("") +
+          '<option value="__new__">+ New tag…</option>';
+      }
+
+      function addEditTag(raw) {
+        const t = String(raw || "").trim();
+        if (!t) return;
+        if (editTags.some((e) => e.toLowerCase() === t.toLowerCase())) return;
+        editTags.push(t);
+        if (!knownTags.some((k) => k.toLowerCase() === t.toLowerCase()))
+          knownTags.push(t);
+        renderEditTagChips();
+      }
+
+      function loadKnownTags() {
+        return fetchJSON("data/projects/index.json")
+          .then((idx) => {
+            const set = new Set();
+            (idx.projects || []).forEach((p) =>
+              normalizeProjectTags(p.tags).forEach((t) => set.add(t)),
+            );
+            knownTags = [...set].sort((a, b) =>
+              a.localeCompare(b, undefined, { sensitivity: "base" }),
+            );
+          })
+          .catch(() => {})
+          .then(() => populateEditTagSelect());
+      }
+
+      function renderProjectBadges(data) {
+        const host = document.getElementById("project-badges");
+        const status = normalizeProjectStatus(data.status);
+        const tags = normalizeProjectTags(data.tags);
+        const parts = [];
+        if (status)
+          parts.push(
+            `<span class="project-status project-status--${status}">${escapeHtml(projectStatusLabel(status))}</span>`,
+          );
+        tags.forEach((t) =>
+          parts.push(`<span class="project-tag">${escapeHtml(t)}</span>`),
+        );
+        if (!parts.length) {
+          host.hidden = true;
+          host.innerHTML = "";
+          return;
+        }
+        host.innerHTML = parts.join("");
+        host.hidden = false;
       }
 
       function scrollToHashIfPresent() {
@@ -697,6 +900,8 @@
 
       function openEditProjectModal() {
         fillEditForm(projectPayload);
+        editProjectPicker.refresh(projectPayload.createdBy);
+        loadKnownTags();
         editProjectOverlay.hidden = false;
         document.getElementById("edit-project-name").focus();
       }
@@ -749,27 +954,39 @@
           const description = document
             .getElementById("edit-project-desc")
             .value.trim();
-          const createdBy = document
-            .getElementById("edit-project-by")
-            .value.trim();
           if (!name) return;
-          const updatedAt = new Date().toISOString();
-          const next = { ...projectPayload, name, description, updatedAt };
-          if (createdBy) next.createdBy = createdBy;
-          else delete next.createdBy;
-          const indexPatch = {
-            name,
-            description,
-            ...(createdBy ? { createdBy } : { createdBy: null }),
-          };
-          putDataJson("data/projects/" + projectId + "/project.json", next)
-            .then(() => syncProjectIndexEntry(projectId, indexPatch))
-            .then(() => {
-              showToast("Saved");
-              closeEditProjectModal();
-              return loadProjectHub();
+          const status = normalizeProjectStatus(
+            document.getElementById("edit-project-status").value,
+          );
+          const tags = normalizeProjectTags(editTags);
+          editProjectPicker
+            .getValue()
+            .then((createdBy) => {
+              const updatedAt = new Date().toISOString();
+              const next = { ...projectPayload, name, description, updatedAt };
+              if (createdBy) next.createdBy = createdBy;
+              else delete next.createdBy;
+              if (status) next.status = status;
+              else delete next.status;
+              if (tags.length) next.tags = tags;
+              else delete next.tags;
+              const indexPatch = {
+                name,
+                description,
+                ...(createdBy ? { createdBy } : { createdBy: null }),
+                status: status || null,
+                tags: tags.length ? tags : null,
+              };
+              putDataJson("data/projects/" + projectId + "/project.json", next)
+                .then(() => syncProjectIndexEntry(projectId, indexPatch))
+                .then(() => {
+                  showToast("Saved");
+                  closeEditProjectModal();
+                  return loadProjectHub();
+                })
+                .catch((err) => showToast(err.message || "Could not save"));
             })
-            .catch((err) => showToast(err.message || "Could not save"));
+            .catch(() => {});
         });
 
       document
@@ -865,6 +1082,9 @@
               el.desc.textContent = "";
               el.desc.hidden = true;
             }
+
+            renderProjectBadges(data);
+            recordRecentProject(projectId);
 
             const metaLine = buildProjectMetaLine(data);
             if (metaLine) {

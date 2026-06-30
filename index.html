@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Projects — Design Core</title>
+  <script>(function(){try{var t=localStorage.getItem('dc-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){}})();</script>
   <link rel="stylesheet" href="styles/shared.css">
   <link rel="stylesheet" href="styles/app.css">
 </head>
@@ -23,16 +24,43 @@
       <div class="home-toolbar__row">
         <div class="home-search-wrap">
           <label class="visually-hidden" for="project-filter">Filter projects by name</label>
-          <input type="search" id="project-filter" class="home-search" placeholder="Search by name or description…" autocomplete="off">
+          <input type="search" id="project-filter" class="home-search" placeholder="Search by name, description, or tag…" autocomplete="off">
         </div>
-        <div class="home-sort-wrap">
-          <label class="home-sort-label" for="project-sort">Sort</label>
-          <select id="project-sort" class="home-sort">
-            <option value="updated-desc" selected>Recently updated</option>
-            <option value="created-desc">Recently created</option>
-            <option value="name-asc">Name A–Z</option>
-            <option value="name-desc">Name Z–A</option>
-          </select>
+        <div class="home-filter" id="home-filter">
+          <button type="button" class="home-filter__btn" id="home-filter-btn" aria-haspopup="true" aria-expanded="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
+            <span>Filter</span>
+            <span class="home-filter__badge" id="home-filter-badge" hidden></span>
+            <svg class="home-filter__chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="home-filter__panel" id="home-filter-panel" hidden role="group" aria-label="Filter and sort projects">
+            <div class="home-filter__group">
+              <label class="home-filter__label" for="project-status">Status</label>
+              <select id="project-status" class="home-sort">
+                <option value="" selected>All active</option>
+                <option value="draft">Draft</option>
+                <option value="in-progress">In progress</option>
+                <option value="shipped">Shipped</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
+            <div class="home-filter__group" id="tag-filter-wrap" hidden>
+              <label class="home-filter__label" for="project-tag">Tag</label>
+              <select id="project-tag" class="home-sort">
+                <option value="" selected>All tags</option>
+              </select>
+            </div>
+            <div class="home-filter__group">
+              <label class="home-filter__label" for="project-sort">Sort by</label>
+              <select id="project-sort" class="home-sort">
+                <option value="updated-desc" selected>Recently updated</option>
+                <option value="created-desc">Recently created</option>
+                <option value="name-asc">Name A–Z</option>
+                <option value="name-desc">Name Z–A</option>
+              </select>
+            </div>
+            <button type="button" class="home-filter__clear" id="home-filter-clear">Clear filters</button>
+          </div>
         </div>
       </div>
       <p class="home-count-hint" id="project-count-hint" hidden></p>
@@ -42,13 +70,15 @@
       To create or edit projects from the UI, run <code>npm run dev</code> locally. Static hosting does not include write APIs.
     </p>
 
-    <div id="projects" class="home-grid" aria-busy="true">
-      <div class="project-card-skeleton" aria-hidden="true"></div>
-      <div class="project-card-skeleton" aria-hidden="true"></div>
-      <div class="project-card-skeleton" aria-hidden="true"></div>
-      <div class="project-card-skeleton" aria-hidden="true"></div>
-      <div class="project-card-skeleton" aria-hidden="true"></div>
-      <div class="project-card-skeleton" aria-hidden="true"></div>
+    <div id="projects" class="home-sections" aria-busy="true">
+      <div class="home-grid">
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+        <div class="project-card-skeleton" aria-hidden="true"></div>
+      </div>
     </div>
   </div>
 
@@ -68,10 +98,13 @@
           <textarea id="new-project-desc" class="tool-form__textarea" rows="2" autocomplete="off"></textarea>
         </div>
         <div class="tool-form__row" id="new-project-by-row">
-          <label class="tool-form__label" id="new-project-by-label" for="new-project-by-select">Created by</label>
-          <select id="new-project-by-select" class="tool-form__select tool-form__select--full" hidden aria-label="Created by"></select>
-          <input type="text" id="new-project-by-custom" class="tool-form__input" placeholder="Enter name" autocomplete="name" hidden>
-          <p id="new-project-by-hint" class="tool-form__hint" hidden>From your <code>.designer</code> profile. Choose <strong>Other…</strong> to type a different name.</p>
+          <label class="tool-form__label" for="new-project-by-select">Created by</label>
+          <select id="new-project-by-select" class="tool-form__select tool-form__select--full" aria-label="Created by"></select>
+          <div id="new-project-by-add" style="display:none; gap:8px; margin-top:8px;">
+            <input type="text" id="new-project-by-add-input" class="tool-form__input" placeholder="New user's name" autocomplete="name">
+            <button type="button" id="new-project-by-add-btn" class="btn-tool btn-tool--primary">Add</button>
+          </div>
+          <p id="new-project-by-hint" class="tool-form__hint">Everyone here comes from your <code>.designer</code> profile. Pick <strong>Add a user…</strong> to add someone new.</p>
         </div>
         <div class="tool-form__actions">
           <button type="button" class="btn-tool" id="new-project-cancel">Cancel</button>
@@ -91,10 +124,21 @@
     const toolbar = document.getElementById("home-toolbar");
     const filterInput = document.getElementById("project-filter");
     const sortSelect = document.getElementById("project-sort");
+    const statusSelect = document.getElementById("project-status");
+    const tagSelect = document.getElementById("project-tag");
+    const tagFilterWrap = document.getElementById("tag-filter-wrap");
     const countHint = document.getElementById("project-count-hint");
+    const filterMenu = document.getElementById("home-filter");
+    const filterBtn = document.getElementById("home-filter-btn");
+    const filterPanel = document.getElementById("home-filter-panel");
+    const filterBadge = document.getElementById("home-filter-badge");
+
+    const SORT_KEY = "design-core:home-sort";
+    const STATUS_KEY = "design-core:home-status";
 
     let allRows = [];
     let homeLocalEdit = false;
+    let profileName = "";
 
     const homeLocalHint = document.getElementById("home-local-hint");
     const newProjectOverlay = document.getElementById("new-project-overlay");
@@ -109,78 +153,25 @@
       newProjectOverlay.hidden = true;
     }
 
-    const newProjectBySelect = document.getElementById("new-project-by-select");
-    const newProjectByCustom = document.getElementById("new-project-by-custom");
-    const newProjectByHint = document.getElementById("new-project-by-hint");
-
-    const newProjectByLabel = document.getElementById("new-project-by-label");
-
-    function syncNewProjectCreatedByUi() {
-      if (newProjectBySelect.hidden) {
-        newProjectByCustom.hidden = false;
-        newProjectByHint.hidden = true;
-        newProjectByLabel.setAttribute("for", "new-project-by-custom");
-        return;
-      }
-      newProjectByLabel.setAttribute("for", "new-project-by-select");
-      const isOther = newProjectBySelect.value === "__custom__";
-      newProjectByCustom.hidden = !isOther;
-      newProjectByHint.hidden = false;
-      if (isOther) newProjectByCustom.focus();
-    }
-
-    function populateNewProjectCreatedBy(prof) {
-      const names = designerAttributionNames(prof);
-      newProjectBySelect.innerHTML = "";
-      newProjectBySelect.appendChild(new Option("(Optional — uses your name from profile)", ""));
-      names.forEach((n) => newProjectBySelect.appendChild(new Option(n, n)));
-      newProjectBySelect.appendChild(new Option("Other…", "__custom__"));
-
-      if (names.length) {
-        newProjectBySelect.hidden = false;
-        newProjectByCustom.value = "";
-        newProjectByCustom.placeholder = "Enter name";
-        const preferred = String((prof && prof.name) || "").trim();
-        let matched = "";
-        if (preferred) {
-          const hit = names.find((n) => n.toLowerCase() === preferred.toLowerCase());
-          if (hit) matched = hit;
-        }
-        newProjectBySelect.value = matched;
-        newProjectByHint.hidden = false;
-      } else {
-        newProjectBySelect.hidden = true;
-        newProjectByCustom.value = "";
-        newProjectByCustom.placeholder = "Optional — defaults from your profile if set";
-        newProjectByHint.hidden = true;
-      }
-      syncNewProjectCreatedByUi();
-    }
-
-    newProjectBySelect.addEventListener("change", syncNewProjectCreatedByUi);
+    const newProjectPicker = setupAttributionPicker({
+      select: document.getElementById("new-project-by-select"),
+      addRow: document.getElementById("new-project-by-add"),
+      addInput: document.getElementById("new-project-by-add-input"),
+      addBtn: document.getElementById("new-project-by-add-btn"),
+      defaultToOwner: true,
+    });
 
     function openNewProjectModal() {
       document.getElementById("form-new-project").reset();
-      fetchDesignerProfile()
-        .then((prof) => populateNewProjectCreatedBy(prof))
-        .catch(() => populateNewProjectCreatedBy(null));
+      newProjectPicker.refresh();
       newProjectOverlay.hidden = false;
       document.getElementById("new-project-name").focus();
-    }
-
-    function getNewProjectCreatedByValue() {
-      if (!newProjectBySelect.hidden) {
-        const v = newProjectBySelect.value;
-        if (v === "__custom__") return newProjectByCustom.value.trim();
-        return v.trim();
-      }
-      return newProjectByCustom.value.trim();
     }
 
     isLocalToolServer().then((on) => {
       homeLocalEdit = on;
       applyHomeLocalChrome();
-      renderGrid(allRows, allRows.length);
+      if (allRows.length) render();
     });
 
     function debounce(fn, ms) {
@@ -209,14 +200,19 @@
       return out;
     }
 
-    function filterRows(rows, q) {
-      if (!q.trim()) return rows;
-      const n = q.trim().toLowerCase();
-      return rows.filter((r) => {
-        const name = (r.name || "").toLowerCase();
-        const desc = (r.description || "").toLowerCase();
-        return name.includes(n) || desc.includes(n);
-      });
+    function matchesQuery(r, n) {
+      const name = (r.name || "").toLowerCase();
+      const desc = (r.description || "").toLowerCase();
+      const tags = normalizeProjectTags(r.tags).join(" ").toLowerCase();
+      return name.includes(n) || desc.includes(n) || tags.includes(n);
+    }
+
+    function isArchived(r) {
+      return normalizeProjectStatus(r.status) === "archived";
+    }
+
+    function isMine(r) {
+      return !!profileName && String(r.createdBy || "").trim().toLowerCase() === profileName;
     }
 
     function formatStats(row) {
@@ -224,12 +220,10 @@
       const pc = row._protoCount;
       const tc = row._testedProtoCount;
       const parts = [];
-      if (sc === null) parts.push("Screens unavailable");
-      else parts.push(sc === 1 ? "1 screen" : `${sc} screens`);
-      if (pc === null) parts.push("Prototypes unavailable");
-      else parts.push(pc === 1 ? "1 prototype" : `${pc} prototypes`);
-      if (tc !== null)
-        parts.push(tc === 1 ? "1 tested" : `${tc} tested`);
+      if (sc != null && sc > 0) parts.push(sc === 1 ? "1 screen" : `${sc} screens`);
+      if (pc != null && pc > 0) parts.push(pc === 1 ? "1 prototype" : `${pc} prototypes`);
+      if (tc != null && tc > 0) parts.push(tc === 1 ? "1 tested" : `${tc} tested`);
+      if (!parts.length) return "No screens yet";
       return parts.join(" · ");
     }
 
@@ -246,89 +240,218 @@
       return "";
     }
 
-    function renderGrid(rows, totalUnfiltered) {
-      const q = filterInput.value;
-      const filtered = filterRows(rows, q);
-      const sorted = sortRows(filtered, sortSelect.value);
+    const STAR_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5l2.6 5.27 5.82.85-4.21 4.1.99 5.8L12 16.77 6.99 19.5l.99-5.8-4.21-4.1 5.82-.85z"/></svg>';
 
-      if (totalUnfiltered > 0) {
-        toolbar.hidden = false;
-        const filtering = q.trim().length > 0;
-        if (filtering) {
-          countHint.hidden = false;
-          countHint.textContent =
-            sorted.length === totalUnfiltered
-              ? `Showing all ${totalUnfiltered} project${totalUnfiltered === 1 ? "" : "s"}`
-              : `Showing ${sorted.length} of ${totalUnfiltered} project${totalUnfiltered === 1 ? "" : "s"}`;
-        } else {
-          countHint.hidden = true;
-        }
-      } else {
-        toolbar.hidden = true;
-      }
+    // Color follows the person (createdBy), so the same author is always one color.
+    function personHue(p) {
+      const key = String(p.createdBy || "").trim().toLowerCase();
+      return projectHue(key || p.id);
+    }
 
-      if (!sorted.length) {
-        if (q.trim()) {
-          grid.innerHTML = `
-            <div class="empty-state empty-state--in-grid">
-              <p class="empty-state__title">No matches</p>
-              <p class="empty-state__hint">Try a different search, or <button type="button" class="home-clear-search btn-tool">clear the filter</button>.</p>
-            </div>`;
-          const btn = grid.querySelector(".home-clear-search");
-          if (btn) btn.addEventListener("click", () => { filterInput.value = ""; renderGrid(allRows, allRows.length); filterInput.focus(); });
-        } else {
-          const emptyHint = homeLocalEdit
-            ? "Use <strong>New project</strong> at the top of the page, or ask the AI to create one."
-            : "Ask the AI to create your first project — just describe what you want to design.";
-          grid.innerHTML = `
-            <div class="empty-state empty-state--in-grid">
-              <p class="empty-state__title">No projects yet</p>
-              <p class="empty-state__hint">${emptyHint}</p>
-            </div>`;
-        }
-        grid.setAttribute("aria-busy", "false");
-        return;
-      }
+    function cardHtml(p) {
+      const id = encodeURIComponent(p.id);
+      const name = escapeHtml(p.name);
+      const descRaw = (p.description || "").trim();
+      const desc = descRaw ? escapeHtml(descRaw) : "No description yet";
+      const descClass = descRaw ? "project-card__desc" : "project-card__desc project-card__desc--empty";
+      const by = escapeHtml(p.createdBy || "");
+      const createdShort = p.createdAt ? escapeHtml(formatDate(p.createdAt)) : "";
+      const metaBits = [];
+      if (by) metaBits.push(by);
+      if (createdShort) metaBits.push(createdShort);
+      const metaLine = metaBits.join(" · ");
+      const statsLine = escapeHtml(formatStats(p));
+      const updatedLine = formatUpdatedLine(p);
+      const updatedHtml = updatedLine ? `<span class="project-card__updated">${escapeHtml(updatedLine)}</span>` : "";
+      const hue = personHue(p);
+      const fav = isFavoriteProject(p.id);
 
-      grid.innerHTML = sorted.map((p) => {
-        const id = encodeURIComponent(p.id);
-        const name = escapeHtml(p.name);
-        const desc = escapeHtml(p.description || "");
-        const by = escapeHtml(p.createdBy || "");
-        const createdShort = p.createdAt ? escapeHtml(formatDate(p.createdAt)) : "";
-        const metaBits = [];
-        if (by) metaBits.push(by);
-        if (createdShort) metaBits.push(createdShort);
-        const metaLine = metaBits.join(" · ");
-        const statsLine = escapeHtml(formatStats(p));
-        const updatedLine = formatUpdatedLine(p);
-        const updatedHtml = updatedLine ? `<span class="project-card__updated">${escapeHtml(updatedLine)}</span>` : "";
-        const hubHref = `project.html?id=${id}`;
-        return `
-          <a href="${hubHref}" class="project-card">
-            <div class="project-card__name">${name}</div>
-            <div class="project-card__desc">${desc}</div>
-            <div class="project-card__stats" aria-label="Screens, prototypes, and tested counts">${statsLine}</div>
+      const status = normalizeProjectStatus(p.status);
+      const statusHtml = status
+        ? `<span class="project-status project-status--${status}">${escapeHtml(projectStatusLabel(status))}</span>`
+        : "";
+
+      const tags = normalizeProjectTags(p.tags);
+      const tagsHtml = tags.length
+        ? `<div class="project-card__tags">${tags.map((t) => `<span class="project-tag">${escapeHtml(t)}</span>`).join("")}</div>`
+        : "";
+
+      const favTitle = fav ? "Remove from favorites" : "Add to favorites";
+
+      return `
+        <div class="project-card-wrap" style="--card-hue:${hue}">
+          <a href="project.html?id=${id}" class="project-card" aria-label="Open ${name}">
+            <div class="project-card__head">
+              <div class="project-card__name">${name}</div>
+              ${statusHtml}
+            </div>
+            <div class="${descClass}">${desc}</div>
+            ${tagsHtml}
+            <div class="project-card__stats">${statsLine}</div>
             ${updatedHtml}
             <div class="project-card__footer">
               <div class="project-card__avatar">${escapeHtml(initials(p.createdBy))}</div>
               <span class="project-card__meta">${metaLine}</span>
               <span class="project-card__arrow" aria-hidden="true">&rarr;</span>
             </div>
-          </a>`;
-      }).join("");
+          </a>
+          <button type="button" class="project-card__fav${fav ? " is-on" : ""}" data-fav-id="${escapeHtml(p.id)}" aria-pressed="${fav ? "true" : "false"}" aria-label="${favTitle}" title="${favTitle}">${STAR_SVG}</button>
+        </div>`;
+    }
 
+    function gridHtml(rows) {
+      return `<div class="home-grid">${rows.map(cardHtml).join("")}</div>`;
+    }
+
+    function renderEmptyNoProjects() {
+      const emptyHint = homeLocalEdit
+        ? "Use <strong>New project</strong> at the top of the page, or ask the AI to create one."
+        : "Ask the AI to create your first project — just describe what you want to design.";
+      grid.innerHTML = `
+        <div class="empty-state empty-state--in-grid">
+          <p class="empty-state__title">No projects yet</p>
+          <p class="empty-state__hint">${emptyHint}</p>
+        </div>`;
       grid.setAttribute("aria-busy", "false");
     }
 
-    function wireMouseGlow() {
-      document.addEventListener("mousemove", (e) => {
-        for (const card of document.querySelectorAll(".project-card:not(.project-card--skeleton)")) {
-          const rect = card.getBoundingClientRect();
-          card.style.setProperty("--mouse-x", (e.clientX - rect.left) + "px");
-          card.style.setProperty("--mouse-y", (e.clientY - rect.top) + "px");
+    function renderEmptyNoMatches() {
+      grid.innerHTML = `
+        <div class="empty-state empty-state--in-grid">
+          <p class="empty-state__title">No matches</p>
+          <p class="empty-state__hint">Try a different search or filter, or <button type="button" class="home-clear-search btn-tool">clear filters</button>.</p>
+        </div>`;
+      const btn = grid.querySelector(".home-clear-search");
+      if (btn) btn.addEventListener("click", clearFilters);
+      grid.setAttribute("aria-busy", "false");
+    }
+
+    function clearFilters() {
+      filterInput.value = "";
+      statusSelect.value = "";
+      tagSelect.value = "";
+      saveViewPrefs();
+      render();
+      filterInput.focus();
+    }
+
+    function render() {
+      updateFilterBadge();
+      if (!allRows.length) {
+        toolbar.hidden = true;
+        renderEmptyNoProjects();
+        return;
+      }
+      toolbar.hidden = false;
+
+      const q = filterInput.value.trim().toLowerCase();
+      const statusF = statusSelect.value;
+      const tagF = tagSelect.value;
+      const narrowing = !!q || !!tagF || statusF !== "";
+
+      if (narrowing) {
+        let rows = allRows.slice();
+        if (q) rows = rows.filter((r) => matchesQuery(r, q));
+        if (tagF) rows = rows.filter((r) => normalizeProjectTags(r.tags).some((t) => t.toLowerCase() === tagF.toLowerCase()));
+        if (statusF) rows = rows.filter((r) => normalizeProjectStatus(r.status) === statusF);
+        else rows = rows.filter((r) => !isArchived(r));
+        rows = sortRows(rows, sortSelect.value);
+
+        countHint.hidden = false;
+        countHint.textContent = rows.length === 1 ? "1 project" : `${rows.length} projects`;
+
+        if (!rows.length) { renderEmptyNoMatches(); return; }
+        grid.innerHTML = gridHtml(rows);
+        grid.setAttribute("aria-busy", "false");
+        return;
+      }
+
+      renderDefault();
+    }
+
+    function renderDefault() {
+      const active = allRows.filter((r) => !isArchived(r));
+      const archivedCount = allRows.length - active.length;
+
+      countHint.hidden = false;
+      countHint.textContent =
+        `${active.length} ${active.length === 1 ? "project" : "projects"}` +
+        (archivedCount ? ` · ${archivedCount} archived` : "");
+
+      const sortKey = sortSelect.value;
+      const favs = sortRows(active.filter((r) => isFavoriteProject(r.id)), sortKey);
+      const rest = active.filter((r) => !isFavoriteProject(r.id));
+
+      const sections = [];
+      if (favs.length) sections.push({ title: "Favorites", rows: favs });
+
+      if (profileName) {
+        const mine = sortRows(rest.filter(isMine), sortKey);
+        const others = sortRows(rest.filter((r) => !isMine(r)), sortKey);
+        if (mine.length && others.length) {
+          sections.push({ title: "Your projects", rows: mine });
+          sections.push({ title: "Other projects", rows: others });
+        } else {
+          sections.push({ title: favs.length ? "All projects" : "", rows: sortRows(rest, sortKey) });
         }
-      });
+      } else {
+        sections.push({ title: favs.length ? "All projects" : "", rows: sortRows(rest, sortKey) });
+      }
+
+      grid.innerHTML = sections
+        .filter((s) => s.rows.length)
+        .map((s) => {
+          const header = s.title
+            ? `<h2 class="home-group__title">${escapeHtml(s.title)} <span class="home-group__count">${s.rows.length}</span></h2>`
+            : "";
+          return `<section class="home-group">${header}${gridHtml(s.rows)}</section>`;
+        })
+        .join("");
+      grid.setAttribute("aria-busy", "false");
+    }
+
+    function rebuildTagFilterOptions() {
+      const set = new Set();
+      allRows.forEach((r) => normalizeProjectTags(r.tags).forEach((t) => set.add(t)));
+      const tags = [...set].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+      const current = tagSelect.value;
+      tagSelect.innerHTML =
+        `<option value="">All tags</option>` +
+        tags.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+      tagSelect.value = tags.includes(current) ? current : "";
+      tagFilterWrap.hidden = tags.length === 0;
+    }
+
+    function saveViewPrefs() {
+      try {
+        localStorage.setItem(SORT_KEY, sortSelect.value);
+        localStorage.setItem(STATUS_KEY, statusSelect.value);
+      } catch (_) {}
+    }
+
+    function restoreViewPrefs() {
+      try {
+        const s = localStorage.getItem(SORT_KEY);
+        if (s && [...sortSelect.options].some((o) => o.value === s)) sortSelect.value = s;
+        const st = localStorage.getItem(STATUS_KEY);
+        if (st && [...statusSelect.options].some((o) => o.value === st)) statusSelect.value = st;
+      } catch (_) {}
+    }
+
+    function wireMouseGlow() {
+      let raf = 0, el = null, x = 0, y = 0;
+      document.addEventListener("mousemove", (e) => {
+        el = e.target.closest ? e.target.closest(".project-card") : null;
+        x = e.clientX; y = e.clientY;
+        if (raf || !el) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          if (!el) return;
+          const rect = el.getBoundingClientRect();
+          el.style.setProperty("--mouse-x", (x - rect.left) + "px");
+          el.style.setProperty("--mouse-y", (y - rect.top) + "px");
+        });
+      }, { passive: true });
     }
 
     function showLoadError() {
@@ -342,53 +465,135 @@
       document.getElementById("projects-retry").addEventListener("click", loadProjects);
     }
 
+    function mergeRow(p, d) {
+      d = d || {};
+      return {
+        ...p,
+        _updatedAt: d.updatedAt || null,
+        _createdAtResolved: d.createdAt || p.createdAt || null,
+        _screenCount: d.screenCount == null ? null : d.screenCount,
+        _protoCount: d.protoCount == null ? null : d.protoCount,
+        _testedProtoCount: d.testedProtoCount == null ? null : d.testedProtoCount,
+      };
+    }
+
+    function enrichRows(projects) {
+      return fetchProjectsSummary()
+        .then((sum) => {
+          const byId = {};
+          (sum.projects || []).forEach((s) => { byId[s.id] = s; });
+          return projects.map((p) => mergeRow(p, byId[p.id]));
+        })
+        .catch(() =>
+          Promise.all(projects.map((p) => fetchProjectListDetails(p.id).then((d) => mergeRow(p, d)))),
+        );
+    }
+
+    function loadRows() {
+      return fetchJSON("data/projects/index.json").then((data) => {
+        const projects = data.projects || [];
+        if (!projects.length) return [];
+        return enrichRows(projects);
+      });
+    }
+
+    function showSkeletons() {
+      grid.setAttribute("aria-busy", "true");
+      grid.innerHTML = `
+        <div class="home-grid">
+          <div class="project-card-skeleton" aria-hidden="true"></div>
+          <div class="project-card-skeleton" aria-hidden="true"></div>
+          <div class="project-card-skeleton" aria-hidden="true"></div>
+          <div class="project-card-skeleton" aria-hidden="true"></div>
+          <div class="project-card-skeleton" aria-hidden="true"></div>
+          <div class="project-card-skeleton" aria-hidden="true"></div>
+        </div>`;
+    }
+
     function loadProjects() {
       toolbar.hidden = true;
       countHint.hidden = true;
       filterInput.value = "";
-      grid.setAttribute("aria-busy", "true");
-      grid.innerHTML = `
-        <div class="project-card-skeleton" aria-hidden="true"></div>
-        <div class="project-card-skeleton" aria-hidden="true"></div>
-        <div class="project-card-skeleton" aria-hidden="true"></div>
-        <div class="project-card-skeleton" aria-hidden="true"></div>
-        <div class="project-card-skeleton" aria-hidden="true"></div>
-        <div class="project-card-skeleton" aria-hidden="true"></div>`;
-
-      fetchJSON("data/projects/index.json")
-        .then((data) => {
-          const projects = data.projects || [];
-          if (!projects.length) {
-            allRows = [];
-            renderGrid([], 0);
-            return;
-          }
-          return Promise.all(
-            projects.map((p) =>
-              fetchProjectListDetails(p.id).then((d) => ({
-                ...p,
-                _updatedAt: d.updatedAt,
-                _createdAtResolved: d.createdAt || p.createdAt || null,
-                _screenCount: d.screenCount,
-                _protoCount: d.protoCount,
-                _testedProtoCount: d.testedProtoCount,
-              })),
-            ),
-          ).then((rows) => {
-            allRows = rows;
-            renderGrid(allRows, allRows.length);
-          });
+      showSkeletons();
+      loadRows()
+        .then((rows) => {
+          allRows = rows;
+          rebuildTagFilterOptions();
+          render();
         })
         .catch(showLoadError);
     }
 
-    const onFilterSort = debounce(() => {
-      if (allRows.length) renderGrid(allRows, allRows.length);
+    function softReloadProjects() {
+      loadRows()
+        .then((rows) => {
+          allRows = rows;
+          rebuildTagFilterOptions();
+          render();
+        })
+        .catch(() => {});
+    }
+
+    const onFilterInput = debounce(() => {
+      if (allRows.length) render();
     }, 160);
 
-    filterInput.addEventListener("input", onFilterSort);
-    sortSelect.addEventListener("change", () => {
-      if (allRows.length) renderGrid(allRows, allRows.length);
+    filterInput.addEventListener("input", onFilterInput);
+    sortSelect.addEventListener("change", () => { saveViewPrefs(); if (allRows.length) render(); });
+    statusSelect.addEventListener("change", () => { saveViewPrefs(); if (allRows.length) render(); });
+    tagSelect.addEventListener("change", () => { if (allRows.length) render(); });
+
+    /* ── Filter menu (status + tag + sort in one dropdown) ── */
+    function updateFilterBadge() {
+      let n = 0;
+      if (statusSelect.value) n++;
+      if (tagSelect.value) n++;
+      if (n > 0) {
+        filterBadge.hidden = false;
+        filterBadge.textContent = String(n);
+        filterBtn.classList.add("is-active");
+      } else {
+        filterBadge.hidden = true;
+        filterBtn.classList.remove("is-active");
+      }
+    }
+
+    function closeFilterMenu() {
+      filterPanel.hidden = true;
+      filterBtn.setAttribute("aria-expanded", "false");
+    }
+
+    filterBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const willOpen = filterPanel.hidden;
+      filterPanel.hidden = !willOpen;
+      filterBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!filterPanel.hidden && !filterMenu.contains(e.target)) closeFilterMenu();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !filterPanel.hidden) {
+        closeFilterMenu();
+        filterBtn.focus();
+      }
+    });
+
+    document.getElementById("home-filter-clear").addEventListener("click", () => {
+      statusSelect.value = "";
+      tagSelect.value = "";
+      saveViewPrefs();
+      if (allRows.length) render();
+    });
+
+    grid.addEventListener("click", (e) => {
+      const favBtn = e.target.closest("[data-fav-id]");
+      if (!favBtn) return;
+      e.preventDefault();
+      toggleFavoriteProject(favBtn.getAttribute("data-fav-id"));
+      render();
     });
 
     btnNewProject.addEventListener("click", openNewProjectModal);
@@ -402,29 +607,36 @@
       e.preventDefault();
       const name = document.getElementById("new-project-name").value.trim();
       const description = document.getElementById("new-project-desc").value.trim();
-      const byInput = getNewProjectCreatedByValue();
       if (!name) return;
       const baseId = slugifyDataId(name, "project");
-      function go(createdBy) {
-        postProjectAdminAutoId(baseId, (id) => ({
-          action: "create-project",
-          id,
-          name,
-          description,
-          ...(createdBy ? { createdBy } : {}),
-        }))
-          .then((r) => {
-            closeNewProjectModal();
-            showToast("Project created");
-            window.location.href = "project.html?id=" + encodeURIComponent(r.id);
-          })
-          .catch((err) => showToast(err.message || "Could not create"));
-      }
-      if (byInput) go(byInput);
-      else fetchDesignerProfile().then((prof) => go((prof.name || "").trim())).catch(() => go(""));
+      newProjectPicker
+        .getValue()
+        .then((createdBy) => {
+          postProjectAdminAutoId(baseId, (id) => ({
+            action: "create-project",
+            id,
+            name,
+            description,
+            ...(createdBy ? { createdBy } : {}),
+          }))
+            .then((r) => {
+              closeNewProjectModal();
+              showToast("Project created");
+              window.location.href = "project.html?id=" + encodeURIComponent(r.id);
+            })
+            .catch((err) => showToast(err.message || "Could not create"));
+        })
+        .catch(() => {});
     });
 
+    restoreViewPrefs();
     wireMouseGlow();
+
+    fetchDesignerProfile()
+      .then((prof) => { profileName = String((prof && prof.name) || "").trim().toLowerCase(); })
+      .catch(() => {})
+      .then(() => { if (allRows.length) render(); });
+
     loadProjects();
 
     try {
@@ -435,40 +647,36 @@
       }
     } catch (_) {}
 
-    /* ── Live reload ── */
-    function softReloadProjects() {
-      fetchJSON("data/projects/index.json")
-        .then((data) => {
-          const projects = data.projects || [];
-          if (!projects.length) {
-            allRows = [];
-            renderGrid([], 0);
-            return;
-          }
-          return Promise.all(
-            projects.map((p) =>
-              fetchProjectListDetails(p.id).then((d) => ({
-                ...p,
-                _updatedAt: d.updatedAt,
-                _createdAtResolved: d.createdAt || p.createdAt || null,
-                _screenCount: d.screenCount,
-                _protoCount: d.protoCount,
-                _testedProtoCount: d.testedProtoCount,
-              })),
-            ),
-          ).then((rows) => {
-            allRows = rows;
-            renderGrid(allRows, allRows.length);
-          });
-        })
-        .catch(() => {});
+    /* ── Live reload — refetch only what changed ── */
+    function changedProjectIds(paths) {
+      const ids = new Set();
+      for (const p of paths) {
+        const m = /^data\/projects\/([^/]+)\//.exec(p);
+        if (m) ids.add(decodeURIComponent(m[1]));
+      }
+      return [...ids];
     }
 
-    window.__onDataChanged = function(paths) {
-      const isProjectData = paths.length === 0 || paths.some(p =>
-        p.startsWith("data/projects/")
-      );
-      if (isProjectData) softReloadProjects();
+    window.__onDataChanged = function (paths) {
+      if (!paths || !paths.length) { softReloadProjects(); return; }
+      // Adds/removes/renames touch the index itself — reload the whole list.
+      if (paths.some((p) => p === "data/projects/index.json")) { softReloadProjects(); return; }
+      const ids = changedProjectIds(paths).filter((id) => allRows.some((r) => r.id === id));
+      if (!ids.length) return;
+      Promise.all(
+        ids.map((id) => {
+          const base = allRows.find((r) => r.id === id);
+          return fetchProjectListDetails(id).then((d) => mergeRow(base, d));
+        }),
+      )
+        .then((updated) => {
+          const map = {};
+          updated.forEach((r) => { map[r.id] = r; });
+          allRows = allRows.map((r) => map[r.id] || r);
+          rebuildTagFilterOptions();
+          render();
+        })
+        .catch(() => {});
     };
   </script>
 </body>

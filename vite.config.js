@@ -237,6 +237,61 @@ function localDevDataApiPlugin() {
     writeFileSync(p, JSON.stringify(data, null, 2) + "\n", "utf8");
   }
 
+  // Mirror of prototypeExternalTestHref() in shared.js for server-side tested counts.
+  function isPlausibleTestUrl(value) {
+    const t = (value == null ? "" : String(value)).trim();
+    if (!t) return false;
+    let u;
+    try {
+      u = new URL(t);
+    } catch {
+      try {
+        u = new URL("https://" + t.replace(/^\/+/, ""));
+      } catch {
+        return false;
+      }
+    }
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    const host = (u.hostname || "").toLowerCase();
+    if (!host || host.length < 2) return false;
+    if (host !== "localhost" && !host.includes(".")) return false;
+    return true;
+  }
+
+  function readJsonFileSafe(filePath) {
+    try {
+      return JSON.parse(readFileSync(filePath, "utf8"));
+    } catch {
+      return null;
+    }
+  }
+
+  // Computes screen/prototype/tested counts + dates for one project (server-side).
+  function summarizeProject(id) {
+    const dir = resolve(PUBLIC_DATA_ROOT, "projects", String(id || ""));
+    const out = { id, createdAt: null, updatedAt: null, screenCount: null, protoCount: null, testedProtoCount: null };
+    const proj = readJsonFileSafe(resolve(dir, "project.json"));
+    if (proj) {
+      out.createdAt = proj.createdAt || null;
+      out.updatedAt = proj.updatedAt || null;
+    }
+    const canvas = readJsonFileSafe(resolve(dir, "canvas.json"));
+    if (canvas) out.screenCount = Array.isArray(canvas.screens) ? canvas.screens.length : 0;
+    const protoIndex = readJsonFileSafe(resolve(dir, "prototypes/index.json"));
+    if (protoIndex) {
+      const protos = Array.isArray(protoIndex.prototypes) ? protoIndex.prototypes : [];
+      out.protoCount = protos.length;
+      let tested = 0;
+      for (const proto of protos) {
+        if (!proto || !proto.id) continue;
+        const meta = readJsonFileSafe(resolve(dir, "prototypes", String(proto.id), "meta.json"));
+        if (meta && isPlausibleTestUrl(meta.externalTestUrl)) tested++;
+      }
+      out.testedProtoCount = tested;
+    }
+    return out;
+  }
+
   const protoStubHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -261,6 +316,23 @@ function localDevDataApiPlugin() {
         if (pathOnly === "/api/tool-env" && req.method === "GET") {
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ local: true }));
+          return;
+        }
+
+        if (pathOnly === "/api/projects-summary" && req.method === "GET") {
+          res.setHeader("Content-Type", "application/json");
+          try {
+            const idx = readProjectsIndex();
+            const projects = Array.isArray(idx.projects) ? idx.projects : [];
+            const summaries = projects
+              .filter((p) => p && typeof p.id === "string")
+              .map((p) => summarizeProject(p.id));
+            res.writeHead(200);
+            res.end(JSON.stringify({ projects: summaries }));
+          } catch (e) {
+            res.writeHead(500);
+            res.end(JSON.stringify({ error: e.message || "Server error" }));
+          }
           return;
         }
 
@@ -372,6 +444,12 @@ function localDevDataApiPlugin() {
               }
               const createdBy = typeof body.createdBy === "string" ? body.createdBy.trim() : "";
               const description = typeof body.description === "string" ? body.description.trim() : "";
+              const STATUS_VALUES = ["draft", "in-progress", "shipped", "archived"];
+              const statusRaw = typeof body.status === "string" ? body.status.trim().toLowerCase() : "";
+              const status = STATUS_VALUES.includes(statusRaw) ? statusRaw : "";
+              const tags = Array.isArray(body.tags)
+                ? body.tags.map((t) => String(t || "").trim()).filter(Boolean).slice(0, 24)
+                : [];
               const createdAt = new Date().toISOString();
               // Read the current index before any disk writes so a parse failure
               // surfaces as a clean error instead of leaving an orphan folder.
@@ -383,6 +461,8 @@ function localDevDataApiPlugin() {
                   name,
                   description,
                   ...(createdBy ? { createdBy } : {}),
+                  ...(status ? { status } : {}),
+                  ...(tags.length ? { tags } : {}),
                   createdAt,
                   updatedAt: createdAt,
                 };
@@ -399,6 +479,8 @@ function localDevDataApiPlugin() {
                   name,
                   description,
                   ...(createdBy ? { createdBy } : {}),
+                  ...(status ? { status } : {}),
+                  ...(tags.length ? { tags } : {}),
                   createdAt,
                 });
                 writeProjectsIndex({ projects });

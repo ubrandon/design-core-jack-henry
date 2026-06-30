@@ -3,5 +3,9 @@
   "description": "",
   "createdBy": "Brandon Unglaub",
   "createdAt": "2026-06-23T16:14:00.290Z",
-  "updatedAt": "2026-06-23T18:30:00.000Z"
+  "updatedAt": "2026-06-23T18:30:00.000Z",
+  "status": "in-progress",
+  "tags": [
+    "Wires"
+  ]
 }

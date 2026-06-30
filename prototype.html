@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Prototype — Design Core</title>
+  <script>(function(){try{var t=localStorage.getItem('dc-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){}})();</script>
   <link rel="stylesheet" href="styles/shared.css">
   <link rel="stylesheet" href="styles/ds.css">
   <link rel="stylesheet" href="styles/app.css">
@@ -111,7 +112,7 @@
       width: 1px;
       align-self: center;
       height: 24px;
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(var(--fg-rgb), 0.12);
       flex-shrink: 0;
       margin: 0 4px;
     }
@@ -128,9 +129,9 @@
       gap: 6px;
       padding: 6px 14px;
       border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(var(--fg-rgb), 0.14);
+      background: rgba(var(--fg-rgb), 0.06);
+      color: rgba(var(--fg-rgb), 0.88);
       font-family: inherit;
       font-size: 0.8rem;
       font-weight: 650;
@@ -141,8 +142,8 @@
       line-height: 1;
     }
     .proto-bar__btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.24);
+      background: rgba(var(--fg-rgb), 0.1);
+      border-color: rgba(var(--fg-rgb), 0.24);
     }
     .proto-bar__btn svg {
       width: 14px;
