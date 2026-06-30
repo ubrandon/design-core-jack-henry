@@ -1,0 +1,25 @@
+{
+  "name": "Brandon Unglaub",
+  "favorites": [
+    "ach-bulk-edit",
+    "retail-wires",
+    "wires"
+  ],
+  "recents": [
+    {
+      "id": "wires",
+      "ts": 1782846592337
+    },
+    {
+      "id": "business-self-enrollment",
+      "ts": 1782840727113
+    }
+  ],
+  "theme": null,
+  "filters": {
+    "sort": "",
+    "status": ""
+  },
+  "navCollapsed": null,
+  "updatedAt": 1782846592751
+}

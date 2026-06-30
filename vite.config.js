@@ -373,6 +373,100 @@ function localDevDataApiPlugin() {
           return;
         }
 
+        if (pathOnly === "/api/users" && req.method === "GET") {
+          res.setHeader("Content-Type", "application/json");
+          try {
+            const p = resolve(PUBLIC_DATA_ROOT, "users/index.json");
+            res.writeHead(200);
+            res.end(existsSync(p) ? readFileSync(p, "utf8") : JSON.stringify({ users: [] }));
+          } catch {
+            res.writeHead(200);
+            res.end(JSON.stringify({ users: [] }));
+          }
+          return;
+        }
+
+        if (pathOnly === "/api/user-prefs" && req.method === "GET") {
+          res.setHeader("Content-Type", "application/json");
+          const slug = (new URL(req.url, "http://localhost").searchParams.get("user") || "").trim();
+          if (!SLUG_RE.test(slug)) {
+            res.writeHead(400);
+            res.end(JSON.stringify({ error: "Bad user id" }));
+            return;
+          }
+          const p = resolve(PUBLIC_DATA_ROOT, "users", slug + ".json");
+          if (!existsSync(p)) {
+            res.writeHead(404);
+            res.end(JSON.stringify({ error: "Not found" }));
+            return;
+          }
+          try {
+            res.writeHead(200);
+            res.end(readFileSync(p, "utf8"));
+          } catch {
+            res.writeHead(404);
+            res.end(JSON.stringify({ error: "Not found" }));
+          }
+          return;
+        }
+
+        if (pathOnly === "/api/user-prefs" && req.method === "POST") {
+          res.setHeader("Content-Type", "application/json");
+          try {
+            const data = await readJsonBody(req);
+            const slug = typeof data.user === "string" ? data.user.trim() : "";
+            if (!SLUG_RE.test(slug)) {
+              res.writeHead(400);
+              res.end(JSON.stringify({ error: "Bad user id" }));
+              return;
+            }
+            const inPrefs = data.prefs && typeof data.prefs === "object" ? data.prefs : {};
+            const out = {
+              name: typeof inPrefs.name === "string" ? inPrefs.name : "",
+              favorites: Array.isArray(inPrefs.favorites) ? inPrefs.favorites.filter((x) => typeof x === "string") : [],
+              recents: Array.isArray(inPrefs.recents)
+                ? inPrefs.recents
+                    .filter((e) => e && typeof e.id === "string")
+                    .map((e) => ({ id: e.id, ts: typeof e.ts === "number" ? e.ts : 0 }))
+                : [],
+              theme: inPrefs.theme === "light" || inPrefs.theme === "dark" ? inPrefs.theme : null,
+              filters: {
+                sort: inPrefs.filters && typeof inPrefs.filters.sort === "string" ? inPrefs.filters.sort : "",
+                status: inPrefs.filters && typeof inPrefs.filters.status === "string" ? inPrefs.filters.status : "",
+              },
+              navCollapsed: typeof inPrefs.navCollapsed === "boolean" ? inPrefs.navCollapsed : null,
+              updatedAt: typeof inPrefs.updatedAt === "number" ? inPrefs.updatedAt : 0,
+            };
+            const dir = resolve(PUBLIC_DATA_ROOT, "users");
+            mkdirSync(dir, { recursive: true });
+            writeFileSync(resolve(dir, slug + ".json"), JSON.stringify(out, null, 2) + "\n", "utf8");
+
+            const idxPath = resolve(dir, "index.json");
+            let idx = { users: [] };
+            if (existsSync(idxPath)) {
+              try {
+                const parsed = JSON.parse(readFileSync(idxPath, "utf8"));
+                if (parsed && Array.isArray(parsed.users)) idx = parsed;
+              } catch {}
+            }
+            const label = out.name || slug;
+            if (!idx.users.some((u) => u && u.slug === slug)) {
+              idx.users.push({ name: label, slug });
+            } else if (out.name) {
+              idx.users = idx.users.map((u) => (u && u.slug === slug ? { name: label, slug } : u));
+            }
+            idx.users.sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
+            writeFileSync(idxPath, JSON.stringify(idx, null, 2) + "\n", "utf8");
+
+            res.writeHead(200);
+            res.end('{"ok":true}');
+          } catch (e) {
+            res.writeHead(400);
+            res.end(JSON.stringify({ error: e.message || "Bad JSON" }));
+          }
+          return;
+        }
+
         if (pathOnly === "/api/duplicate-screen" && req.method === "POST") {
           res.setHeader("Content-Type", "application/json");
           try {

@@ -116,6 +116,7 @@
 
   <script src="scripts/shared.js"></script>
   <script src="scripts/nav.js"></script>
+  <script src="scripts/sidenav.js"></script>
   <script src="scripts/live-reload.js"></script>
   <script>
     renderNav();
@@ -132,9 +133,6 @@
     const filterBtn = document.getElementById("home-filter-btn");
     const filterPanel = document.getElementById("home-filter-panel");
     const filterBadge = document.getElementById("home-filter-badge");
-
-    const SORT_KEY = "design-core:home-sort";
-    const STATUS_KEY = "design-core:home-status";
 
     let allRows = [];
     let homeLocalEdit = false;
@@ -163,7 +161,7 @@
 
     function openNewProjectModal() {
       document.getElementById("form-new-project").reset();
-      newProjectPicker.refresh();
+      newProjectPicker.refresh(getCurrentUserName() || undefined);
       newProjectOverlay.hidden = false;
       document.getElementById("new-project-name").focus();
     }
@@ -423,17 +421,14 @@
     }
 
     function saveViewPrefs() {
-      try {
-        localStorage.setItem(SORT_KEY, sortSelect.value);
-        localStorage.setItem(STATUS_KEY, statusSelect.value);
-      } catch (_) {}
+      if (typeof setViewPrefs === "function") setViewPrefs(sortSelect.value, statusSelect.value);
     }
 
     function restoreViewPrefs() {
       try {
-        const s = localStorage.getItem(SORT_KEY);
+        const s = typeof getViewPref === "function" ? getViewPref("sort") : "";
         if (s && [...sortSelect.options].some((o) => o.value === s)) sortSelect.value = s;
-        const st = localStorage.getItem(STATUS_KEY);
+        const st = typeof getViewPref === "function" ? getViewPref("status") : "";
         if (st && [...statusSelect.options].some((o) => o.value === st)) statusSelect.value = st;
       } catch (_) {}
     }
@@ -632,10 +627,29 @@
     restoreViewPrefs();
     wireMouseGlow();
 
-    fetchDesignerProfile()
-      .then((prof) => { profileName = String((prof && prof.name) || "").trim().toLowerCase(); })
-      .catch(() => {})
-      .then(() => { if (allRows.length) render(); });
+    // "Your projects" follows the selected user; falls back to the designer profile owner.
+    function refreshProfileName() {
+      const cur = getCurrentUserName();
+      if (cur) {
+        profileName = cur.trim().toLowerCase();
+        if (allRows.length) render();
+        return Promise.resolve();
+      }
+      return fetchDesignerProfile()
+        .then((prof) => { profileName = String((prof && prof.name) || "").trim().toLowerCase(); })
+        .catch(() => {})
+        .then(() => { if (allRows.length) render(); });
+    }
+    refreshProfileName();
+
+    window.addEventListener("dc:user-changed", () => {
+      restoreViewPrefs();
+      refreshProfileName();
+    });
+    window.addEventListener("dc:user-prefs-changed", () => {
+      restoreViewPrefs();
+      if (allRows.length) render();
+    });
 
     loadProjects();
 

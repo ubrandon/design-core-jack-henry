@@ -49,8 +49,12 @@ function makeThemeToggle() {
     try {
       localStorage.setItem("dc-theme", next);
     } catch (e) {}
+    if (typeof setUserTheme === "function") setUserTheme(next);
     paint();
   });
+
+  // Switching user can change the theme; keep the icon/label in sync.
+  window.addEventListener("dc:user-changed", paint);
 
   paint();
   return btn;
