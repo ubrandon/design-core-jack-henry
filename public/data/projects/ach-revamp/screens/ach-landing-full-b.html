@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap">
 <style>
+  body { margin: 0; }
   .yf, .yf * { box-sizing: border-box; }
   .yf { font-family: 'Open Sans', -apple-system, sans-serif; color: #1f2733; background: #e7ebf0; display: flex; height: 1040px; overflow: hidden; position: relative; }
 
@@ -42,7 +43,6 @@
   .ach-new-more { background: #eef3fa; color: #16335c; border: none; border-left: 1px solid #d7dfea; width: 38px; cursor: pointer; display: grid; place-items: center; }
   .ach-new-more svg { width: 15px; height: 15px; }
 
-  /* Table card with a real filter toolbar */
   .ach-card { background: #fff; border-radius: 16px; box-shadow: 0 14px 40px rgba(15,40,70,.18); }
   .ach-cardbar { display: flex; align-items: center; height: 54px; border-bottom: 1px solid #eceef1; padding: 0 16px 0 0; }
   .ach-tab { position: relative; height: 54px; display: flex; align-items: center; gap: 7px; padding: 0 22px; font-size: 14.5px; font-weight: 600; color: #5b6470; cursor: pointer; }
@@ -60,14 +60,13 @@
   .ach-fchip svg { width: 14px; height: 14px; color: #5b6470; }
   .ach-fchip.is-open { border-color: #2563eb; background: #eaf1fe; color: #16335c; box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
   .ach-fchip.is-open svg { color: #2563eb; }
-  .ach-clear { margin-left: auto; color: #2563eb; font-size: 13.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 
   /* Calendar popover: the calendar IS the date filter */
   .ach-pop { position: absolute; top: 62px; left: 486px; width: 316px; background: #fff; border: 1px solid #e3e7ec; border-radius: 14px; box-shadow: 0 18px 44px rgba(15,40,70,.24); padding: 16px 18px; z-index: 9; }
   .ach-pop::before { content: ""; position: absolute; top: -7px; left: 40px; width: 12px; height: 12px; background: #fff; border-left: 1px solid #e3e7ec; border-top: 1px solid #e3e7ec; transform: rotate(45deg); }
   .ach-pop-presets { display: flex; gap: 6px; margin-bottom: 12px; }
   .ach-preset { border: 1px solid #dfe3e9; background: #fff; border-radius: 999px; padding: 5px 11px; font-family: inherit; font-size: 12px; font-weight: 600; color: #2b3340; cursor: pointer; }
-  .ach-preset.is-on { background: #16335c; border-color: #16335c; color: #fff; }
+  .ach-preset:hover { background: #f7f9fc; }
   .ach-pop-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
   .ach-pop-month { font-size: 14.5px; font-weight: 700; color: #1f2733; }
   .ach-pop-nav { display: flex; gap: 6px; }
@@ -78,17 +77,13 @@
   .ach-pop-day { height: 32px; display: grid; place-items: center; font-size: 12.5px; color: #2b3340; }
   .ach-pop-day em { font-style: normal; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
   .ach-pop-day em:hover { background: #eef2f8; }
-  .ach-pop-day.in-range { background: #eaf1fe; }
-  .ach-pop-day.is-start { background: linear-gradient(90deg, transparent 50%, #eaf1fe 50%); }
-  .ach-pop-day.is-end { background: linear-gradient(90deg, #eaf1fe 50%, transparent 50%); }
-  .ach-pop-day.is-start em, .ach-pop-day.is-end em { background: #2563eb; color: #fff; font-weight: 700; }
+  .ach-pop-day.is-today em { border: 1.5px solid #2563eb; color: #16335c; font-weight: 700; }
   .ach-pop-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
   .ach-pop-btn { border: none; border-radius: 8px; padding: 8px 14px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
   .ach-pop-btn.ghost { background: transparent; color: #5b6470; }
   .ach-pop-btn.solid { background: #2563eb; color: #fff; }
 
-  /* Sortable table */
-  .ach-cols { display: grid; grid-template-columns: 28px 2.2fr 1.5fr 1.7fr .8fr 1.2fr 40px; gap: 12px; align-items: center; padding: 0 24px; }
+  .ach-cols { display: grid; grid-template-columns: 28px 2.2fr 1.5fr 1.7fr .8fr 1.2fr 1fr; gap: 12px; align-items: center; padding: 0 24px; }
   .ach-thead { height: 42px; border-bottom: 1px solid #eceef1; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #8a929c; }
   .ach-th { display: flex; align-items: center; gap: 5px; cursor: pointer; }
   .ach-th svg { width: 11px; height: 11px; opacity: .4; }
@@ -97,7 +92,6 @@
   .ach-th.ach-right-h { justify-content: flex-end; }
   .ach-check { width: 17px; height: 17px; border: 1.5px solid #c6cdd6; border-radius: 5px; cursor: pointer; }
   .ach-row { padding-top: 14px; padding-bottom: 14px; border-bottom: 1px solid #f0f2f5; cursor: pointer; font-size: 14px; }
-  .ach-row:last-child { border-bottom: none; }
   .ach-row:hover { background: #f7f9fc; }
   .ach-name { font-size: 14.5px; font-weight: 600; color: #1f2733; }
   .ach-name small { display: block; font-size: 12.5px; font-weight: 400; color: #5b6470; margin-top: 1px; }
@@ -111,8 +105,6 @@
   .ach-date small { display: block; font-size: 12px; color: #5b6470; }
   .ach-type { color: #5b6470; }
   .ach-amt { text-align: right; color: #1f2733; font-weight: 600; }
-  .ach-go { justify-self: end; color: #9aa1ab; display: grid; place-items: center; }
-  .ach-go svg { width: 16px; height: 16px; }
 
   .ach-count { padding: 12px 24px; font-size: 12.5px; color: #8a929c; border-top: 1px solid #eceef1; }
 </style>
@@ -169,7 +161,7 @@
 
       <div class="ach-card">
         <div class="ach-cardbar">
-          <span class="ach-tab is-active">Active <b>3</b></span>
+          <span class="ach-tab is-active">Active <b>4</b></span>
           <span class="ach-tab">History <b>28</b></span>
         </div>
 
@@ -182,16 +174,15 @@
           <button class="ach-fchip">Company <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
           <button class="ach-fchip is-open">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
-            Jan 8 &ndash; Jan 14
+            All dates
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
           </button>
-          <span class="ach-clear">Clear all</span>
 
-          <!-- Calendar popover = the date filter -->
+          <!-- Calendar popover = the date filter, nothing applied yet -->
           <div class="ach-pop">
             <div class="ach-pop-presets">
               <button class="ach-preset">Today</button>
-              <button class="ach-preset is-on">This week</button>
+              <button class="ach-preset">This week</button>
               <button class="ach-preset">This month</button>
               <button class="ach-preset">Custom</button>
             </div>
@@ -205,7 +196,7 @@
             <div class="ach-pop-grid">
               <span class="ach-pop-dow">S</span><span class="ach-pop-dow">M</span><span class="ach-pop-dow">T</span><span class="ach-pop-dow">W</span><span class="ach-pop-dow">T</span><span class="ach-pop-dow">F</span><span class="ach-pop-dow">S</span>
               <span class="ach-pop-day"><em>1</em></span><span class="ach-pop-day"><em>2</em></span><span class="ach-pop-day"><em>3</em></span><span class="ach-pop-day"><em>4</em></span><span class="ach-pop-day"><em>5</em></span><span class="ach-pop-day"><em>6</em></span><span class="ach-pop-day"><em>7</em></span>
-              <span class="ach-pop-day is-start"><em>8</em></span><span class="ach-pop-day in-range"><em>9</em></span><span class="ach-pop-day in-range"><em>10</em></span><span class="ach-pop-day in-range"><em>11</em></span><span class="ach-pop-day in-range"><em>12</em></span><span class="ach-pop-day in-range"><em>13</em></span><span class="ach-pop-day is-end"><em>14</em></span>
+              <span class="ach-pop-day"><em>8</em></span><span class="ach-pop-day"><em>9</em></span><span class="ach-pop-day is-today"><em>10</em></span><span class="ach-pop-day"><em>11</em></span><span class="ach-pop-day"><em>12</em></span><span class="ach-pop-day"><em>13</em></span><span class="ach-pop-day"><em>14</em></span>
               <span class="ach-pop-day"><em>15</em></span><span class="ach-pop-day"><em>16</em></span><span class="ach-pop-day"><em>17</em></span><span class="ach-pop-day"><em>18</em></span><span class="ach-pop-day"><em>19</em></span><span class="ach-pop-day"><em>20</em></span><span class="ach-pop-day"><em>21</em></span>
               <span class="ach-pop-day"><em>22</em></span><span class="ach-pop-day"><em>23</em></span><span class="ach-pop-day"><em>24</em></span><span class="ach-pop-day"><em>25</em></span><span class="ach-pop-day"><em>26</em></span><span class="ach-pop-day"><em>27</em></span><span class="ach-pop-day"><em>28</em></span>
               <span class="ach-pop-day"><em>29</em></span><span class="ach-pop-day"><em>30</em></span><span class="ach-pop-day"><em>31</em></span>
@@ -249,6 +240,16 @@
 
         <div class="ach-cols ach-row">
           <span class="ach-check"></span>
+          <span class="ach-name">Monthly payroll<small>Monthly &middot; next run Nov 20</small></span>
+          <span class="ach-tag ach-tag-red"><i></i>Pending approval</span>
+          <span class="ach-company">ABC Company</span>
+          <span class="ach-type">PPD</span>
+          <span class="ach-date">Nov 20</span>
+          <span class="ach-amt">$500.00</span>
+        </div>
+
+        <div class="ach-cols ach-row">
+          <span class="ach-check"></span>
           <span class="ach-name">ABC supplies<small>One time</small></span>
           <span class="ach-tag ach-tag-gray"><i></i>Processed</span>
           <span class="ach-company">Landscape Inc</span>
@@ -257,7 +258,7 @@
           <span class="ach-amt">$875.00</span>
         </div>
 
-        <div class="ach-count">Showing 3 of 4 active payments &middot; 1 hidden by date filter (Monthly payroll, Nov 20)</div>
+        <div class="ach-count">4 active payments &middot; $2,525.00 total</div>
       </div>
     </div>
   </div>

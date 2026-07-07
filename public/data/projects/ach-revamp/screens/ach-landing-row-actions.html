@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap">
 <style>
+  body { margin: 0; }
   .yf, .yf * { box-sizing: border-box; }
   .yf { font-family: 'Open Sans', -apple-system, sans-serif; color: #1f2733; background: #e7ebf0; display: flex; height: 1040px; overflow: hidden; position: relative; }
 
@@ -58,7 +59,7 @@
   .ach-fchip:hover { background: #f7f9fc; }
   .ach-fchip svg { width: 14px; height: 14px; color: #5b6470; }
 
-  .ach-cols { display: grid; grid-template-columns: 28px 2.2fr 1.5fr 1.7fr .8fr 1.2fr 1fr; gap: 12px; align-items: center; padding: 0 24px; }
+  .ach-cols { display: grid; grid-template-columns: 28px 2.2fr 1.5fr 1.7fr .8fr 1.2fr 1fr 36px; gap: 12px; align-items: center; padding: 0 24px; }
   .ach-thead { height: 42px; border-bottom: 1px solid #eceef1; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #8a929c; }
   .ach-th { display: flex; align-items: center; gap: 5px; cursor: pointer; }
   .ach-th svg { width: 11px; height: 11px; opacity: .4; }
@@ -80,6 +81,12 @@
   .ach-date small { display: block; font-size: 12px; color: #5b6470; }
   .ach-type { color: #5b6470; }
   .ach-amt { text-align: right; color: #1f2733; font-weight: 600; }
+
+  /* Quick actions menu on the right of each row */
+  .ach-rowactions { display: flex; align-items: center; justify-content: flex-end; }
+  .ach-more { width: 32px; height: 32px; border: none; border-radius: 8px; background: transparent; color: #5b6470; cursor: pointer; display: grid; place-items: center; flex-shrink: 0; }
+  .ach-more:hover { background: #eceef1; }
+  .ach-more svg { width: 18px; height: 18px; }
 
   .ach-count { padding: 12px 24px; font-size: 12.5px; color: #8a929c; border-top: 1px solid #eceef1; }
 </style>
@@ -162,6 +169,7 @@
           <span class="ach-th">Type <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
           <span class="ach-th is-sorted">Effective date <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></span>
           <span class="ach-th ach-right-h">Amount</span>
+          <span></span>
         </div>
 
         <div class="ach-cols ach-row">
@@ -172,6 +180,8 @@
           <span class="ach-type">PPD</span>
           <span class="ach-date">Jan 10<small>today</small></span>
           <span class="ach-amt">$650.00</span>
+          <span class="ach-rowactions">            <button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button>
+          </span>
         </div>
 
         <div class="ach-cols ach-row">
@@ -182,6 +192,8 @@
           <span class="ach-type">PPD</span>
           <span class="ach-date">Jan 10<small>today</small></span>
           <span class="ach-amt">$500.00</span>
+          <span class="ach-rowactions">            <button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button>
+          </span>
         </div>
 
         <div class="ach-cols ach-row">
@@ -192,6 +204,8 @@
           <span class="ach-type">PPD</span>
           <span class="ach-date">Nov 20</span>
           <span class="ach-amt">$500.00</span>
+          <span class="ach-rowactions">            <button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button>
+          </span>
         </div>
 
         <div class="ach-cols ach-row">
@@ -202,6 +216,8 @@
           <span class="ach-type">CCD</span>
           <span class="ach-date">Jan 8</span>
           <span class="ach-amt">$875.00</span>
+          <span class="ach-rowactions">            <button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button>
+          </span>
         </div>
 
         <div class="ach-count">4 active payments &middot; $2,525.00 total</div>
