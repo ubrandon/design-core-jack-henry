@@ -42,30 +42,30 @@
   .rev-back svg { width: 20px; height: 20px; }
   .rev-title { flex: 1; text-align: center; font-size: 17px; font-weight: 700; color: #1f2733; }
 
-  .rev-body { padding: 18px 24px 4px; }
-  .rev-list { display: flex; flex-direction: column; gap: 12px; }
-  .rev-row { display: flex; align-items: center; gap: 14px; border: 1px solid #e6e9ee; border-radius: 10px; padding: 14px 16px; }
+  .rev-body { padding: 10px 24px 4px; }
+  .rev-count { font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #8a929c; padding: 8px 2px 2px; }
+  .rev-list { display: flex; flex-direction: column; }
+  .rev-row { display: flex; align-items: center; gap: 14px; padding: 13px 2px; border-bottom: 1px solid #eef0f3; }
+  .rev-row:last-child { border-bottom: none; }
   .rev-info { min-width: 0; flex: 1; }
-  .rev-name { font-size: 15px; font-weight: 700; color: #1f2733; }
-  .rev-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 12.5px; color: #8a929c; }
+  .rev-name { font-size: 14.5px; font-weight: 700; color: #1f2733; }
+  .rev-meta { display: flex; align-items: center; gap: 8px; margin-top: 3px; font-size: 12.5px; color: #8a929c; }
   .rev-meta .dot { color: #cbd1d9; }
   .rev-meta .mono { letter-spacing: .02em; }
-  .rev-side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .rev-side { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
   .rev-pill { font-size: 11px; font-weight: 700; letter-spacing: .03em; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; }
   .rev-pill.credit { background: #e6f4ec; color: #1f8a4c; }
   .rev-pill.debit { background: #fbf0d8; color: #a8730a; }
-  .rev-amt { font-size: 15px; font-weight: 700; color: #1f2733; }
+  .rev-amt { font-size: 14.5px; font-weight: 700; color: #1f2733; min-width: 68px; text-align: right; }
 
-  .rev-totals { margin-top: 16px; background: #f6f8fb; border: 1px solid #e6e9ee; border-radius: 10px; padding: 16px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
-  .rev-tot { display: flex; flex-direction: column; gap: 3px; }
-  .rev-tot-label { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: #8a929c; text-transform: uppercase; }
-  .rev-tot-val { font-size: 15px; font-weight: 700; color: #1f2733; }
-  .rev-tot-val.green { color: #16a34a; }
-  .rev-tot-val.amber { color: #b8860b; }
-  .rev-tot-val.navy { color: #16335c; }
-  .rev-tot.net { grid-column: 1 / -1; border-top: 1px solid #e6e9ee; padding-top: 12px; margin-top: 2px; flex-direction: row; align-items: center; justify-content: space-between; }
-  .rev-tot.net .rev-tot-label { font-size: 13px; }
-  .rev-tot.net .rev-tot-val { font-size: 18px; }
+  .rev-totals { margin-top: 14px; background: #f6f8fb; border-radius: 10px; padding: 4px 18px; }
+  .rev-trow { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; font-size: 13.5px; color: #5b6470; border-bottom: 1px solid #e9edf2; }
+  .rev-trow b { font-weight: 700; color: #1f2733; }
+  .rev-trow b.green { color: #1f8a4c; }
+  .rev-trow b.amber { color: #a8730a; }
+  .rev-trow.net { border-bottom: none; padding: 13px 0; }
+  .rev-trow.net span { font-size: 14.5px; font-weight: 700; color: #16335c; }
+  .rev-trow.net b { font-size: 18px; color: #16335c; }
 
   .rev-foot { display: flex; gap: 12px; padding: 22px 24px 24px; }
   .rev-btn { flex: 1; border-radius: 8px; padding: 13px 20px; font-size: 14.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
@@ -124,6 +124,7 @@
       </div>
 
       <div class="rev-body">
+        <div class="rev-count">3 recipients</div>
         <div class="rev-list">
 
           <div class="rev-row">
@@ -162,22 +163,9 @@
         </div>
 
         <div class="rev-totals">
-          <div class="rev-tot">
-            <span class="rev-tot-label">Recipients</span>
-            <span class="rev-tot-val navy">3</span>
-          </div>
-          <div class="rev-tot">
-            <span class="rev-tot-label">Total credits</span>
-            <span class="rev-tot-val green">$65.00</span>
-          </div>
-          <div class="rev-tot">
-            <span class="rev-tot-label">Total debits</span>
-            <span class="rev-tot-val amber">$25.00</span>
-          </div>
-          <div class="rev-tot net">
-            <span class="rev-tot-label">Net</span>
-            <span class="rev-tot-val navy">$40.00</span>
-          </div>
+          <div class="rev-trow"><span>Total credits</span><b class="green">$65.00</b></div>
+          <div class="rev-trow"><span>Total debits</span><b class="amber">$25.00</b></div>
+          <div class="rev-trow net"><span>Net total</span><b>$40.00</b></div>
         </div>
       </div>
 

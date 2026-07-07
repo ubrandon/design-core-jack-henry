@@ -35,60 +35,64 @@
   .yf-footer .sep { color: rgba(255,255,255,.45); }
   .yf-help { position: absolute; right: 22px; bottom: 60px; width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid #e1e5ea; box-shadow: 0 3px 10px rgba(0,0,0,.12); color: #16335c; font-weight: 700; font-size: 17px; cursor: pointer; }
 
-  /* ---------- Modal (redesigned) ---------- */
-  .iadd-modal { position: absolute; top: 96px; left: 50%; transform: translateX(-50%); width: 620px; background: #fff; border-radius: 16px; box-shadow: 0 18px 50px rgba(15,40,70,.22); z-index: 5; }
-  .iadd-head { display: flex; align-items: center; padding: 22px 22px 18px; position: relative; border-bottom: 1px solid #eceef1; }
-  .iadd-back { position: absolute; left: 22px; color: #2b3340; cursor: pointer; display: grid; place-items: center; }
-  .iadd-back svg { width: 20px; height: 20px; }
-  .iadd-title { flex: 1; text-align: center; font-size: 17px; font-weight: 700; color: #1f2733; }
-  .iadd-x { position: absolute; right: 22px; color: #6b7280; cursor: pointer; display: grid; place-items: center; }
-  .iadd-x svg { width: 20px; height: 20px; }
+  /* ---------- Wide editable card ---------- */
+  .ar-modal { position: absolute; top: 72px; left: 50%; transform: translateX(-50%); width: 1080px; background: #fff; border-radius: 16px; box-shadow: 0 18px 50px rgba(15,40,70,.22); z-index: 5; }
+  .ar-head { display: flex; align-items: center; padding: 20px 24px 16px; position: relative; border-bottom: 1px solid #eceef1; }
+  .ar-back { position: absolute; left: 24px; color: #2b3340; cursor: pointer; display: grid; place-items: center; }
+  .ar-back svg { width: 20px; height: 20px; }
+  .ar-title { flex: 1; text-align: center; font-size: 17px; font-weight: 700; color: #1f2733; }
+  .ar-x { position: absolute; right: 24px; color: #6b7280; cursor: pointer; display: grid; place-items: center; }
+  .ar-x svg { width: 20px; height: 20px; }
 
   /* Summary bar */
-  .iadd-summary { display: flex; align-items: center; justify-content: space-between; padding: 13px 24px; background: #f5f7fa; border-bottom: 1px solid #eceef1; }
-  .iadd-summary-left { font-size: 13.5px; font-weight: 700; color: #16335c; }
-  .iadd-summary-right { font-size: 13px; color: #5b6470; display: flex; align-items: center; gap: 9px; }
-  .iadd-summary-right b { font-weight: 700; color: #1f2733; }
-  .iadd-summary-right .dot { color: #c2c8d0; }
+  .ar-summary { display: flex; align-items: center; justify-content: space-between; padding: 12px 26px; background: #f5f7fa; border-bottom: 1px solid #eceef1; }
+  .ar-summary-left { font-size: 13.5px; font-weight: 700; color: #16335c; }
+  .ar-summary-right { font-size: 13px; color: #5b6470; display: flex; align-items: center; gap: 9px; }
+  .ar-summary-right b { font-weight: 700; color: #1f2733; }
+  .ar-summary-right .cr b { color: #1f8a4c; }
+  .ar-summary-right .db b { color: #a8730a; }
+  .ar-summary-right .dot { color: #c2c8d0; }
 
-  /* Card body */
-  .iadd-body { padding: 18px 24px 4px; }
-  .iadd-card { border: 1px solid #e6e9ee; border-radius: 12px; padding: 16px 16px 15px; margin-bottom: 14px; }
-  .iadd-card-top { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
-  .iadd-card-name { font-size: 15px; font-weight: 700; color: #1f2733; }
-  .iadd-pill { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; letter-spacing: .01em; }
-  .iadd-pill.credit { background: #e7f5ec; color: #1f8a4c; }
-  .iadd-pill.debit { background: #fbf2dc; color: #a8730a; }
-  .iadd-ready { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: #1f8a4c; background: #e7f5ec; padding: 3px 8px 3px 6px; border-radius: 999px; }
-  .iadd-ready svg { width: 12px; height: 12px; }
-  .iadd-trash { margin-left: auto; color: #9aa1ab; cursor: pointer; display: grid; place-items: center; }
-  .iadd-trash svg { width: 18px; height: 18px; }
+  /* Editable grid */
+  .ar-grid { padding: 0 26px; }
+  .ar-cols, .ar-row { display: grid; grid-template-columns: 1.45fr 130px 130px 128px 112px 118px 52px 72px 34px; gap: 10px; align-items: center; }
+  .ar-cols { padding: 14px 0 8px; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; color: #8a929c; }
+  .ar-cols .c-center { text-align: center; }
+  .ar-cols .c-right { text-align: right; padding-right: 11px; }
+  .ar-row { padding: 7px 0; }
+  .ar-row + .ar-row { border-top: 1px solid #f2f3f6; }
 
-  /* Compact labeled fields */
-  .iadd-fields { display: grid; grid-template-columns: 1.5fr 1fr 1fr 0.9fr 0.85fr; gap: 0; border: 1px solid #eceef1; border-radius: 8px; overflow: hidden; }
-  .iadd-fld { padding: 9px 12px; border-right: 1px solid #eceef1; min-width: 0; }
-  .iadd-fld:last-child { border-right: none; }
-  .iadd-fld-label { font-size: 10px; font-weight: 700; letter-spacing: .04em; color: #8a929c; text-transform: uppercase; margin-bottom: 3px; }
-  .iadd-fld-val { font-size: 13.5px; color: #1f2733; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .iadd-fld-val.money { font-weight: 700; }
-  .iadd-fld-val.money.credit { color: #16a34a; }
-  .iadd-fld-val.money.debit { color: #a8730a; }
-  .iadd-mono { letter-spacing: .04em; }
+  .ar-input { width: 100%; height: 40px; border: 1px solid #cfd4db; border-radius: 7px; padding: 0 11px; font-family: inherit; font-size: 13.5px; color: #1f2733; background: #fff; outline: none; }
+  .ar-input::placeholder { color: #9aa1ab; }
+  .ar-input.mono { letter-spacing: .03em; }
+  .ar-input.amt { text-align: right; font-weight: 700; }
+  .ar-input.is-focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.18); }
+  .ar-select { position: relative; }
+  .ar-select .ar-input { padding-right: 28px; }
+  .ar-select .chev { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); color: #6b7280; pointer-events: none; }
+  .ar-select .chev svg { width: 14px; height: 14px; display: block; }
 
-  /* Undercard: optional link + checkboxes */
-  .iadd-undercard { display: flex; align-items: center; margin-top: 13px; }
-  .iadd-optional { color: #2563eb; font-size: 13.5px; font-weight: 600; cursor: pointer; }
-  .iadd-checks { margin-left: auto; display: flex; align-items: center; gap: 20px; }
-  .iadd-check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #2b3340; cursor: pointer; }
-  .iadd-cbx { width: 17px; height: 17px; border: 1.5px solid #b8bfc8; border-radius: 4px; display: inline-grid; place-items: center; flex-shrink: 0; }
-  .iadd-cbx.on { background: #2563eb; border-color: #2563eb; color: #fff; }
-  .iadd-cbx svg { width: 11px; height: 11px; }
+  .ar-center { display: flex; justify-content: center; }
+  .ar-cbx { width: 18px; height: 18px; border: 1.5px solid #b8bfc8; border-radius: 4px; display: inline-grid; place-items: center; cursor: pointer; flex-shrink: 0; }
+  .ar-cbx.on { background: #2563eb; border-color: #2563eb; color: #fff; }
+  .ar-cbx svg { width: 12px; height: 12px; }
+  .ar-trash { color: #9aa1ab; cursor: pointer; display: grid; place-items: center; }
+  .ar-trash svg { width: 18px; height: 18px; }
 
-  /* Add link + footer */
-  .iadd-add { padding: 4px 24px 2px; }
-  .iadd-add-link { color: #2563eb; font-size: 14.5px; font-weight: 700; cursor: pointer; }
-  .iadd-foot { display: flex; justify-content: center; padding: 20px 24px 24px; }
-  .iadd-save { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 12px 30px; font-size: 14.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  /* Add row + hint */
+  .ar-addbar { display: flex; align-items: center; gap: 14px; padding: 14px 26px 4px; }
+  .ar-add-link { display: inline-flex; align-items: center; gap: 7px; color: #2563eb; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .ar-add-link svg { width: 16px; height: 16px; }
+  .ar-hint { margin-left: auto; display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: #8a929c; }
+  .ar-key { display: inline-block; border: 1px solid #d5d9df; border-bottom-width: 2px; border-radius: 5px; background: #f7f8fa; padding: 1px 7px; font-size: 11px; font-weight: 700; color: #5b6470; }
+
+  /* Footer */
+  .ar-foot { display: flex; align-items: center; gap: 12px; padding: 18px 26px 22px; border-top: 1px solid #eceef1; margin-top: 14px; }
+  .ar-foot-recap { font-size: 13.5px; color: #5b6470; }
+  .ar-foot-recap b { color: #1f2733; font-weight: 700; }
+  .ar-btn-ghost { margin-left: auto; background: none; border: 1px solid #cfd4db; color: #2b3340; border-radius: 8px; padding: 11px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .ar-btn-primary { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 11px 26px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .ar-btn-primary:hover { background: #1d4fd0; }
 </style>
 <div class="yf">
   <!-- Sidebar -->
@@ -134,72 +138,82 @@
     </footer>
     <button class="yf-help">?</button>
 
-    <!-- Modal: Add recipients (redesigned) -->
-    <div class="iadd-modal">
-      <div class="iadd-head">
-        <span class="iadd-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></span>
-        <div class="iadd-title">Add recipients</div>
-        <span class="iadd-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12M18 6 6 18"/></svg></span>
+    <!-- Add recipients: wide editable grid -->
+    <div class="ar-modal">
+      <div class="ar-head">
+        <span class="ar-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></span>
+        <div class="ar-title">Add recipients</div>
+        <span class="ar-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12M18 6 6 18"/></svg></span>
       </div>
 
-      <!-- Summary bar -->
-      <div class="iadd-summary">
-        <span class="iadd-summary-left">2 recipients</span>
-        <span class="iadd-summary-right">Credits <b>$25.00</b><span class="dot">&bull;</span>Debits <b>$25.00</b><span class="dot">&bull;</span>Net <b>$0.00</b></span>
+      <div class="ar-summary">
+        <span class="ar-summary-left">3 recipients</span>
+        <span class="ar-summary-right"><span class="cr">Credits <b>$50.00</b></span><span class="dot">&bull;</span><span class="db">Debits <b>$25.00</b></span><span class="dot">&bull;</span><span>Net <b>$25.00</b></span></span>
       </div>
 
-      <div class="iadd-body">
-        <!-- Recipient 1: Michael Rivera -->
-        <div class="iadd-card">
-          <div class="iadd-card-top">
-            <span class="iadd-card-name">Michael Rivera</span>
-            <span class="iadd-pill credit">Credit</span>
-            <span class="iadd-ready"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Ready</span>
-            <span class="iadd-trash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></span>
-          </div>
-          <div class="iadd-fields">
-            <div class="iadd-fld"><div class="iadd-fld-label">Recipient name</div><div class="iadd-fld-val">Michael Rivera</div></div>
-            <div class="iadd-fld"><div class="iadd-fld-label">Account</div><div class="iadd-fld-val iadd-mono">&bull;&bull;&bull;&bull;2345</div></div>
-            <div class="iadd-fld"><div class="iadd-fld-label">Routing</div><div class="iadd-fld-val iadd-mono">123456789</div></div>
-            <div class="iadd-fld"><div class="iadd-fld-label">Acct type</div><div class="iadd-fld-val">Checking</div></div>
-            <div class="iadd-fld"><div class="iadd-fld-label">Amount</div><div class="iadd-fld-val money credit">$25.00</div></div>
-          </div>
-          <div class="iadd-undercard">
-            <span class="iadd-optional">Show optional</span>
-            <div class="iadd-checks">
-              <span class="iadd-check"><span class="iadd-cbx"></span>Prenote</span>
-              <span class="iadd-check"><span class="iadd-cbx"></span>Hold</span>
-            </div>
-          </div>
+      <div class="ar-grid">
+        <div class="ar-cols">
+          <span>RECIPIENT NAME</span>
+          <span>ROUTING #</span>
+          <span>ACCOUNT #</span>
+          <span>ACCOUNT TYPE</span>
+          <span>CREDIT/DEBIT</span>
+          <span class="c-right">AMOUNT</span>
+          <span class="c-center">HOLD</span>
+          <span class="c-center">PRENOTE</span>
+          <span></span>
         </div>
 
-        <!-- Recipient 2: John Edward Carder -->
-        <div class="iadd-card">
-          <div class="iadd-card-top">
-            <span class="iadd-card-name">John Edward Carder</span>
-            <span class="iadd-pill debit">Debit</span>
-            <span class="iadd-ready"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Ready</span>
-            <span class="iadd-trash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></span>
-          </div>
-          <div class="iadd-fields">
-            <div class="iadd-fld"><div class="iadd-fld-label">Recipient name</div><div class="iadd-fld-val">John Edward Carder</div></div>
-            <div class="iadd-fld"><div class="iadd-fld-label">Account</div><div class="iadd-fld-val iadd-mono">&bull;&bull;&bull;&bull;6789</div></div>
-            <div class="iadd-fld"><div class="iadd-fld-label">Routing</div><div class="iadd-fld-val iadd-mono">123456789</div></div>
-            <div class="iadd-fld"><div class="iadd-fld-label">Acct type</div><div class="iadd-fld-val">Checking</div></div>
-            <div class="iadd-fld"><div class="iadd-fld-label">Amount</div><div class="iadd-fld-val money debit">$25.00</div></div>
-          </div>
-          <div class="iadd-undercard">
-            <span class="iadd-optional">Show optional</span>
-            <div class="iadd-checks">
-              <span class="iadd-check"><span class="iadd-cbx"></span>Prenote</span>
-              <span class="iadd-check"><span class="iadd-cbx on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>Hold</span>
-            </div>
-          </div>
+        <!-- Row 1 -->
+        <div class="ar-row">
+          <input class="ar-input" value="Michael Rivera">
+          <input class="ar-input mono" value="123456789">
+          <input class="ar-input mono" value="&bull;&bull;&bull;&bull;2345">
+          <div class="ar-select"><input class="ar-input" value="Checking" readonly><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 10 6 6 6-6"/></svg></span></div>
+          <div class="ar-select"><input class="ar-input" value="Credit" readonly><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 10 6 6 6-6"/></svg></span></div>
+          <input class="ar-input amt" value="$25.00">
+          <span class="ar-center"><span class="ar-cbx"></span></span>
+          <span class="ar-center"><span class="ar-cbx"></span></span>
+          <span class="ar-trash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></span>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="ar-row">
+          <input class="ar-input" value="John Edward Carder">
+          <input class="ar-input mono" value="123456789">
+          <input class="ar-input mono" value="&bull;&bull;&bull;&bull;6789">
+          <div class="ar-select"><input class="ar-input" value="Checking" readonly><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 10 6 6 6-6"/></svg></span></div>
+          <div class="ar-select"><input class="ar-input" value="Debit" readonly><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 10 6 6 6-6"/></svg></span></div>
+          <input class="ar-input amt" value="$25.00">
+          <span class="ar-center"><span class="ar-cbx on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span></span>
+          <span class="ar-center"><span class="ar-cbx"></span></span>
+          <span class="ar-trash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></span>
+        </div>
+
+        <!-- Row 3: in progress -->
+        <div class="ar-row">
+          <input class="ar-input" value="Sandra Whit">
+          <input class="ar-input mono is-focus" placeholder="9 digits">
+          <input class="ar-input mono" placeholder="Account #">
+          <div class="ar-select"><input class="ar-input" placeholder="Select" readonly><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 10 6 6 6-6"/></svg></span></div>
+          <div class="ar-select"><input class="ar-input" value="Credit" readonly><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 10 6 6 6-6"/></svg></span></div>
+          <input class="ar-input amt" value="$25.00">
+          <span class="ar-center"><span class="ar-cbx"></span></span>
+          <span class="ar-center"><span class="ar-cbx"></span></span>
+          <span class="ar-trash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></span>
         </div>
       </div>
 
-      <div class="iadd-add"><span class="iadd-add-link">+ Add another recipient</span></div>
-      <div class="iadd-foot"><button class="iadd-save">Save recipients</button></div>
+      <div class="ar-addbar">
+        <span class="ar-add-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add another recipient</span>
+        <span class="ar-hint"><span class="ar-key">Tab</span> moves across fields<span style="color:#c2c8d0">&bull;</span><span class="ar-key">Enter</span> starts a new row</span>
+      </div>
+
+      <div class="ar-foot">
+        <span class="ar-foot-recap"><b>3 recipients</b> will be added to this batch</span>
+        <button class="ar-btn-ghost">Cancel</button>
+        <button class="ar-btn-primary">Save recipients</button>
+      </div>
     </div>
   </div>
 </div>

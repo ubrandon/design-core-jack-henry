@@ -1,21 +1,120 @@
 {
   "screens": [
-    { "file": "add-recipients-new.html", "x": -1472, "y": 0, "width": 1440 },
-    { "file": "add-recipients.html", "x": 0, "y": 0, "width": 1440 },
-    { "file": "improved-add-recipients.html", "x": 1472, "y": 0, "width": 1440 },
-    { "file": "improved-add-recipients-review.html", "x": 2944, "y": 0, "width": 1440 },
-
-    { "file": "upload-file-empty.html", "x": -1472, "y": 1568, "width": 1440 },
-    { "file": "upload-file.html", "x": 0, "y": 1568, "width": 1440 },
-    { "file": "improved-upload-file.html", "x": 1472, "y": 1568, "width": 1440 },
-    { "file": "improved-upload-file-review.html", "x": 2944, "y": 1568, "width": 1440 },
-
-    { "file": "create-batch.html", "x": -1472, "y": 3232, "width": 1440 },
-    { "file": "improved-create-batch.html", "x": 0, "y": 3232, "width": 1440 },
-    { "file": "improved-create-batch-review.html", "x": 1472, "y": 3232, "width": 1440 },
-
-    { "file": "recipients-batch.html", "x": -1472, "y": 4832, "width": 1440 },
-    { "file": "improved-recipients-batch.html", "x": 0, "y": 4832, "width": 1440 },
-    { "file": "improved-recipients-confirm.html", "x": 1472, "y": 4832, "width": 1440 }
+    {
+      "file": "add-recipients-new.html",
+      "x": -1472,
+      "y": 0,
+      "width": 1440
+    },
+    {
+      "file": "add-recipients.html",
+      "x": 0,
+      "y": 0,
+      "width": 1440
+    },
+    {
+      "file": "improved-add-recipients.html",
+      "x": 1664,
+      "y": 0,
+      "width": 1440
+    },
+    {
+      "file": "improved-add-recipients-review.html",
+      "x": 3136,
+      "y": 0,
+      "width": 1440
+    },
+    {
+      "file": "upload-file-empty.html",
+      "x": -1472,
+      "y": 1568,
+      "width": 1440
+    },
+    {
+      "file": "upload-file.html",
+      "x": 0,
+      "y": 1568,
+      "width": 1440
+    },
+    {
+      "file": "improved-upload-file.html",
+      "x": 1664,
+      "y": 1568,
+      "width": 1440
+    },
+    {
+      "file": "improved-upload-file-review.html",
+      "x": 3136,
+      "y": 1568,
+      "width": 1440
+    },
+    {
+      "file": "create-batch.html",
+      "x": -1472,
+      "y": 3232,
+      "width": 1440
+    },
+    {
+      "file": "improved-create-batch.html",
+      "x": 224,
+      "y": 3232,
+      "width": 1440
+    },
+    {
+      "file": "improved-create-batch-review.html",
+      "x": 1696,
+      "y": 3232,
+      "width": 1440
+    },
+    {
+      "file": "improved-create-batch-steps.html",
+      "x": 3168,
+      "y": 3232,
+      "width": 1440
+    },
+    {
+      "file": "recipients-batch.html",
+      "x": -1472,
+      "y": 4832,
+      "width": 1440
+    },
+    {
+      "file": "improved-recipients-batch.html",
+      "x": 224,
+      "y": 4832,
+      "width": 1440
+    },
+    {
+      "file": "improved-recipients-confirm.html",
+      "x": 1696,
+      "y": 4832,
+      "width": 1440
+    }
+  ],
+  "texts": [
+    {
+      "text": "Add recipients",
+      "x": -1472,
+      "y": -96,
+      "size": 48
+    },
+    {
+      "text": "Upload file",
+      "x": -1472,
+      "y": 1472,
+      "size": 48
+    },
+    {
+      "text": "Create batch",
+      "x": -1472,
+      "y": 3136,
+      "size": 48
+    },
+    {
+      "text": "Edit recipients",
+      "x": -1472,
+      "y": 4736,
+      "size": 48
+    }
   ]
 }
