@@ -97,20 +97,20 @@
       "width": 1440
     },
     {
-      "file": "ach-landing-full-a.html",
-      "x": 96,
-      "y": -1504,
-      "width": 1440
-    },
-    {
       "file": "ach-landing-full-c.html",
-      "x": 1568,
+      "x": 160,
       "y": -1504,
       "width": 1440
     },
     {
       "file": "ach-landing-full-b.html",
-      "x": 3072,
+      "x": 1664,
+      "y": -1504,
+      "width": 1440
+    },
+    {
+      "file": "ach-landing-final.html",
+      "x": 3168,
       "y": -1504,
       "width": 1440
     }
