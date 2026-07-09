@@ -3,91 +3,91 @@
     {
       "file": "add-recipients-new.html",
       "x": -1472,
-      "y": 3168,
+      "y": 5504,
       "width": 1440
     },
     {
       "file": "add-recipients.html",
       "x": 0,
-      "y": 3168,
+      "y": 5504,
       "width": 1440
     },
     {
       "file": "improved-add-recipients.html",
       "x": 1664,
-      "y": 3168,
+      "y": 5504,
       "width": 1440
     },
     {
       "file": "improved-add-recipients-review.html",
       "x": 3136,
-      "y": 3168,
+      "y": 5504,
       "width": 1440
     },
     {
       "file": "upload-file-empty.html",
       "x": -1472,
-      "y": 4736,
+      "y": 7072,
       "width": 1440
     },
     {
       "file": "upload-file.html",
       "x": 0,
-      "y": 4736,
+      "y": 7072,
       "width": 1440
     },
     {
       "file": "improved-upload-file.html",
       "x": 1664,
-      "y": 4736,
+      "y": 7072,
       "width": 1440
     },
     {
       "file": "improved-upload-file-review.html",
       "x": 3136,
-      "y": 4736,
+      "y": 7072,
       "width": 1440
     },
     {
       "file": "create-batch.html",
       "x": -1472,
-      "y": 6400,
+      "y": 8736,
       "width": 1440
     },
     {
       "file": "improved-create-batch.html",
       "x": 224,
-      "y": 6400,
+      "y": 8736,
       "width": 1440
     },
     {
       "file": "improved-create-batch-review.html",
       "x": 1696,
-      "y": 6400,
+      "y": 8736,
       "width": 1440
     },
     {
       "file": "improved-create-batch-steps.html",
       "x": 3168,
-      "y": 6400,
+      "y": 8736,
       "width": 1440
     },
     {
       "file": "recipients-batch.html",
       "x": -1472,
-      "y": 8000,
+      "y": 10336,
       "width": 1440
     },
     {
       "file": "improved-recipients-batch.html",
       "x": 224,
-      "y": 8000,
+      "y": 10336,
       "width": 1440
     },
     {
       "file": "improved-recipients-confirm.html",
       "x": 1696,
-      "y": 8000,
+      "y": 10336,
       "width": 1440
     },
     {
@@ -98,110 +98,110 @@
     },
     {
       "file": "ach-landing-full-c.html",
-      "x": 1728,
-      "y": -1504,
+      "x": 6208,
+      "y": -192,
       "width": 1440
     },
     {
       "file": "ach-landing-full-b.html",
-      "x": 3232,
-      "y": -1504,
+      "x": 7712,
+      "y": -192,
       "width": 1440
     },
     {
       "file": "ach-landing-row-actions.html",
-      "x": 224,
-      "y": -1504,
+      "x": 4704,
+      "y": -192,
       "width": 1440
     },
     {
       "file": "ach-landing-quick-rail.html",
-      "x": 4736,
+      "x": -1536,
+      "y": 3104,
+      "width": 1440
+    },
+    {
+      "file": "ach-landing-status-inline.html",
+      "x": 96,
       "y": -1504,
       "width": 1440
     },
     {
       "file": "landing-menu-new-payment.html",
-      "x": -1504,
-      "y": -256,
+      "x": 5920,
+      "y": 1984,
       "width": 1440
     },
     {
       "file": "landing-menu-row-actions.html",
       "x": 0,
-      "y": -256,
+      "y": -192,
       "width": 1440
     },
     {
       "file": "landing-filter-status.html",
       "x": 1504,
-      "y": -256,
+      "y": -192,
       "width": 1440
     },
     {
       "file": "landing-search-active.html",
       "x": 3008,
-      "y": -256,
-      "width": 1440
-    },
-    {
-      "file": "landing-bulk-selected.html",
-      "x": 4512,
-      "y": -256,
+      "y": -192,
       "width": 1440
     },
     {
       "file": "landing-details-drawer.html",
-      "x": 6016,
-      "y": -256,
+      "x": 10400,
+      "y": 1952,
       "width": 1440
     },
     {
       "file": "landing-approve-modal.html",
-      "x": -1504,
-      "y": 880,
+      "x": 1472,
+      "y": 1984,
       "width": 1440
     },
     {
       "file": "landing-cancel-modal.html",
-      "x": 0,
-      "y": 880,
+      "x": 2944,
+      "y": 1984,
       "width": 1440
     },
     {
       "file": "landing-success-toast.html",
-      "x": 1504,
-      "y": 880,
+      "x": 4416,
+      "y": 1984,
       "width": 1440
     },
     {
       "file": "landing-history-tab.html",
-      "x": 3008,
-      "y": 880,
+      "x": 8896,
+      "y": 1952,
       "width": 1440
     },
     {
       "file": "landing-loading.html",
-      "x": 4512,
-      "y": 880,
+      "x": 7424,
+      "y": 1952,
       "width": 1440
     },
     {
       "file": "landing-empty.html",
-      "x": 6016,
-      "y": 880,
+      "x": -1504,
+      "y": -192,
       "width": 1440
     },
     {
       "file": "landing-no-results.html",
-      "x": -1504,
-      "y": 2016,
+      "x": -32,
+      "y": 1984,
       "width": 1440
     },
     {
       "file": "landing-error.html",
-      "x": 0,
-      "y": 2016,
+      "x": -1536,
+      "y": 1984,
       "width": 1440
     }
   ],
@@ -209,25 +209,25 @@
     {
       "text": "Add recipients",
       "x": -1472,
-      "y": 3072,
+      "y": 5408,
       "size": 48
     },
     {
       "text": "Upload file",
       "x": -1472,
-      "y": 4640,
+      "y": 6976,
       "size": 48
     },
     {
       "text": "Create batch",
       "x": -1472,
-      "y": 6304,
+      "y": 8640,
       "size": 48
     },
     {
       "text": "Edit recipients",
       "x": -1472,
-      "y": 7904,
+      "y": 10240,
       "size": 48
     },
     {
@@ -237,9 +237,15 @@
       "size": 48
     },
     {
-      "text": "Dashboard states and interactions",
-      "x": -1504,
-      "y": -352,
+      "text": "Dash archive",
+      "x": -1536,
+      "y": 1888,
+      "size": 48
+    },
+    {
+      "text": "New designs",
+      "x": 96,
+      "y": -1600,
       "size": 48
     }
   ]
