@@ -127,6 +127,18 @@
       "width": 1440
     },
     {
+      "file": "ach-landing-history-inline.html",
+      "x": 1600,
+      "y": -1504,
+      "width": 1440
+    },
+    {
+      "file": "ach-landing-rail-new-payment.html",
+      "x": 3104,
+      "y": -1504,
+      "width": 1440
+    },
+    {
       "file": "landing-menu-new-payment.html",
       "x": 5920,
       "y": 1984,
@@ -147,6 +159,12 @@
     {
       "file": "landing-search-active.html",
       "x": 3008,
+      "y": -192,
+      "width": 1440
+    },
+    {
+      "file": "landing-bulk-selected.html",
+      "x": 9216,
       "y": -192,
       "width": 1440
     },

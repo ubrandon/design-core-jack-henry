@@ -36,11 +36,6 @@
   .ach-content { position: absolute; top: 44px; left: 64px; width: 1042px; z-index: 5; }
   .ach-hero-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
   .ach-title { color: #fff; font-size: 36px; font-weight: 700; margin: 0; }
-  .ach-new { display: flex; align-items: stretch; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(5,20,45,.4); }
-  .ach-new-main { background: #fff; color: #16335c; border: none; padding: 0 20px; height: 46px; font-family: inherit; font-size: 14.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 9px; }
-  .ach-new-main svg { width: 17px; height: 17px; }
-  .ach-new-more { background: #eef3fa; color: #16335c; border: none; border-left: 1px solid #d7dfea; width: 38px; cursor: pointer; display: grid; place-items: center; }
-  .ach-new-more svg { width: 15px; height: 15px; }
 
   .ach-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
 
@@ -85,8 +80,15 @@
   .ach-more:hover { background: #eceef1; }
   .ach-more svg { width: 18px; height: 18px; }
 
+  .ach-loadmore { display: flex; justify-content: flex-end; padding: 16px 20px; }
+  .ach-loadmore button { font-family: inherit; font-size: 13.5px; font-weight: 700; color: #2563eb; background: #fff; border: 1px solid #c9d8f2; border-radius: 10px; height: 40px; padding: 0 26px; cursor: pointer; }
+  .ach-loadmore button:hover { background: #f2f7fe; }
+
   /* Right rail */
   .ach-rail { display: flex; flex-direction: column; gap: 18px; }
+  .rail-new { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #fff; color: #16335c; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 18px rgba(5,20,45,.4); }
+  .rail-new:hover { background: #f4f8fe; }
+  .rail-new svg { width: 17px; height: 17px; }
   .rail-card { background: #fff; border-radius: 16px; box-shadow: 0 14px 40px rgba(15,40,70,.18); padding: 16px 20px; }
   .rail-head { display: flex; align-items: center; justify-content: space-between; padding: 2px 0 8px; }
   .rail-title { font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #8a929c; display: flex; align-items: center; gap: 8px; }
@@ -167,16 +169,12 @@
     <div class="ach-content">
       <div class="ach-hero-row">
         <h1 class="ach-title">ACH</h1>
-        <span class="ach-new">
-          <button class="ach-new-main"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New payment</button>
-          <button class="ach-new-more" title="More ways to pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
-        </span>
       </div>
 
       <div class="ach-layout">
         <div class="ach-card">
           <div class="ach-cardbar">
-            <span class="ach-tab is-active">Active <b>4</b></span>
+            <span class="ach-tab is-active">Active <b>12</b></span>
             <span class="ach-tab">History <b>28</b></span>
           </div>
 
@@ -232,16 +230,47 @@
             <span class="ach-amt">$875.00</span>
             <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
           </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">Vendor batch<small><span class="ach-st ach-st-green">Ready</span> &middot; Landscape Inc</small></span>
+            <span class="ach-date">Jan 12</span>
+            <span class="ach-amt">$1,200.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">Contractor payout<small><span class="ach-st ach-st-gray">Initiated</span> &middot; ABC Company</small></span>
+            <span class="ach-date">Jan 13</span>
+            <span class="ach-amt">$425.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">Weekly payroll<small><span class="ach-st ach-st-red">Pending approval</span> &middot; ABC Company</small></span>
+            <span class="ach-date">Jan 15<small>Weekly</small></span>
+            <span class="ach-amt">$500.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">Utilities payment<small><span class="ach-st ach-st-green">Ready</span> &middot; Landscape Inc</small></span>
+            <span class="ach-date">Jan 16</span>
+            <span class="ach-amt">$310.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-loadmore"><button>Load more</button></div>
         </div>
 
         <div class="ach-rail">
+          <button class="rail-new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New payment</button>
+
           <div class="rail-card">
             <div class="rail-head"><span class="rail-title">Quick actions</span></div>
-            <div class="rail-action">
-              <span class="rail-action-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
-              <span class="rail-action-label">New payment<small>Single or batch</small></span>
-              <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
-            </div>
             <div class="rail-action">
               <span class="rail-action-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4m0 0 4 4m-4-4-4 4"/><path d="M4 17v2a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 20 19v-2"/></svg></span>
               <span class="rail-action-label">Upload a file<small>NACHA pass-through</small></span>
