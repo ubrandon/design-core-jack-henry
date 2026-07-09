@@ -122,19 +122,25 @@
     },
     {
       "file": "ach-landing-status-inline.html",
-      "x": 96,
-      "y": -1504,
+      "x": 4640,
+      "y": 5504,
       "width": 1440
     },
     {
       "file": "ach-landing-history-inline.html",
-      "x": 1600,
+      "x": 1664,
+      "y": -1504,
+      "width": 1440
+    },
+    {
+      "file": "ach-landing-history-archived.html",
+      "x": 3168,
       "y": -1504,
       "width": 1440
     },
     {
       "file": "ach-landing-rail-new-payment.html",
-      "x": 3104,
+      "x": 160,
       "y": -1504,
       "width": 1440
     },
@@ -262,7 +268,7 @@
     },
     {
       "text": "New designs",
-      "x": 96,
+      "x": 160,
       "y": -1600,
       "size": 48
     }
