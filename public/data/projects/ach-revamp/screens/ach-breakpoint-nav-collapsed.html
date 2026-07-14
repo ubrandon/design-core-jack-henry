@@ -1,1 +1,334 @@
-<div style="background: var(--bg-0);"></div>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  body { margin: 0; }
+  .yf, .yf * { box-sizing: border-box; }
+  .yf { font-family: 'Open Sans', -apple-system, sans-serif; color: #1f2733; background: #e7ebf0; display: flex; height: 1040px; overflow: hidden; position: relative; }
+
+  /* Collapsed icon-only sidebar */
+  .yf-side { width: 76px; flex-shrink: 0; background: #fff; border-right: 1px solid #e6e9ee; display: flex; flex-direction: column; align-items: center; padding: 0; }
+  .yf-logo { display: flex; align-items: center; justify-content: center; padding: 22px 0 14px; }
+  .yf-logo-mark { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #2f6fc0; display: grid; place-items: center; color: #2f6fc0; flex-shrink: 0; }
+  .yf-logo-mark svg { width: 20px; height: 20px; }
+  .yf-expand { width: 40px; height: 40px; border-radius: 10px; border: 1px solid #e1e5ea; background: #fff; display: grid; place-items: center; color: #5b6470; cursor: pointer; margin-bottom: 8px; }
+  .yf-expand:hover { background: #f2f5f9; }
+  .yf-expand svg { width: 17px; height: 17px; }
+  .yf-nav { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; overflow: hidden; padding: 4px 0; }
+  .yf-nav-item { position: relative; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; color: #5b6470; cursor: pointer; }
+  .yf-nav-item:hover { background: #f2f5f9; }
+  .yf-nav-item svg { width: 22px; height: 22px; }
+  .yf-nav-item.is-active { background: #e7f0fd; color: #16335c; }
+  .yf-nav-item.is-active::before { content: ""; position: absolute; left: -15px; top: 9px; bottom: 9px; width: 3px; border-radius: 0 3px 3px 0; background: #2563eb; }
+  .yf-badge { position: absolute; top: 5px; right: 5px; background: #e11d2a; color: #fff; font-size: 10px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; padding: 0 4px; }
+  .yf-profile { padding: 14px 0 18px; border-top: 1px solid #edeff2; width: 100%; display: flex; justify-content: center; }
+  .yf-avatar { width: 40px; height: 40px; border-radius: 50%; background: url("avatar-emma.png") center/cover no-repeat; cursor: pointer; }
+
+  .yf-main { flex: 1; min-width: 0; position: relative; display: flex; flex-direction: column; }
+  .yf-hero { height: 200px; flex-shrink: 0; background: linear-gradient(115deg,#16335c 0%,#1f4f8f 45%,#2a63ad 100%); position: relative; overflow: hidden; }
+  .yf-hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 72% 22%, rgba(120,150,190,.55), transparent 42%); }
+  .yf-stage { flex: 1; background: #e7ebf0; }
+  .yf-footer { background: #0e2547; color: rgba(255,255,255,.92); height: 46px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; flex-shrink: 0; }
+  .yf-footer a { color: #6db1ff; text-decoration: none; }
+  .yf-footer .sep { color: rgba(255,255,255,.45); }
+  .yf-help { position: absolute; right: 22px; bottom: 60px; width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid #e1e5ea; box-shadow: 0 3px 10px rgba(0,0,0,.12); color: #16335c; font-weight: 700; font-size: 17px; cursor: pointer; }
+
+  .ach-content { position: absolute; top: 44px; left: 52px; width: 1100px; z-index: 5; }
+  .ach-hero-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+  .ach-title { color: #fff; font-size: 36px; font-weight: 700; margin: 0; }
+
+  .ach-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+
+  .ach-card { background: #fff; border-radius: 16px; box-shadow: 0 14px 40px rgba(15,40,70,.18); }
+  .ach-cardbar { display: flex; align-items: center; height: 54px; border-bottom: 1px solid #eceef1; padding: 0 16px 0 0; }
+  .ach-tab { position: relative; height: 54px; display: flex; align-items: center; gap: 7px; padding: 0 22px; font-size: 14.5px; font-weight: 600; color: #5b6470; cursor: pointer; }
+  .ach-tab b { font-size: 11.5px; font-weight: 700; background: #eceef1; color: #3a4250; border-radius: 999px; padding: 1px 8px; }
+  .ach-tab.is-active { color: #16335c; font-weight: 700; }
+  .ach-tab.is-active b { background: #dbe7fb; color: #16335c; }
+  .ach-tab.is-active::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: #2563eb; }
+
+  .ach-filters { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid #eceef1; }
+  .ach-search { flex: 1; max-width: 260px; display: flex; align-items: center; gap: 9px; height: 38px; padding: 0 14px; border: 1px solid #dfe3e9; border-radius: 10px; color: #8a929c; }
+  .ach-search svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .ach-search input { border: none; outline: none; font-family: inherit; font-size: 13.5px; color: #1f2733; width: 100%; background: transparent; }
+  .ach-fchip { display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 14px; border: 1px solid #dfe3e9; border-radius: 10px; background: #fff; font-family: inherit; font-size: 13.5px; font-weight: 600; color: #2b3340; cursor: pointer; }
+  .ach-fchip:hover { background: #f7f9fc; }
+  .ach-fchip svg { width: 14px; height: 14px; color: #5b6470; }
+
+  .ach-cols { display: grid; grid-template-columns: 28px 2.6fr 1.1fr .8fr 1fr 36px; gap: 12px; align-items: center; padding: 0 20px; }
+  .ach-type { font-size: 13px; font-weight: 600; color: #3a4250; }
+  .ach-thead { height: 42px; border-bottom: 1px solid #eceef1; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #8a929c; }
+  .ach-th { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .ach-th svg { width: 11px; height: 11px; opacity: .4; }
+  .ach-th.is-sorted { color: #16335c; }
+  .ach-th.is-sorted svg { opacity: 1; color: #2563eb; }
+  .ach-th.ach-right-h { justify-content: flex-end; }
+  .ach-check { width: 17px; height: 17px; border: 1.5px solid #c6cdd6; border-radius: 5px; cursor: pointer; }
+  .ach-row { padding-top: 14px; padding-bottom: 14px; border-bottom: 1px solid #f0f2f5; cursor: pointer; font-size: 14px; }
+  .ach-row:hover { background: #f7f9fc; }
+  .ach-name { font-size: 14.5px; font-weight: 600; color: #1f2733; }
+  .ach-name small { display: block; font-size: 12.5px; font-weight: 400; color: #5b6470; margin-top: 1px; }
+  .ach-st { font-weight: 700; }
+  .ach-st-red { color: #c02b2b; }
+  .ach-st-gray { color: #5b6470; }
+  .ach-st-green { color: #237a31; }
+  .ach-date { color: #1f2733; }
+  .ach-date small { display: block; font-size: 12px; color: #5b6470; }
+  .ach-amt { text-align: right; color: #1f2733; font-weight: 600; }
+
+  .ach-rowactions { display: flex; align-items: center; justify-content: flex-end; }
+  .ach-more { width: 32px; height: 32px; border: none; border-radius: 8px; background: transparent; color: #5b6470; cursor: pointer; display: grid; place-items: center; flex-shrink: 0; }
+  .ach-more:hover { background: #eceef1; }
+  .ach-more svg { width: 18px; height: 18px; }
+
+  .ach-loadmore { display: flex; justify-content: flex-end; padding: 16px 20px; }
+  .ach-loadmore button { font-family: inherit; font-size: 13.5px; font-weight: 700; color: #2563eb; background: #fff; border: 1px solid #c9d8f2; border-radius: 10px; height: 40px; padding: 0 26px; cursor: pointer; }
+  .ach-loadmore button:hover { background: #f2f7fe; }
+
+  /* Right rail */
+  .ach-rail { display: flex; flex-direction: column; gap: 18px; }
+  .rail-new { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 50px; border: none; border-radius: 10px; background: #132e55; color: #fff; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(15,40,70,.28); }
+  .rail-new:hover { background: #1a3a68; }
+  .rail-new img { width: 22px; height: 22px; flex-shrink: 0; }
+  .rail-card { background: #fff; border-radius: 16px; box-shadow: 0 14px 40px rgba(15,40,70,.18); padding: 16px 20px; }
+  .rail-head { display: flex; align-items: center; justify-content: space-between; padding: 2px 0 8px; }
+  .rail-title { font-size: 11.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #8a929c; display: flex; align-items: center; gap: 8px; }
+  .rail-link { font-size: 12.5px; font-weight: 700; color: #2563eb; cursor: pointer; text-decoration: none; }
+  .rail-action { display: flex; align-items: center; gap: 12px; padding: 9px 10px; margin: 0 -10px; border-radius: 10px; cursor: pointer; }
+  .rail-action:hover { background: #f4f7fb; }
+  .rail-action-ic { width: 36px; height: 36px; border-radius: 10px; background: #e7f0fd; color: #1f4f8f; display: grid; place-items: center; flex-shrink: 0; }
+  .rail-action-ic svg { width: 18px; height: 18px; }
+  .rail-action-label { font-size: 14px; font-weight: 700; color: #1f2733; }
+  .rail-action-label small { display: block; font-size: 12px; font-weight: 400; color: #5b6470; margin-top: 1px; }
+  .rail-action .yf-chev { width: 15px; height: 15px; margin-left: auto; color: #9aa1ab; flex-shrink: 0; }
+  .yf-chev { color: #9aa1ab; }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; padding: 2px 0 10px; }
+  .cal-month { font-size: 14px; font-weight: 700; color: #1f2733; }
+  .cal-nav { display: flex; gap: 8px; }
+  .cal-nav button { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #dfe3e9; background: #fff; display: grid; place-items: center; color: #2b3340; cursor: pointer; }
+  .cal-nav button:hover { background: #f2f5f9; }
+  .cal-nav svg { width: 12px; height: 12px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 4px; }
+  .cal-dow { font-size: 10px; font-weight: 700; letter-spacing: .05em; color: #8a929c; text-align: center; padding-bottom: 2px; }
+  .cal-day { height: 28px; display: grid; place-items: center; font-size: 12.5px; color: #2b3340; }
+  .cal-day em { font-style: normal; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+  .cal-day em:hover { background: #eef2f8; }
+  .cal-day.is-selected em { background: #16335c; color: #fff; font-weight: 700; }
+  .upl-item { display: flex; align-items: center; gap: 11px; padding: 10px 0; border-top: 1px solid #f0f2f5; }
+  .upl-item:first-of-type { border-top: none; }
+  .upl-ic { width: 32px; height: 32px; border-radius: 8px; background: #eef3fa; color: #1f4f8f; display: grid; place-items: center; flex-shrink: 0; }
+  .upl-ic svg { width: 16px; height: 16px; }
+  .upl-name { font-size: 13px; font-weight: 700; color: #1f2733; min-width: 0; }
+  .upl-name small { display: block; font-weight: 400; font-size: 11.5px; color: #8a929c; margin-top: 1px; }
+  .upl-tag { margin-left: auto; flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .upl-tag.is-green { background: #e2f2e3; color: #1e5e28; }
+  .upl-tag.is-gray { background: #eceef1; color: #3a4250; }
+  .upl-tag.is-red { background: #fdeaea; color: #8f1d1d; }
+</style>
+<div class="yf">
+  <aside class="yf-side">
+    <div class="yf-logo">
+      <span class="yf-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8"/><path d="M3.5 18.5h17"/></svg></span>
+    </div>
+    <button class="yf-expand" title="Expand menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <nav class="yf-nav">
+      <span class="yf-nav-item" title="Dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
+      <span class="yf-nav-item" title="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span class="yf-badge">1</span></span>
+      <span class="yf-nav-item" title="Accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/></svg></span>
+      <span class="yf-nav-item" title="Transfers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span>
+      <span class="yf-nav-item is-active" title="Payments &middot; ACH"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M12 8.5v7M13.7 10.2c-.4-.5-1-.8-1.7-.8-1 0-1.8.6-1.8 1.4s.8 1.2 1.8 1.4 1.8.6 1.8 1.4-.8 1.4-1.8 1.4c-.7 0-1.3-.3-1.7-.8"/></svg></span>
+      <span class="yf-nav-item" title="Remote deposits"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11m0 0 4-4m-4 4-4-4"/><path d="M5 19h14"/></svg></span>
+      <span class="yf-nav-item" title="Insights"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.3 1 2.5h6c0-1.2.2-1.7 1-2.5A6 6 0 0 0 12 3Z"/></svg></span>
+      <span class="yf-nav-item" title="Support"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.5 1.5c0 1.7-2.5 2-2.5 3.5"/><circle cx="12" cy="17.4" r=".6" fill="currentColor"/></svg></span>
+    </nav>
+    <div class="yf-profile">
+      <span class="yf-avatar" title="Emma Reed"></span>
+    </div>
+  </aside>
+
+  <div class="yf-main">
+    <div class="yf-hero"></div>
+    <div class="yf-stage"></div>
+    <footer class="yf-footer">
+      <span>&copy;2023 YourFI</span><span class="sep">&bull;</span>
+      <span>(555) 555-5555</span><span class="sep">&bull;</span>
+      <a href="#">Privacy policy</a><span class="sep">&bull;</span>
+      <span>Member FDIC</span><span class="sep">&bull;</span>
+      <span>&#8962; Equal Housing Lender</span>
+    </footer>
+    <button class="yf-help">?</button>
+
+    <div class="ach-content">
+      <div class="ach-hero-row">
+        <h1 class="ach-title">ACH</h1>
+      </div>
+
+      <div class="ach-layout">
+        <div class="ach-card">
+          <div class="ach-cardbar">
+            <span class="ach-tab is-active">Active <b>12</b></span>
+            <span class="ach-tab">History <b>28</b></span>
+          </div>
+
+          <div class="ach-filters">
+            <span class="ach-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input placeholder="Search payments&hellip;">
+            </span>
+            <button class="ach-fchip">Status <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+            <button class="ach-fchip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+              All dates
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+
+          <div class="ach-cols ach-thead">
+            <span class="ach-check"></span>
+            <span class="ach-th">Payment <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+            <span class="ach-th is-sorted">Date <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></span>
+            <span class="ach-th">Type</span>
+            <span class="ach-th ach-right-h">Amount</span>
+            <span></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">Landscaping payment<small><span class="ach-st ach-st-gray">Initiated</span> &middot; Landscape Inc</small></span>
+            <span class="ach-date">Jan 10<small>Today</small></span>
+            <span class="ach-type">CCD</span>
+            <span class="ach-amt">$650.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">ABC payroll<small><span class="ach-st ach-st-green">Ready</span> &middot; ABC Company</small></span>
+            <span class="ach-date">Jan 10<small>Today</small></span>
+            <span class="ach-type">PPD</span>
+            <span class="ach-amt">$500.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">Monthly payroll<small><span class="ach-st ach-st-red">Pending approval</span> &middot; ABC Company</small></span>
+            <span class="ach-date">Jan 20<small>Monthly</small></span>
+            <span class="ach-type">PPD</span>
+            <span class="ach-amt">$500.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">ABC supplies<small><span class="ach-st ach-st-gray">Processed</span> &middot; Landscape Inc</small></span>
+            <span class="ach-date">Jan 8</span>
+            <span class="ach-type">CCD</span>
+            <span class="ach-amt">$875.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">Vendor batch<small><span class="ach-st ach-st-green">Ready</span> &middot; Landscape Inc</small></span>
+            <span class="ach-date">Jan 12</span>
+            <span class="ach-type">PPD</span>
+            <span class="ach-amt">$1,200.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">Contractor payout<small><span class="ach-st ach-st-gray">Initiated</span> &middot; ABC Company</small></span>
+            <span class="ach-date">Jan 13</span>
+            <span class="ach-type">PPD</span>
+            <span class="ach-amt">$425.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">Weekly payroll<small><span class="ach-st ach-st-red">Pending approval</span> &middot; ABC Company</small></span>
+            <span class="ach-date">Jan 15<small>Weekly</small></span>
+            <span class="ach-type">PPD</span>
+            <span class="ach-amt">$500.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-cols ach-row">
+            <span class="ach-check"></span>
+            <span class="ach-name">Utilities payment<small><span class="ach-st ach-st-green">Ready</span> &middot; Landscape Inc</small></span>
+            <span class="ach-date">Jan 16</span>
+            <span class="ach-type">CCD</span>
+            <span class="ach-amt">$310.00</span>
+            <span class="ach-rowactions"><button class="ach-more" title="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="18.5" r="1.7"/></svg></button></span>
+          </div>
+
+          <div class="ach-loadmore"><button>Load more</button></div>
+        </div>
+
+        <div class="ach-rail">
+          <button class="rail-new"><img src="icon-create-batch.svg" alt="">Create ACH</button>
+
+          <div class="rail-card">
+            <div class="rail-head"><span class="rail-title">Quick actions</span></div>
+            <div class="rail-action">
+              <span class="rail-action-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4m0 0 4 4m-4-4-4 4"/><path d="M4 17v2a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 20 19v-2"/></svg></span>
+              <span class="rail-action-label">Upload a file<small>NACHA pass-through</small></span>
+              <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+            </div>
+            <div class="rail-action">
+              <span class="rail-action-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8.5" r="3.5"/><path d="M4 19c.7-3 3.2-4.5 6-4.5s5.3 1.5 6 4.5"/><path d="M18.5 8v6M21.5 11h-6"/></svg></span>
+              <span class="rail-action-label">Add recipients<small>Type in or import</small></span>
+              <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+            </div>
+            <div class="rail-action">
+              <span class="rail-action-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3.5 20.5h17"/></svg></span>
+              <span class="rail-action-label">Pay taxes<small>Federal and state</small></span>
+              <svg class="yf-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+            </div>
+          </div>
+
+          <div class="rail-card">
+            <div class="cal-head">
+              <span class="cal-month">January</span>
+              <span class="cal-nav">
+                <button title="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></button>
+                <button title="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>
+              </span>
+            </div>
+            <div class="cal-grid">
+              <span class="cal-dow">S</span><span class="cal-dow">M</span><span class="cal-dow">T</span><span class="cal-dow">W</span><span class="cal-dow">T</span><span class="cal-dow">F</span><span class="cal-dow">S</span>
+              <span class="cal-day"><em>1</em></span><span class="cal-day"><em>2</em></span><span class="cal-day"><em>3</em></span><span class="cal-day"><em>4</em></span><span class="cal-day"><em>5</em></span><span class="cal-day"><em>6</em></span><span class="cal-day"><em>7</em></span>
+              <span class="cal-day"><em>8</em></span><span class="cal-day"><em>9</em></span><span class="cal-day is-selected"><em>10</em></span><span class="cal-day"><em>11</em></span><span class="cal-day"><em>12</em></span><span class="cal-day"><em>13</em></span><span class="cal-day"><em>14</em></span>
+              <span class="cal-day"><em>15</em></span><span class="cal-day"><em>16</em></span><span class="cal-day"><em>17</em></span><span class="cal-day"><em>18</em></span><span class="cal-day"><em>19</em></span><span class="cal-day"><em>20</em></span><span class="cal-day"><em>21</em></span>
+              <span class="cal-day"><em>22</em></span><span class="cal-day"><em>23</em></span><span class="cal-day"><em>24</em></span><span class="cal-day"><em>25</em></span><span class="cal-day"><em>26</em></span><span class="cal-day"><em>27</em></span><span class="cal-day"><em>28</em></span>
+              <span class="cal-day"><em>29</em></span><span class="cal-day"><em>30</em></span><span class="cal-day"><em>31</em></span>
+            </div>
+          </div>
+
+          <div class="rail-card">
+            <div class="rail-head">
+              <span class="rail-title">Recent uploads</span>
+              <a class="rail-link">See all</a>
+            </div>
+            <div class="upl-item">
+              <span class="upl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a1.5 1.5 0 0 0-1.5 1.5v15A1.5 1.5 0 0 0 7 21h10a1.5 1.5 0 0 0 1.5-1.5V7.5L14 3Z"/><path d="M14 3v4.5h4.5"/></svg></span>
+              <span class="upl-name">payroll-jan.ach<small>45 recipients &middot; 2 hours ago</small></span>
+              <span class="upl-tag is-green">Accepted</span>
+            </div>
+            <div class="upl-item">
+              <span class="upl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a1.5 1.5 0 0 0-1.5 1.5v15A1.5 1.5 0 0 0 7 21h10a1.5 1.5 0 0 0 1.5-1.5V7.5L14 3Z"/><path d="M14 3v4.5h4.5"/></svg></span>
+              <span class="upl-name">vendors-0108.ach<small>12 recipients &middot; Jan 8</small></span>
+              <span class="upl-tag is-red">2 errors</span>
+            </div>
+            <div class="upl-item">
+              <span class="upl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a1.5 1.5 0 0 0-1.5 1.5v15A1.5 1.5 0 0 0 7 21h10a1.5 1.5 0 0 0 1.5-1.5V7.5L14 3Z"/><path d="M14 3v4.5h4.5"/></svg></span>
+              <span class="upl-name">dec-payroll.ach<small>45 recipients &middot; Dec 20</small></span>
+              <span class="upl-tag is-gray">Processed</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
