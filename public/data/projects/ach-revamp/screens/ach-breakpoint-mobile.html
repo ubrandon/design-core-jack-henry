@@ -4,20 +4,21 @@
   .yf, .yf * { box-sizing: border-box; }
   .yf { font-family: 'Open Sans', -apple-system, sans-serif; color: #1f2733; background: #e7ebf0; overflow-x: clip; position: relative; }
 
-  .yf-topbar { display: flex; align-items: center; gap: 10px; height: 58px; padding: 0 16px; background: #fff; border-bottom: 1px solid #e6e9ee; }
-  .yf-burger { width: 40px; height: 40px; border-radius: 10px; border: none; background: transparent; display: grid; place-items: center; color: #16335c; cursor: pointer; margin-left: -8px; }
-  .yf-burger:hover { background: #f2f5f9; }
+  /* Clear top nav sits directly on the hero */
+  .yf-topbar { display: flex; align-items: center; gap: 10px; height: 62px; padding: 0 16px; background: transparent; position: relative; z-index: 3; margin: 0 -20px; }
+  .yf-burger { width: 40px; height: 40px; border-radius: 10px; border: none; background: transparent; display: grid; place-items: center; color: #fff; cursor: pointer; margin-left: -8px; }
+  .yf-burger:hover { background: rgba(255,255,255,.14); }
   .yf-burger svg { width: 22px; height: 22px; }
   .yf-logo { display: flex; align-items: center; gap: 8px; }
-  .yf-logo-mark { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #2f6fc0; display: grid; place-items: center; color: #2f6fc0; flex-shrink: 0; }
+  .yf-logo-mark { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,.85); display: grid; place-items: center; color: #fff; flex-shrink: 0; }
   .yf-logo-mark svg { width: 16px; height: 16px; }
-  .yf-logo-text { font-size: 19px; font-weight: 800; letter-spacing: -.01em; color: #16335c; }
-  .yf-avatar { margin-left: auto; width: 36px; height: 36px; border-radius: 50%; background: url("avatar-emma.png") center/cover no-repeat; cursor: pointer; }
+  .yf-logo-text { font-size: 19px; font-weight: 800; letter-spacing: -.01em; color: #fff; }
+  .yf-avatar { margin-left: auto; width: 36px; height: 36px; border-radius: 50%; background: url("avatar-emma.png") center/cover no-repeat; cursor: pointer; border: 2px solid rgba(255,255,255,.7); }
 
-  .yf-hero { background: linear-gradient(115deg,#16335c 0%,#1f4f8f 45%,#2a63ad 100%); position: relative; overflow: hidden; padding: 26px 20px 78px; }
+  .yf-hero { background: linear-gradient(115deg,#16335c 0%,#1f4f8f 45%,#2a63ad 100%); position: relative; overflow: hidden; padding: 10px 20px 78px; }
   .yf-hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 72% 22%, rgba(120,150,190,.55), transparent 42%); pointer-events: none; }
   .yf-hero > * { position: relative; z-index: 1; }
-  .ach-title { color: #fff; font-size: 30px; font-weight: 700; margin: 0; }
+  .ach-title { color: #fff; font-size: 30px; font-weight: 700; margin: 12px 0 0; }
 
   .ach-wrap { padding: 0 16px 24px; margin-top: -56px; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px; }
 
@@ -70,16 +71,15 @@
   .yf-footer .sep { color: rgba(255,255,255,.45); }
 </style>
 <div class="yf">
-  <header class="yf-topbar">
-    <button class="yf-burger" title="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-    <span class="yf-logo">
-      <span class="yf-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8"/><path d="M3.5 18.5h17"/></svg></span>
-      <span class="yf-logo-text">Your<b>FI</b></span>
-    </span>
-    <span class="yf-avatar" title="Emma Reed"></span>
-  </header>
-
   <div class="yf-hero">
+    <header class="yf-topbar">
+      <button class="yf-burger" title="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <span class="yf-logo">
+        <span class="yf-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8"/><path d="M3.5 18.5h17"/></svg></span>
+        <span class="yf-logo-text">Your<b>FI</b></span>
+      </span>
+      <span class="yf-avatar" title="Emma Reed"></span>
+    </header>
     <h1 class="ach-title">ACH</h1>
   </div>
 
