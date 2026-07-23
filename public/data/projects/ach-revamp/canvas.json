@@ -236,26 +236,26 @@
     },
     {
       "file": "ach-breakpoint-nav-collapsed.html",
-      "x": 160,
-      "y": -3072,
+      "x": 6688,
+      "y": -1536,
       "width": 1280
     },
     {
       "file": "ach-breakpoint-tablet.html",
-      "x": 1504,
-      "y": -3072,
+      "x": 8032,
+      "y": -1536,
       "width": 1024
     },
     {
       "file": "ach-breakpoint-small.html",
-      "x": 2592,
-      "y": -3072,
+      "x": 9120,
+      "y": -1536,
       "width": 768
     },
     {
       "file": "ach-breakpoint-mobile.html",
-      "x": 3424,
-      "y": -3072,
+      "x": 9952,
+      "y": -1536,
       "width": 480
     }
   ],
@@ -304,8 +304,8 @@
     },
     {
       "text": "Breakpoints",
-      "x": 160,
-      "y": -3168,
+      "x": 6688,
+      "y": -1632,
       "size": 48
     }
   ]
