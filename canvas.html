@@ -67,6 +67,7 @@
       box-shadow: 0 0 0 0.5px rgba(255,255,255,0.75);
     }
   </style>
+  <link rel="stylesheet" href="styles/tool-refresh.css">
 </head>
 <body>
 
@@ -121,6 +122,7 @@
 
     renderNav({
       breadcrumbs: [
+        { label: "Projects", href: "index.html" },
         { label: projectId, href: "project.html?id=" + encProjectId, id: "project-link" },
         { label: "Canvas" },
       ],

@@ -7,6 +7,7 @@
   <script>(function(){try{var t=localStorage.getItem('dc-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){}})();</script>
   <link rel="stylesheet" href="styles/shared.css">
   <link rel="stylesheet" href="styles/app.css">
+  <link rel="stylesheet" href="styles/tool-refresh.css">
 </head>
 <body>
   <div class="page-shell">
@@ -119,7 +120,9 @@
   <script src="scripts/sidenav.js"></script>
   <script src="scripts/live-reload.js"></script>
   <script>
-    renderNav();
+    renderNav({
+      breadcrumbs: [{ label: "Projects" }],
+    });
 
     const grid = document.getElementById("projects");
     const toolbar = document.getElementById("home-toolbar");

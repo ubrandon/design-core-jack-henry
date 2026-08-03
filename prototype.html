@@ -204,6 +204,7 @@
       gap: 6px;
     }
   </style>
+  <link rel="stylesheet" href="styles/tool-refresh.css">
 </head>
 <body>
   <div class="preview-page">
@@ -377,6 +378,7 @@
       loadSiteConfig().then(() => {
         renderNav({
           breadcrumbs: [
+            { label: "Projects", href: "index.html" },
             { label: projectId, href: "project.html?id=" + projectId, id: "nav-project" },
             { label: protoId, id: "nav-proto" },
           ],

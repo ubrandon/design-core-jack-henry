@@ -32,10 +32,6 @@
   function initialsOf(s) {
     return typeof initials === "function" ? initials(s) : String(s || "?").slice(0, 2).toUpperCase();
   }
-  function hueOf(id) {
-    return typeof projectHue === "function" ? projectHue(id) : 0;
-  }
-
   let projectNames = {};
   let railEl = null;
   let listEl = null;
@@ -70,7 +66,6 @@
       '<li class="dc-rail__fav" draggable="true" data-id="' + esc(id) + '" title="' + esc(name) + '">' +
       '<span class="dc-rail__grip" aria-hidden="true">' + RAIL_ICONS.grip + "</span>" +
       '<a class="dc-rail__fav-link" href="project.html?id=' + encodeURIComponent(id) + '">' +
-      '<span class="dc-rail__fav-avatar" style="--card-hue:' + hueOf(id) + '">' + esc(initialsOf(name)) + "</span>" +
       '<span class="dc-rail__fav-name">' + esc(name) + "</span>" +
       "</a></li>"
     );
@@ -126,8 +121,10 @@
     document.body.setAttribute("data-rail", collapsed ? "collapsed" : "expanded");
     const toggle = railEl.querySelector(".dc-rail__toggle");
     if (toggle) {
-      toggle.setAttribute("aria-label", collapsed ? "Expand sidebar" : "Collapse sidebar");
+      const label = collapsed ? "Expand sidebar" : "Collapse sidebar";
+      toggle.setAttribute("aria-label", label);
       toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      toggle.title = label;
     }
   }
 
@@ -255,7 +252,8 @@
     rail.id = "dc-rail";
     rail.innerHTML =
       '<div class="dc-rail__head">' +
-      '<button type="button" class="dc-rail__toggle" aria-controls="dc-rail" title="Toggle sidebar">' + RAIL_ICONS.chevron + "</button>" +
+      '<a class="dc-rail__brand" href="index.html">Design Core</a>' +
+      '<button type="button" class="dc-rail__toggle" aria-controls="dc-rail" title="Collapse sidebar">' + RAIL_ICONS.chevron + "</button>" +
       "</div>" +
       '<nav class="dc-rail__links">' +
       railLink("index.html", "Projects", RAIL_ICONS.projects, flags.isHome) +

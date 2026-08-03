@@ -224,6 +224,7 @@
         overflow: visible;
       }
     </style>
+    <link id="tool-refresh-styles" rel="stylesheet" href="styles/tool-refresh.css" />
   </head>
   <body>
     <div id="viewport" class="ds-canvas-viewport">
@@ -236,7 +237,7 @@
         <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
         <span id="zoom-label" class="zoom-level">100%</span>
         <button class="zoom-btn" onclick="pz.zoomBy(0.04)" title="Zoom in">+</button>
-        <button class="zoom-btn" type="button" onclick="pz.resetView()" title="Reset view" aria-label="Reset view">
+        <button class="zoom-btn" type="button" onclick="focusDesignSystem()" title="Focus content" aria-label="Focus design system content">
           <!-- @phosphor-icons/core assets/regular/crosshair.svg (MIT) -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232,120h-8.34A96.14,96.14,0,0,0,136,32.34V24a8,8,0,0,0-16,0v8.34A96.14,96.14,0,0,0,32.34,120H24a8,8,0,0,0,0,16h8.34A96.14,96.14,0,0,0,120,223.66V232a8,8,0,0,0,16,0v-8.34A96.14,96.14,0,0,0,223.66,136H232a8,8,0,0,0,0-16Zm-96,87.6V200a8,8,0,0,0-16,0v7.6A80.15,80.15,0,0,1,48.4,136H56a8,8,0,0,0,0-16H48.4A80.15,80.15,0,0,1,120,48.4V56a8,8,0,0,0,16,0V48.4A80.15,80.15,0,0,1,207.6,120H200a8,8,0,0,0,0,16h7.6A80.15,80.15,0,0,1,136,207.6ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Z"/></svg>
         </button>
@@ -250,13 +251,14 @@
     <script src="scripts/live-reload.js"></script>
     <script>
       renderNav({
+        breadcrumbs: [{ label: "Design System" }],
         fixed: true,
       });
 
       const viewport = document.getElementById("viewport");
       const stage = document.getElementById("stage");
 
-      const DS_STORAGE_KEY = "design-core-canvas-ds";
+      const DS_STORAGE_KEY = "design-core-canvas-ds-v2";
       let restoreState = null;
       try {
         const s = sessionStorage.getItem(DS_STORAGE_KEY);
@@ -264,6 +266,19 @@
       } catch (_) {}
 
       const pz = initPanZoom(viewport, stage, { navHeight: 52, restoreState });
+      let didInitialFocus = Boolean(restoreState);
+
+      function focusDesignSystem() {
+        const rect = viewport.getBoundingClientRect();
+        const rail = document.getElementById("dc-rail");
+        const visibleLeft = rail
+          ? Math.max(0, rail.getBoundingClientRect().right - rect.left)
+          : 0;
+        pz.zoom = 0.85;
+        pz.panX = visibleLeft + 36 - rect.width / 2;
+        pz.panY = 36 - rect.height / 2;
+        pz.applyTransform();
+      }
 
       function dsDataPath(p) {
         return typeof p === "string" && p.replace(/\\/g, "/").startsWith("data/design-system/");
@@ -297,7 +312,8 @@
               link.id = "design-core-company-css";
               link.rel = "stylesheet";
               link.addEventListener("load", dsScheduleLayout);
-              document.head.appendChild(link);
+              const refreshStyles = document.getElementById("tool-refresh-styles");
+              document.head.insertBefore(link, refreshStyles || null);
             }
             link.href = "data/design-system/company.css?t=" + Date.now();
           }
@@ -656,6 +672,12 @@
         activeGroupRecords = records;
         stage.innerHTML = layoutHtml.join("");
         dsArrangeAll();
+        if (!didInitialFocus) {
+          requestAnimationFrame(() => {
+            focusDesignSystem();
+            didInitialFocus = true;
+          });
+        }
         if (document.fonts && document.fonts.ready) document.fonts.ready.then(dsScheduleLayout);
 
         const companyLink = document.getElementById("design-core-company-css");
