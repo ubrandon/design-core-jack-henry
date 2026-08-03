@@ -1,64 +1,7 @@
 {
   "name": "Brandon Unglaub",
-  "favorites": [
-    "onboarding",
-    "marketing-site",
-    "ach-revamp",
-    "brandon-misc",
-    "ach-bulk-edit",
-    "retail-wires",
-    "wires"
-  ],
-  "recents": [
-    {
-      "id": "ach-revamp",
-      "ts": 1785246065976
-    },
-    {
-      "id": "marketing-site",
-      "ts": 1784953312176
-    },
-    {
-      "id": "onboarding",
-      "ts": 1784233043782
-    },
-    {
-      "id": "home-page",
-      "ts": 1783799041845
-    },
-    {
-      "id": "saved-places",
-      "ts": 1782943436738
-    },
-    {
-      "id": "you-page",
-      "ts": 1782943401464
-    },
-    {
-      "id": "plans",
-      "ts": 1782943387172
-    },
-    {
-      "id": "calendar",
-      "ts": 1782941958155
-    },
-    {
-      "id": "brandon-misc",
-      "ts": 1782850894619
-    },
-    {
-      "id": "ach-origination",
-      "ts": 1782850878577
-    },
-    {
-      "id": "wires",
-      "ts": 1782846592337
-    },
-    {
-      "id": "business-self-enrollment",
-      "ts": 1782840727113
-    }
-  ],
+  "favorites": [],
+  "recents": [],
   "theme": "light",
   "filters": {
     "sort": "",
