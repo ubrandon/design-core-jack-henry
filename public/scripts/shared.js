@@ -567,7 +567,7 @@ function projectHue(id) {
    file (public/data/users/<slug>.json) when the dev server is running, with a
    localStorage mirror for instant, offline reads. */
 const CURRENT_USER_KEY = "design-core:current-user";
-const PREFS_MIRROR_PREFIX = "design-core:prefs:";
+const PREFS_MIRROR_PREFIX = "design-core:prefs:v2:";
 const LEGACY_FAVORITES_KEY = "design-core:favorites";
 const LEGACY_RECENTS_KEY = "design-core:recents";
 const GUEST_SLUG = "__guest__";
@@ -577,6 +577,7 @@ let _userState = null;
 let _userStateSlug = null;
 let _prefsSaveTimer = null;
 let _pendingSave = null;
+let _prefsStorageReady = false;
 
 function readLsArray(key) {
   try {
@@ -640,10 +641,17 @@ function normalizePrefs(p) {
 }
 
 function prefsMirrorKey(slug) {
-  return PREFS_MIRROR_PREFIX + (slug || GUEST_SLUG);
+  // Browser storage is shared by every app served from the same origin. Local
+  // Design Core repos normally all run at localhost:3000, so user name alone
+  // is not enough to isolate favorites and recents. site.json supplies the
+  // deployed repo URL, which gives every company checkout a stable scope.
+  const base = _publicSiteBaseFromConfig || shareBaseUrl();
+  const scope = encodeURIComponent(String(base || "").replace(/\/+$/, "").toLowerCase());
+  return PREFS_MIRROR_PREFIX + scope + ":" + (slug || GUEST_SLUG);
 }
 
 function readPrefsMirror(slug) {
+  if (!_prefsStorageReady) return null;
   try {
     const v = JSON.parse(localStorage.getItem(prefsMirrorKey(slug)) || "null");
     return v && typeof v === "object" ? v : null;
@@ -653,6 +661,7 @@ function readPrefsMirror(slug) {
 }
 
 function writePrefsMirror(slug, prefs) {
+  if (!_prefsStorageReady) return;
   try {
     localStorage.setItem(prefsMirrorKey(slug), JSON.stringify(prefs));
   } catch {}
@@ -824,6 +833,20 @@ function setFavoriteOrder(ids) {
   emitUserPrefsChanged();
 }
 
+/** Removes favorites and recents for projects that do not exist in this repo. */
+function pruneUnknownProjectPrefs(projectIds) {
+  const known = new Set((projectIds || []).filter((id) => typeof id === "string"));
+  const prefs = userState();
+  const favorites = prefs.favorites.filter((id) => known.has(id));
+  const recents = prefs.recents.filter((entry) => entry && known.has(entry.id));
+  if (favorites.length === prefs.favorites.length && recents.length === prefs.recents.length) return false;
+  _userState.favorites = favorites;
+  _userState.recents = recents;
+  persistUserPrefs();
+  emitUserPrefsChanged();
+  return true;
+}
+
 /** Records that the user just opened a project (most-recent first, capped). */
 function recordRecentProject(id) {
   if (!id) return;
@@ -912,10 +935,27 @@ function addDesignerTeamMember(name) {
     .catch(() => false);
 }
 
-// Load the active user's prefs on script load, then refresh from the server.
-hydrateUserState();
+// Resolve site.json before reading the browser mirror so the storage key is
+// scoped to this repo even when several checkouts all use localhost:3000.
+// Until that short fetch finishes, callers see an empty in-memory preference
+// object instead of another repo's cached favorites.
+_userState = defaultPrefs();
+_userStateSlug = currentUserSlug();
 applyUserTheme();
-try { refreshUserPrefsFromServer(); } catch {}
+try {
+  loadSiteConfig().finally(() => {
+    _prefsStorageReady = true;
+    hydrateUserState();
+    applyUserTheme();
+    emitUserPrefsChanged();
+    try { refreshUserPrefsFromServer(); } catch {}
+  });
+} catch {
+  _prefsStorageReady = true;
+  hydrateUserState();
+  applyUserTheme();
+  try { refreshUserPrefsFromServer(); } catch {}
+}
 
 /** One request that returns counts/dates for every project (local dev server only). */
 function fetchProjectsSummary() {

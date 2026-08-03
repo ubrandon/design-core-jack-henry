@@ -33,6 +33,7 @@
     return typeof initials === "function" ? initials(s) : String(s || "?").slice(0, 2).toUpperCase();
   }
   let projectNames = {};
+  let projectNamesLoaded = false;
   let railEl = null;
   let listEl = null;
   let userBtnEl = null;
@@ -73,7 +74,13 @@
 
   function renderFavorites() {
     if (!listEl) return;
-    const ids = typeof getFavoriteProjectIds === "function" ? getFavoriteProjectIds() : [];
+    if (projectNamesLoaded && typeof pruneUnknownProjectPrefs === "function") {
+      pruneUnknownProjectPrefs(Object.keys(projectNames));
+    }
+    const storedIds = typeof getFavoriteProjectIds === "function" ? getFavoriteProjectIds() : [];
+    const ids = projectNamesLoaded
+      ? storedIds.filter((id) => Object.prototype.hasOwnProperty.call(projectNames, id))
+      : [];
     listEl.innerHTML = ids.map(favItemHtml).join("");
     const empty = railEl.querySelector(".dc-rail__empty");
     if (empty) empty.hidden = ids.length > 0;
@@ -301,12 +308,16 @@
   }
 
   function loadProjectNames() {
-    if (typeof fetchJSON !== "function") return Promise.resolve();
+    if (typeof fetchJSON !== "function") {
+      projectNamesLoaded = true;
+      return Promise.resolve();
+    }
     return fetchJSON("data/projects/index.json")
       .then((d) => {
         (d.projects || []).forEach((p) => { if (p && p.id) projectNames[p.id] = p.name || p.id; });
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => { projectNamesLoaded = true; });
   }
 
   function init() {
