@@ -11,40 +11,17 @@ import { execSync } from "node:child_process";
 import { writeFileSync, readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { normalizePublicBaseUrl, githubPagesRootFromRemote } from "./lib/repo-info.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 const sitePath = resolve(root, "public/data/site.json");
 
-function parseGithubRemote(raw) {
-  if (!raw) return null;
-  const url = raw.trim().replace(/\.git$/i, "");
-  let m = url.match(/^git@github\.com:([^/]+)\/([^/]+)$/i);
-  if (m) return { owner: m[1], repo: m[2] };
-  m = url.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)/i);
-  if (m) return { owner: m[1], repo: m[2] };
-  return null;
-}
-
-function normalizePagesRoot(input) {
-  const s = String(input).trim().replace(/\/+$/, "");
-  if (!s) return null;
-  try {
-    const u = new URL(s.startsWith("http") ? s : `https://${s}`);
-    if (u.protocol !== "http:" && u.protocol !== "https:") return null;
-    let path = u.pathname || "/";
-    if (!path.endsWith("/")) path += "/";
-    return `${u.origin}${path}`;
-  } catch {
-    return null;
-  }
-}
-
 function main() {
   const fromEnv =
     process.env.DESIGN_CORE_PUBLIC_URL?.trim() ||
     process.env.GITHUB_PAGES_ROOT?.trim();
-  let publicBaseUrl = fromEnv ? normalizePagesRoot(fromEnv) : null;
+  let publicBaseUrl = fromEnv ? normalizePublicBaseUrl(fromEnv) : null;
 
   if (!publicBaseUrl) {
     let remote;
@@ -62,8 +39,8 @@ function main() {
       );
       process.exit(1);
     }
-    const parsed = parseGithubRemote(remote);
-    if (!parsed) {
+    publicBaseUrl = githubPagesRootFromRemote(remote);
+    if (!publicBaseUrl) {
       console.error(
         "Could not parse GitHub owner/repo from origin:\n  ",
         remote,
@@ -71,9 +48,6 @@ function main() {
       );
       process.exit(1);
     }
-    publicBaseUrl = `https://${parsed.owner.toLowerCase()}.github.io/${parsed.repo}/`;
-  } else if (!publicBaseUrl.endsWith("/")) {
-    publicBaseUrl += "/";
   }
 
   let existing = {};

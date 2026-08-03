@@ -1860,6 +1860,60 @@ article.tile-card--prototype {
   opacity: 1;
 }
 
+/* ── View-only notice (deployed static site) ── */
+.dc-viewonly {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(92vw, 560px);
+  padding: 9px 10px 9px 15px;
+  border-radius: 999px;
+  background: var(--nav-bg, rgba(20, 22, 28, 0.92));
+  border: 1px solid rgba(var(--fg-rgb), 0.14);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: rgba(var(--fg-rgb), 0.92);
+  font-size: 0.82rem;
+  line-height: 1.3;
+  z-index: 190;
+}
+
+.dc-viewonly__icon {
+  display: inline-flex;
+  color: rgba(var(--fg-rgb), 0.6);
+  flex-shrink: 0;
+}
+
+.dc-viewonly__text {
+  min-width: 0;
+}
+
+.dc-viewonly__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(var(--fg-rgb), 0.08);
+  color: rgba(var(--fg-rgb), 0.75);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dc-viewonly__close:hover {
+  background: rgba(var(--fg-rgb), 0.16);
+  color: rgba(var(--fg-rgb), 0.95);
+}
+
 /* ── Light mode polish ──
    On a light page, the faint dark-tint surfaces read as near-invisible. Give
    the card/input surfaces a true white fill, a firmer edge, and a resting

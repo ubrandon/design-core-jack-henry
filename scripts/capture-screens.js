@@ -8,15 +8,19 @@ const LOCAL_CONFIG_PATH = join(ROOT, '.app-screens.json');
 const OUTPUT_DIR = join(ROOT, 'public', 'data', 'captures');
 const BROWSER_DATA_DIR = join(ROOT, '.capture-browser-data');
 
-let sharedConfig = {};
-let localConfig = {};
+// Read a JSON config file, or exit with a readable message instead of a raw stack trace.
+function readConfigOrExit(path, label) {
+  if (!existsSync(path)) return {};
+  try {
+    return JSON.parse(readFileSync(path, 'utf-8'));
+  } catch (e) {
+    console.error(`\n  ${label} is not valid JSON:\n    ${path}\n    ${e.message}\n  Fix or delete that file, then run the capture again.\n`);
+    process.exit(1);
+  }
+}
 
-if (existsSync(SHARED_CONFIG_PATH)) {
-  sharedConfig = JSON.parse(readFileSync(SHARED_CONFIG_PATH, 'utf-8'));
-}
-if (existsSync(LOCAL_CONFIG_PATH)) {
-  localConfig = JSON.parse(readFileSync(LOCAL_CONFIG_PATH, 'utf-8'));
-}
+const sharedConfig = readConfigOrExit(SHARED_CONFIG_PATH, 'captures/config.json');
+const localConfig = readConfigOrExit(LOCAL_CONFIG_PATH, '.app-screens.json');
 
 const config = { ...sharedConfig, ...localConfig };
 

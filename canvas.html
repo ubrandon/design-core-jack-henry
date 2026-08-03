@@ -61,6 +61,11 @@
       color: inherit; background: transparent; border: none; outline: none; padding: 0; margin: 0;
       box-sizing: content-box; overflow: visible; min-width: 120px; width: 120px;
     }
+    .canvas-alignment-guide {
+      position: absolute; z-index: 1000; pointer-events: none;
+      background: var(--neon-blue, #4a8cff);
+      box-shadow: 0 0 0 0.5px rgba(255,255,255,0.75);
+    }
   </style>
 </head>
 <body>
@@ -93,11 +98,12 @@
     const DRAG_THRESHOLD = 5;
     const TITLE_FONT_SIZE = 48;
     const DUPLICATE_OFFSET = 64;
-    /** Stage-space snap when dragging cards (px). */
-    const GRID_SNAP = 32;
+    /** Screen-space distance at which matching object edges or centers snap. */
+    const ALIGN_SNAP_THRESHOLD = 8;
+    const ALIGN_GUIDE_PADDING = 24;
 
-    function snapToGrid(n) {
-      return Math.round(Number(n) / GRID_SNAP) * GRID_SNAP;
+    function roundCanvasPosition(n) {
+      return Math.round(Number(n));
     }
 
     const projectId = getParam("project");
@@ -154,6 +160,9 @@
 
     let screens = [];
     let texts = [];
+    let layoutInteractionActive = false;
+    let pendingSavePayload = null;
+    let saveInFlight = null;
 
     /* ── Selection state ── */
     const selected = new Set();
@@ -258,7 +267,7 @@
       });
     }
 
-    function saveCanvas() {
+    function buildCanvasPayload() {
       const payload = { screens: screens.map(s => {
         const out = { file: s.file, x: Math.round(s.x), y: Math.round(s.y), width: s.width };
         if (s.name && s.name.trim()) out.name = s.name.trim();
@@ -267,11 +276,44 @@
       if (texts.length) {
         payload.texts = texts.map(t => ({ text: t.text, x: Math.round(t.x), y: Math.round(t.y), size: t.size }));
       }
-      return fetch("data/projects/" + encProjectId + "/canvas.json", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload, null, 2),
-      }).catch(() => {});
+      return payload;
+    }
+
+    async function flushCanvasSaveQueue() {
+      let saved = true;
+      while (pendingSavePayload) {
+        const payload = pendingSavePayload;
+        pendingSavePayload = null;
+        try {
+          const response = await fetch("data/projects/" + encProjectId + "/canvas.json", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload, null, 2),
+            keepalive: true,
+          });
+          if (!response.ok) throw new Error("Canvas save failed with status " + response.status);
+        } catch (err) {
+          saved = false;
+          console.error(err);
+          showToast("Canvas changes could not be saved");
+        }
+      }
+      return saved;
+    }
+
+    function saveCanvas() {
+      // Keep only the newest waiting snapshot. The active request always finishes
+      // first, so an older response can never overwrite a newer canvas state.
+      pendingSavePayload = buildCanvasPayload();
+      if (!saveInFlight) {
+        saveInFlight = flushCanvasSaveQueue().finally(() => {
+          saveInFlight = null;
+          // A promise callback can enqueue work just as the current flush settles.
+          // Start another flush so that snapshot cannot remain stranded.
+          if (pendingSavePayload) saveCanvas();
+        });
+      }
+      return saveInFlight;
     }
 
     async function duplicateScreenFile(file) {
@@ -303,8 +345,8 @@
           const file = await duplicateScreenFile(s.file);
           copiedScreens.push({
             file,
-            x: snapToGrid(s.x + offsetX),
-            y: snapToGrid(s.y + offsetY),
+            x: roundCanvasPosition(s.x + offsetX),
+            y: roundCanvasPosition(s.y + offsetY),
             width: s.width,
             name: s.name && s.name.trim() ? s.name.trim() + " Copy" : "",
           });
@@ -317,8 +359,8 @@
 
       const copiedTexts = textIndices.map(i => ({
         text: texts[i].text,
-        x: snapToGrid(texts[i].x + offsetX),
-        y: snapToGrid(texts[i].y + offsetY),
+        x: roundCanvasPosition(texts[i].x + offsetX),
+        y: roundCanvasPosition(texts[i].y + offsetY),
         size: texts[i].size,
       }));
 
@@ -628,6 +670,7 @@
         textDragOffsets: null,
         pointerId: e.pointerId,
       };
+      layoutInteractionActive = true;
       viewport.setPointerCapture(e.pointerId);
     }
 
@@ -670,36 +713,163 @@
     }
 
     function stagePointFromClient(clientX, clientY) {
-      const rect = viewport.getBoundingClientRect();
+      return pz.clientToStage(clientX, clientY);
+    }
+
+    let alignmentGuideEls = [];
+
+    function clearAlignmentGuides() {
+      alignmentGuideEls.forEach(el => el.remove());
+      alignmentGuideEls = [];
+    }
+
+    function normalizedBounds(x, y, width, height) {
+      return { minX: x, minY: y, maxX: x + width, maxY: y + height };
+    }
+
+    function screenBounds(idx) {
+      const s = screens[idx];
+      if (!s) return null;
+      const card = document.getElementById("card-" + idx);
+      const width = s.width || 390;
+      const measuredHeight = card ? card.offsetHeight : 0;
+      const height = measuredHeight > 0 ? measuredHeight : Math.round(width * 2.16);
+      return normalizedBounds(s.x, s.y, width, height);
+    }
+
+    function textBounds(idx) {
+      const t = texts[idx];
+      if (!t) return null;
+      const el = textLayer && textLayer.querySelector('.canvas-text[data-idx="' + idx + '"]');
+      const width = el && el.offsetWidth ? el.offsetWidth : Math.max(120, singleLineText(t.text).length * t.size * 0.6);
+      const height = el && el.offsetHeight ? el.offsetHeight : t.size * 1.1 + 8;
+      return normalizedBounds(t.x, t.y, width, height);
+    }
+
+    function unionBounds(items) {
+      if (!items.length) return null;
+      return items.reduce((out, item) => ({
+        minX: Math.min(out.minX, item.minX),
+        minY: Math.min(out.minY, item.minY),
+        maxX: Math.max(out.maxX, item.maxX),
+        maxY: Math.max(out.maxY, item.maxY),
+      }));
+    }
+
+    function movingSelectionBounds() {
+      const items = [];
+      selected.forEach(i => { const b = screenBounds(i); if (b) items.push(b); });
+      selectedTexts.forEach(i => { const b = textBounds(i); if (b) items.push(b); });
+      return unionBounds(items);
+    }
+
+    function collectAlignmentTargets() {
+      const items = [];
+      screens.forEach((_, i) => { if (!selected.has(i)) { const b = screenBounds(i); if (b) items.push(b); } });
+      texts.forEach((_, i) => { if (!selectedTexts.has(i)) { const b = textBounds(i); if (b) items.push(b); } });
+      return items;
+    }
+
+    function offsetBounds(bounds, dx, dy) {
       return {
-        x: (clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom,
-        y: (clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom,
+        minX: bounds.minX + dx,
+        minY: bounds.minY + dy,
+        maxX: bounds.maxX + dx,
+        maxY: bounds.maxY + dy,
       };
+    }
+
+    function axisValues(bounds, axis) {
+      return axis === "x"
+        ? [bounds.minX, (bounds.minX + bounds.maxX) / 2, bounds.maxX]
+        : [bounds.minY, (bounds.minY + bounds.maxY) / 2, bounds.maxY];
+    }
+
+    function bestAxisAlignment(movingBounds, targets, axis) {
+      const movingValues = axisValues(movingBounds, axis);
+      const threshold = ALIGN_SNAP_THRESHOLD / pz.zoom;
+      let best = null;
+      targets.forEach(target => {
+        const targetValues = axisValues(target, axis);
+        for (let i = 0; i < movingValues.length; i++) {
+          const delta = targetValues[i] - movingValues[i];
+          const distance = Math.abs(delta);
+          if (distance <= threshold && (!best || distance < best.distance)) {
+            best = { delta, distance, position: targetValues[i], target };
+          }
+        }
+      });
+      return best;
+    }
+
+    function drawAlignmentGuides(snap, movingBounds) {
+      clearAlignmentGuides();
+      const thickness = 1 / pz.zoom;
+      if (snap.x) {
+        const guide = document.createElement("div");
+        const top = Math.min(movingBounds.minY, snap.x.target.minY) - ALIGN_GUIDE_PADDING;
+        const bottom = Math.max(movingBounds.maxY, snap.x.target.maxY) + ALIGN_GUIDE_PADDING;
+        guide.className = "canvas-alignment-guide";
+        guide.style.left = snap.x.position + "px";
+        guide.style.top = top + "px";
+        guide.style.width = thickness + "px";
+        guide.style.height = (bottom - top) + "px";
+        stage.appendChild(guide);
+        alignmentGuideEls.push(guide);
+      }
+      if (snap.y) {
+        const guide = document.createElement("div");
+        const left = Math.min(movingBounds.minX, snap.y.target.minX) - ALIGN_GUIDE_PADDING;
+        const right = Math.max(movingBounds.maxX, snap.y.target.maxX) + ALIGN_GUIDE_PADDING;
+        guide.className = "canvas-alignment-guide";
+        guide.style.left = left + "px";
+        guide.style.top = snap.y.position + "px";
+        guide.style.width = (right - left) + "px";
+        guide.style.height = thickness + "px";
+        stage.appendChild(guide);
+        alignmentGuideEls.push(guide);
+      }
     }
 
     function beginSelectionDrag(pointer) {
       pointer.moved = true;
       viewport.classList.add("dragging-card");
       const start = stagePointFromClient(pointer.startX, pointer.startY);
+      clearAlignmentGuides();
+      pointer.dragStartStage = start;
       pointer.dragOffsets = [];
       selected.forEach(i => {
         const s = screens[i];
-        if (s) pointer.dragOffsets.push({ idx: i, offX: start.x - s.x, offY: start.y - s.y });
+        if (s) pointer.dragOffsets.push({ idx: i, originX: s.x, originY: s.y });
       });
       pointer.textDragOffsets = [];
       selectedTexts.forEach(i => {
         const t = texts[i];
-        if (t) pointer.textDragOffsets.push({ idx: i, offX: start.x - t.x, offY: start.y - t.y });
+        if (t) pointer.textDragOffsets.push({ idx: i, originX: t.x, originY: t.y });
       });
+      pointer.initialSelectionBounds = movingSelectionBounds();
+      pointer.alignmentTargets = collectAlignmentTargets();
     }
 
-    function moveSelectionDragToClient(pointer, clientX, clientY) {
+    function moveSelectionDragToClient(pointer, clientX, clientY, disableSnap) {
       const point = stagePointFromClient(clientX, clientY);
+      const rawDx = point.x - pointer.dragStartStage.x;
+      const rawDy = point.y - pointer.dragStartStage.y;
+      let dx = rawDx;
+      let dy = rawDy;
+      let snap = { x: null, y: null };
+      if (!disableSnap && pointer.initialSelectionBounds && pointer.alignmentTargets.length) {
+        const proposed = offsetBounds(pointer.initialSelectionBounds, rawDx, rawDy);
+        snap.x = bestAxisAlignment(proposed, pointer.alignmentTargets, "x");
+        snap.y = bestAxisAlignment(proposed, pointer.alignmentTargets, "y");
+        if (snap.x) dx += snap.x.delta;
+        if (snap.y) dy += snap.y.delta;
+      }
       pointer.dragOffsets.forEach(d => {
         const s = screens[d.idx];
         if (!s) return;
-        s.x = snapToGrid(point.x - d.offX);
-        s.y = snapToGrid(point.y - d.offY);
+        s.x = roundCanvasPosition(d.originX + dx);
+        s.y = roundCanvasPosition(d.originY + dy);
         const el = document.getElementById("card-" + d.idx);
         if (el) {
           el.style.left = s.x + "px";
@@ -709,11 +879,16 @@
       pointer.textDragOffsets.forEach(d => {
         const t = texts[d.idx];
         if (!t) return;
-        t.x = snapToGrid(point.x - d.offX);
-        t.y = snapToGrid(point.y - d.offY);
+        t.x = roundCanvasPosition(d.originX + dx);
+        t.y = roundCanvasPosition(d.originY + dy);
         const el = textLayer && textLayer.querySelector('.canvas-text[data-idx="' + d.idx + '"]');
         if (el) { el.style.left = t.x + "px"; el.style.top = t.y + "px"; }
       });
+      if (snap.x || snap.y) {
+        drawAlignmentGuides(snap, offsetBounds(pointer.initialSelectionBounds, dx, dy));
+      } else {
+        clearAlignmentGuides();
+      }
     }
 
     function startAltDuplicateDrag(pointer, isActive) {
@@ -749,11 +924,13 @@
       if (cardPointer && cardPointer.pointerId === pid) {
         if (cardPointer.moved) {
           viewport.classList.remove("dragging-card");
+          clearAlignmentGuides();
           saveCanvas();
         } else if (!cardPointer.shiftHeld) {
           setSelected([cardPointer.idx]);
         }
         cardPointer = null;
+        layoutInteractionActive = false;
         releaseViewportCaptureSafe(pid);
         return true;
       }
@@ -780,7 +957,7 @@
           beginSelectionDrag(cardPointer);
         }
 
-        moveSelectionDragToClient(cardPointer, e.clientX, e.clientY);
+        moveSelectionDragToClient(cardPointer, e.clientX, e.clientY, e.metaKey || e.ctrlKey);
         return;
       }
 
@@ -879,11 +1056,13 @@
       if (cardPointer && cardPointer.pointerId === e.pointerId) {
         if (cardPointer.moved) {
           viewport.classList.remove("dragging-card");
+          clearAlignmentGuides();
           saveCanvas();
         } else if (!cardPointer.shiftHeld) {
           setSelected([cardPointer.idx]);
         }
         cardPointer = null;
+        layoutInteractionActive = false;
       }
       if (marquee && marquee.pointerId === e.pointerId) {
         endMarqueePointer(e);
@@ -957,7 +1136,7 @@
       return true;
     }
 
-    function loadCanvas(changedFiles) {
+    function loadCanvas(changedFiles, reloadAllScreens) {
       return fetch("data/projects/" + encProjectId + "/canvas.json?t=" + Date.now())
         .then(r => {
           if (!r.ok) throw new Error(r.status);
@@ -990,8 +1169,24 @@
             renderCards();
             var empty = document.getElementById("canvas-empty");
             if (empty) empty.remove();
-          } else if (changedFiles && changedFiles.length) {
-            reloadChangedIframes(changedFiles);
+          } else {
+            const positionsChanged = next.some((n, i) => n.x !== screens[i].x || n.y !== screens[i].y);
+            if (positionsChanged && !layoutInteractionActive) {
+              next.forEach((n, i) => {
+                screens[i].x = n.x;
+                screens[i].y = n.y;
+                const card = document.getElementById("card-" + i);
+                if (card) {
+                  card.style.left = n.x + "px";
+                  card.style.top = n.y + "px";
+                }
+              });
+            }
+            if (reloadAllScreens) {
+              reloadChangedIframes([], true);
+            } else if (changedFiles && changedFiles.length) {
+              reloadChangedIframes(changedFiles, false);
+            }
           }
           if (!textsSame) {
             texts = nextTexts;
@@ -1013,13 +1208,13 @@
         });
     }
 
-    function reloadChangedIframes(changedFiles) {
+    function reloadChangedIframes(changedFiles, reloadAll) {
       // Watcher paths are raw (unencoded) — compare raw, then build encoded URL.
       const rawPrefix = "data/projects/" + projectId + "/screens/";
       const bust = "?t=" + Date.now();
       screens.forEach((s, i) => {
         const fullPath = rawPrefix + s.file;
-        if (changedFiles.some(f => f === fullPath)) {
+        if (reloadAll || changedFiles.some(f => f === fullPath)) {
           const card = document.getElementById("card-" + i);
           if (!card) return;
           const iframe = card.querySelector("iframe");
@@ -1087,9 +1282,9 @@
       const screenFiles = relevant.filter(p => p.startsWith(prefix + "screens/"));
 
       if (canvasJsonChanged || relevant.length === 0) {
-        loadCanvas(screenFiles);
+        loadCanvas(screenFiles, relevant.length === 0);
       } else if (screenFiles.length) {
-        reloadChangedIframes(screenFiles);
+        reloadChangedIframes(screenFiles, false);
       }
     };
 
@@ -1281,10 +1476,10 @@
       viewport.classList.remove("placing-text");
     }
     function placeTextAt(clientX, clientY) {
-      const rect = viewport.getBoundingClientRect();
-      const x = (clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
-      const y = (clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
-      texts.push({ text: "", x: snapToGrid(x), y: snapToGrid(y), size: TITLE_FONT_SIZE });
+      const point = stagePointFromClient(clientX, clientY);
+      const x = point.x;
+      const y = point.y;
+      texts.push({ text: "", x: roundCanvasPosition(x), y: roundCanvasPosition(y), size: TITLE_FONT_SIZE });
       cancelPlaceText();
       renderTexts();
       const idx = texts.length - 1;
@@ -1321,6 +1516,7 @@
         textDragOffsets: null,
         pointerId: e.pointerId,
       };
+      layoutInteractionActive = true;
       window.addEventListener("pointermove", onTextWindowPointerMove, true);
       window.addEventListener("pointerup", onTextWindowPointerEnd, true);
       window.addEventListener("pointercancel", onTextWindowPointerEnd, true);
@@ -1358,7 +1554,7 @@
         }
         beginSelectionDrag(textPointer);
       }
-      moveSelectionDragToClient(textPointer, e.clientX, e.clientY);
+      moveSelectionDragToClient(textPointer, e.clientX, e.clientY, e.metaKey || e.ctrlKey);
       return true;
     }
 
@@ -1366,9 +1562,11 @@
       if (!textPointer || textPointer.pointerId !== e.pointerId) return false;
       if (textPointer.moved) {
         viewport.classList.remove("dragging-card");
+        clearAlignmentGuides();
         saveCanvas();
       }
       textPointer = null;
+      layoutInteractionActive = false;
       clearTextPointerListeners();
       releaseViewportCaptureSafe(e.pointerId);
       return true;

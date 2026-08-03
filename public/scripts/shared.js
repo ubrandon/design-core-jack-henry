@@ -766,13 +766,17 @@ function refreshUserPrefsFromServer() {
   });
 }
 
-/** Applies the active user's saved theme (also caches it in dc-theme for no-flash boot). */
+/** Applies the active user's saved theme and keeps the dc-theme boot cache in lockstep so a reload never flashes the previous user's theme. */
 function applyUserTheme() {
+  const root = document.documentElement;
   const t = userState().theme;
-  if (t === "light" || t === "dark") {
-    document.documentElement.setAttribute("data-theme", t);
-    try { localStorage.setItem("dc-theme", t); } catch {}
+  const explicit = t === "light" || t === "dark" ? t : null;
+  if (explicit && root.getAttribute("data-theme") !== explicit) {
+    root.setAttribute("data-theme", explicit);
   }
+  // A user with no saved theme keeps the current document theme (the shared default).
+  const effective = explicit || (root.getAttribute("data-theme") === "light" ? "light" : "dark");
+  try { localStorage.setItem("dc-theme", effective); } catch {}
 }
 
 /** Switches the active user; loads their prefs and notifies the page. Pass "" to clear. */
@@ -920,3 +924,40 @@ function fetchProjectsSummary() {
     return r.json();
   });
 }
+
+/* Slim notice shown only on the deployed (static) site, where there is no local
+   tool server so authoring does not persist for others. Skipped on localhost
+   and inside prototype embeds; dismissible and remembered per browser. */
+const VIEWONLY_DISMISS_KEY = "design-core:viewonly-dismissed";
+const VIEWONLY_EYE_SVG =
+  '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+const VIEWONLY_CLOSE_SVG =
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+
+function mountViewOnlyNotice() {
+  let isEmbed = false;
+  try { isEmbed = new URLSearchParams(location.search).get("view") === "embed"; } catch {}
+  if (isEmbed) return;
+  try { if (localStorage.getItem(VIEWONLY_DISMISS_KEY) === "1") return; } catch {}
+  isLocalToolServer().then((local) => {
+    if (local || document.getElementById("dc-viewonly")) return;
+    const bar = document.createElement("div");
+    bar.id = "dc-viewonly";
+    bar.className = "dc-viewonly";
+    bar.innerHTML =
+      '<span class="dc-viewonly__icon" aria-hidden="true">' + VIEWONLY_EYE_SVG + "</span>" +
+      '<span class="dc-viewonly__text">View-only copy. To create or edit projects, run Design Core on your computer.</span>' +
+      '<button type="button" class="dc-viewonly__close" aria-label="Dismiss">' + VIEWONLY_CLOSE_SVG + "</button>";
+    function mount() {
+      document.body.appendChild(bar);
+      bar.querySelector(".dc-viewonly__close").addEventListener("click", () => {
+        bar.remove();
+        try { localStorage.setItem(VIEWONLY_DISMISS_KEY, "1"); } catch {}
+      });
+    }
+    if (document.body) mount();
+    else document.addEventListener("DOMContentLoaded", mount);
+  });
+}
+
+try { mountViewOnlyNotice(); } catch {}

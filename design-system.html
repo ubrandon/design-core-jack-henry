@@ -43,56 +43,155 @@
         gap: 40px;
         width: max-content;
       }
+      .ds-group-pair {
+        display: flex;
+        align-items: stretch;
+        gap: var(--ds-pair-gap, 40px);
+        width: max-content;
+      }
       .ds-group {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 28px;
+        width: max-content;
+        box-sizing: border-box;
+        padding: 40px;
+        border-radius: 0;
+        background: linear-gradient(180deg, #ffffff, #f8fafc);
+        border: 0;
+        box-shadow: none;
+        --bg-0: #ffffff;
+        --bg-1: #f3f4f6;
+        --surface: #ffffff;
+        --border: rgba(15, 23, 42, 0.12);
+        --text: #1a2332;
+        --muted: #5c6b7d;
+        --muted-2: #858b94;
+        --shadow: 0 18px 60px rgba(15, 23, 42, 0.12);
+        --shadow-soft: 0 10px 40px rgba(15, 23, 42, 0.08);
+        color: var(--text);
+        overflow: visible;
       }
-      .ds-group-header {
-        font-size: 0.7rem;
-        font-weight: 800;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: rgba(0, 0, 0, 0.45);
-        padding-bottom: 6px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      #stage .ds-group > .ds-group-header {
+        font-size: 2rem;
+        line-height: 1.15;
+        font-weight: 850;
+        letter-spacing: -0.035em;
+        text-transform: none;
+        color: var(--text);
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
       }
       .ds-group-row {
         display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        gap: 20px;
-        align-items: flex-start;
-      }
-      .ds-section {
-        padding: 20px;
-        border-radius: var(--radius-lg);
-        background: #ffffff;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        min-width: 280px;
+        flex-direction: column;
+        gap: var(--ds-layout-gap, 32px);
         width: max-content;
+      }
+      .ds-group-band {
+        display: grid;
+        grid-template-columns: repeat(var(--ds-layout-columns, 1), var(--ds-column-width, 520px));
+        gap: var(--ds-layout-gap, 32px);
+        align-items: start;
+        width: max-content;
+      }
+      .ds-group-column {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ds-layout-gap, 32px);
+        width: var(--ds-column-width, 520px);
+        min-width: 0;
+      }
+      .ds-group-row--row {
+        flex-direction: row;
+        align-items: flex-start;
+        flex-wrap: nowrap;
+      }
+      .ds-group-row--column {
+        flex-direction: column;
+      }
+      #stage .ds-group > .ds-group-row :where(.ds-section) {
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        min-width: 280px;
+        width: var(--ds-column-width, max-content);
+        box-sizing: border-box;
         flex-shrink: 0;
         overflow: visible;
-        --bg-0: #ffffff;
-        --bg-1: #f8f9fb;
-        --surface: rgba(0, 0, 0, 0.03);
-        --border: rgba(0, 0, 0, 0.1);
-        --text: rgba(0, 0, 0, 0.88);
-        --muted: rgba(0, 0, 0, 0.55);
-        --muted-2: rgba(0, 0, 0, 0.38);
-        --shadow: 0 18px 60px rgba(0, 0, 0, 0.1);
-        --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.06);
+        color: inherit;
+      }
+      #stage .ds-group > .ds-group-row :where(.ds-section--full) {
+        width: var(--ds-group-width, max-content);
+      }
+      .ds-layout-measure {
+        position: absolute;
+        left: -100000px;
+        top: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      /* A theme is one continuous board; categories are sections inside it. */
+      .ds-canvas-stage .ds-group[data-ds-theme="dark"] {
+        background: linear-gradient(180deg, #101827, #0a111d);
+        border-color: transparent;
+        box-shadow: none;
+        --bg-0: #090f19;
+        --bg-1: #101827;
+        --surface: rgba(255, 255, 255, 0.07);
+        --border: rgba(255, 255, 255, 0.14);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.68);
+        --muted-2: rgba(255, 255, 255, 0.5);
+        --shadow: 0 18px 60px rgba(0, 0, 0, 0.48);
+        --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.3);
+        color: var(--text);
+        color-scheme: dark;
+      }
+      .ds-canvas-stage .ds-group[data-ds-theme="light"] {
+        background: linear-gradient(180deg, #ffffff, #f8fafc);
+        border-color: transparent;
+        box-shadow: none;
+        color-scheme: light;
+      }
+      .ds-canvas-stage .ds-group[data-ds-theme="dark"] :where(.ds-group-header, .ds-chapter-header, .ds-section-header) {
+        color: rgba(255, 255, 255, 0.92);
+        border-bottom-color: rgba(255, 255, 255, 0.14);
+      }
+      .ds-canvas-stage .ds-group[data-ds-theme="dark"] :where(.ds-component-label) {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .ds-canvas-stage .ds-group[data-ds-theme="light"] :where(.ds-group-header, .ds-chapter-header, .ds-section-header) {
+        color: #1a2332;
+        border-bottom-color: rgba(15, 23, 42, 0.12);
+      }
+      .ds-canvas-stage .ds-group[data-ds-theme="light"] :where(.ds-component-label) {
+        color: #697586;
+      }
+      #stage .ds-group > .ds-group-row > .ds-chapter-header {
+        width: var(--ds-group-width, 100%);
+        box-sizing: border-box;
+        margin: 8px 0 -16px;
+        padding: 0 0 14px;
+        border-bottom: 2px solid var(--border);
+        font-size: 1.65rem;
+        line-height: 1.2;
+        font-weight: 850;
+        letter-spacing: -0.03em;
         color: var(--text);
       }
       .ds-section-header {
-        font-size: 1.1rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: rgba(0, 0, 0, 0.8);
-        margin-bottom: 20px;
+        font-size: 1.3rem;
+        line-height: 1.25;
+        font-weight: 850;
+        letter-spacing: -0.025em;
+        color: var(--text);
+        margin-bottom: 18px;
         padding-bottom: 12px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        border-bottom: 1px solid var(--border);
       }
       .ds-component-grid {
         display: flex;
@@ -197,12 +296,232 @@
               link = document.createElement("link");
               link.id = "design-core-company-css";
               link.rel = "stylesheet";
+              link.addEventListener("load", dsScheduleLayout);
               document.head.appendChild(link);
             }
             link.href = "data/design-system/company.css?t=" + Date.now();
           }
         })
         .catch(() => {});
+
+      function dsEscape(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function dsClassName(value) {
+        return String(value ?? "group")
+          .toLowerCase()
+          .replace(/[^a-z0-9_-]+/g, "-")
+          .replace(/^-+|-+$/g, "") || "group";
+      }
+
+      function dsNumber(value, fallback, min, max) {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) return fallback;
+        return Math.min(max, Math.max(min, parsed));
+      }
+
+      function dsTheme(group) {
+        const explicit = String(group.theme || "").toLowerCase();
+        if (explicit === "dark" || explicit === "light") return explicit;
+        const hint = `${group.id || ""} ${group.name || ""}`.toLowerCase();
+        if (/(^|\W)dark(\W|$)/.test(hint)) return "dark";
+        if (/(^|\W)light(\W|$)/.test(hint)) return "light";
+        return "";
+      }
+
+      function dsPair(group, theme) {
+        if (group.pair === false || group.pair === null) return "";
+        if (typeof group.pair === "string" && group.pair.trim()) return group.pair.trim();
+        return theme ? "theme-modes" : "";
+      }
+
+      function dsGroupLayout(registry, group, categoryCount) {
+        const registryLayout = registry.layout && typeof registry.layout === "object" ? registry.layout : {};
+        const defaults = registryLayout.group && typeof registryLayout.group === "object"
+          ? registryLayout.group
+          : registryLayout;
+        const local = typeof group.layout === "string"
+          ? { mode: group.layout }
+          : group.layout && typeof group.layout === "object" ? group.layout : {};
+        const requestedMode = String(local.mode || defaults.mode || "masonry").toLowerCase();
+        const mode = ["masonry", "row", "column"].includes(requestedMode) ? requestedMode : "masonry";
+        const automaticColumns = categoryCount > 4 ? 2 : 1;
+        return {
+          mode,
+          columns: Math.round(dsNumber(local.columns ?? defaults.columns, automaticColumns, 1, 4)),
+          columnWidth: Math.round(dsNumber(local.columnWidth ?? defaults.columnWidth, 520, 280, 1600)),
+          maxColumnWidth: Math.round(dsNumber(local.maxColumnWidth ?? defaults.maxColumnWidth, 1600, 280, 2400)),
+          gap: Math.round(dsNumber(local.gap ?? defaults.gap, 32, 8, 80)),
+          pairGap: Math.round(dsNumber(registryLayout.pairGap, 40, 16, 120)),
+        };
+      }
+
+      function dsCategorySpan(category, columns) {
+        const layout = category.layout && typeof category.layout === "object" ? category.layout : {};
+        const raw = category.span ?? layout.span;
+        if (raw === "all" || raw === "full" || Number(raw) >= columns) return "all";
+        if (Number(raw) === 1) return "single";
+        const rowLayout = category.layout === "row" || layout.mode === "row";
+        if (rowLayout && (category.components || []).length > 1 && columns > 1) return "all";
+        return "auto";
+      }
+
+      function dsArrangeMasonry(groupEl, record) {
+        const body = groupEl.querySelector(":scope > .ds-group-row");
+        const sections = [...body.querySelectorAll(".ds-section[data-category-index]")]
+          .sort((a, b) => Number(a.dataset.categoryIndex) - Number(b.dataset.categoryIndex));
+        const { columns, gap, maxColumnWidth } = record.layout;
+        let columnWidth = record.layout.columnWidth;
+
+        body.className = "ds-group-row ds-group-row--masonry";
+        body.replaceChildren();
+
+        function setDimensions() {
+          const groupWidth = columnWidth * columns + gap * (columns - 1);
+          groupEl.style.setProperty("--ds-layout-columns", columns);
+          groupEl.style.setProperty("--ds-column-width", columnWidth + "px");
+          groupEl.style.setProperty("--ds-layout-gap", gap + "px");
+          groupEl.style.setProperty("--ds-group-width", groupWidth + "px");
+          return groupWidth;
+        }
+
+        let groupWidth = setDimensions();
+        const measure = document.createElement("div");
+        measure.className = "ds-layout-measure";
+        body.appendChild(measure);
+
+        function measureSections(allowExpansion) {
+          let requiredColumnWidth = columnWidth;
+          const measured = [];
+          for (const section of sections) {
+            section.classList.remove("ds-section--full");
+            section.style.width = columnWidth + "px";
+            measure.appendChild(section);
+
+            const requested = section.dataset.span || "auto";
+            let full = columns === 1 ? false : requested === "all";
+            const overflowsColumn = section.scrollWidth > section.clientWidth + 4 || section.offsetWidth > columnWidth + 4;
+            if (!full && requested !== "all" && columns > 1 && overflowsColumn) full = true;
+
+            if (full) {
+              section.classList.add("ds-section--full");
+              section.style.width = groupWidth + "px";
+              if (allowExpansion && section.scrollWidth > section.clientWidth + 4) {
+                const needed = Math.ceil((section.scrollWidth - gap * (columns - 1)) / columns);
+                requiredColumnWidth = Math.max(requiredColumnWidth, Math.min(maxColumnWidth, needed));
+              }
+            }
+
+            measured.push({
+              section,
+              full,
+              height: Math.ceil(section.getBoundingClientRect().height),
+              column: Math.round(dsNumber(section.dataset.column, 0, 0, columns)),
+              chapter: section.dataset.sectionName || "",
+            });
+          }
+          return { measured, requiredColumnWidth };
+        }
+
+        let result = measureSections(true);
+        if (result.requiredColumnWidth > columnWidth) {
+          columnWidth = result.requiredColumnWidth;
+          groupWidth = setDimensions();
+          result = measureSections(false);
+        }
+
+        measure.remove();
+        body.replaceChildren();
+
+        let band = null;
+        let bandColumns = [];
+        let columnHeights = [];
+        function startBand() {
+          band = document.createElement("div");
+          band.className = "ds-group-band";
+          bandColumns = [];
+          columnHeights = Array(columns).fill(0);
+          for (let i = 0; i < columns; i++) {
+            const column = document.createElement("div");
+            column.className = "ds-group-column";
+            band.appendChild(column);
+            bandColumns.push(column);
+          }
+          body.appendChild(band);
+        }
+
+        for (const item of result.measured) {
+          const { section, full, height, column, chapter } = item;
+          section.style.width = "";
+          if (chapter) {
+            band = null;
+            const heading = document.createElement("h3");
+            heading.className = "ds-chapter-header";
+            heading.textContent = chapter;
+            body.appendChild(heading);
+          }
+          if (full) {
+            band = null;
+            body.appendChild(section);
+            continue;
+          }
+          if (!band) startBand();
+          const target = column > 0
+            ? column - 1
+            : columnHeights.indexOf(Math.min(...columnHeights));
+          bandColumns[target].appendChild(section);
+          columnHeights[target] += height + gap;
+        }
+      }
+
+      function dsArrangeLinear(groupEl, record) {
+        const body = groupEl.querySelector(":scope > .ds-group-row");
+        const sections = [...body.querySelectorAll(".ds-section[data-category-index]")]
+          .sort((a, b) => Number(a.dataset.categoryIndex) - Number(b.dataset.categoryIndex));
+        body.className = `ds-group-row ds-group-row--${record.layout.mode}`;
+        body.style.setProperty("--ds-layout-gap", record.layout.gap + "px");
+        const nodes = [];
+        for (const section of sections) {
+          const chapter = section.dataset.sectionName || "";
+          if (chapter) {
+            const heading = document.createElement("h3");
+            heading.className = "ds-chapter-header";
+            heading.textContent = chapter;
+            nodes.push(heading);
+          }
+          section.classList.remove("ds-section--full");
+          section.style.width = "max-content";
+          nodes.push(section);
+        }
+        body.replaceChildren(...nodes);
+      }
+
+      let activeGroupRecords = [];
+      let relayoutFrame = 0;
+      function dsArrangeAll() {
+        for (const record of activeGroupRecords) {
+          const groupEl = stage.querySelector(`[data-group-key="${CSS.escape(record.key)}"]`);
+          if (!groupEl) continue;
+          if (record.layout.mode === "masonry") dsArrangeMasonry(groupEl, record);
+          else dsArrangeLinear(groupEl, record);
+        }
+        pz.applyTransform();
+      }
+
+      function dsScheduleLayout() {
+        cancelAnimationFrame(relayoutFrame);
+        relayoutFrame = requestAnimationFrame(dsArrangeAll);
+      }
+
+      stage.addEventListener("load", event => {
+        if (event.target instanceof HTMLImageElement) dsScheduleLayout();
+      }, true);
 
       async function loadDesignSystem() {
         const bust = "?t=" + Date.now();
@@ -270,25 +589,33 @@
         const contentMap = new Map();
         for (const c of loaded) contentMap.set(c.id, c.content);
 
-        const groupHtml = [];
-        for (const g of groups) {
+        const categoryIndex = new Map(categories.map((category, index) => [category, index]));
+        const records = [];
+        for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
+          const g = groups[groupIndex];
           const cats = byGroup.get(g.id) || [];
           if (cats.length === 0) continue;
 
+          const theme = dsTheme(g);
+          const groupLayout = dsGroupLayout(registry, g, cats.length);
+          const key = String(g.id || `group-${groupIndex}`);
+
           const sections = [];
           for (const cat of cats) {
-            const layout = typeof cat.layout === "string" ? { mode: cat.layout } : cat.layout || {};
-            const isRow = layout.mode === "row";
+            const categoryLayout = typeof cat.layout === "string" ? { mode: cat.layout } : cat.layout || {};
+            const isRow = categoryLayout.mode === "row";
             const gridClass = isRow ? "ds-component-grid ds-component-grid--fixed" : "ds-component-grid";
-            const gridStyle = "";
+            const index = categoryIndex.get(cat);
+            const span = dsCategorySpan(cat, groupLayout.columns);
+            const column = Math.round(dsNumber(cat.column ?? categoryLayout.column, 0, 0, 4));
 
             sections.push(`
-              <section class="ds-section">
-                <h2 class="ds-section-header">${cat.name}</h2>
-                <div class="${gridClass}" ${gridStyle}>
+              <section class="ds-section" data-category-index="${index}" data-span="${span}" data-column="${column}" data-section-name="${dsEscape(cat.section || cat.chapter || "")}">
+                <h2 class="ds-section-header">${dsEscape(cat.name)}</h2>
+                <div class="${gridClass}">
                   ${cat.components.map(comp => `
                     <div class="ds-component-item">
-                      <span class="ds-component-label">${comp.label}</span>
+                      <span class="ds-component-label">${dsEscape(comp.label)}</span>
                       <div class="ds-component-preview">${contentMap.get(comp.id) || ""}</div>
                     </div>
                   `).join("")}
@@ -297,16 +624,39 @@
             `);
           }
 
-          groupHtml.push(`
-            <div class="ds-group ds-group--${g.id}">
-              <h2 class="ds-group-header">${g.name}</h2>
+          records.push({
+            key,
+            group: g,
+            theme,
+            pair: dsPair(g, theme),
+            layout: groupLayout,
+            html: `
+            <div class="ds-group ds-group--${dsClassName(g.id)}" data-group-key="${dsEscape(key)}"${theme ? ` data-ds-theme="${theme}"` : ""}>
+              <h2 class="ds-group-header">${dsEscape(g.name)}</h2>
               <div class="ds-group-row">${sections.join("")}</div>
-            </div>
-          `);
+            </div>`,
+          });
         }
 
-        stage.innerHTML = groupHtml.join("");
-        pz.applyTransform();
+        const consumedPairs = new Set();
+        const layoutHtml = [];
+        for (const record of records) {
+          if (record.pair) {
+            const members = records.filter(candidate => candidate.pair === record.pair);
+            if (members.length > 1) {
+              if (consumedPairs.has(record.pair)) continue;
+              consumedPairs.add(record.pair);
+              layoutHtml.push(`<div class="ds-group-pair" data-pair="${dsEscape(record.pair)}" style="--ds-pair-gap:${record.layout.pairGap}px">${members.map(member => member.html).join("")}</div>`);
+              continue;
+            }
+          }
+          layoutHtml.push(record.html);
+        }
+
+        activeGroupRecords = records;
+        stage.innerHTML = layoutHtml.join("");
+        dsArrangeAll();
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(dsScheduleLayout);
 
         const companyLink = document.getElementById("design-core-company-css");
         if (companyLink) {

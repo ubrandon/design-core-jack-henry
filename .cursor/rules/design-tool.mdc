@@ -162,11 +162,14 @@ All paths below are **disk paths** (relative to repo root):
 
 ### Design System Page Layout
 
-The design system page (`design-system.html`) uses an **infinite canvas**: main sections (groups) stack **vertically**; under each, sub-categories are laid out **horizontally** in one row so the canvas uses width. Layout is driven by `registry.json`:
+The design system page (`design-system.html`) uses an **infinite canvas** with a registry-driven masonry layout. Categories pack into balanced vertical columns so short sections do not inherit empty space from taller neighbors.
 
-- **`groups`** -- order defines vertical order. Each group has a header, then a single horizontal row of section cards (its categories).
-- **Categories** -- each has `group`, `name`, and `components`. Optionally `"layout": "row"` so that section's components sit side by side.
-- **Adding content** -- add a category to a group; it appears as another card in that group's horizontal row.
+- **`groups`** -- top-level libraries or themes. Groups normally stack vertically; groups with the same `pair` render side by side.
+- **Light/dark themes** -- set `theme` to `"dark"` or `"light"` and give both groups the same `pair`. Each group becomes one continuous flat themed surface; categories use internal headings rather than card shells. IDs/names containing “dark” and “light” are inferred for backward compatibility.
+- **Group layout** -- masonry is the default. Configure top-level `layout` defaults or a group's `layout` with `columns`, `columnWidth`, `maxColumnWidth`, and `gap`.
+- **Categories** -- each has `group`, `name`, and `components`. Add `section` to the first category of a major chapter to create a full-width divider; use `span: "all"` for a wide visual anchor and optional `column` hints to keep related categories together.
+- **Component layout** -- `"layout": "row"` still means the components inside one category sit side by side. A multi-component row automatically becomes full width unless explicitly constrained.
+- **Full reference** -- read `docs/design-system.md` before creating or restructuring a company design system.
 
 ## Critical Rules
 
@@ -514,28 +517,41 @@ The `registry.json` file controls the design system page layout:
 
 ```json
 {
+  "layout": {
+    "mode": "masonry",
+    "columns": 2,
+    "columnWidth": 520,
+    "gap": 20,
+    "pairGap": 40
+  },
   "groups": [
-    { "id": "foundations", "name": "Foundations" },
-    { "id": "inputs", "name": "Inputs & Controls" }
+    { "id": "dark-mode", "name": "Dark mode", "theme": "dark", "pair": "color-modes" },
+    { "id": "light-mode", "name": "Light mode", "theme": "light", "pair": "color-modes" }
   ],
   "categories": [
     {
-      "group": "foundations",
+      "group": "dark-mode",
       "name": "Colors",
+      "span": "all",
       "layout": "row",
       "components": [
-        { "id": "colors-bg", "file": "colors-bg.html", "label": "Backgrounds" }
+        { "id": "colors-dark", "file": "acme/colors-dark.html", "label": "Color tokens" }
       ]
     }
   ]
 }
 ```
 
-- **Groups** are top-level sections that stack vertically. Each gets a header row.
-- **Categories** belong to a group and appear as horizontal cards under that group.
+- **Groups** are top-level libraries. Paired groups appear side by side; unpaired groups stack vertically.
+- **Categories** belong to a group and pack into its masonry columns as plain headed sections. `section` on the first category of a major chapter inserts a large full-width divider and resets the masonry run. Do not add decorative outer cards around previews; the displayed component should be the only UI chrome.
 - Each category has a `components` array -- each component gets its own preview file.
 - Use `"layout": "row"` on a category to lay out its components side-by-side (good for color swatches, button variants, icon sets).
+- Use `"span": "all"` only for foundations, typography, or another category that should reset the visual flow. Normal categories should remain one column.
+- Use the same `pair` plus `theme: "dark"` / `theme: "light"` for side-by-side theme libraries. Prefer token-driven fragments that can be reused in both themes.
+- A group can override top-level layout defaults with `"layout": { "mode": "masonry", "columns": 3, "columnWidth": 460 }`.
+- A category can use a one-based `column` hint when related components should stay in the same masonry stack.
 - Group IDs should be lowercase, hyphenated (e.g. `cards-content`, `inputs-controls`).
+- Read `docs/design-system.md` for the full schema, automatic behavior, and light/dark guidance.
 
 ### User content separation
 

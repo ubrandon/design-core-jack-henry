@@ -202,6 +202,7 @@ Key rules for prototype HTML:
 
 ```json
 {
+  "layout": { "mode": "masonry", "columns": 2, "columnWidth": 520 },
   "groups": [
     { "id": "foundations", "name": "Foundations" },
     { "id": "cards", "name": "Cards" }
@@ -219,7 +220,7 @@ Key rules for prototype HTML:
 }
 ```
 
-The design system page uses an **infinite canvas**: main sections (groups) stack **vertically**; under each, sub-categories are laid out **horizontally** in one row so the canvas uses width. Groups appear in the order listed in `groups`. A category can set `"layout": "row"` so that section’s components sit side by side.
+The design system page uses an **infinite canvas** with registry-driven masonry columns. Every group is one continuous flat reference surface; categories are separated by headings and whitespace rather than card shells. A category can start a major chapter with `section`, creating a full-width divider and a new masonry run. Groups normally stack vertically, while groups with the same `pair` appear side by side for comparisons such as light and dark mode. A category can set `"layout": "row"` for its internal components and `"span": "all"` when it should become a wide anchor. See `docs/design-system.md` for the current schema.
 
 ## Features
 
@@ -270,7 +271,8 @@ A prototype is a **self-contained interactive HTML file** that the designer buil
 
 ### Design System — Reference Page
 
-- Infinite-canvas style layout: groups stack vertically; categories flow horizontally (`canvas-pan-zoom.js` + canvas-space styles)
+- Infinite-canvas masonry layout with paired groups, chapter dividers, automatic wide-section promotion, and explicit span/column hints
+- Theme-aware full-board chrome and inherited tokens for paired light/dark libraries
 - Each component rendered from its HTML file under `public/data/design-system/components/`
 - Categories and groups from `registry.json`
 - Shows colors, typography, buttons, cards, rows, tags, chips, forms, radii, shadows

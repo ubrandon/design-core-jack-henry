@@ -60,6 +60,30 @@ export function isCoreRemote(url) {
   return !!p && `${p.owner}/${p.repo}`.toLowerCase() === CORE_SLUG;
 }
 
+// Normalizes a site root to `origin/path/` (adds https:// and a trailing slash), else null.
+export function normalizePublicBaseUrl(input) {
+  if (input == null) return null;
+  const s = String(input).trim();
+  if (!s) return null;
+  try {
+    const raw = /^https?:\/\//i.test(s) ? s : `https://${s.replace(/^\/+/, "")}`;
+    const u = new URL(raw);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return null;
+    let path = u.pathname || "/";
+    if (!path.endsWith("/")) path += "/";
+    return `${u.origin}${path}`;
+  } catch {
+    return null;
+  }
+}
+
+// GitHub project Pages root (https://<owner>.github.io/<repo>/) for a remote URL, else null.
+export function githubPagesRootFromRemote(remoteUrl) {
+  const p = parseGithubRemote(remoteUrl);
+  if (!p) return null;
+  return `https://${p.owner.toLowerCase()}.github.io/${p.repo}/`;
+}
+
 // Reads all remotes into { origin: {fetch, push}, upstream: {...}, ... }.
 export function getRemotes() {
   const out = sh("git remote -v");

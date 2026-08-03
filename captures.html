@@ -991,9 +991,9 @@
           cardPointer.moved = true;
           viewport.classList.add("dragging-card");
 
-          var rect = viewport.getBoundingClientRect();
-          var sX = (cardPointer.startX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
-          var sY = (cardPointer.startY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
+          var startPoint = pz.clientToStage(cardPointer.startX, cardPointer.startY);
+          var sX = startPoint.x;
+          var sY = startPoint.y;
 
           cardPointer.dragOffsets = [];
           selected.forEach(function(i) {
@@ -1001,9 +1001,9 @@
           });
         }
 
-        var rect = viewport.getBoundingClientRect();
-        var stageX = (e.clientX - rect.left - pz.panX - rect.width / 2) / pz.zoom;
-        var stageY = (e.clientY - rect.top - pz.panY - rect.height / 2 + 52) / pz.zoom;
+        var stagePoint = pz.clientToStage(e.clientX, e.clientY);
+        var stageX = stagePoint.x;
+        var stageY = stagePoint.y;
 
         for (var di = 0; di < cardPointer.dragOffsets.length; di++) {
           var d = cardPointer.dragOffsets[di];

@@ -2,11 +2,11 @@
  * Shared pan/zoom/touch logic for infinite canvas pages.
  *
  * Usage:
- *   const pz = initPanZoom(viewportEl, stageEl, { navHeight: 52 });
- *   // pz.zoom, pz.panX, pz.panY, pz.zoomBy(delta), pz.resetView()
+ *   const pz = initPanZoom(viewportEl, stageEl, { restoreState });
+ *   // pz.zoom, pz.panX, pz.panY, pz.zoomBy(delta), pz.resetView(),
+ *   // pz.clientToStage(clientX, clientY)
  */
 function initPanZoom(viewport, stage, opts) {
-  const navHeight = (opts && opts.navHeight) || 52;
   const MIN_ZOOM = 0.05;
   const MAX_ZOOM = 2;
 
@@ -51,6 +51,15 @@ function initPanZoom(viewport, stage, opts) {
     stage.style.transform = "translate(" + panX + "px, " + panY + "px) scale(" + zoom + ")";
     var label = document.getElementById("zoom-label");
     if (label) label.textContent = Math.round(zoom * 100) + "%";
+  }
+
+  /** Convert viewport client coordinates into unscaled stage coordinates. */
+  function clientToStage(clientX, clientY) {
+    var rect = viewport.getBoundingClientRect();
+    return {
+      x: (clientX - rect.left - rect.width / 2 - panX) / zoom,
+      y: (clientY - rect.top - rect.height / 2 - panY) / zoom,
+    };
   }
 
   function zoomBy(delta) {
@@ -150,7 +159,7 @@ function initPanZoom(viewport, stage, opts) {
     e.preventDefault();
     var rect = viewport.getBoundingClientRect();
     var mx = e.clientX - rect.left - rect.width / 2;
-    var my = e.clientY - rect.top - rect.height / 2 + navHeight;
+    var my = e.clientY - rect.top - rect.height / 2;
 
     if (e.ctrlKey || e.metaKey) {
       var step = Math.max(-50, Math.min(50, e.deltaY));
@@ -209,6 +218,7 @@ function initPanZoom(viewport, stage, opts) {
     set zoom(v) { zoom = v; },
     get spaceHeld() { return spaceHeld; },
     applyTransform: applyTransform,
+    clientToStage: clientToStage,
     zoomBy: zoomBy,
     resetView: resetView,
     get isPanning() { return isPanning; },
