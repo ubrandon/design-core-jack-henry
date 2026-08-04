@@ -98,6 +98,13 @@
     const CARD_GAP = 40;
     const DRAG_THRESHOLD = 5;
     const TITLE_FONT_SIZE = 48;
+    const TITLE_FONT_SIZES = [
+      { label: "Small", size: 24 },
+      { label: "Medium", size: 36 },
+      { label: "Large", size: 48 },
+      { label: "Extra large", size: 72 },
+      { label: "Massive", size: 144 },
+    ];
     const DUPLICATE_OFFSET = 64;
     /** Screen-space distance at which matching object edges or centers snap. */
     const ALIGN_SNAP_THRESHOLD = 8;
@@ -422,6 +429,7 @@
       closeContextMenu();
       ctxMenu = document.createElement("div");
       ctxMenu.className = "canvas-context-menu";
+      ctxMenu.setAttribute("role", "menu");
       for (const item of items) {
         if (item.sep) {
           const sep = document.createElement("div");
@@ -429,8 +437,20 @@
           ctxMenu.appendChild(sep);
           continue;
         }
+        if (item.heading) {
+          const heading = document.createElement("div");
+          heading.className = "canvas-context-menu-heading";
+          heading.textContent = item.heading;
+          ctxMenu.appendChild(heading);
+          continue;
+        }
         const btn = document.createElement("button");
-        btn.className = "canvas-context-menu-item" + (item.danger ? " canvas-context-menu-item--danger" : "");
+        btn.type = "button";
+        btn.className = "canvas-context-menu-item" +
+          (item.danger ? " canvas-context-menu-item--danger" : "") +
+          (item.active ? " is-active" : "");
+        btn.setAttribute("role", typeof item.active === "boolean" ? "menuitemradio" : "menuitem");
+        if (typeof item.active === "boolean") btn.setAttribute("aria-checked", item.active ? "true" : "false");
         const iconWrap = document.createElement("span");
         iconWrap.className = "canvas-context-menu-icon";
         if (item.icon) iconWrap.innerHTML = item.icon;
@@ -439,6 +459,12 @@
         labelEl.className = "canvas-context-menu-label";
         labelEl.textContent = item.label;
         btn.appendChild(labelEl);
+        if (item.meta) {
+          const metaEl = document.createElement("span");
+          metaEl.className = "canvas-context-menu-meta";
+          metaEl.textContent = item.meta;
+          btn.appendChild(metaEl);
+        }
         btn.addEventListener("click", () => {
           if (btn.dataset.busy === "1") return;
           if (item.async) {
@@ -480,6 +506,7 @@
     const ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
     const ICON_DELETE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
     const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>';
+    const ICON_TEXT_SIZE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>';
 
     let jszipPromise = null;
     function loadJSZip() {
@@ -603,9 +630,24 @@
         }
 
         const label = selectedObjectLabel();
+        const selectedSizes = new Set(
+          Array.from(selectedTexts)
+            .map(i => texts[i] && texts[i].size)
+            .filter(size => Number.isFinite(size)),
+        );
+        const sizeItems = TITLE_FONT_SIZES.map(option => ({
+          label: option.label,
+          meta: option.size + "px",
+          icon: ICON_TEXT_SIZE,
+          active: selectedSizes.size === 1 && selectedSizes.has(option.size),
+          action: () => setSelectedTextSize(option.size),
+        }));
         showContextMenu(e.clientX, e.clientY, [
           { label: "Select All", icon: ICON_SELECT, action: setAllSelected },
           { label: "Duplicate " + label, icon: ICON_COPY, async: true, action: ({ startBusy }) => { startBusy("Duplicating…"); return duplicateSelection(); } },
+          { sep: true },
+          { heading: "Text size" },
+          ...sizeItems,
           { sep: true },
           { label: "Delete " + label, icon: ICON_DELETE, danger: true, action: deleteSelected },
         ]);
@@ -1044,7 +1086,12 @@
     viewport.addEventListener("pointerup", (e) => {
       if (endCanvasPointerSession(e)) return;
 
-      if (!pz.didPan && !e.target.closest(".canvas-card") && !e.target.closest(".canvas-context-menu")) {
+      if (
+        !pz.didPan &&
+        !e.target.closest(".canvas-card") &&
+        !e.target.closest(".canvas-text") &&
+        !e.target.closest(".canvas-context-menu")
+      ) {
         clearSelection();
       }
     });
@@ -1661,6 +1708,15 @@
       if (selectedTexts.size === 0) return;
       Array.from(selectedTexts).sort((a, b) => b - a).forEach(i => texts.splice(i, 1));
       clearTextSelection();
+      renderTexts();
+      saveCanvas();
+    }
+
+    function setSelectedTextSize(size) {
+      if (!TITLE_FONT_SIZES.some(option => option.size === size) || selectedTexts.size === 0) return;
+      selectedTexts.forEach(i => {
+        if (texts[i]) texts[i].size = size;
+      });
       renderTexts();
       saveCanvas();
     }

@@ -294,6 +294,31 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
+.canvas-context-menu-item.is-active {
+  color: var(--neon-teal);
+  background: rgba(var(--neon-teal-rgb), 0.12);
+}
+
+.canvas-context-menu-heading {
+  padding: 8px 12px 5px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.canvas-context-menu-label {
+  flex: 1;
+}
+
+.canvas-context-menu-meta {
+  margin-left: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
 .canvas-context-menu-item--danger {
   color: #ff6b6b;
 }

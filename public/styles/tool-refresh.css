@@ -885,6 +885,54 @@ a.tile-card:hover {
   box-shadow: var(--tool-shadow-float);
 }
 
+.canvas-selection-bar-label {
+  color: var(--tool-text-secondary);
+}
+
+.canvas-selection-bar-btn {
+  color: var(--tool-danger);
+  background: var(--tool-danger-soft);
+  border-color: color-mix(in srgb, var(--tool-danger) 30%, transparent);
+}
+
+.canvas-selection-bar-btn:hover {
+  color: var(--tool-danger);
+  background: color-mix(in srgb, var(--tool-danger) 16%, transparent);
+  border-color: color-mix(in srgb, var(--tool-danger) 44%, transparent);
+}
+
+.canvas-context-menu-item {
+  color: var(--tool-text-secondary);
+}
+
+.canvas-context-menu-item:hover {
+  color: var(--tool-text);
+  background: var(--tool-surface-muted);
+}
+
+.canvas-context-menu-item.is-active {
+  color: var(--tool-accent);
+  background: var(--tool-accent-soft);
+}
+
+.canvas-context-menu-item--danger,
+.canvas-context-menu-item--danger:hover {
+  color: var(--tool-danger);
+}
+
+.canvas-context-menu-item--danger:hover {
+  background: var(--tool-danger-soft);
+}
+
+.canvas-context-menu-heading,
+.canvas-context-menu-meta {
+  color: var(--tool-text-tertiary);
+}
+
+.canvas-context-menu-sep {
+  background: var(--tool-border);
+}
+
 /* Shared floating zoom / canvas toolbar */
 .zoom-controls {
   bottom: 18px;
