@@ -4,13 +4,26 @@
   right: 20px;
   z-index: 150;
   display: flex;
+  flex-wrap: nowrap;
   gap: 8px;
   align-items: center;
+  width: max-content;
+  max-width: calc(100vw - 36px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.zoom-controls::-webkit-scrollbar {
+  display: none;
+}
+.zoom-controls > * {
+  flex-shrink: 0;
 }
 .zoom-controls__zoom-group {
   display: flex;
@@ -22,6 +35,8 @@
 }
 .canvas-tool-group {
   display: flex;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
   align-items: center;
   gap: 4px;
   padding-right: 8px;
