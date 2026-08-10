@@ -20,6 +20,14 @@
   margin-left: 4px;
   border-left: 1px solid rgba(0, 0, 0, 0.12);
 }
+.canvas-tool-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-right: 8px;
+  margin-right: 2px;
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
 .zoom-btn {
   width: 36px;
   height: 36px;
@@ -44,6 +52,12 @@
 .zoom-btn:hover {
   background: #f0f0f0;
   border-color: rgba(0, 0, 0, 0.2);
+}
+.zoom-btn.is-active,
+.zoom-btn[aria-pressed="true"] {
+  color: #fff;
+  background: #0066ff;
+  border-color: #0066ff;
 }
 .zoom-level {
   font-size: 0.75rem;

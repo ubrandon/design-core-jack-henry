@@ -19,7 +19,16 @@ function initPanZoom(viewport, stage, opts) {
   var panPointerId = null;
   var didPan = false;
   var spaceHeld = false;
+  var dragToPan = !(opts && opts.dragToPan === false);
   var lastTouchDist = 0, lastTouchMidX = 0, lastTouchMidY = 0;
+
+  function isEditableTarget(target) {
+    return Boolean(target && target.closest && target.closest("input, textarea, select, button, [contenteditable]"));
+  }
+
+  function updatePanReadyVisual() {
+    viewport.classList.toggle("is-pan-ready", spaceHeld || dragToPan);
+  }
 
   function clearPanVisual() {
     viewport.classList.remove("is-panning");
@@ -75,12 +84,17 @@ function initPanZoom(viewport, stage, opts) {
   }
 
   window.addEventListener("keydown", function (e) {
-    if (e.code === "Space") { e.preventDefault(); spaceHeld = true; }
+    if (e.code === "Space" && !isEditableTarget(e.target)) {
+      e.preventDefault();
+      spaceHeld = true;
+      updatePanReadyVisual();
+    }
   });
   window.addEventListener("keyup", function (e) {
     if (e.code === "Space") {
-      e.preventDefault();
+      if (!isEditableTarget(e.target)) e.preventDefault();
       spaceHeld = false;
+      updatePanReadyVisual();
       if (isPanning || panPointerId != null) {
         didPan = isPanning;
         isPanning = false;
@@ -92,9 +106,19 @@ function initPanZoom(viewport, stage, opts) {
     }
   });
 
+  window.addEventListener("blur", function () {
+    spaceHeld = false;
+    panPending = null;
+    if (panPointerId != null) releasePanCapture(panPointerId);
+    panPointerId = null;
+    isPanning = false;
+    clearPanVisual();
+    updatePanReadyVisual();
+  });
+
   viewport.addEventListener("pointerdown", function (e) {
+    didPan = false;
     if (spaceHeld || e.button === 1) {
-      didPan = false;
       isPanning = true;
       panStartX = e.clientX;
       panStartY = e.clientY;
@@ -106,9 +130,8 @@ function initPanZoom(viewport, stage, opts) {
       e.preventDefault();
       return;
     }
-    if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
+    if (e.button === 0 && (dragToPan || e.pointerType === "touch") && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
-      didPan = false;
       panPending = { x: e.clientX, y: e.clientY, id: e.pointerId };
     }
   });
@@ -169,8 +192,9 @@ function initPanZoom(viewport, stage, opts) {
       panX = mx - (mx - panX) * (zoom / oldZoom);
       panY = my - (my - panY) * (zoom / oldZoom);
     } else {
-      panX -= e.deltaX;
-      panY -= e.deltaY;
+      const horizontalFromShift = e.shiftKey && Math.abs(e.deltaX) < Math.abs(e.deltaY);
+      panX -= horizontalFromShift ? e.deltaY : e.deltaX;
+      if (!horizontalFromShift) panY -= e.deltaY;
     }
     applyTransform();
   }, { passive: false });
@@ -207,6 +231,7 @@ function initPanZoom(viewport, stage, opts) {
 
   viewport.addEventListener("dragstart", function (e) { e.preventDefault(); });
 
+  updatePanReadyVisual();
   applyTransform();
 
   var api = {
@@ -217,6 +242,12 @@ function initPanZoom(viewport, stage, opts) {
     get zoom() { return zoom; },
     set zoom(v) { zoom = v; },
     get spaceHeld() { return spaceHeld; },
+    get dragToPan() { return dragToPan; },
+    set dragToPan(v) {
+      dragToPan = Boolean(v);
+      panPending = null;
+      updatePanReadyVisual();
+    },
     applyTransform: applyTransform,
     clientToStage: clientToStage,
     zoomBy: zoomBy,

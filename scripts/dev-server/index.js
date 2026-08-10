@@ -760,6 +760,40 @@ function screenPngPlugin() {
           page = await ctx.newPage();
           await page.goto(target, { waitUntil: "networkidle", timeout: 30000 });
           try { await page.evaluate(() => document.fonts && document.fonts.ready); } catch {}
+          // Full-page screenshots are never shorter than the viewport. Measure the
+          // actual screen content so every export uses its own rendered height.
+          const sizing = await page.evaluate(() => {
+            let max = 0;
+            const all = document.body.getElementsByTagName("*");
+            for (let i = 0; i < all.length; i++) {
+              const el = all[i];
+              const cs = getComputedStyle(el);
+              if (cs.position === "fixed" || cs.position === "sticky") continue;
+
+              let clipped = false;
+              let parent = el.parentElement;
+              while (parent && parent !== document.body) {
+                const overflowY = getComputedStyle(parent).overflowY;
+                if (overflowY === "hidden" || overflowY === "auto" || overflowY === "scroll") {
+                  clipped = true;
+                  break;
+                }
+                parent = parent.parentElement;
+              }
+              if (clipped) continue;
+
+              const rect = el.getBoundingClientRect();
+              const bottom = rect.bottom + window.scrollY;
+              if (Number.isFinite(bottom) && bottom > max) max = bottom;
+            }
+            return {
+              contentHeight: max > 0 ? Math.ceil(max) : window.innerHeight,
+              viewportHeight: window.innerHeight,
+            };
+          });
+          if (sizing.contentHeight < sizing.viewportHeight) {
+            await page.setViewportSize({ width, height: sizing.contentHeight });
+          }
           // Sticky/fixed elements would otherwise stamp mid-document on a full-page
           // screenshot. Inject a screenshot-only stylesheet that pins them to the
           // bottom of the document. The bottom nav anchors at bottom:0; smaller

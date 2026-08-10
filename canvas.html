@@ -71,18 +71,30 @@
 </head>
 <body>
 
-  <div id="viewport" class="canvas-space-viewport">
+  <div id="viewport" class="canvas-space-viewport is-select-tool">
     <div id="stage" class="canvas-space-stage"></div>
   </div>
 
   <div class="zoom-controls">
-    <button class="zoom-btn zoom-btn--tidy" onclick="addText()" title="Add a title (T)">Title</button>
-    <button class="zoom-btn zoom-btn--tidy" onclick="refreshScreens()" title="Reload screens to see edits">Refresh</button>
+    <div class="canvas-tool-group" role="toolbar" aria-label="Canvas tools">
+      <button id="tool-select" class="zoom-btn is-active" type="button" onclick="setCanvasTool('select')" title="Select tool (V)" aria-label="Select tool" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l13.5 8.6-6.1 1.7-3 5.7L5 3z"/><path d="M13 13l5 5"/></svg>
+      </button>
+      <button id="tool-hand" class="zoom-btn" type="button" onclick="setCanvasTool('hand')" title="Hand tool (H)" aria-label="Hand tool" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 11V6.5a1.5 1.5 0 0 1 3 0V10"/><path d="M10.5 10V4.5a1.5 1.5 0 0 1 3 0V10"/><path d="M13.5 10V6a1.5 1.5 0 0 1 3 0v5"/><path d="M16.5 11V8.5a1.5 1.5 0 0 1 3 0V14c0 4.4-2.8 7-7 7h-1.1a6 6 0 0 1-4.8-2.4L4 15.2a1.6 1.6 0 0 1 2.4-2.1l1.1.9"/></svg>
+      </button>
+      <button id="tool-text" class="zoom-btn" type="button" onclick="addText()" title="Title tool (T)" aria-label="Title tool" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7V4h14v3M9 20h6M12 4v16"/></svg>
+      </button>
+    </div>
+    <button class="zoom-btn" type="button" onclick="refreshScreens()" title="Reload screens" aria-label="Reload screens">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+    </button>
     <div class="zoom-controls__zoom-group">
       <button class="zoom-btn" onclick="pz.zoomBy(-0.04)" title="Zoom out">&minus;</button>
       <span id="zoom-label" class="zoom-level">100%</span>
       <button class="zoom-btn" onclick="pz.zoomBy(0.04)" title="Zoom in">+</button>
-      <button class="zoom-btn" type="button" onclick="centerOnContent()" title="Center on screens" aria-label="Center on screens">
+      <button class="zoom-btn" type="button" onclick="centerOnContent()" title="Frame all (Shift+1)" aria-label="Frame all canvas content">
         <!-- @phosphor-icons/core assets/regular/crosshair.svg (MIT) -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232,120h-8.34A96.14,96.14,0,0,0,136,32.34V24a8,8,0,0,0-16,0v8.34A96.14,96.14,0,0,0,32.34,120H24a8,8,0,0,0,0,16h8.34A96.14,96.14,0,0,0,120,223.66V232a8,8,0,0,0,16,0v-8.34A96.14,96.14,0,0,0,223.66,136H232a8,8,0,0,0,0-16Zm-96,87.6V200a8,8,0,0,0-16,0v7.6A80.15,80.15,0,0,1,48.4,136H56a8,8,0,0,0,0-16H48.4A80.15,80.15,0,0,1,120,48.4V56a8,8,0,0,0,16,0V48.4A80.15,80.15,0,0,1,207.6,120H200a8,8,0,0,0,0,16h7.6A80.15,80.15,0,0,1,136,207.6ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Z"/></svg>
       </button>
@@ -133,6 +145,7 @@
         { label: projectId, href: "project.html?id=" + encProjectId, id: "project-link" },
         { label: "Canvas" },
       ],
+      hint: "Drag to select · Space+drag to pan",
       fixed: true,
     });
 
@@ -154,7 +167,25 @@
       if (s) restoreState = JSON.parse(s);
     } catch (_) {}
 
-    const pz = initPanZoom(viewport, stage, { navHeight: 52, restoreState });
+    const pz = initPanZoom(viewport, stage, { navHeight: 52, restoreState, dragToPan: false });
+    let canvasTool = "select";
+    let placingText = false;
+
+    function setCanvasTool(tool) {
+      if (!["select", "hand", "text"].includes(tool)) return;
+      canvasTool = tool;
+      placingText = tool === "text";
+      pz.dragToPan = tool === "hand";
+      viewport.classList.toggle("is-select-tool", tool === "select");
+      viewport.classList.toggle("placing-text", tool === "text");
+      ["select", "hand", "text"].forEach((name) => {
+        const button = document.getElementById("tool-" + name);
+        if (!button) return;
+        const active = name === tool;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+    }
 
     function savePanZoom() {
       try {
@@ -386,30 +417,113 @@
       return { screens: nextScreens, texts: nextTexts };
     }
 
+    function nudgeSelection(dx, dy) {
+      if (selected.size === 0 && selectedTexts.size === 0) return;
+      selected.forEach((i) => {
+        const screen = screens[i];
+        if (!screen) return;
+        screen.x = roundCanvasPosition(screen.x + dx);
+        screen.y = roundCanvasPosition(screen.y + dy);
+        const card = document.getElementById("card-" + i);
+        if (card) {
+          card.style.left = screen.x + "px";
+          card.style.top = screen.y + "px";
+        }
+      });
+      selectedTexts.forEach((i) => {
+        const text = texts[i];
+        if (!text) return;
+        text.x = roundCanvasPosition(text.x + dx);
+        text.y = roundCanvasPosition(text.y + dy);
+        const el = textLayer && textLayer.querySelector('.canvas-text[data-idx="' + i + '"]');
+        if (el) {
+          el.style.left = text.x + "px";
+          el.style.top = text.y + "px";
+        }
+      });
+      saveCanvas();
+    }
+
+    function zoomToActualSize() {
+      pz.zoom = 1;
+      pz.applyTransform();
+    }
+
+    function frameSelection() {
+      const bounds = movingSelectionBounds();
+      if (bounds) frameBounds(bounds, 80);
+    }
+
     /* ── Keyboard shortcuts ── */
     window.addEventListener("keydown", function (e) {
       const inField = e.target.closest("input, textarea, [contenteditable]");
+      if (inField) return;
+      const primaryModifier = e.metaKey || e.ctrlKey;
+
       if (e.key === "Delete" || e.key === "Backspace") {
-        if (!inField && (selected.size > 0 || selectedTexts.size > 0)) {
+        if (selected.size > 0 || selectedTexts.size > 0) {
           e.preventDefault();
           deleteSelected();
         }
       }
-      if ((e.key === "t" || e.key === "T") && !inField && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if ((e.key === "v" || e.key === "V") && !primaryModifier && !e.altKey) {
+        e.preventDefault();
+        setCanvasTool("select");
+      }
+      if ((e.key === "h" || e.key === "H") && !primaryModifier && !e.altKey) {
+        e.preventDefault();
+        setCanvasTool("hand");
+      }
+      if ((e.key === "t" || e.key === "T") && !primaryModifier && !e.altKey) {
         e.preventDefault();
         addText();
       }
-      if ((e.key === "a" || e.key === "A") && (e.metaKey || e.ctrlKey)) {
-        if (!e.target.closest("input, textarea, [contenteditable]")) {
+      if ((e.key === "a" || e.key === "A") && primaryModifier) {
+        e.preventDefault();
+        setAllSelected();
+      }
+      if ((e.key === "d" || e.key === "D") && primaryModifier && !e.altKey) {
+        e.preventDefault();
+        if (!e.repeat) duplicateSelection();
+      }
+      if (e.code === "Digit1" && e.shiftKey && !primaryModifier && !e.altKey) {
+        e.preventDefault();
+        centerOnContent();
+      }
+      if (e.code === "Digit2" && e.shiftKey && !primaryModifier && !e.altKey) {
+        e.preventDefault();
+        frameSelection();
+      }
+      if (e.key === "0" && !primaryModifier && !e.altKey) {
+        e.preventDefault();
+        zoomToActualSize();
+      }
+      if ((e.key === "+" || e.key === "=") && !primaryModifier && !e.altKey) {
+        e.preventDefault();
+        pz.zoomBy(0.1);
+      }
+      if (e.key === "-" && !primaryModifier && !e.altKey) {
+        e.preventDefault();
+        pz.zoomBy(-0.1);
+      }
+      if (e.key.startsWith("Arrow") && (selected.size > 0 || selectedTexts.size > 0)) {
+        const amount = e.shiftKey ? 10 : 1;
+        const offsets = {
+          ArrowLeft: [-amount, 0],
+          ArrowRight: [amount, 0],
+          ArrowUp: [0, -amount],
+          ArrowDown: [0, amount],
+        };
+        const offset = offsets[e.key];
+        if (offset) {
           e.preventDefault();
-          setAllSelected();
+          nudgeSelection(offset[0], offset[1]);
         }
       }
       if (e.key === "Escape") {
         closeContextMenu();
         clearSelection();
-        clearTextSelection();
-        cancelPlaceText();
+        setCanvasTool("select");
       }
     });
 
@@ -538,18 +652,24 @@
       }, delay || 0);
     }
 
-    async function renderScreenToPng(idx) {
+    async function renderScreenToPng(idx, scale) {
       const screen = screens[idx];
       if (!screen) return null;
       const file = "data/projects/" + encProjectId + "/screens/" + screen.file;
       const width = screen.width || 390;
-      const url = "/api/render-png?file=" + encodeURIComponent(file) + "&width=" + width + "&scale=2";
+      const exportScale = scale === 2 ? 2 : 1;
+      const url = "/api/render-png?file=" + encodeURIComponent(file) + "&width=" + width + "&scale=" + exportScale;
       const resp = await fetch(url);
       if (!resp.ok) {
         console.error("render-png failed", resp.status, await resp.text().catch(() => ""));
         return null;
       }
       return await resp.blob();
+    }
+
+    function pngFilename(file, scale) {
+      const base = file.replace(/\.html$/, "");
+      return base + (scale === 2 ? "@2x" : "") + ".png";
     }
 
     function triggerDownload(dataUrl, name) {
@@ -561,22 +681,23 @@
       a.remove();
     }
 
-    async function downloadScreensAsPng(indices) {
+    async function downloadScreensAsPng(indices, scale) {
       const list = indices.filter(i => screens[i]);
       if (!list.length) return;
+      const exportScale = scale === 2 ? 2 : 1;
 
       try {
         if (list.length === 1) {
           showExportToast("Rendering screen…");
           const idx = list[0];
-          const blob = await renderScreenToPng(idx);
+          const blob = await renderScreenToPng(idx, exportScale);
           if (!blob) {
             showExportToast("Couldn't render screen — see console.", "error");
             hideExportToast(2800);
             return;
           }
           const url = URL.createObjectURL(blob);
-          triggerDownload(url, screens[idx].file.replace(/\.html$/, "") + ".png");
+          triggerDownload(url, pngFilename(screens[idx].file, exportScale));
           setTimeout(() => URL.revokeObjectURL(url), 1000);
           showExportToast("Downloaded 1 screen", "done");
           hideExportToast(1600);
@@ -590,18 +711,18 @@
         for (let i = 0; i < list.length; i++) {
           const idx = list[i];
           showExportToast("Rendering " + (i + 1) + " of " + list.length + "…");
-          const blob = await renderScreenToPng(idx);
+          const blob = await renderScreenToPng(idx, exportScale);
           if (!blob) {
             skipped.push(screens[idx].file);
             continue;
           }
-          zip.file(screens[idx].file.replace(/\.html$/, "") + ".png", blob);
+          zip.file(pngFilename(screens[idx].file, exportScale), blob);
         }
         showExportToast("Zipping " + (list.length - skipped.length) + " screens…");
         const blob = await zip.generateAsync({ type: "blob" });
         const url = URL.createObjectURL(blob);
         const stamp = new Date().toISOString().slice(0, 10);
-        triggerDownload(url, "screens-" + stamp + ".zip");
+        triggerDownload(url, "screens-" + stamp + (exportScale === 2 ? "@2x" : "") + ".zip");
         setTimeout(() => URL.revokeObjectURL(url), 1000);
         const doneCount = list.length - skipped.length;
         const doneMsg = skipped.length
@@ -658,12 +779,14 @@
 
         const count = selected.size;
         const label = selectedTexts.size ? selectedObjectLabel() : (count === 1 ? screenDisplayName(screens[idx]) : count + " screens");
-        const downloadLabel = count === 1 ? "Download as PNG" : "Download " + count + " as PNG";
+        const exactLabel = count === 1 ? "Download PNG · Exact size" : "Download " + count + " PNGs · Exact size";
+        const retinaLabel = count === 1 ? "Download PNG · 2×" : "Download " + count + " PNGs · 2×";
         const duplicateLabel = "Duplicate " + label;
         const items = [
           { label: "Select All", icon: ICON_SELECT, action: setAllSelected },
           { label: duplicateLabel, icon: ICON_COPY, async: true, action: ({ startBusy }) => { startBusy("Duplicating…"); return duplicateSelection(); } },
-          { label: downloadLabel, icon: ICON_DOWNLOAD, action: () => downloadScreensAsPng([...selected]) },
+          { label: exactLabel, icon: ICON_DOWNLOAD, action: () => downloadScreensAsPng([...selected], 1) },
+          { label: retinaLabel, icon: ICON_DOWNLOAD, action: () => downloadScreensAsPng([...selected], 2) },
           { sep: true },
           { label: "Delete " + label, icon: ICON_DELETE, danger: true, action: deleteSelected },
         ];
@@ -684,7 +807,8 @@
     function onCardPointerDown(e, idx) {
       if (e.button !== 0) return;
       if (placingText) return;
-      if (pz.spaceHeld) return;
+      if (e.pointerType === "touch") return;
+      if (pz.spaceHeld || pz.dragToPan) return;
       e.stopPropagation();
       e.preventDefault();
       closeContextMenu();
@@ -692,9 +816,9 @@
       const shiftHeld = e.shiftKey;
 
       if (shiftHeld) {
-        const next = new Set(selected);
-        if (next.has(idx)) next.delete(idx); else next.add(idx);
-        setSelected([...next]);
+        const nextScreens = new Set(selected);
+        if (nextScreens.has(idx)) nextScreens.delete(idx); else nextScreens.add(idx);
+        setCanvasSelection([...nextScreens], [...selectedTexts]);
       } else if (!selected.has(idx)) {
         setSelected([idx]);
       }
@@ -726,26 +850,29 @@
         placeTextAt(e.clientX, e.clientY);
         return;
       }
-      if (pz.spaceHeld) return;
+      if (e.pointerType === "touch") return;
+      if (pz.spaceHeld || pz.dragToPan) return;
       if (e.target.closest(".canvas-card")) return;
 
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        e.stopPropagation();
-        marquee = {
-          startX: e.clientX,
-          startY: e.clientY,
-          moved: false,
-          pointerId: e.pointerId,
-        };
-        window.addEventListener("pointermove", onMarqueeWindowPointerMove, true);
-        window.addEventListener("pointerup", onMarqueeWindowPointerEnd);
-        window.addEventListener("pointercancel", onMarqueeWindowPointerEnd);
-      } else {
-        closeContextMenu();
-        clearSelection();
-        clearTextSelection();
-      }
+      e.preventDefault();
+      e.stopPropagation();
+      closeContextMenu();
+      const additive = e.shiftKey;
+      const baseScreens = new Set(selected);
+      const baseTexts = new Set(selectedTexts);
+      if (!additive) clearSelection();
+      marquee = {
+        startX: e.clientX,
+        startY: e.clientY,
+        moved: false,
+        additive,
+        baseScreens,
+        baseTexts,
+        pointerId: e.pointerId,
+      };
+      window.addEventListener("pointermove", onMarqueeWindowPointerMove, true);
+      window.addEventListener("pointerup", onMarqueeWindowPointerEnd);
+      window.addEventListener("pointercancel", onMarqueeWindowPointerEnd);
     });
 
     function releaseViewportCaptureSafe(pointerId) {
@@ -777,7 +904,7 @@
       const card = document.getElementById("card-" + idx);
       const width = s.width || 390;
       const measuredHeight = card ? card.offsetHeight : 0;
-      const height = measuredHeight > 0 ? measuredHeight : Math.round(width * 2.16);
+      const height = measuredHeight > 200 ? measuredHeight : Math.round(width * 2.16);
       return normalizedBounds(s.x, s.y, width, height);
     }
 
@@ -1069,7 +1196,15 @@
           }
         });
       }
-      setCanvasSelection(hits, textHits);
+      if (marquee.additive) {
+        const nextScreens = new Set(marquee.baseScreens);
+        const nextTexts = new Set(marquee.baseTexts);
+        hits.forEach((i) => nextScreens.add(i));
+        textHits.forEach((i) => nextTexts.add(i));
+        setCanvasSelection([...nextScreens], [...nextTexts]);
+      } else {
+        setCanvasSelection(hits, textHits);
+      }
       return true;
     }
 
@@ -1120,23 +1255,17 @@
 
     /* ── Canvas data ── */
 
-    function getScreensBounds() {
-      if (!screens.length) return null;
-      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-      for (let i = 0; i < screens.length; i++) {
-        const s = screens[i];
-        const w = s.width || 390;
-        const card = document.getElementById("card-" + i);
-        // Cards start with tiny iframes until the inner doc loads, so fall back
-        // to a mobile-ish aspect ratio so initial centering frames the content.
-        const measured = card ? card.offsetHeight : 0;
-        const h = measured > 200 ? measured : Math.round(w * 2.16);
-        if (s.x < minX) minX = s.x;
-        if (s.y < minY) minY = s.y;
-        if (s.x + w > maxX) maxX = s.x + w;
-        if (s.y + h > maxY) maxY = s.y + h;
-      }
-      return { minX, minY, maxX, maxY };
+    function getCanvasBounds() {
+      const items = [];
+      screens.forEach((_, i) => {
+        const bounds = screenBounds(i);
+        if (bounds) items.push(bounds);
+      });
+      texts.forEach((_, i) => {
+        const bounds = textBounds(i);
+        if (bounds) items.push(bounds);
+      });
+      return unionBounds(items);
     }
 
     /** Frame a bounds rect inside the viewport and apply the pan/zoom. */
@@ -1157,11 +1286,11 @@
       pz.applyTransform();
     }
 
-    /** Frame all screens inside the viewport. The stage's (0,0) is CSS-positioned
+    /** Frame all objects inside the viewport. The stage's (0,0) is CSS-positioned
      *  at the viewport center, so panning by (-cx*z, -cy*z) lands the content
      *  center at the viewport center. */
     function centerOnContent() {
-      const b = getScreensBounds();
+      const b = getCanvasBounds();
       if (!b) {
         pz.zoom = 1;
         pz.panX = 0;
@@ -1515,14 +1644,11 @@
     }
 
     // Arm placement: the next click on the canvas drops the title where you click.
-    let placingText = false;
     function addText() {
-      placingText = true;
-      viewport.classList.add("placing-text");
+      setCanvasTool("text");
     }
     function cancelPlaceText() {
-      placingText = false;
-      viewport.classList.remove("placing-text");
+      setCanvasTool("select");
     }
     function placeTextAt(clientX, clientY) {
       const point = stagePointFromClient(clientX, clientY);
@@ -1539,17 +1665,22 @@
     function onTextPointerDown(e, idx) {
       if (e.button !== 0) return;
       if (placingText) return;
-      if (pz.spaceHeld) return;
+      if (e.pointerType === "touch") return;
+      if (pz.spaceHeld || pz.dragToPan) return;
       const el = e.currentTarget;
       if (el.querySelector("input, textarea")) return;
-      if (e.ctrlKey || e.metaKey) return;
       e.stopPropagation();
+      e.preventDefault();
       closeContextMenu();
-      if (selectedTexts.has(idx)) {
+      const shiftHeld = e.shiftKey;
+      if (shiftHeld) {
+        const nextTexts = new Set(selectedTexts);
+        if (nextTexts.has(idx)) nextTexts.delete(idx); else nextTexts.add(idx);
+        setCanvasSelection([...selected], [...nextTexts]);
+      } else if (selectedTexts.has(idx)) {
         selectedText = idx;
       } else {
-        clearSelection();
-        selectText(idx);
+        setCanvasSelection([], [idx]);
       }
       textPointer = {
         idx,
@@ -1558,6 +1689,7 @@
         lastX: e.clientX,
         lastY: e.clientY,
         moved: false,
+        shiftHeld,
         duplicateOnDrag: e.altKey,
         duplicateReady: !e.altKey,
         duplicatePromise: null,
@@ -1613,6 +1745,8 @@
         viewport.classList.remove("dragging-card");
         clearAlignmentGuides();
         saveCanvas();
+      } else if (!textPointer.shiftHeld) {
+        setCanvasSelection([], [textPointer.idx]);
       }
       textPointer = null;
       layoutInteractionActive = false;

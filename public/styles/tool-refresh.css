@@ -955,6 +955,13 @@ a.tile-card:hover {
   border-color: var(--tool-border);
 }
 
+.canvas-tool-group {
+  gap: 3px;
+  padding-right: 7px;
+  margin-right: 1px;
+  border-color: var(--tool-border);
+}
+
 .zoom-btn {
   width: 34px;
   height: 34px;
@@ -969,6 +976,15 @@ a.tile-card:hover {
   color: var(--tool-text);
   background: var(--tool-surface-muted);
   border-color: var(--tool-border);
+}
+
+.zoom-btn.is-active,
+.zoom-btn[aria-pressed="true"],
+.zoom-btn.is-active:hover,
+.zoom-btn[aria-pressed="true"]:hover {
+  color: #fff;
+  background: var(--tool-accent);
+  border-color: var(--tool-accent);
 }
 
 .zoom-level {
