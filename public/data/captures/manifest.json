@@ -183,6 +183,16 @@
       "y": 2449,
       "width": 500,
       "height": 877
+    },
+    {
+      "name": "login",
+      "file": "login.jpg",
+      "group": "login",
+      "path": "/login",
+      "url": "https://devbank.banno-staging.com/login",
+      "width": 500,
+      "height": 877,
+      "capturedAt": "2026-08-11T21:14:34.586Z"
     }
   ]
 }
